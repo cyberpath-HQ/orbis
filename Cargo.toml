@@ -1,0 +1,11 @@
+[workspace]
+resolver = "3"
+members = [
+    "server"
+]
+
+[workspace.package]
+authors = ["Emanuele (Ebalo) Balsamo <me@ebalo.xyz>"]
+edition = "2024"
+rust-version = "1.91.0"
+version = "0.1.0"
