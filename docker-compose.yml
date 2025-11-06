@@ -1,0 +1,17 @@
+# Development services for Orbis Assets
+#
+# +--------------------------------------------+
+# | THESE ARE UNSAFE, Do not use in production |
+# +--------------------------------------------+
+#
+
+services:
+  db:
+    image: postgres:alpine
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: orbis
+      POSTGRES_PASSWORD: orbis_password
+      POSTGRES_DB: orbis
