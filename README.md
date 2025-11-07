@@ -1,8 +1,8 @@
-# 🚀 Orbis Assets
+# 🚀 Orbis
 
 **NextGen Asset Management Platform**
 
-Orbis Assets is a modern, enterprise-grade asset management platform designed to provide comprehensive visibility and control over your IT infrastructure. Built with performance, security, and extensibility in mind.
+Orbis is a modern, enterprise-grade asset management platform designed to provide comprehensive visibility and control over your IT infrastructure. Built with performance, security, and extensibility in mind.
 
 ---
 
