@@ -4,11 +4,15 @@ use crate::{PluginError, ResourceLimits};
 use std::path::PathBuf;
 use std::process::{Child, Command};
 use std::time::{Duration, Instant};
+use std::sync::Arc;
+use tokio::sync::RwLock;
 use tokio::time::timeout;
 use tracing::{debug, error, info, warn};
 
 #[cfg(target_os = "linux")]
 use crate::sandbox::{SandboxConfig, linux::LinuxSandbox};
+
+use crate::{TerminationReason, TerminationEvent, PluginMetrics, EnhancedResourceMonitor};
 
 /// Status of a plugin process
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -58,7 +62,7 @@ pub struct PluginProcess {
     ipc_server: IpcServer,
 
     /// IPC channel for communication
-    ipc_channel: Option<IpcChannel>,
+    pub(crate) ipc_channel: Option<IpcChannel>,
 
     /// Current status
     pub status: ProcessStatus,
@@ -74,6 +78,18 @@ pub struct PluginProcess {
 
     /// Last health check time
     last_health_check: Option<Instant>,
+
+    /// Resource monitor for metrics and violation detection
+    pub(crate) monitor: Option<Arc<RwLock<EnhancedResourceMonitor>>>,
+
+    /// Termination reason (if terminated)
+    pub termination_reason: Option<TerminationReason>,
+
+    /// Final metrics before termination
+    pub final_metrics: Option<PluginMetrics>,
+
+    /// Termination event callback
+    termination_callback: Option<Arc<dyn Fn(TerminationEvent) + Send + Sync>>,
 
     /// Linux sandbox (if enabled)
     #[cfg(target_os = "linux")]
@@ -116,6 +132,10 @@ impl PluginProcess {
             start_time: None,
             restart_attempts: 0,
             last_health_check: None,
+            monitor: None,
+            termination_reason: None,
+            final_metrics: None,
+            termination_callback: None,
             #[cfg(target_os = "linux")]
             sandbox,
         })
@@ -398,6 +418,143 @@ impl PluginProcess {
     pub fn get_cgroup_cpu_usage(&self) -> Option<u64> {
         self.sandbox.as_ref()
             .and_then(|s| s.get_cpu_usage().ok())
+    }
+
+    // ========== Termination Tracking and Resource Monitoring ==========
+
+    /// Set resource monitor for this process
+    pub fn set_monitor(&mut self, monitor: EnhancedResourceMonitor) {
+        self.monitor = Some(Arc::new(RwLock::new(monitor)));
+    }
+
+    /// Set termination callback
+    pub fn set_termination_callback<F>(&mut self, callback: F)
+    where
+        F: Fn(TerminationEvent) + Send + Sync + 'static,
+    {
+        self.termination_callback = Some(Arc::new(callback));
+    }
+
+    /// Collect current metrics
+    pub async fn collect_metrics(&self) -> Result<PluginMetrics, PluginError> {
+        if let Some(monitor) = &self.monitor {
+            let mut mon = monitor.write().await;
+            mon.collect_metrics()
+        } else {
+            Err(PluginError::LoadError("No resource monitor configured".to_string()))
+        }
+    }
+
+    /// Check for resource violations
+    pub async fn check_violations(&self) -> Result<Vec<crate::limits::ViolationType>, PluginError> {
+        if let Some(monitor) = &self.monitor {
+            let mon = monitor.read().await;
+            mon.check_violations()
+        } else {
+            Ok(Vec::new())
+        }
+    }
+
+    /// Check if process exceeded memory limit
+    pub async fn check_memory_limit(&self) -> Option<TerminationReason> {
+        if let Ok(metrics) = self.collect_metrics().await {
+            if metrics.memory.rss_bytes > self.resource_limits.max_heap_bytes {
+                return Some(TerminationReason::MemoryLimit {
+                    used: metrics.memory.rss_bytes,
+                    limit: self.resource_limits.max_heap_bytes,
+                });
+            }
+        }
+        None
+    }
+
+    /// Check if process was killed by OOM killer
+    pub fn check_oom_kill(&self) -> Option<TerminationReason> {
+        // Check if process crashed (simplified check)
+        // Full implementation would check kernel logs
+        if self.status == ProcessStatus::Crashed {
+            Some(TerminationReason::CgroupOomKill)
+        } else {
+            None
+        }
+    }
+
+    /// Terminate process with reason tracking
+    pub async fn terminate_with_reason(
+        &mut self,
+        reason: TerminationReason,
+        grace_period: Duration,
+    ) -> Result<(), PluginError> {
+        info!("Terminating plugin '{}' - {}", self.plugin_name, reason.description());
+
+        // Collect final metrics before termination
+        let final_metrics = self.collect_metrics().await.ok();
+
+        // Send termination warning to plugin
+        if let Err(e) = self.send_termination_warning(&reason, grace_period).await {
+            warn!("Failed to send termination warning: {}", e);
+        }
+
+        // Perform shutdown
+        let result = self.shutdown(grace_period).await;
+
+        // Create termination event
+        let uptime = self.uptime().unwrap_or(Duration::from_secs(0));
+        let event = TerminationEvent::new(
+            self.plugin_name.clone(),
+            self.pid.unwrap_or(0),
+            reason.clone(),
+            final_metrics.clone(),
+            uptime,
+            self.restart_attempts,
+        );
+
+        // Store termination info
+        self.termination_reason = Some(reason);
+        self.final_metrics = final_metrics;
+
+        // Trigger callback
+        if let Some(callback) = &self.termination_callback {
+            callback(event);
+        }
+
+        result
+    }
+
+    /// Send termination warning to plugin
+    async fn send_termination_warning(
+        &mut self,
+        reason: &TerminationReason,
+        grace_period: Duration,
+    ) -> Result<(), PluginError> {
+        let msg = IpcMessage::TerminationWarning {
+            reason: reason.description(),
+            grace_period_ms: grace_period.as_millis() as u64,
+        };
+
+        // Send via IPC channel if available
+        if let Some(channel) = &mut self.ipc_channel {
+            channel.send(&msg).await?;
+        }
+
+        Ok(())
+    }
+
+    /// Get termination event if terminated
+    pub fn get_termination_event(&self) -> Option<TerminationEvent> {
+        if let Some(reason) = &self.termination_reason {
+            let uptime = self.uptime().unwrap_or(Duration::from_secs(0));
+            Some(TerminationEvent::new(
+                self.plugin_name.clone(),
+                self.pid.unwrap_or(0),
+                reason.clone(),
+                self.final_metrics.clone(),
+                uptime,
+                self.restart_attempts,
+            ))
+        } else {
+            None
+        }
     }
 
     /// Check if sandbox is enabled

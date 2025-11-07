@@ -1,7 +1,7 @@
 /// Plugin Process Manager - orchestrates multiple plugin processes
 use crate::ipc::IpcConfig;
 use crate::process::{PluginProcess, ProcessConfig, ProcessStatus};
-use crate::{PluginError, ResourceLimits};
+use crate::{PluginError, ResourceLimits, EnhancedResourceMonitor, TerminationEvent, PluginMetrics};
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -9,6 +9,8 @@ use std::time::Duration;
 use tokio::sync::RwLock;
 use tokio::time::interval;
 use tracing::{debug, error, info, warn};
+use serde::{Deserialize, Serialize};
+
 
 /// Manages multiple plugin processes
 pub struct PluginProcessManager {
@@ -301,16 +303,15 @@ impl PluginProcessManager {
         // Fallback to /proc
         #[cfg(target_os = "linux")]
         {
-            use crate::PluginResourceMonitor;
-            let monitor = PluginResourceMonitor::new(
+            let monitor = EnhancedResourceMonitor::new(
                 plugin_name.to_string(),
                 pid,
                 process.resource_limits.clone(),
             );
             
-            let memory = monitor.check_resources()
+            let memory = monitor.check_violations()
                 .ok()
-                .and_then(|v| v.iter().find_map(|viol| {
+                .and_then(|violations| violations.iter().find_map(|viol| {
                     if let crate::limits::ViolationType::HeapMemory { used, .. } = viol {
                         Some(*used)
                     } else {
@@ -318,7 +319,7 @@ impl PluginProcessManager {
                     }
                 }))
                 .unwrap_or(0);
-            
+
             return Ok(PluginResourceUsage {
                 memory_bytes: memory,
                 cpu_time_ms: 0,
@@ -349,6 +350,135 @@ pub enum ResourceUsageSource {
     /// From /proc filesystem (fallback, may include shared resources)
     Proc,
 }
+
+// ========== Termination Event Tracking ==========
+
+/// Termination event handler trait
+pub trait TerminationHandler: Send + Sync {
+    /// Handle a termination event
+    fn on_termination(&self, event: TerminationEvent);
+}
+
+/// Simple termination logger
+pub struct LoggingTerminationHandler;
+
+impl TerminationHandler for LoggingTerminationHandler {
+    fn on_termination(&self, event: TerminationEvent) {
+        // Use conditional logging based on criticality
+        if event.reason.is_critical() {
+            error!(
+                plugin = %event.plugin_name,
+                pid = event.pid,
+                reason = %event.reason.description(),
+                uptime_secs = event.uptime.as_secs(),
+                restarts = event.restart_count,
+                "Plugin terminated (critical)"
+            );
+        } else {
+            warn!(
+                plugin = %event.plugin_name,
+                pid = event.pid,
+                reason = %event.reason.description(),
+                uptime_secs = event.uptime.as_secs(),
+                restarts = event.restart_count,
+                "Plugin terminated"
+            );
+        }
+
+        if let Some(metrics) = &event.final_metrics {
+            debug!(
+                "Final metrics - Memory: {} MB, CPU: {:.2}%, Threads: {}",
+                metrics.memory.rss_bytes / (1024 * 1024),
+                metrics.cpu.usage_percent,
+                metrics.process.thread_count
+            );
+        }
+    }
+}
+
+/// Termination event store for persistence and analysis
+pub struct TerminationEventStore {
+    events: Arc<RwLock<Vec<TerminationEvent>>>,
+    max_events: usize,
+}
+
+impl TerminationEventStore {
+    pub fn new(max_events: usize) -> Self {
+        Self {
+            events: Arc::new(RwLock::new(Vec::new())),
+            max_events,
+        }
+    }
+
+    /// Store a termination event
+    pub async fn store(&self, event: TerminationEvent) {
+        let mut events = self.events.write().await;
+        events.push(event);
+
+        // Keep only the most recent events
+        if events.len() > self.max_events {
+            let drain_end = events.len() - self.max_events;
+            events.drain(0..drain_end);
+        }
+    }
+
+    /// Get all termination events
+    pub async fn get_all(&self) -> Vec<TerminationEvent> {
+        self.events.read().await.clone()
+    }
+
+    /// Get events for a specific plugin
+    pub async fn get_by_plugin(&self, plugin_name: &str) -> Vec<TerminationEvent> {
+        self.events.read().await
+            .iter()
+            .filter(|e| e.plugin_name == plugin_name)
+            .cloned()
+            .collect()
+    }
+
+    /// Get events by termination reason type
+    pub async fn get_by_reason(&self, reason_type: fn(&crate::TerminationReason) -> bool) -> Vec<TerminationEvent> {
+        self.events.read().await
+            .iter()
+            .filter(|e| reason_type(&e.reason))
+            .cloned()
+            .collect()
+    }
+
+    /// Clear all events
+    pub async fn clear(&self) {
+        self.events.write().await.clear();
+    }
+
+    /// Get statistics
+    pub async fn get_stats(&self) -> TerminationStats {
+        let events = self.events.read().await;
+
+        let mut by_reason = HashMap::new();
+        let mut by_plugin = HashMap::new();
+
+        for event in events.iter() {
+            let reason_key = format!("{:?}", event.reason);
+            *by_reason.entry(reason_key).or_insert(0) += 1;
+            *by_plugin.entry(event.plugin_name.clone()).or_insert(0) += 1;
+        }
+
+        TerminationStats {
+            total_terminations: events.len(),
+            by_reason,
+            by_plugin,
+        }
+    }
+}
+
+/// Statistics about termination events
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TerminationStats {
+    pub total_terminations: usize,
+    pub by_reason: HashMap<String, usize>,
+    pub by_plugin: HashMap<String, usize>,
+}
+
 
 impl Drop for PluginProcessManager {
     fn drop(&mut self) {

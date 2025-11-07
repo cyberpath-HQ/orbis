@@ -10,6 +10,12 @@ pub mod ipc;  // IPC module for process isolation
 #[cfg(feature = "macros")]
 pub mod macros;
 
+// Metrics (always included - types are needed by both server and plugins)
+pub mod metrics;
+
+// Resource monitoring (always available - critical for all plugins)
+pub mod monitoring;
+
 // Plugin-side modules
 #[cfg(feature = "context-proxy")]
 mod context_proxy;  // Context proxy for IPC-based context access
@@ -27,8 +33,6 @@ mod security;
 #[cfg(feature = "registry")]
 mod registry;
 
-#[cfg(feature = "monitoring")]
-mod monitoring;  // Per-plugin resource monitoring
 
 #[cfg(feature = "server")]
 mod context_manager;  // Server-side context manager with permission checking
@@ -36,7 +40,7 @@ mod context_manager;  // Server-side context manager with permission checking
 #[cfg(feature = "server")]
 mod integration;  // Requirements to sandbox config integration
 
-#[cfg(feature = "process-management")]
+#[cfg(feature = "server")]
 pub mod process;  // Process management for plugin sandboxing
 
 #[cfg(all(feature = "sandboxing", target_os = "linux"))]
@@ -52,6 +56,8 @@ pub use signature::*;
 pub use limits::*;
 pub use requirements::*;
 pub use network_types::*;
+pub use metrics::*;
+pub use monitoring::*;
 
 // Plugin-side exports
 #[cfg(feature = "context-proxy")]
@@ -67,8 +73,6 @@ pub use security::*;
 #[cfg(feature = "registry")]
 pub use registry::*;
 
-#[cfg(feature = "monitoring")]
-pub use monitoring::PluginResourceMonitor;
 
 #[cfg(feature = "server")]
 pub use context_manager::*;
@@ -76,10 +80,7 @@ pub use context_manager::*;
 #[cfg(feature = "server")]
 pub use integration::{requirements_to_sandbox_config, get_resource_limits};
 
-#[cfg(all(feature = "server", feature = "security"))]
-pub use integration::validate_requirements_against_policy;
-
-#[cfg(all(feature = "server", not(feature = "security")))]
+#[cfg(feature = "server")]
 pub use integration::validate_requirements_against_policy;
 
 

@@ -6,8 +6,17 @@
 pub mod manager;
 pub mod process;
 
-pub use manager::PluginProcessManager;
+pub use manager::{
+    PluginProcessManager,
+    PluginResourceUsage,
+    ResourceUsageSource,
+    TerminationHandler,
+    LoggingTerminationHandler,
+    TerminationEventStore,
+    TerminationStats,
+};
 pub use process::{PluginProcess, ProcessStatus};
+
 
 use std::path::PathBuf;
 

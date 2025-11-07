@@ -111,6 +111,31 @@ pub enum IpcMessage {
         request_id: u64,
         exists: bool,
     },
+    
+    // ========== Metrics & Monitoring (Server → Plugin / Plugin → Server) ==========
+    
+    /// Request current metrics from plugin
+    MetricsRequest {
+        request_id: u64,
+    },
+    
+    /// Response with current metrics
+    MetricsResponse {
+        request_id: u64,
+        metrics: Option<Vec<u8>>, // Serialized PluginMetrics
+        error: Option<String>,
+    },
+    
+    /// Notify server of termination event
+    TerminationEvent {
+        event_data: Vec<u8>, // Serialized TerminationEvent
+    },
+    
+    /// Plugin is about to be terminated (warning from server)
+    TerminationWarning {
+        reason: String,
+        grace_period_ms: u64,
+    },
 }
 
 /// Hook registration information

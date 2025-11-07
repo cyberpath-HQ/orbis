@@ -12,9 +12,7 @@ server = [
     "loader",
     "security",
     "registry",
-    "monitoring",
     "sandboxing",
-    "process-management",
     "signing",  # Server can sign and verify
 ]
 # Plugin-side features (context proxy, basic execution)
@@ -25,9 +23,7 @@ loader = ["dep:libloading"]
 security = ["dep:sha3", "dep:chacha20poly1305", "dep:base64", "dep:zeroize", "dep:keyring", "dep:whoami"]
 signing = ["dep:ed25519-dalek", "dep:hex", "dep:rand", "dep:chrono"]  # Signature creation and verification
 registry = []
-monitoring = []
 sandboxing = ["dep:nix", "dep:libseccomp", "dep:caps"]
-process-management = []
 context-proxy = []
 macros = ["dep:paste"]
 
