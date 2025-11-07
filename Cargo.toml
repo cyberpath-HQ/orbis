@@ -1,7 +1,10 @@
 [workspace]
 resolver = "3"
 members = [
-    "server"
+    "server",
+    "plugin-api",
+    "plugin-worker",
+    "example-plugin"
 ]
 
 [workspace.package]
@@ -10,6 +13,17 @@ edition = "2024"
 rust-version = "1.91.0"
 version = "0.1.0"
 readme = "README.md"
+
+[profile.release]
+codegen-units = 1           # Single codegen unit for better optimizations
+debug = false               # No debug info for smaller and faster binary
+lto = true                  # Link Time Optimization for better codegen
+debug-assertions = false    # Disable debug assertions to avoid runtime overhead
+incremental = false         # Disable incremental for clean, reliable release builds
+opt-level = 3               # Max optimization level
+panic = "abort"             # Abort on panic, no unwinding, smaller binary and better security
+overflow-checks = true     # Disable integer overflow checks to enhance performance
+strip = true                # Strip symbols to reduce binary size
 
 [workspace.lints.clippy]
 alloc_instead_of_core = "deny"
