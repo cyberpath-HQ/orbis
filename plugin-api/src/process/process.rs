@@ -344,8 +344,9 @@ impl PluginProcess {
         }
 
         self.status = ProcessStatus::Stopped;
-        self.child = None;
-        self.ipc_channel = None;
+        
+        // Perform comprehensive cleanup of all resources
+        self.cleanup();
 
         Ok(())
     }
@@ -359,6 +360,48 @@ impl PluginProcess {
         }
         self.status = ProcessStatus::Stopped;
         self.ipc_channel = None;
+    }
+
+    /// Comprehensive cleanup - releases all resources
+    /// Call this after shutdown to ensure everything is cleaned up
+    pub fn cleanup(&mut self) {
+        info!("Performing comprehensive cleanup for plugin: {}", self.plugin_name);
+        
+        // Ensure process is stopped
+        if self.child.is_some() {
+            self.kill();
+        }
+        
+        // Close IPC channel
+        if let Some(channel) = self.ipc_channel.take() {
+            debug!("Closing IPC channel for plugin: {}", self.plugin_name);
+            drop(channel);
+        }
+        
+        // Drop resource monitor
+        if let Some(monitor) = self.monitor.take() {
+            debug!("Dropping resource monitor for plugin: {}", self.plugin_name);
+            drop(monitor);
+        }
+        
+        // Cleanup sandbox resources
+        #[cfg(target_os = "linux")]
+        if let Some(mut sandbox) = self.sandbox.take() {
+            debug!("Cleaning up sandbox for plugin: {}", self.plugin_name);
+            sandbox.cleanup();
+        }
+        
+        // Clear callbacks
+        if let Some(callback) = self.termination_callback.take() {
+            debug!("Dropping termination callback for plugin: {}", self.plugin_name);
+            drop(callback);
+        }
+        
+        // Clear termination data
+        self.termination_reason = None;
+        self.final_metrics = None;
+        
+        info!("Comprehensive cleanup complete for plugin: {}", self.plugin_name);
     }
 
     /// Check if process is still running
@@ -571,11 +614,36 @@ impl PluginProcess {
 
 impl Drop for PluginProcess {
     fn drop(&mut self) {
-        // Ensure process is killed when PluginProcess is dropped
+        debug!("PluginProcess dropping for plugin: {}", self.plugin_name);
+        
+        // Kill process if still running
         if self.child.is_some() {
             warn!("PluginProcess dropped while still running, killing: {}", self.plugin_name);
             self.kill();
         }
+        
+        // Explicitly drop IPC resources
+        if self.ipc_channel.take().is_some() {
+            debug!("Dropped IPC channel for plugin: {}", self.plugin_name);
+        }
+        
+        // Drop resource monitor
+        if self.monitor.take().is_some() {
+            debug!("Dropped resource monitor for plugin: {}", self.plugin_name);
+        }
+        
+        // Drop sandbox (will trigger its Drop implementation)
+        #[cfg(target_os = "linux")]
+        if self.sandbox.take().is_some() {
+            debug!("Dropped sandbox for plugin: {}", self.plugin_name);
+        }
+        
+        // Clear callbacks to break reference cycles
+        if self.termination_callback.take().is_some() {
+            debug!("Dropped termination callback for plugin: {}", self.plugin_name);
+        }
+        
+        info!("PluginProcess fully dropped for plugin: {}", self.plugin_name);
     }
 }
 

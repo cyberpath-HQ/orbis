@@ -482,8 +482,27 @@ pub struct TerminationStats {
 
 impl Drop for PluginProcessManager {
     fn drop(&mut self) {
-        warn!("PluginProcessManager dropping - processes will be killed");
-        // Processes will be killed when PluginProcess instances are dropped
+        warn!("PluginProcessManager dropping - ensuring all processes are stopped");
+        
+        // Note: We can't call async methods in Drop, but the PluginProcess Drop
+        // implementations will ensure processes are killed
+        
+        // Get sync access to processes
+        if let Ok(mut processes) = self.processes.try_write() {
+            let count = processes.len();
+            if count > 0 {
+                warn!("Force-cleaning {} plugin processes during manager drop", count);
+                
+                // Explicitly cleanup each process
+                for (name, mut process) in processes.drain() {
+                    warn!("Force-stopping plugin during drop: {}", name);
+                    process.cleanup();
+                }
+            }
+            info!("PluginProcessManager cleanup complete");
+        } else {
+            error!("Failed to acquire write lock during PluginProcessManager drop");
+        }
     }
 }
 

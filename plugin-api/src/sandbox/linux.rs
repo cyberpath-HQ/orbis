@@ -1,7 +1,7 @@
 /// Main Linux sandbox implementation
 use super::{SandboxConfig, namespaces, seccomp, cgroups, capabilities, filesystem};
 use crate::{PluginError, ResourceLimits};
-use tracing::{info, warn};
+use tracing::{debug, info, warn};
 
 /// Linux sandbox for plugin isolation
 pub struct LinuxSandbox {
@@ -157,6 +157,27 @@ impl LinuxSandbox {
     /// Check if cgroups are enabled
     pub fn has_cgroups(&self) -> bool {
         self.cgroup_controller.is_some()
+    }
+
+    /// Explicit cleanup method to release all sandbox resources
+    pub fn cleanup(&mut self) {
+        info!("Cleaning up sandbox for plugin: {}", self.plugin_name);
+
+        // Cgroup controller will be cleaned up by its Drop implementation
+        if let Some(controller) = self.cgroup_controller.take() {
+            debug!("Dropping cgroup controller for plugin: {}", self.plugin_name);
+            drop(controller);
+        }
+
+        info!("Sandbox cleanup complete for plugin: {}", self.plugin_name);
+    }
+}
+
+impl Drop for LinuxSandbox {
+    fn drop(&mut self) {
+        debug!("LinuxSandbox dropping for plugin: {}", self.plugin_name);
+        // Ensure cleanup happens even if not called explicitly
+        self.cleanup();
     }
 }
 

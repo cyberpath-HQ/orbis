@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, RwLock};
 use std::time::{SystemTime, Duration};
-use tracing::{info, warn, error};
+use tracing::{info, warn, error, debug};
 use crate::{BridgedPlugin, HookRegistry, Plugin, PluginContext, PluginError, PluginLoader, PluginSecurity, TrustLevel, TrustedPluginEntry, ResourceLimits, ViolationTracker, UnmountBehavior, ViolationType};
 use crate::bridge::PluginBridge;
 
@@ -69,6 +69,24 @@ struct LoadedPlugin {
     unmount_behavior: UnmountBehavior,
 }
 
+impl Drop for LoadedPlugin {
+    fn drop(&mut self) {
+        info!("Dropping LoadedPlugin: {} - ensuring cleanup", self.info.name);
+
+        // Clear memory region tracking
+        if let Some(region) = self.memory_region.take() {
+            debug!("Cleared memory region for plugin: {} (loaded at: {:?})",
+                   self.info.name, region.loaded_at);
+        }
+
+        // Plugin's shutdown should have been called before drop,
+        // but we can't call async methods here
+        // The library will be unloaded when Library is dropped
+
+        info!("LoadedPlugin dropped: {}", self.info.name);
+    }
+}
+
 /// Memory region tracking for plugin isolation
 #[derive(Debug, Clone)]
 struct MemoryRegion {
@@ -119,7 +137,7 @@ impl PluginRegistry {
             sandboxed_mode: false,
         }
     }
-    
+
     /// Create a new registry with sandboxing enabled
     #[cfg(target_os = "linux")]
     pub fn new_sandboxed(
@@ -140,7 +158,7 @@ impl PluginRegistry {
             sandboxed_mode: true,
         }
     }
-    
+
     /// Check if sandboxing is enabled
     pub fn is_sandboxed(&self) -> bool {
         self.sandboxed_mode
