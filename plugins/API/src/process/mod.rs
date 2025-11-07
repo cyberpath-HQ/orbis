@@ -23,7 +23,7 @@ use std::path::PathBuf;
 /// Configuration for plugin process management
 #[derive(Debug, Clone)]
 pub struct ProcessConfig {
-    /// Path to the plugin-worker binary
+    /// Path to the worker binary
     pub worker_binary: PathBuf,
     
     /// Maximum number of restart attempts before giving up

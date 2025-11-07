@@ -74,7 +74,7 @@ Orbis Assets is a modern, enterprise-grade asset management platform designed to
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Rust 1.70+ (for server compilation)
+- Rust 1.91 (nightly)+ (for server compilation)
 - Node.js 18+ (for GUI)
 - Docker (optional, for containerized deployment)
 
@@ -82,8 +82,8 @@ Orbis Assets is a modern, enterprise-grade asset management platform designed to
 
 #### 1. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/orbis-assets.git
-cd orbis-assets
+git clone https://github.com/ebalo55/Orbis.git
+cd orbis
 ```
 
 #### 2. Build the Server
@@ -93,7 +93,7 @@ cargo build --release
 
 #### 3. Run the Server
 ```bash
-./target/release/orbis-assets
+./target/release/orbis
 ```
 
 #### 4. Access the Web Interface
@@ -111,20 +111,20 @@ http://localhost:8080
 #### Linux
 ```bash
 # Download the latest release
-wget https://github.com/yourusername/orbis-assets/releases/latest/download/orbis-assets-linux-amd64
+wget https://github.com/ebalo55/Orbis/releases/latest/download/orbis-assets-linux-amd64
 
 # Make it executable
-chmod +x orbis-assets-linux-amd64
+chmod +x orbis-linux-amd64
 
 # Run the server
-./orbis-assets-linux-amd64
+./orbis-linux-amd64
 ```
 
 #### Windows
 ```powershell
 # Download and run the installer
 # Or use the portable executable
-orbis-assets-windows-amd64.exe
+orbis-windows-amd64.exe
 ```
 
 ### Agent Installation
@@ -141,63 +141,9 @@ Invoke-WebRequest -Uri https://install.orbis-assets.io/agent.ps1 -UseBasicParsin
 
 ---
 
-## 🔌 Plugin Development
+### Documentation
 
-Orbis Assets supports a powerful plugin system based on hooks. Create custom plugins to extend functionality:
-
-```rust
-use orbis_assets_sdk::Plugin;
-
-#[plugin]
-pub struct MyCustomPlugin;
-
-impl Plugin for MyCustomPlugin {
-    fn on_asset_discovered(&self, asset: &Asset) {
-        // Custom logic here
-    }
-}
-```
-
-For detailed plugin development guide, see [PLUGINS.md](docs/PLUGINS.md).
-
----
-
-## 🔧 Configuration
-
-Configuration is managed via `config.toml`:
-
-```toml
-[server]
-host = "0.0.0.0"
-port = 8080
-
-[database]
-url = "postgresql://localhost/orbis_assets"
-
-[notifications.telegram]
-enabled = true
-bot_token = "your-bot-token"
-
-[notifications.slack]
-enabled = true
-webhook_url = "your-webhook-url"
-
-[security]
-mfa_enabled = true
-e2e_encryption = true
-```
-
----
-
-## 📖 Documentation
-
-- [User Guide](docs/user-guide.md)
-- [API Documentation](docs/api.md)
-- [Plugin Development](docs/plugins.md)
-- [Deployment Guide](docs/deployment.md)
-- [Security Best Practices](docs/security.md)
-
----
+- **[Plugin System Guide](plugins/API/README.md)** - Complete documentation
 
 ## 🤝 Contributing
 
@@ -222,18 +168,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Documentation**: [https://docs.orbis-assets.io](https://docs.orbis-assets.io)
 - **Issues**: [GitHub Issues](https://github.com/yourusername/orbis-assets/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/yourusername/orbis-assets/discussions)
-- **Email**: support@orbis-assets.io
-
----
-
-## 🗺️ Roadmap
-
-- [ ] Kubernetes orchestration support
-- [ ] Cloud provider integrations (AWS, Azure, GCP)
-- [ ] Advanced ML-based anomaly detection
-- [ ] GraphQL API
-- [ ] Mobile native apps (iOS/Android)
-- [ ] Desktop applications (Electron)
+- **Email**: me@ebalo.xyz
 
 ---
 
@@ -249,9 +184,9 @@ Built with ❤️ using:
 
 <div align="center">
 
-**[Website](https://orbis-assets.io)** • **[Documentation](https://docs.orbis-assets.io)** • **[Blog](https://blog.orbis-assets.io)**
+**[Website](https://ebalo.xyz)** • **[Documentation](#)**
 
-Made with 🚀 by the Orbis Assets team
+Made with 🚀 by the Ebalo
 
 </div>
 

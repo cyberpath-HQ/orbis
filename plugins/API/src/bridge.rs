@@ -1,8 +1,8 @@
-/// Bridge module to convert between plugin-api types and internal types
+/// Bridge module to convert between API types and internal types
 use std::sync::Arc;
 use crate::{BridgedPlugin, HookRegistry, Plugin, PluginContext, PluginError, ResourceLimits};
 
-/// Wrapper that converts plugin-api Plugin to internal Plugin
+/// Wrapper that converts API Plugin to internal Plugin
 pub struct PluginBridge {
     inner: Box<dyn Plugin>,
 }

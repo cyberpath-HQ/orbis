@@ -2,9 +2,9 @@
 resolver = "3"
 members = [
     "server",
-    "plugin-api",
-    "plugin-worker",
-    "example-plugin"
+    "plugins/API",
+    "plugins/worker",
+    "plugins/example-plugin"
 ]
 
 [workspace.package]

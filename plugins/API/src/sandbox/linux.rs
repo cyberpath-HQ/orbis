@@ -74,10 +74,10 @@ impl LinuxSandbox {
     pub fn apply_inside_worker() -> Result<(), PluginError> {
         info!("Applying sandbox inside worker process");
 
-        // Note: This would be called from plugin-worker
-        // Currently plugin-worker doesn't support this yet
+        // Note: This would be called from worker
+        // Currently worker doesn't support this yet
 
-        warn!("apply_inside_worker is a placeholder - needs plugin-worker integration");
+        warn!("apply_inside_worker is a placeholder - needs worker integration");
         Ok(())
     }
 
