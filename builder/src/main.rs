@@ -1,9 +1,14 @@
 mod handler;
+mod args;
 
 use std::fmt::Display;
-use std::path::PathBuf;
 use clap::{Parser, Subcommand};
 use tracing::trace;
+use crate::args::hash::HashArgs;
+use crate::args::keygen::KeygenArgs;
+use crate::args::list::ListArgs;
+use crate::args::sign::SignArgs;
+use crate::args::verify::VerifyArgs;
 
 /// Orbis Builder CLI, allows flexible and advanced project building and management
 #[derive(Parser)]
@@ -30,11 +35,23 @@ struct Args {
 enum Commands {
     /// Build the Orbis project
     Build {
+        /// Clean previous build artifacts
+        #[arg(short, long, default_value_t = false)]
+        clean: bool,
+
         /// Build in release mode
         #[arg(short, long, default_value_t = false)]
         release: bool,
 
         /// Additional plugins to include
+        ///
+        /// Comma-separated list of plugin names to build (without path or extension)
+        /// e.g., --plugins plugin1,plugin2
+        ///
+        /// Plugins should be located in the plugins/ directory
+        ///
+        /// Special values:
+        /// - "all" or "*": Build all plugins found in the plugins/ directory
         #[arg(short, long, value_delimiter = ',')]
         plugins: Vec<String>,
 
@@ -45,27 +62,37 @@ enum Commands {
         all: bool,
     },
     /// Compute the sha3-512 hash of (plugin) files
-    Hash {
-        /// Path to the file(s) to hash
-        #[arg(value_name = "FILES", required = true)]
-        filenames: Vec<PathBuf>
-    },
-    Sign {
-
-    },
-    Keygen {
-
-    }
+    Hash(HashArgs),
+    /// Sign a file using a stored key pair
+    Sign(SignArgs),
+    /// Verify a file's signature using a stored key pair or provided public key
+    Verify(VerifyArgs),
+    /// Generate a new key pair and store it in the specified storage
+    Keygen(KeygenArgs),
+    /// List available keys and plugins
+    List(ListArgs),
 }
 
 impl Display for Commands {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Commands::Build { release: _, plugins: _, all: _ } => {
+            Commands::Build {..} => {
                 write!(f, "Build")
             }
-            Commands::Hash { filenames: _ } => {
+            Commands::Hash(_) => {
                 write!(f, "Hash")
+            }
+            Commands::Sign(_) => {
+                write!(f, "Sign")
+            }
+            Commands::Keygen(_) => {
+                write!(f, "Keygen")
+            }
+            Commands::Verify(_) => {
+                write!(f, "Verify")
+            }
+            Commands::List(_) => {
+                write!(f, "List")
             }
         }
     }
@@ -104,8 +131,20 @@ fn main() {
     trace!("Running for command: {}", args.command);
     match args.command {
         Commands::Build { .. } => {}
-        Commands::Hash { filenames } => {
-            handler::hash::handle(filenames)
+        Commands::Hash(a) => {
+            handler::hash::handle(a)
+        }
+        Commands::Sign(a) => {
+            handler::sign::handle(a)
+        }
+        Commands::Verify(a) => {
+            handler::verify::handle(a)
+        }
+        Commands::Keygen(a) => {
+            handler::keygen::handle(a)
+        }
+        Commands::List(a) => {
+            handler::list::handle(a, args.json)
         }
     }
 }
