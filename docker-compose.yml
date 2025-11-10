@@ -5,6 +5,8 @@
 # +--------------------------------------------+
 #
 
+name: "orbis-development-services"
+
 services:
   db:
     image: postgres:alpine
