@@ -326,12 +326,8 @@ impl PluginSecurity {
 
     /// Calculate the SHA3-512 hash of a plugin file
     pub fn calculate_hash<P: AsRef<Path>>(&self, path: P) -> Result<String, PluginError> {
-        let contents = fs::read(path.as_ref())
-            .map_err(|e| PluginError::SecurityError(format!("Failed to read plugin file: {}", e)))?;
-
-        let mut hasher = Sha3_512::new();
-        hasher.update(&contents);
-        Ok(format!("{:x}", hasher.finalize()))
+        hasher::hash_file(path)
+            .map_err(|e| PluginError::SecurityError(format!("Failed to read plugin file: {}", e)))
     }
 
     /// Check if a plugin hash is trusted (either hardcoded or user-added)
