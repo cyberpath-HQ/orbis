@@ -2,7 +2,7 @@
 name = "example-plugin"
 authors.workspace = true
 edition.workspace = true
-version.workspace = true
+version = "0.1.0"
 rust-version.workspace = true
 
 [lib]
