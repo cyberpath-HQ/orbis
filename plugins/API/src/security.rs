@@ -11,7 +11,8 @@ use std::path::{Path, PathBuf};
 use std::sync::RwLock;
 use tracing::{info, warn, error};
 use zeroize::Zeroize;
-use crate::{PluginError, PublicKey, PluginSignature};
+use signer::{PublicKey, Signature};
+use crate::{PluginError};
 
 /// Trust level for plugins - only Trusted plugins are loaded
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
@@ -69,7 +70,7 @@ pub struct TrustedPluginEntry {
     /// Plugin version
     pub version: PluginVersion,
     /// Ed25519 signature (REQUIRED)
-    pub signature: PluginSignature,
+    pub signature: Signature,
     /// Optional note/description
     pub note: Option<String>,
 }
@@ -388,7 +389,7 @@ impl PluginSecurity {
         &self,
         hash: String,
         version: PluginVersion,
-        signature: PluginSignature,
+        signature: Signature,
     ) -> Result<(), PluginError> {
         let entry = TrustedPluginEntry {
             hash,
@@ -441,7 +442,7 @@ impl PluginSecurity {
         let is_key_allowed = self.is_public_key_allowed(entry.signature.public_key())?;
         if !is_key_allowed {
             error!("Plugin signature uses unknown public key: {}", entry.signature.public_key().to_hex());
-            return Err(PluginError::SignatureError("Public key not in allowed list".to_string()));
+            return Err(PluginError::InvalidPublicKey);
         }
 
         // Read plugin file and verify signature
@@ -450,7 +451,7 @@ impl PluginSecurity {
 
         if !signature_valid {
             error!("Plugin signature verification failed for: {}", library_path.display());
-            return Err(PluginError::SignatureError("Invalid signature".to_string()));
+            return Err(PluginError::InvalidSignature);
         }
 
         info!("Plugin validated successfully (hash + signature): {}", library_path.display());
@@ -649,7 +650,7 @@ mod tests {
     fn test_hardcoded_trust() {
         let test_hash = "abc123".to_string();
         let dummy_key = PublicKey::from_bytes([0u8; 32]);
-        let dummy_signature = PluginSignature::from_bytes([0u8; 64], dummy_key.clone());
+        let dummy_signature = Signature::from_bytes([0u8; 64], dummy_key.clone());
         
         let entry = TrustedPluginEntry {
             hash: test_hash.clone(),

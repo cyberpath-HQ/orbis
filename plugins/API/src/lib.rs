@@ -2,7 +2,6 @@
 mod error;
 mod context;
 mod hook;
-mod signature;
 mod limits;
 mod requirements;  // Plugin requirements declaration
 mod network_types;  // Network target types (used by requirements)
@@ -52,7 +51,6 @@ use std::sync::Arc;
 pub use error::*;
 pub use context::*;
 pub use hook::*;
-pub use signature::*;
 pub use limits::*;
 pub use requirements::*;
 pub use network_types::*;

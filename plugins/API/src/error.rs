@@ -20,8 +20,16 @@ pub enum PluginError {
     #[error("Security validation failed: {0}")]
     SecurityError(String),
     
-    #[error("Plugin signature verification failed: {0}")]
-    SignatureError(String),
+    /// START: Signature related errors
+    #[error("Signature related operation failed: {0}")]
+    SignatureError(#[from] signer::errors::SignerErrors),
+    
+    #[error("Public key not in allowed list")]
+    InvalidPublicKey,
+    
+    #[error("Invalid plugin signature")]
+    InvalidSignature,
+    /// END: Signature related errors
     
     #[error("Resource limit violation: {0}")]
     ResourceLimitError(String),
