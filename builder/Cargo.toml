@@ -1,0 +1,16 @@
+[package]
+name = "builder"
+authors.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+version = "0.1.0"
+readme.workspace = true
+
+[dependencies]
+clap = { version = "4.5", features = ["derive"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["tracing-log", "json"] }
+hasher = { path = "../shared/hasher" }
+
+[lints]
+workspace = true
