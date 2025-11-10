@@ -1,15 +1,15 @@
-use std::path::PathBuf;
 use tracing::{debug, error, info, warn};
+use crate::args::hash::HashArgs;
 
 /// Handle the 'hash' command to compute sha3-512 hashes of given files
 ///
 /// # Arguments
 ///
 /// * `filenames` - A vector of PathBuf representing the files to hash
-pub fn handle(filenames: Vec<PathBuf>) {
-    debug!("Handling 'hash' command for {} file(s)", filenames.len());
+pub fn handle(args: HashArgs) {
+    debug!("Handling 'hash' command for {} file(s)", args.filenames.len());
 
-    for filename in filenames {
+    for filename in args.filenames {
         if filename.exists() && filename.is_file() {
             debug!(filename = %filename.display(), "Hashing file");
             let result = hasher::hash_file(&filename);
