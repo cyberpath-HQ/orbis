@@ -1,14 +1,11 @@
+pub mod errors;
+
 /// Plugin signature verification system using Ed25519
-#[cfg(feature = "signing")]
-use ed25519_dalek::{Signature, Signer, SigningKey, Verifier, VerifyingKey};
+use ed25519_dalek::{Signature as Ed25519Signature, Signer, SigningKey, Verifier, VerifyingKey};
 
 use serde::{Deserialize, Serialize};
 
-#[cfg(feature = "signing")]
 use std::path::Path;
-
-#[cfg(feature = "signing")]
-use crate::PluginError;
 
 /// Ed25519 public key for signature verification
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
@@ -17,6 +14,7 @@ pub struct PublicKey {
     /// Raw public key bytes (32 bytes) - Vec for serde compatibility
     #[serde(with = "serde_bytes")]
     pub key_bytes: Vec<u8>,
+
     /// Optional label for this key (e.g., "official", "partner-acme")
     pub label: Option<String>,
 }
@@ -46,13 +44,11 @@ impl PublicKey {
     }
 
     /// Create from hex string
-    #[cfg(feature = "signing")]
-    pub fn from_hex(hex_str: &str) -> Result<Self, PluginError> {
-        let bytes = hex::decode(hex_str)
-            .map_err(|e| PluginError::SignatureError(format!("Invalid hex string: {}", e)))?;
+    pub fn from_hex(hex_str: &str) -> Result<Self, errors::SignerErrors> {
+        let bytes = hex::decode(hex_str)?;
 
         if bytes.len() != 32 {
-            return Err(PluginError::SignatureError(
+            return Err(errors::SignerErrors::FormatError(
                 format!("Public key must be 32 bytes, got {}", bytes.len())
             ));
         }
@@ -64,30 +60,29 @@ impl PublicKey {
     }
 
     /// Convert to hex string
-    #[cfg(feature = "signing")]
     pub fn to_hex(&self) -> String {
         hex::encode(&self.key_bytes)
     }
 
     /// Get verifying key
-    #[cfg(feature = "signing")]
-    fn to_verifying_key(&self) -> Result<VerifyingKey, PluginError> {
+    fn to_verifying_key(&self) -> Result<VerifyingKey, errors::SignerErrors> {
         let arr = self.as_bytes();
         VerifyingKey::from_bytes(&arr)
-            .map_err(|e| PluginError::SignatureError(format!("Invalid public key: {}", e)))
+            .map_err(|e| errors::SignerErrors::InvalidPublicKey(e))
     }
 }
 
 /// Plugin signature
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[derive(bincode::Encode, bincode::Decode)]
-pub struct PluginSignature {
+pub struct Signature {
     /// Ed25519 signature bytes (64 bytes) - Vec for serde compatibility
     #[serde(with = "serde_bytes")]
     pub signature_bytes: Vec<u8>,
 
     /// Public key that created this signature
     public_key: PublicKey,
+
     /// Optional metadata
     pub metadata: Option<SignatureMetadata>,
 }
@@ -105,7 +100,7 @@ pub struct SignatureMetadata {
     pub notes: Option<String>,
 }
 
-impl PluginSignature {
+impl Signature {
     /// Create from raw bytes
     pub fn from_bytes(signature_bytes: [u8; 64], public_key: PublicKey) -> Self {
         Self {
@@ -128,14 +123,12 @@ impl PluginSignature {
     }
 
     /// Create from hex string
-    #[cfg(feature = "signing")]
-    pub fn from_hex(hex_str: &str, public_key: PublicKey) -> Result<Self, PluginError> {
-        let bytes = hex::decode(hex_str)
-            .map_err(|e| PluginError::SignatureError(format!("Invalid hex string: {}", e)))?;
+    pub fn from_hex(hex_str: &str, public_key: PublicKey) -> Result<Self, errors::SignerErrors> {
+        let bytes = hex::decode(hex_str)?;
 
         if bytes.len() != 64 {
-            return Err(PluginError::SignatureError(
-                format!("Signature must be 64 bytes, got {}", bytes.len())
+            return Err(errors::SignerErrors::FormatError(
+                format!("Signature must be 64 bytes long, got {}", bytes.len())
             ));
         }
 
@@ -147,17 +140,15 @@ impl PluginSignature {
     }
 
     /// Convert to hex string
-    #[cfg(feature = "signing")]
     pub fn to_hex(&self) -> String {
         hex::encode(&self.signature_bytes)
     }
 
     /// Verify signature against file content
-    #[cfg(feature = "signing")]
-    pub fn verify(&self, content: &[u8]) -> Result<bool, PluginError> {
+    pub fn verify(&self, content: &[u8]) -> Result<bool, errors::SignerErrors> {
         let verifying_key = self.public_key.to_verifying_key()?;
         let sig_bytes = self.as_bytes();
-        let signature = Signature::from_bytes(&sig_bytes);
+        let signature = Ed25519Signature::from_bytes(&sig_bytes);
 
         match verifying_key.verify(content, &signature) {
             Ok(()) => Ok(true),
@@ -167,17 +158,15 @@ impl PluginSignature {
 }
 
 /// Signing key pair (for plugin developers to sign their plugins)
-#[cfg(feature = "signing")]
 pub struct SigningKeyPair {
     signing_key: SigningKey,
     verifying_key: VerifyingKey,
 }
 
-#[cfg(feature = "signing")]
 impl SigningKeyPair {
     /// Generate a new random key pair
     pub fn generate() -> Self {
-        let signing_key = SigningKey::generate(&mut rand::rngs::OsRng);
+        let signing_key = SigningKey::generate(&mut rand::thread_rng());
         let verifying_key = signing_key.verifying_key();
 
         Self {
@@ -197,17 +186,17 @@ impl SigningKeyPair {
     }
 
     /// Sign a file
-    pub fn sign_file<P: AsRef<Path>>(&self, path: P) -> Result<PluginSignature, PluginError> {
+    pub fn sign_file<P: AsRef<Path>>(&self, path: P) -> Result<Signature, errors::SignerErrors> {
         let content = std::fs::read(path.as_ref())?;
         self.sign(&content)
     }
 
     /// Sign content
-    pub fn sign(&self, content: &[u8]) -> Result<PluginSignature, PluginError> {
+    pub fn sign(&self, content: &[u8]) -> Result<Signature, errors::SignerErrors> {
         let signature = self.signing_key.sign(content);
         let signature_bytes = signature.to_bytes();
 
-        Ok(PluginSignature {
+        Ok(Signature {
             signature_bytes: signature_bytes.to_vec(),
             public_key: self.public_key(),
             metadata: Some(SignatureMetadata {
@@ -224,13 +213,12 @@ impl SigningKeyPair {
     }
 
     /// Import from private key hex
-    pub fn from_private_key_hex(hex_str: &str) -> Result<Self, PluginError> {
-        let bytes = hex::decode(hex_str)
-            .map_err(|e| PluginError::SignatureError(format!("Invalid hex string: {}", e)))?;
+    pub fn from_private_key_hex(hex_str: &str) -> Result<Self, errors::SignerErrors> {
+        let bytes = hex::decode(hex_str)?;
 
         if bytes.len() != 32 {
-            return Err(PluginError::SignatureError(
-                format!("Private key must be 32 bytes, got {}", bytes.len())
+            return Err(errors::SignerErrors::FormatError(
+                format!("Private key must be 32 bytes long, got {}", bytes.len())
             ));
         }
 
@@ -248,29 +236,27 @@ impl SigningKeyPair {
 }
 
 /// Signature verification helper
-#[cfg(feature = "signing")]
-pub fn verify_plugin_signature<P: AsRef<Path>>(
+pub fn verify_signature<P: AsRef<Path>>(
     plugin_path: P,
-    signature: &PluginSignature,
-) -> Result<bool, PluginError> {
+    signature: &Signature,
+) -> Result<bool, errors::SignerErrors> {
     let content = std::fs::read(plugin_path.as_ref())?;
     signature.verify(&content)
 }
 
 /// Verify against multiple public keys
-#[cfg(feature = "signing")]
 pub fn verify_with_keys<P: AsRef<Path>>(
     plugin_path: P,
-    signature: &PluginSignature,
+    signature: &Signature,
     allowed_keys: &[PublicKey],
-) -> Result<bool, PluginError> {
+) -> Result<bool, errors::SignerErrors> {
     // Check if signature's public key is in allowed list
     if !allowed_keys.contains(&signature.public_key) {
         return Ok(false);
     }
 
     // Verify the signature
-    verify_plugin_signature(plugin_path, signature)
+    verify_signature(plugin_path, signature)
 }
 
 #[cfg(test)]
@@ -314,5 +300,106 @@ mod tests {
         let keypair2 = SigningKeyPair::from_private_key_hex(&private_hex).unwrap();
         assert_eq!(keypair2.public_key_hex(), public_hex);
     }
-}
 
+    #[test]
+    fn test_public_key_from_hex_errors() {
+        // Invalid hex string should return HexFormatError
+        if let Err(e) = PublicKey::from_hex("zzzz") {
+            match e {
+                errors::SignerErrors::HexFormatError(_) => {}
+                other => panic!("expected HexFormatError, got: {:?}", other),
+            }
+        } else {
+            panic!("expected error for invalid hex");
+        }
+
+        // Wrong-length hex (not 32 bytes) should return FormatError
+        let short_hex = "abcd"; // 2 bytes
+        if let Err(e) = PublicKey::from_hex(short_hex) {
+            match e {
+                errors::SignerErrors::FormatError(_) => {}
+                other => panic!("expected FormatError for short hex, got: {:?}", other),
+            }
+        } else {
+            panic!("expected FormatError for short hex");
+        }
+    }
+
+    #[test]
+    fn test_signature_from_hex_errors() {
+        let keypair = SigningKeyPair::generate();
+        let pubkey = keypair.public_key();
+
+        // Invalid hex
+        if let Err(e) = Signature::from_hex("zzzz", pubkey.clone()) {
+            match e {
+                errors::SignerErrors::HexFormatError(_) => {}
+                other => panic!("expected HexFormatError, got: {:?}", other),
+            }
+        } else {
+            panic!("expected error for invalid signature hex");
+        }
+
+        // Wrong length
+        let short_hex = "abcd"; // too short
+        if let Err(e) = Signature::from_hex(short_hex, pubkey) {
+            match e {
+                errors::SignerErrors::FormatError(_) => {}
+                other => panic!("expected FormatError for short signature hex, got: {:?}", other),
+            }
+        } else {
+            panic!("expected FormatError for short signature hex");
+        }
+    }
+
+    #[test]
+    fn test_sign_file_and_verify_with_keys() {
+        // Create a temp file under system temp dir
+        let mut path = std::env::temp_dir();
+        let fname = format!("orbis_signer_test_{}.bin", std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos());
+        path.push(fname);
+
+        let content = b"file content for signing";
+        std::fs::write(&path, content).expect("write temp file");
+
+        let keypair = SigningKeyPair::generate();
+        let signature = keypair.sign_file(&path).expect("sign file");
+
+        // In-memory verify
+        let file_content = std::fs::read(&path).expect("read back file");
+        assert!(signature.verify(&file_content).unwrap());
+
+        // verify_with_keys should accept when allowed_keys contains the public key
+        let allowed = vec![keypair.public_key()];
+        let ok = verify_with_keys(&path, &signature, &allowed).expect("verify_with_keys");
+        assert!(ok);
+
+        // And should return false when empty allowed list
+        let not_allowed: Vec<PublicKey> = vec![];
+        let ok2 = verify_with_keys(&path, &signature, &not_allowed).expect("verify_with_keys empty");
+        assert!(!ok2);
+
+        // cleanup
+        let _ = std::fs::remove_file(&path);
+    }
+
+    #[test]
+    fn test_bincode_roundtrip_publickey_and_signature() {
+        let keypair = SigningKeyPair::generate();
+        let public_key = keypair.public_key();
+
+        // bincode encode/decode for PublicKey
+        let encoded_pk = bincode::encode_to_vec(&public_key, bincode::config::standard()).expect("encode pk");
+        let (decoded_pk, _): (PublicKey, usize) = bincode::decode_from_slice(&encoded_pk, bincode::config::standard()).expect("decode pk");
+        assert_eq!(decoded_pk, public_key);
+
+        // Sign content and roundtrip Signature
+        let content = b"roundtrip content";
+        let signature = keypair.sign(content).expect("sign");
+        let encoded_sig = bincode::encode_to_vec(&signature, bincode::config::standard()).expect("encode sig");
+        let (decoded_sig, _): (Signature, usize) = bincode::decode_from_slice(&encoded_sig, bincode::config::standard()).expect("decode sig");
+
+        assert_eq!(decoded_sig.to_hex(), signature.to_hex());
+        assert_eq!(decoded_sig.public_key().key_bytes, signature.public_key().key_bytes);
+    }
+}

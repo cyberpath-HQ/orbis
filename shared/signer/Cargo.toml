@@ -1,0 +1,20 @@
+[package]
+name = "signer"
+authors.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+version = "0.1.0"
+readme.workspace = true
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+bincode = "2"
+hex = "0.4"
+rand = "0.8"
+chrono = "0.4"
+ed25519-dalek = { version = "2.2.0", features = ["rand_core"] }
+serde_bytes = "0.11"
+thiserror = "2.0.17"
+
+[lints]
+workspace = true
