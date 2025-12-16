@@ -1,0 +1,273 @@
+/**
+ * Main Orbis Application
+ */
+
+import React, {
+    useState,
+    useEffect,
+    useMemo
+} from 'react';
+import {
+    Routes,
+    Route
+} from 'react-router-dom';
+import { invoke } from '@tauri-apps/api/core';
+
+import { AppLayout } from '@/lib/layout';
+import { RouteGuard } from '@/lib/router';
+import { SchemaRenderer } from '@/lib/renderer';
+import { createPageStateStore } from '@/lib/state';
+import type { ApiClient } from '@/lib/actions';
+import type {
+    PluginInfo, PluginPage, AppModeInfo
+} from '@/types/plugin';
+import type {
+    NavigationConfig,
+    PageDefinition
+} from '@/types/schema';
+
+// Core system pages
+import {
+    DashboardPage,
+    PluginsPage,
+    SettingsPage,
+    LoginPage,
+    NotFoundPage,
+    UnauthorizedPage
+} from '@/pages';
+
+function App(): React.ReactElement {
+    const [
+        status,
+        setStatus,
+    ] = useState<`loading` | `connected` | `error`>(`loading`);
+    const [
+        mode,
+        setMode,
+    ] = useState<AppModeInfo | null>(null);
+    const [
+        plugins,
+        setPlugins,
+    ] = useState<Array<PluginInfo>>([]);
+    const [
+        pluginPages,
+        setPluginPages,
+    ] = useState<Array<PluginPage>>([]);
+    const [
+        error,
+        setError,
+    ] = useState<string | null>(null);
+
+    // Initialize application
+    useEffect(() => {
+        async function init(): Promise<void> {
+            try {
+                // Check health
+                await invoke(`health_check`);
+                setStatus(`connected`);
+
+                // Get mode info
+                const modeInfo = await invoke<AppModeInfo>(`get_mode`);
+                setMode(modeInfo);
+
+                // Get plugins
+                const {
+                    plugins: loadedPlugins,
+                } = await invoke<{ plugins: Array<PluginInfo> }>(`get_plugins`);
+                setPlugins(loadedPlugins);
+
+                // Get plugin pages
+                const {
+                    pages,
+                } = await invoke<{ pages: Array<PluginPage> }>(`get_plugin_pages`);
+                setPluginPages(pages);
+            }
+            catch (err) {
+                setStatus(`error`);
+                setError(err instanceof Error ? err.message : String(err));
+            }
+        }
+
+        void init();
+    }, []);
+
+    // Navigation configuration
+    const navigation = useMemo<NavigationConfig>(() => ({
+        primary: [
+            {
+                id:    `dashboard`,
+                label: `Dashboard`,
+                icon:  `LayoutDashboard`,
+                href:  `/`,
+            },
+            {
+                id:    `plugins`,
+                label: `Plugins`,
+                icon:  `Puzzle`,
+                href:  `/plugins`,
+            },
+        ],
+        secondary: [
+            {
+                id:    `settings`,
+                label: `Settings`,
+                icon:  `Settings`,
+                href:  `/settings`,
+            },
+        ],
+    }), []);
+
+    // API client for plugin pages
+    const apiClient = useMemo<ApiClient>(() => ({
+        call: async(api: string, method: string, args?: Record<string, unknown>) => {
+            // Parse API path: "plugin.command_name" or "core.command_name"
+            const [
+                namespace,
+                command,
+            ] = api.split(`.`);
+
+            if (namespace === `plugin`) {
+                // Call plugin API
+                return invoke(`call_plugin_api`, {
+                    command,
+                    method,
+                    args,
+                });
+            }
+
+            // Call core API
+            return invoke(command, args);
+        },
+    }), []);
+
+    // Loading state
+    if (status === `loading`) {
+        return (
+            <div className="flex min-h-screen items-center justify-center">
+                <div className="text-center space-y-4">
+                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent mx-auto" />
+                    <h2 className="text-xl font-semibold">Loading Orbis...</h2>
+                </div>
+            </div>
+        );
+    }
+
+    // Error state
+    if (status === `error`) {
+        return (
+            <div className="flex min-h-screen items-center justify-center">
+                <div className="text-center space-y-4 p-8 max-w-md">
+                    <div className="text-destructive text-6xl">⚠</div>
+                    <h2 className="text-xl font-semibold">Failed to connect</h2>
+                    <p className="text-muted-foreground">{error}</p>
+                    <button
+                        className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+                        onClick={() => window.location.reload()}
+                    >
+                        Retry
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <AppLayout
+            navigation={navigation}
+            pluginPages={pluginPages}
+            mode={mode ?? undefined}
+        >
+            <Routes>
+                {/* Public routes */}
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/unauthorized" element={<UnauthorizedPage />} />
+
+                {/* Protected routes */}
+                <Route element={<RouteGuard requiresAuth={false} />}>
+                    <Route path="/" element={<DashboardPage mode={mode} plugins={plugins} />} />
+                    <Route path="/plugins" element={<PluginsPage plugins={plugins} />} />
+                    <Route path="/settings" element={<SettingsPage />} />
+                    <Route path="/settings/*" element={<SettingsPage />} />
+                </Route>
+
+                {/* Plugin pages */}
+                {pluginPages.map((page) => (
+                    <Route
+                        key={`${ page.plugin }-${ page.route }`}
+                        path={`/plugins/${ page.plugin }${ page.route }`}
+                        element={
+                            <PluginPageRenderer
+                                page={page}
+                                apiClient={apiClient}
+                            />
+                        }
+                    />
+                ))}
+
+                {/* Catch-all */}
+                <Route path="*" element={<NotFoundPage />} />
+            </Routes>
+        </AppLayout>
+    );
+}
+
+// Plugin page renderer component
+interface PluginPageRendererProps {
+    page:      PluginPage
+    apiClient: ApiClient
+}
+
+function PluginPageRenderer({
+    page,
+    apiClient,
+}: PluginPageRendererProps): React.ReactElement {
+    // Create page state store
+    const stateStore = useMemo(() => {
+        // Convert page layout state definition if present
+        const pageWithState = page as unknown as { state?: PageDefinition[`state`] };
+        if (pageWithState.state) {
+            return createPageStateStore(
+                Object.fromEntries(
+                    Object.entries(pageWithState.state).map(([
+                        key,
+                        def,
+                    ]) => [
+                        key,
+                        {
+                            type:    def.type,
+                            default: def.default,
+                        },
+                    ])
+                )
+            );
+        }
+        return createPageStateStore();
+    }, [ page ]);
+
+    // Get the actual store instance
+    const state = stateStore();
+
+    // Type alias for ComponentSchema
+    type NewComponentSchema = import(`@/types/schema`).ComponentSchema;
+
+    return (
+        <div className="space-y-6">
+            <div className="flex items-center justify-between">
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight">{page.title}</h1>
+                    {page.description && (
+                        <p className="text-muted-foreground">{page.description}</p>
+                    )}
+                </div>
+            </div>
+
+            <SchemaRenderer
+                schema={page.layout as unknown as NewComponentSchema}
+                state={state}
+                apiClient={apiClient}
+            />
+        </div>
+    );
+}
+
+export default App;
