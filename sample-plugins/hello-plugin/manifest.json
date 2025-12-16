@@ -1,0 +1,7 @@
+{
+  "name": "Hello-Plugin",
+  "version": "0.1.0",
+  "description": "A simple hello world plugin demonstrating Orbis plugin system",
+  "author": "Orbis Team",
+  "wasm_entry": "hello_plugin.wasm"
+}
