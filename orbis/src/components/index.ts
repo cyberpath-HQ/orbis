@@ -1,1 +1,1 @@
-export { PluginRenderer } from './PluginRenderer';
+export { PluginRenderer } from './plugin-renderer';
