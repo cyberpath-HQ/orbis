@@ -1,0 +1,41 @@
+[package]
+name = "orbis-plugin"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = "Secure runtime plugin system for Orbis"
+
+[lints]
+workspace = true
+
+[features]
+default = ["wasm"]
+wasm = ["wasmtime"]
+native = ["libloading"]
+
+[dependencies]
+orbis-core = { workspace = true }
+orbis-config = { workspace = true }
+orbis-db = { workspace = true }
+
+# Plugin runtime
+wasmtime = { workspace = true, optional = true }
+libloading = { workspace = true, optional = true }
+
+# Async
+tokio = { workspace = true }
+async-trait = { workspace = true }
+
+# Serialization
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# Utilities
+uuid = { workspace = true }
+chrono = { workspace = true }
+tracing = { workspace = true }
+thiserror = { workspace = true }
+semver = { workspace = true }
+dashmap = { workspace = true }
+parking_lot = { workspace = true }
