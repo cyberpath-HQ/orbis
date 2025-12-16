@@ -1,6 +1,6 @@
 # 🚀 Orbis
 
-**NextGen Asset Management Platform**
+**NextGen Extensible Asset Management Platform**
 
 Orbis is a modern, enterprise-grade asset management platform designed to provide comprehensive visibility and control over your IT infrastructure. Built with performance, security, and extensibility in mind.
 
@@ -8,134 +8,267 @@ Orbis is a modern, enterprise-grade asset management platform designed to provid
 
 ---
 
-## ✨ Features & Implementation Status
+## ✨ Features
 
 ### 🔧 Core Platform Features
 
 | Feature | Status | Description |
 |---------|--------|-------------|
-| **Cross-Platform Server** | 🚧 WIP | High-performance Rust backend that runs on Windows, Linux, and macOS |
-| **React GUI** | 🚧 WIP | Modern, intuitive web interface for seamless asset management |
-| **Mobile Friendly** | 📋 TODO | Responsive design for the web-app that works on tablets and smartphones |
-| **JSON API** | 🚧 WIP | RESTful API for communication and integration with existing tools |
-
-### 🤖 Intelligent Agents
-
-| Feature | Status | Description |
-|---------|--------|-------------|
-| **Cross-Platform Agents** | 📋 TODO | Deploy on Windows and Linux hosts to automatically gather system information |
-| **Auto-Discovery** | 📋 TODO | Detect installed software, hardware specs, and system configurations |
-| **Auto-Update** | 📋 TODO | Agents update themselves automatically, no manual intervention required |
+| **Cross-Platform Server** | ✅ Done | High-performance Rust/Axum backend that runs on Windows, Linux, and macOS |
+| **React GUI** | ✅ Done | Modern, intuitive web interface with plugin UI rendering |
+| **CLI Configuration** | ✅ Done | Full configuration via command line arguments and environment variables |
+| **Multi-Database Support** | ✅ Done | PostgreSQL and SQLite backends with automatic migrations |
+| **HTTPS/TLS Support** | ✅ Done | Optional TLS encryption with rustls |
+| **JSON API** | ✅ Done | RESTful API for communication and integration with existing tools |
 
 ### 🔌 Plugin System
 
 | Feature | Status | Description |
 |---------|--------|-------------|
-| **WASM/WASI-Based Plugins** | 📋 TODO | Secure, sandboxed plugin system based on WebAssembly System Interface (WASI) standard |
-| **Hook Architecture** | 📋 TODO | Powerful event-driven plugin hooks for extending functionality |
-| **Plugin Security** | 📋 TODO | Cryptographic signing and verification for plugin integrity |
+| **WASM Plugins** | ✅ Done | Secure, sandboxed WebAssembly plugins with wasmtime |
+| **Plugin Routes** | ✅ Done | Plugins can define custom API endpoints |
+| **Plugin Pages** | ✅ Done | Plugins can define React pages via JSON UI schema |
+| **Plugin Registry** | ✅ Done | Hot-loading/unloading of plugins at runtime |
 
-> **Note**: The core features listed above provide the foundation of the platform. Advanced features such as automation workflows, notifications, AI integrations, and more are implemented through the extensible plugin system.
+### 🔐 Security
 
-**Legend:**
-- ✅ **DONE** - Feature is implemented and functional
-- 🚧 **WIP** - Feature is currently under development
-- 📋 **TODO** - Feature is planned but not yet started
+| Feature | Status | Description |
+|---------|--------|-------------|
+| **JWT Authentication** | ✅ Done | Secure token-based authentication |
+| **Argon2 Password Hashing** | ✅ Done | Industry-standard password security |
+| **Session Management** | ✅ Done | Secure session handling with refresh tokens |
+| **WASM Sandboxing** | ✅ Done | Plugins run in secure sandboxed environment |
 
----
+### 🔄 Modes
 
-## 🏗️ Architecture
+| Mode | Description |
+|------|-------------|
+| **Standalone** | Local database with embedded server (single user) |
+| **Client-Server** | Connect to remote Orbis server (multi-user) |
 
-```text
-┌─────────────────────────────────────────────┐
-│           Orbis Assets Platform             │
-├─────────────────────────────────────────────┤
-│  React GUI (Web & Mobile)           [WIP]   │
-├─────────────────────────────────────────────┤
-│  Rust Server (Cross-Platform)       [WIP]   │
-│  • JSON API                         [WIP]   │
-│  • WASM/WASI Plugin System          [TODO]  │
-│  • Plugin-Based Extensions          [TODO]  │
-├─────────────────────────────────────────────┤
-│  Agents (Windows/Linux)             [TODO]  │
-│  • Asset Discovery                  [TODO]  │
-│  • Real-Time Sync                   [TODO]  │
-│  • Auto-Update                      [TODO]  │
-└─────────────────────────────────────────────┘
+
+## 📦 Crate Structure
+
+```
+crates/
+├── orbis-core/        # Shared types, errors, and utilities
+├── orbis-config/      # CLI and environment configuration
+├── orbis-db/          # Database layer (SQLx, migrations)
+├── orbis-auth/        # Authentication (JWT, Argon2, sessions)
+├── orbis-plugin/      # Plugin system (WASM, manifest, UI schema)
+└── orbis-server/      # Axum HTTP/HTTPS server
+
+orbis/
+├── src/               # React frontend
+└── src-tauri/         # Tauri desktop application
 ```
 
----
-
-## 🚀 Getting Started
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- Rust 1.91 (nightly)+ (for server compilation)
-- Node.js 18+ (for GUI - when implemented)
-- Docker (optional, for containerized deployment)
+- Rust 1.91.0+ (nightly for Edition 2024)
+- Node.js 18+ (bun preferred)
+- PostgreSQL 15+ (or SQLite for standalone mode)
 
-### Quick Start (Development)
+### Configuration
 
-#### 1. Clone the Repository
-
-```bash
-git clone https://github.com/ebalo55/Orbis.git
-cd orbis
-```
-
-#### 2. Build the Server
+All configuration can be set via CLI arguments or environment variables:
 
 ```bash
-cargo build --release
+# Run in standalone mode with SQLite
+ORBIS_MODE=standalone \
+ORBIS_DATABASE_BACKEND=sqlite \
+ORBIS_DATABASE_PATH=./orbis.db \
+cargo run
+
+# Run as server with PostgreSQL
+ORBIS_MODE=client-server \
+ORBIS_RUN_MODE=server \
+ORBIS_DATABASE_URL=postgres://user:pass@localhost/orbis \
+ORBIS_JWT_SECRET=your-secret-key \
+ORBIS_SERVER_HOST=0.0.0.0 \
+ORBIS_SERVER_PORT=8080 \
+cargo run
+
+# Enable HTTPS
+ORBIS_TLS_ENABLED=true \
+ORBIS_TLS_CERT_PATH=./cert.pem \
+ORBIS_TLS_KEY_PATH=./key.pem \
+cargo run
 ```
 
-#### 3. Run the Server
+### CLI Options
 
 ```bash
-./target/release/orbis
+orbis --help
+
+# Examples:
+orbis serve --mode standalone --db-backend sqlite --db-path ./data.db
+orbis serve --mode client-server --run-mode server --db-url postgres://...
+orbis profile list
+orbis profile switch production
+orbis db migrate
+orbis plugin list
 ```
 
----
+## 🔌 Plugin Development
 
-## 🤝 Contributing
+Orbis supports WASM plugins in three flavors:
 
-We welcome contributions! As the project is under active development, please:
+### Plugin Flavors
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+1. **Packed** (`.zip` archive)
+   - Contains WASM file, `manifest.json`, and assets
+   - Manifest can be external or embedded in WASM
+   - Best for plugins with UI assets (images, styles, etc.)
 
-**Note**: Please check existing issues and discussions before starting work on major features to ensure alignment with the project roadmap.
+2. **Unpacked** (folder)
+   - Directory containing WASM file, `manifest.json`, and assets
+   - Manifest can be external or embedded in WASM
+   - Best for development and testing
 
----
+3. **Standalone** (single `.wasm` file)
+   - Manifest must be embedded in WASM custom section
+   - No external files, completely self-contained
+   - Best for simple plugins without assets
 
-## 📝 License
+### Plugin Manifest
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+External `manifest.json`:
 
----
+```json
+{
+  "name": "my-plugin",
+  "version": "1.0.0",
+  "description": "My awesome plugin",
+  "author": "Your Name",
+  "wasm_entry": "plugin.wasm",
+  "permissions": ["network", "database_read"],
+  "routes": [
+    {
+      "path": "/my-endpoint",
+      "method": "GET",
+      "handler": "handle_my_endpoint",
+      "requires_auth": true
+    }
+  ],
+  "pages": [
+    {
+      "route": "/my-page",
+      "title": "My Page",
+      "show_in_menu": true,
+      "layout": {
+        "type": "Container",
+        "children": [
+          {
+            "type": "Heading",
+            "level": 1,
+            "text": "Welcome to My Plugin"
+          }
+        ]
+      }
+    }
+  ]
+}
+```
 
-## 🌟 Support
+### Embedding Manifest in WASM
 
-- **Issues**: [GitHub Issues](https://github.com/ebalo55/Orbis/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/ebalo55/Orbis/discussions)
-- **Email**: <me@ebalo.xyz>
+For standalone plugins or to eliminate external manifest files, you can embed the manifest in a WASM custom section:
 
----
+```rust
+// In your Rust WASM plugin project
+const MANIFEST: &str = r#"{
+  "name": "my-plugin",
+  "version": "1.0.0",
+  "description": "Standalone plugin with embedded manifest"
+}"#;
 
-## 🙏 Acknowledgments
+// When building with wasm-pack or cargo, add this to your Cargo.toml:
+// [package.metadata.wasm-pack.profile.release]
+// wasm-opt = ['-O4', '--strip-debug']
 
-Built with ❤️ using:
+// Then use wasm-tools to add custom section:
+// wasm-tools custom plugin.wasm manifest manifest.json -o plugin.wasm
+```
 
-- [Rust](https://www.rust-lang.org/) - Systems programming language
-- [React](https://react.dev/) - UI library
-- [WebAssembly/WASI](https://wasi.dev/) - Secure plugin system foundation
-- [Axum](https://github.com/tokio-rs/axum) - Web framework
-- [Tokio](https://tokio.rs/) - Async runtime
+Or use a build script to embed the manifest automatically:
 
----
+```bash
+# After building your WASM module:
+wasm-tools custom plugin.wasm manifest manifest.json -o plugin.wasm
+```
 
-Made with 🚀 by [Ebalo](https://ebalo.xyz)
+The manifest will be stored in a WASM custom section named `"manifest"` and automatically extracted by Orbis when loading the plugin.
+
+### Plugin Structure Examples
+
+**Unpacked Plugin:**
+
+```text
+plugins/
+  my-plugin/
+    manifest.json      # Plugin metadata
+    plugin.wasm        # WASM binary
+    icon.png          # Optional assets
+    styles.css
+```
+
+**Packed Plugin:**
+
+```text
+plugins/
+  my-plugin.zip
+    ├── manifest.json  # Or embedded in WASM
+    ├── plugin.wasm
+    └── assets/
+        ├── icon.png
+        └── styles.css
+```
+
+**Standalone Plugin:**
+
+```text
+plugins/
+  my-plugin.wasm     # Single file with embedded manifest
+```
+
+## 📋 Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `ORBIS_MODE` | `standalone` | `standalone` or `client-server` |
+| `ORBIS_RUN_MODE` | `client` | `server` or `client` (for client-server mode) |
+| `ORBIS_SERVER_HOST` | `127.0.0.1` | Server bind address |
+| `ORBIS_SERVER_PORT` | `8080` | Server port |
+| `ORBIS_DATABASE_BACKEND` | `postgres` | `postgres` or `sqlite` |
+| `ORBIS_DATABASE_URL` | - | PostgreSQL connection URL |
+| `ORBIS_DATABASE_PATH` | - | SQLite database file path |
+| `ORBIS_DATABASE_RUN_MIGRATIONS` | `true` | Auto-run migrations on startup |
+| `ORBIS_JWT_SECRET` | - | JWT signing secret (required for client-server) |
+| `ORBIS_JWT_EXPIRY_SECONDS` | `3600` | JWT token expiry |
+| `ORBIS_TLS_ENABLED` | `false` | Enable HTTPS |
+| `ORBIS_TLS_CERT_PATH` | - | TLS certificate path |
+| `ORBIS_TLS_KEY_PATH` | - | TLS private key path |
+| `ORBIS_PLUGINS_DIR` | `./plugins` | Plugins directory |
+| `ORBIS_LOG_LEVEL` | `info` | Log level (trace, debug, info, warn, error) |
+| `ORBIS_LOG_JSON` | `false` | Output logs as JSON |
+
+## 🛠️ Development
+
+```bash
+# Install dependencies
+cd orbis && bun install
+
+# Run development server
+bun run tauri dev
+
+# Build for production
+bun run tauri build
+```
+
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE) for details.
 
