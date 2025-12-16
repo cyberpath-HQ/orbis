@@ -1,0 +1,45 @@
+[package]
+name = "orbis-server"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = "Axum-based HTTP/HTTPS server for Orbis"
+
+[lints]
+workspace = true
+
+[dependencies]
+orbis-core = { workspace = true }
+orbis-config = { workspace = true }
+orbis-db = { workspace = true }
+orbis-auth = { workspace = true }
+orbis-plugin = { workspace = true }
+
+# Web framework
+axum = { workspace = true }
+axum-extra = { workspace = true }
+tower = { workspace = true }
+tower-http = { workspace = true }
+
+# TLS
+rustls = { workspace = true }
+rustls-pemfile = { workspace = true }
+tokio-rustls = { workspace = true }
+hyper = { workspace = true }
+hyper-util = { workspace = true }
+
+# Async
+tokio = { workspace = true }
+async-trait = { workspace = true }
+
+# Serialization
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# Utilities
+uuid = { workspace = true }
+chrono = { workspace = true }
+tracing = { workspace = true }
+thiserror = { workspace = true }
+parking_lot = { workspace = true }
