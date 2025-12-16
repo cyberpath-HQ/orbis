@@ -1,0 +1,29 @@
+[package]
+name = "orbis-core"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = "Core types, errors, and utilities for Orbis"
+
+[lints]
+workspace = true
+
+[dependencies]
+# Serialization
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# Error handling
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+
+# Utilities
+chrono = { workspace = true }
+uuid = { workspace = true }
+derive_more = { workspace = true }
+typed-builder = { workspace = true }
+bon = { workspace = true }
+semver = { workspace = true }
+async-trait = { workspace = true }
+tracing = { workspace = true }
