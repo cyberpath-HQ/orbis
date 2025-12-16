@@ -4,3 +4,4 @@
 .env*
 !.env.example
 certificates/
+**/orbis.sqlite
