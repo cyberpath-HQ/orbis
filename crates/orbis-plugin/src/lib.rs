@@ -25,11 +25,15 @@ mod sandbox;
 mod ui;
 
 pub use loader::{PluginLoader, PluginSource};
-pub use manifest::{PluginManifest, PluginPermission, PluginRoute, PluginDependency};
+pub use manifest::{PluginDependency, PluginManifest, PluginPermission, PluginRoute};
 pub use registry::{PluginInfo, PluginRegistry, PluginState};
 pub use runtime::{PluginContext, PluginRuntime};
 pub use sandbox::SandboxConfig;
-pub use ui::{ComponentSchema, PageDefinition, UiComponent};
+pub use ui::{
+    Action, ComponentSchema, DialogDefinition, EventHandlers, FormField, NavigationConfig,
+    NavigationItem, PageDefinition, PageLifecycleHooks, SelectOption, StateFieldDefinition,
+    StateFieldType, TabItem, TableColumn, ToastLevel, ValidationRule,
+};
 
 use orbis_db::Database;
 use std::path::PathBuf;
