@@ -1,10 +1,20 @@
 [workspace]
 resolver = "3"
 members = [
-    "server",
-    "plugins/API",
-    "plugins/worker",
-    "plugins/example-plugin"
+    # Core crates
+    "crates/orbis-core",
+    "crates/orbis-config",
+    "crates/orbis-db",
+    "crates/orbis-plugin",
+    "crates/orbis-server",
+    "crates/orbis-auth",
+    
+    # Main application
+    "orbis/src-tauri",
+]
+exclude = [
+    # Sample plugins are independent packages
+    "sample-plugins/*",
 ]
 
 [workspace.package]
@@ -13,6 +23,76 @@ edition = "2024"
 rust-version = "1.91.0"
 version = "0.1.0"
 readme = "README.md"
+
+[workspace.dependencies]
+# Core
+orbis-core = { path = "crates/orbis-core" }
+orbis-config = { path = "crates/orbis-config" }
+orbis-db = { path = "crates/orbis-db" }
+orbis-plugin = { path = "crates/orbis-plugin" }
+orbis-server = { path = "crates/orbis-server" }
+orbis-auth = { path = "crates/orbis-auth" }
+
+# Async runtime
+tokio = { version = "1", features = ["full", "tracing"] }
+
+# Web framework
+axum = { version = "0.8", features = ["macros", "ws", "multipart"] }
+axum-extra = { version = "0.10", features = ["typed-header", "cookie"] }
+tower = { version = "0.5", features = ["full"] }
+tower-http = { version = "0.6", features = ["full"] }
+
+# TLS
+rustls = { version = "0.23", default-features = false, features = ["std", "tls12", "ring"] }
+rustls-pemfile = "2"
+tokio-rustls = "0.26"
+
+# Hyper (for TLS server)
+hyper = { version = "1", features = ["full"] }
+hyper-util = { version = "0.1", features = ["tokio", "server-auto", "http1", "http2"] }
+
+# Database
+sqlx = { version = "0.8", features = ["runtime-tokio", "tls-rustls", "postgres", "sqlite", "chrono", "uuid", "json", "migrate"] }
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+toml = "0.8"
+
+# CLI and config
+clap = { version = "4", features = ["derive", "env", "string"] }
+dotenvy = "0.15"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+# Error handling
+thiserror = "2"
+anyhow = "1"
+
+# Security/Crypto
+argon2 = "0.5"
+jsonwebtoken = "9"
+rand = "0.8"
+uuid = { version = "1", features = ["v4", "v7", "serde"] }
+
+# Plugin system
+wasmtime = "31"
+wasmparser = "0.226"
+seccompiler = "0.4"
+zip = { version = "2", default-features = false, features = ["deflate"] }
+
+# Utilities
+chrono = { version = "0.4", features = ["serde"] }
+async-trait = "0.1"
+parking_lot = "0.12"
+dashmap = "6"
+once_cell = "1"
+derive_more = { version = "2", features = ["full"] }
+typed-builder = "0.21"
+bon = "3"
+semver = { version = "1", features = ["serde"] }
 
 [profile.release]
 codegen-units = 1           # Single codegen unit for better optimizations
