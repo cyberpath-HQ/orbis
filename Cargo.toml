@@ -78,7 +78,7 @@ rand = "0.8"
 uuid = { version = "1", features = ["v4", "v7", "serde"] }
 
 # Plugin system
-wasmtime = "31"
+wasmtime = "36"
 wasmparser = "0.226"
 seccompiler = "0.4"
 zip = { version = "2", default-features = false, features = ["deflate"] }
