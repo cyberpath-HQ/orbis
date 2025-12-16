@@ -4,7 +4,7 @@ rustflags = [
     "-C", "link-arg=-Wl,-zrelro",
     "-C", "link-arg=-Wl,-znow",
     "-C", "link-arg=-Wl,-znoexecstack",
-    #"-C", "link-arg=-Wl,-pie",
+    "-C", "link-arg=-Wl,-pie",
     "-C", "link-arg=-Wl,--as-needed",
     "-C", "link-arg=-Wl,--discard-all"
 ]
