@@ -1,19 +1,21 @@
 //! # Orbis Plugin System
 //!
-//! Secure runtime plugin system for extending Orbis with custom API routes,
-//! UI pages, and functionality.
+//! Secure runtime plugin system for extending Orbis with WASM plugins.
 //!
-//! ## Plugin Types
+//! ## Plugin Flavors
 //!
-//! - **WASM Plugins**: Secure, sandboxed WebAssembly plugins (recommended)
-//! - **Native Plugins**: Dynamically loaded native libraries (requires trust)
+//! - **Packed**: ZIP file containing WASM, manifest.json, and assets
+//! - **Unpacked**: Folder with WASM, manifest.json, and assets
+//! - **Standalone**: Single WASM file with embedded manifest
+//!
+//! Note: Packed and unpacked plugins can also have manifests embedded in WASM.
 //!
 //! ## Features
 //!
 //! - Define custom API routes
 //! - Define React pages via JSON GUI schema
 //! - Access database through controlled API
-//! - Secure sandboxing for WASM plugins
+//! - Secure WASM sandboxing
 
 mod loader;
 mod manifest;
@@ -80,6 +82,11 @@ impl PluginManager {
 
     /// Load all plugins from the plugins directory.
     ///
+    /// Scans for:
+    /// - Unpacked: Directories containing manifest.json or plugin.wasm
+    /// - Packed: .zip files
+    /// - Standalone: .wasm files
+    ///
     /// # Errors
     ///
     /// Returns an error if loading fails.
@@ -100,28 +107,49 @@ impl PluginManager {
             let path = entry.path();
 
             if path.is_dir() {
-                // Look for manifest.json in the directory
-                let manifest_path = path.join("manifest.json");
-                if manifest_path.exists() {
+                // Unpacked plugin: directory containing manifest.json or plugin.wasm
+                let has_manifest = path.join("manifest.json").exists();
+                let has_wasm = path.join("plugin.wasm").exists();
+                
+                if has_manifest || has_wasm {
                     match self.load_plugin(&path).await {
                         Ok(info) => {
-                            tracing::info!("Loaded plugin: {} v{}", info.manifest.name, info.manifest.version);
+                            tracing::info!("Loaded unpacked plugin: {} v{}", info.manifest.name, info.manifest.version);
                             loaded.push(info);
                         }
                         Err(e) => {
-                            tracing::warn!("Failed to load plugin from {:?}: {}", path, e);
+                            tracing::warn!("Failed to load unpacked plugin from {:?}: {}", path, e);
                         }
                     }
                 }
-            } else if path.extension().is_some_and(|ext| ext == "wasm") {
-                // Direct WASM file
-                match self.load_plugin(&path).await {
-                    Ok(info) => {
-                        tracing::info!("Loaded plugin: {} v{}", info.manifest.name, info.manifest.version);
-                        loaded.push(info);
+            } else if let Some(ext) = path.extension() {
+                match ext.to_str() {
+                    Some("wasm") => {
+                        // Standalone plugin: single WASM file with embedded manifest
+                        match self.load_plugin(&path).await {
+                            Ok(info) => {
+                                tracing::info!("Loaded standalone plugin: {} v{}", info.manifest.name, info.manifest.version);
+                                loaded.push(info);
+                            }
+                            Err(e) => {
+                                tracing::warn!("Failed to load standalone plugin from {:?}: {}", path, e);
+                            }
+                        }
                     }
-                    Err(e) => {
-                        tracing::warn!("Failed to load plugin from {:?}: {}", path, e);
+                    Some("zip") => {
+                        // Packed plugin: ZIP archive containing WASM, manifest, and assets
+                        match self.load_plugin(&path).await {
+                            Ok(info) => {
+                                tracing::info!("Loaded packed plugin: {} v{}", info.manifest.name, info.manifest.version);
+                                loaded.push(info);
+                            }
+                            Err(e) => {
+                                tracing::warn!("Failed to load packed plugin from {:?}: {}", path, e);
+                            }
+                        }
+                    }
+                    _ => {
+                        // Ignore other file types
                     }
                 }
             }

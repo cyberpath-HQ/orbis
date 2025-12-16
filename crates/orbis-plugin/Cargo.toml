@@ -12,16 +12,18 @@ workspace = true
 [features]
 default = ["wasm"]
 wasm = ["wasmtime"]
-native = ["libloading"]
 
 [dependencies]
 orbis-core = { workspace = true }
 orbis-config = { workspace = true }
 orbis-db = { workspace = true }
 
-# Plugin runtime
+# Plugin runtime (WASM only)
 wasmtime = { workspace = true, optional = true }
-libloading = { workspace = true, optional = true }
+wasmparser = { workspace = true }
+
+# Archive handling for packed plugins
+zip = { workspace = true }
 
 # Async
 tokio = { workspace = true }

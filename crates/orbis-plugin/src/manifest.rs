@@ -48,13 +48,9 @@ pub struct PluginManifest {
     #[serde(default)]
     pub pages: Vec<super::PageDefinition>,
 
-    /// Entry point for WASM plugins.
+    /// Entry point for WASM plugins (relative path in unpacked/packed).
     #[serde(default)]
     pub wasm_entry: Option<String>,
-
-    /// Entry point for native plugins.
-    #[serde(default)]
-    pub native_entry: Option<String>,
 
     /// Additional custom configuration.
     #[serde(default)]
