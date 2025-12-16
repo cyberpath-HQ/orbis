@@ -1014,6 +1014,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5419bdc4f6a9207fbeba6d11b604d481addf78ecd10c11ad51e76c2f6482748d"
 
 [[package]]
+name = "hasher"
+version = "0.1.0"
+dependencies = [
+ "sha3",
+]
+
+[[package]]
 name = "hashlink"
 version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1764,6 +1771,7 @@ dependencies = [
  "chacha20poly1305",
  "chrono",
  "ed25519-dalek",
+ "hasher",
  "hex",
  "keyring",
  "libloading",
@@ -1772,8 +1780,8 @@ dependencies = [
  "paste",
  "rand",
  "serde",
- "serde_bytes",
  "sha3",
+ "signer",
  "thiserror",
  "tokio",
  "tracing",
@@ -2415,6 +2423,20 @@ checksum = "77549399552de45a898a580c1b41d445bf730df867cc44e6c0233bbc4b8329de"
 dependencies = [
  "digest",
  "rand_core",
+]
+
+[[package]]
+name = "signer"
+version = "0.1.0"
+dependencies = [
+ "bincode",
+ "chrono",
+ "ed25519-dalek",
+ "hex",
+ "rand",
+ "serde",
+ "serde_bytes",
+ "thiserror",
 ]
 
 [[package]]
