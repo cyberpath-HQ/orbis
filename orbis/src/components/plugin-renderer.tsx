@@ -1,5 +1,5 @@
 import React from 'react';
-import type { ComponentSchema } from '../types';
+import type { ComponentSchema } from '../types/plugin';
 
 interface PluginRendererProps {
     schema:    ComponentSchema
@@ -63,13 +63,19 @@ function ComponentRenderer({
                 </span>
             );
 
-        case `Heading`:
-            const HeadingTag = `h${ schema.level }` as keyof JSX.IntrinsicElements;
-            return (
-                <HeadingTag {...baseProps} className={`orbis-heading orbis-heading--${ schema.level } ${ schema.className || `` }`}>
-                    {interpolateText(schema.text, data)}
-                </HeadingTag>
+        case `Heading`: {
+            const HeadingTag = `h${ schema.level }` as const;
+            type HeadingElement = `h1` | `h2` | `h3` | `h4` | `h5` | `h6`;
+            const Tag = HeadingTag as HeadingElement;
+            return React.createElement(
+                Tag,
+                {
+                    ...baseProps,
+                    className: `orbis-heading orbis-heading--${ schema.level } ${ schema.className || `` }`,
+                },
+                interpolateText(schema.text, data)
             );
+        }
 
         case `Button`:
             return (
@@ -343,7 +349,7 @@ function ComponentRenderer({
 // Helper components
 
 function InputRenderer({
-    schema, data, handlers,
+    schema, data, handlers: _handlers,
 }: { schema:  ComponentSchema & { type: `Input` }
     data:     Record<string, unknown>
     handlers: Record<string, (...args: Array<unknown>) => void> }) {
