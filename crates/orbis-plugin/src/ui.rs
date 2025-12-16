@@ -140,7 +140,7 @@ impl ComponentSchema {
 
 /// Pre-defined UI components.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(tag = "type", rename_all = "PascalCase")]
+#[serde(tag = "type", rename_all = "snake_case")]
 pub enum UiComponent {
     /// Container component.
     Container {
@@ -298,7 +298,7 @@ fn default_spacer_size() -> String {
 
 /// Container layout options.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
+#[serde(rename_all = "snake_case")]
 pub enum ContainerLayout {
     #[default]
     Vertical,
@@ -308,7 +308,7 @@ pub enum ContainerLayout {
 
 /// Text variant.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
+#[serde(rename_all = "snake_case")]
 pub enum TextVariant {
     #[default]
     Body,
@@ -319,7 +319,7 @@ pub enum TextVariant {
 
 /// Button variant.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
+#[serde(rename_all = "snake_case")]
 pub enum ButtonVariant {
     #[default]
     Primary,
@@ -358,7 +358,7 @@ pub struct TabItem {
 
 /// Alert severity.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
+#[serde(rename_all = "snake_case")]
 pub enum AlertSeverity {
     #[default]
     Info,
@@ -369,7 +369,7 @@ pub enum AlertSeverity {
 
 /// Chart type.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
+#[serde(rename_all = "snake_case")]
 pub enum ChartType {
     Line,
     Bar,
