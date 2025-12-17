@@ -16,6 +16,8 @@ export default defineConfig([
         // "./**/*.spec.ts",
         "./**/*.gen.ts",
         "./eslint.config.mts",
+        "./src/components/ui/**",
+        "./src/lib/navigation.ts",
     ]),
 
     tseslint.configs.strict as never,
