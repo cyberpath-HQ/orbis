@@ -3,7 +3,7 @@
 use axum::{
     body::Body,
     extract::{Path, State},
-    http::{Method, Request},
+    http::{Method, Request, Uri},
     routing::any,
     Json, Router,
 };
@@ -20,6 +20,60 @@ pub fn router(_state: AppState) -> Router<AppState> {
         .route("/{plugin}/{*path}", any(handle_plugin_route))
         // Plugin pages/UI endpoint
         .route("/{plugin}/pages", axum::routing::get(get_plugin_pages))
+}
+
+/// Parse query string into HashMap.
+fn parse_query_string(uri: &Uri) -> std::collections::HashMap<String, String> {
+    uri.query()
+        .map(|q| {
+            q.split('&')
+                .filter_map(|pair| {
+                    let mut parts = pair.splitn(2, '=');
+                    match (parts.next(), parts.next()) {
+                        (Some(key), Some(value)) => {
+                            // Simple percent decoding
+                            let key = percent_decode(key);
+                            let value = percent_decode(value);
+                            Some((key, value))
+                        }
+                        (Some(key), None) => {
+                            let key = percent_decode(key);
+                            Some((key, String::new()))
+                        }
+                        _ => None
+                    }
+                })
+                .collect()
+        })
+        .unwrap_or_default()
+}
+
+/// Simple percent decoding for URL query parameters.
+fn percent_decode(input: &str) -> String {
+    let mut result = String::with_capacity(input.len());
+    let mut chars = input.chars().peekable();
+    
+    while let Some(c) = chars.next() {
+        if c == '%' {
+            // Try to read two hex digits
+            let hex: String = chars.by_ref().take(2).collect();
+            if hex.len() == 2 {
+                if let Ok(byte) = u8::from_str_radix(&hex, 16) {
+                    result.push(byte as char);
+                    continue;
+                }
+            }
+            // Invalid percent encoding, keep as-is
+            result.push('%');
+            result.push_str(&hex);
+        } else if c == '+' {
+            result.push(' ');
+        } else {
+            result.push(c);
+        }
+    }
+    
+    result
 }
 
 /// Handle dynamic plugin routes.
@@ -62,19 +116,46 @@ async fn handle_plugin_route(
         return Err(orbis_core::Error::auth("Authentication required").into());
     }
 
+    // Parse query parameters
+    let query_params = parse_query_string(request.uri());
+
+    // Collect headers before consuming request
+    let headers: std::collections::HashMap<String, String> = request
+        .headers()
+        .iter()
+        .filter_map(|(k, v)| {
+            v.to_str().ok().map(|v| (k.to_string(), v.to_string()))
+        })
+        .collect();
+
+    // Parse body for POST/PUT/PATCH requests
+    let body = if matches!(method, Method::POST | Method::PUT | Method::PATCH) {
+        // Try to parse body as JSON
+        let (_parts, body) = request.into_parts();
+        let bytes = axum::body::to_bytes(body, 1024 * 1024) // 1MB limit
+            .await
+            .map_err(|e| orbis_core::Error::plugin(format!("Failed to read body: {}", e)))?;
+        
+        if bytes.is_empty() {
+            serde_json::Value::Null
+        } else {
+            serde_json::from_slice(&bytes)
+                .unwrap_or_else(|_| {
+                    // If not JSON, wrap as string
+                    serde_json::Value::String(String::from_utf8_lossy(&bytes).into_owned())
+                })
+        }
+    } else {
+        serde_json::Value::Null
+    };
+
     // Build plugin context
     let context = orbis_plugin::PluginContext {
         method: method.to_string(),
         path: route_path,
-        headers: request
-            .headers()
-            .iter()
-            .filter_map(|(k, v)| {
-                v.to_str().ok().map(|v| (k.to_string(), v.to_string()))
-            })
-            .collect(),
-        query: std::collections::HashMap::new(), // TODO: Parse query params
-        body: serde_json::Value::Null,           // TODO: Parse body
+        headers,
+        query: query_params,
+        body,
         user_id: user.0.as_ref().map(|u| u.user_id.to_string()),
         is_admin: user.0.as_ref().is_some_and(|u| u.is_admin),
     };
