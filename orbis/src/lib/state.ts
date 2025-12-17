@@ -29,6 +29,7 @@ export function setNestedValue<T extends Record<string, unknown>>(
     const parts = path.split(`.`);
     // Prevent prototype pollution by rejecting dangerous properties
     if (parts.some(part => part === '__proto__' || part === 'constructor' || part === 'prototype')) {
+        console.warn('Attempted to set dangerous property in path:', path);
         return obj;
     }
     const clone = structuredClone(obj);
