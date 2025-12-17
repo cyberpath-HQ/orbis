@@ -14,3 +14,7 @@ export {
     TableSkeleton,
 } from './loading';
 
+export {
+    SkipLink,
+    SkipLinks,
+} from './skip-link';
