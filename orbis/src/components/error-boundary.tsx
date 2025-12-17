@@ -162,7 +162,7 @@ function DefaultErrorFallback({ error, errorInfo, reset, context }: ErrorFallbac
 /**
  * Compact Error Fallback for Component-Level Errors
  */
-function CompactErrorFallback({ error, reset, context }: ErrorFallbackProps): React.ReactElement {
+export function CompactErrorFallback({ error, reset, context }: ErrorFallbackProps): React.ReactElement {
     return (
         <Alert variant="destructive" className="my-2">
             <AlertCircle className="h-4 w-4" />
