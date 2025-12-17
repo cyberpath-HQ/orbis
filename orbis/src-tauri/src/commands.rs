@@ -122,7 +122,7 @@ pub fn get_plugin_pages(state: State<'_, OrbisState>) -> Result<Value, String> {
                     "description": page.description,
                     "show_in_menu": page.show_in_menu,
                     "menu_order": page.menu_order,
-                    "layout": page.layout,
+                    "sections": page.sections,
                 })
             })
             .collect::<Vec<_>>()
