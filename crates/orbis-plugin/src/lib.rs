@@ -23,6 +23,7 @@ mod registry;
 mod runtime;
 mod sandbox;
 mod ui;
+mod watcher;
 
 pub use loader::{PluginLoader, PluginSource};
 pub use manifest::{PluginDependency, PluginManifest, PluginPermission, PluginRoute};
@@ -34,6 +35,7 @@ pub use ui::{
     NavigationItem, PageDefinition, PageLifecycleHooks, SelectOption, StateFieldDefinition,
     StateFieldType, TabItem, TableColumn, ToastLevel, ValidationRule,
 };
+pub use watcher::{PluginChangeEvent, PluginChangeKind, PluginWatcher, WatcherConfig};
 
 use orbis_db::Database;
 use std::path::PathBuf;
@@ -243,6 +245,143 @@ impl PluginManager {
         self.registry.set_state(name, PluginState::Disabled)?;
         tracing::info!("Disabled plugin: {}", name);
         Ok(())
+    }
+
+    /// Reload a plugin (hot reload).
+    ///
+    /// Unloads the current version and reloads from disk.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the plugin cannot be reloaded.
+    pub async fn reload_plugin(&self, name: &str) -> orbis_core::Result<PluginInfo> {
+        // Get current plugin info to find the source path
+        let old_info = self.registry.get(name).ok_or_else(|| {
+            orbis_core::Error::plugin(format!("Plugin '{}' not found", name))
+        })?;
+
+        let source_path = match &old_info.source {
+            PluginSource::Unpacked(p) | PluginSource::Standalone(p) | PluginSource::Packed(p) => {
+                p.clone()
+            }
+            PluginSource::Remote(_) => {
+                return Err(orbis_core::Error::plugin(
+                    "Cannot reload remote plugins",
+                ));
+            }
+        };
+
+        tracing::info!("Hot reloading plugin: {}", name);
+
+        // Stop the plugin runtime
+        self.runtime.stop(name).await?;
+
+        // Unregister the old version
+        self.registry.unregister(name);
+
+        // Clear runtime cache for this plugin
+        self.runtime.clear_cache(name);
+
+        // Load the new version
+        let new_info = self.load_plugin(&source_path).await?;
+
+        // Start the new version if it was running before
+        if old_info.state == PluginState::Running {
+            self.runtime.start(&new_info.manifest.name).await?;
+            self.registry
+                .set_state(&new_info.manifest.name, PluginState::Running)?;
+        }
+
+        tracing::info!(
+            "Hot reload complete: {} v{}",
+            new_info.manifest.name,
+            new_info.manifest.version
+        );
+
+        Ok(new_info)
+    }
+
+    /// Reload a plugin by path (for file watcher events).
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the plugin cannot be reloaded.
+    pub async fn reload_plugin_by_path(&self, path: &PathBuf) -> orbis_core::Result<Option<PluginInfo>> {
+        // Find plugin by path
+        let plugin_name = self.registry.list().iter().find_map(|info| {
+            let source_path = match &info.source {
+                PluginSource::Unpacked(p) | PluginSource::Standalone(p) | PluginSource::Packed(p) => {
+                    Some(p)
+                }
+                PluginSource::Remote(_) => None,
+            };
+
+            if let Some(sp) = source_path {
+                // Check if the changed path is within or is the plugin path
+                if path.starts_with(sp) || path == sp {
+                    return Some(info.manifest.name.clone());
+                }
+            }
+            None
+        });
+
+        if let Some(name) = plugin_name {
+            let info = self.reload_plugin(&name).await?;
+            Ok(Some(info))
+        } else {
+            // New plugin, try to load it
+            if path.exists() {
+                // Determine the plugin root path
+                let plugin_root = Self::find_plugin_root(path);
+                if let Some(root) = plugin_root {
+                    match self.load_plugin(&root).await {
+                        Ok(info) => {
+                            tracing::info!("Loaded new plugin: {} v{}", info.manifest.name, info.manifest.version);
+                            Ok(Some(info))
+                        }
+                        Err(e) => {
+                            tracing::warn!("Failed to load plugin from {:?}: {}", root, e);
+                            Ok(None)
+                        }
+                    }
+                } else {
+                    Ok(None)
+                }
+            } else {
+                Ok(None)
+            }
+        }
+    }
+
+    /// Find the plugin root directory from a file path.
+    fn find_plugin_root(path: &PathBuf) -> Option<PathBuf> {
+        // If it's a WASM or ZIP file, that's the root
+        if let Some(ext) = path.extension().and_then(|s| s.to_str()) {
+            if matches!(ext, "wasm" | "zip") {
+                return Some(path.clone());
+            }
+        }
+
+        // For other files, look for parent directory with manifest.json or plugin.wasm
+        let mut current = path.clone();
+        while let Some(parent) = current.parent() {
+            if parent.join("manifest.json").exists() || parent.join("plugin.wasm").exists() {
+                return Some(parent.to_path_buf());
+            }
+            current = parent.to_path_buf();
+        }
+
+        None
+    }
+
+    /// Create a plugin watcher for hot reload.
+    #[must_use]
+    pub fn create_watcher(&self) -> PluginWatcher {
+        PluginWatcher::new(WatcherConfig {
+            watch_dir: self.plugins_dir.clone(),
+            debounce_duration: std::time::Duration::from_millis(500),
+            recursive: true,
+        })
     }
 
     /// Get all registered routes from plugins.
