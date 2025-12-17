@@ -1,0 +1,386 @@
+---
+sidebar_position: 6
+title: Dialog Actions
+description: Show and close dialog boxes
+---
+
+## Dialog Actions
+
+Actions for displaying and managing dialog boxes.
+
+## showDialog
+
+Displays a modal dialog to the user.
+
+### Syntax
+
+```json
+{
+  "type": "showDialog",
+  "id": "confirmDelete",
+  "title": "Confirm Delete",
+  "message": "Are you sure you want to delete this item?"
+}
+```
+
+### Properties
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `id` | string | ✅ | Unique dialog identifier |
+| `title` | string | ✅ | Dialog title |
+| `message` | string | - | Dialog message |
+| `content` | ComponentSchema | - | Custom dialog content |
+| `buttons` | array | - | Dialog buttons |
+| `size` | string | - | Dialog size |
+| `closable` | boolean | - | Allow close button (default: true) |
+
+### Dialog Sizes
+
+| Size | Width | Use Case |
+|------|-------|----------|
+| `sm` | 400px | Simple confirmations |
+| `md` | 500px | Standard dialogs (default) |
+| `lg` | 600px | Forms and complex content |
+| `xl` | 800px | Large forms, data tables |
+| `full` | 90vw | Full-screen content |
+
+### Button Properties
+
+```json
+{
+  "buttons": [
+    {
+      "label": "Cancel",
+      "variant": "ghost",
+      "action": [{ "type": "closeDialog", "id": "myDialog" }]
+    },
+    {
+      "label": "Confirm",
+      "variant": "default",
+      "action": [{ "type": "callApi", "api": "deleteItem" }]
+    }
+  ]
+}
+```
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `label` | string | ✅ | Button text |
+| `variant` | string | - | Button style |
+| `action` | array | - | Actions on click |
+
+### Examples
+
+**Simple confirmation:**
+
+```json
+{
+  "type": "showDialog",
+  "id": "confirm",
+  "title": "Confirm Action",
+  "message": "Are you sure you want to proceed?",
+  "buttons": [
+    {
+      "label": "Cancel",
+      "variant": "ghost",
+      "action": [{ "type": "closeDialog", "id": "confirm" }]
+    },
+    {
+      "label": "Confirm",
+      "variant": "default",
+      "action": [
+        { "type": "callApi", "api": "performAction" },
+        { "type": "closeDialog", "id": "confirm" }
+      ]
+    }
+  ]
+}
+```
+
+**Delete confirmation:**
+
+```json
+{
+  "type": "showDialog",
+  "id": "deleteConfirm",
+  "title": "Delete Item",
+  "message": "Are you sure you want to delete \"{{state.selectedItem.name}}\"? This action cannot be undone.",
+  "buttons": [
+    {
+      "label": "Cancel",
+      "variant": "ghost",
+      "action": [{ "type": "closeDialog", "id": "deleteConfirm" }]
+    },
+    {
+      "label": "Delete",
+      "variant": "destructive",
+      "action": [
+        {
+          "type": "callApi",
+          "api": "deleteItem",
+          "params": { "id": "{{state.selectedItem.id}}" },
+          "onSuccess": [
+            { "type": "showToast", "message": "Item deleted", "level": "success" },
+            { "type": "closeDialog", "id": "deleteConfirm" },
+            { "type": "callApi", "api": "refreshList" }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+**With custom content:**
+
+```json
+{
+  "type": "showDialog",
+  "id": "editItem",
+  "title": "Edit Item",
+  "size": "lg",
+  "content": {
+    "type": "Form",
+    "id": "editForm",
+    "children": [
+      {
+        "type": "Field",
+        "fieldType": "text",
+        "name": "name",
+        "label": "Name",
+        "value": "{{state.selectedItem.name}}"
+      },
+      {
+        "type": "Field",
+        "fieldType": "textarea",
+        "name": "description",
+        "label": "Description",
+        "value": "{{state.selectedItem.description}}"
+      }
+    ]
+  },
+  "buttons": [
+    {
+      "label": "Cancel",
+      "variant": "ghost",
+      "action": [{ "type": "closeDialog", "id": "editItem" }]
+    },
+    {
+      "label": "Save",
+      "variant": "default",
+      "action": [
+        { "type": "validateForm", "formId": "editForm" },
+        {
+          "type": "callApi",
+          "api": "updateItem",
+          "params": { "id": "{{state.selectedItem.id}}", "data": "{{form.editForm}}" },
+          "onSuccess": [
+            { "type": "showToast", "message": "Changes saved", "level": "success" },
+            { "type": "closeDialog", "id": "editItem" }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+**Information dialog:**
+
+```json
+{
+  "type": "showDialog",
+  "id": "info",
+  "title": "About This Feature",
+  "message": "This feature allows you to manage your team's settings and preferences.",
+  "closable": true,
+  "buttons": [
+    {
+      "label": "Got it",
+      "variant": "default",
+      "action": [{ "type": "closeDialog", "id": "info" }]
+    }
+  ]
+}
+```
+
+---
+
+## closeDialog
+
+Closes an open dialog.
+
+### Syntax
+
+```json
+{
+  "type": "closeDialog",
+  "id": "myDialog"
+}
+```
+
+### Properties
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `id` | string | ✅ | Dialog identifier to close |
+
+### Examples
+
+**Close specific dialog:**
+
+```json
+{ "type": "closeDialog", "id": "confirmDelete" }
+```
+
+**Close after action:**
+
+```json
+{
+  "type": "callApi",
+  "api": "saveChanges",
+  "onSuccess": [
+    { "type": "showToast", "message": "Saved!", "level": "success" },
+    { "type": "closeDialog", "id": "editDialog" }
+  ]
+}
+```
+
+---
+
+## Common Patterns
+
+### Confirmation Pattern
+
+```json
+{
+  "type": "Button",
+  "text": "Delete",
+  "variant": "destructive",
+  "events": {
+    "onClick": [
+      {
+        "type": "showDialog",
+        "id": "confirmDelete",
+        "title": "Confirm Delete",
+        "message": "This action cannot be undone.",
+        "buttons": [
+          {
+            "label": "Cancel",
+            "variant": "ghost",
+            "action": [{ "type": "closeDialog", "id": "confirmDelete" }]
+          },
+          {
+            "label": "Delete",
+            "variant": "destructive",
+            "action": [
+              { "type": "callApi", "api": "delete" },
+              { "type": "closeDialog", "id": "confirmDelete" }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### Form Dialog Pattern
+
+```json
+{
+  "type": "Button",
+  "text": "Add New",
+  "events": {
+    "onClick": [
+      { "type": "updateState", "path": "formData", "value": {} },
+      {
+        "type": "showDialog",
+        "id": "addNew",
+        "title": "Add New Item",
+        "size": "lg",
+        "content": {
+          "type": "Form",
+          "id": "addForm",
+          "children": [
+            { "type": "Field", "fieldType": "text", "name": "name", "label": "Name", "required": true }
+          ]
+        },
+        "buttons": [
+          { "label": "Cancel", "variant": "ghost", "action": [{ "type": "closeDialog", "id": "addNew" }] },
+          {
+            "label": "Create",
+            "variant": "default",
+            "action": [
+              { "type": "validateForm", "formId": "addForm" },
+              { "type": "callApi", "api": "createItem" },
+              { "type": "closeDialog", "id": "addNew" }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### Wizard Dialog Pattern
+
+```json
+{
+  "type": "showDialog",
+  "id": "wizard",
+  "title": "Setup Wizard - Step {{state.wizardStep}}/3",
+  "size": "lg",
+  "content": {
+    "type": "Conditional",
+    "conditions": [
+      {
+        "when": "{{state.wizardStep === 1}}",
+        "render": { "type": "Text", "text": "Step 1 content" }
+      },
+      {
+        "when": "{{state.wizardStep === 2}}",
+        "render": { "type": "Text", "text": "Step 2 content" }
+      },
+      {
+        "when": "{{state.wizardStep === 3}}",
+        "render": { "type": "Text", "text": "Step 3 content" }
+      }
+    ]
+  },
+  "buttons": [
+    {
+      "label": "Back",
+      "variant": "ghost",
+      "visible": "{{state.wizardStep > 1}}",
+      "action": [{ "type": "updateState", "path": "wizardStep", "value": "{{state.wizardStep - 1}}" }]
+    },
+    {
+      "label": "{{state.wizardStep === 3 ? 'Finish' : 'Next'}}",
+      "variant": "default",
+      "action": [
+        {
+          "type": "conditional",
+          "condition": "{{state.wizardStep < 3}}",
+          "then": [{ "type": "updateState", "path": "wizardStep", "value": "{{state.wizardStep + 1}}" }],
+          "else": [
+            { "type": "callApi", "api": "completeSetup" },
+            { "type": "closeDialog", "id": "wizard" }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+### Best Practices
+
+1. **Use unique IDs** - Avoid dialog ID collisions
+2. **Always provide close option** - Users should be able to dismiss dialogs
+3. **Keep dialogs focused** - One task per dialog
+4. **Clear button labels** - Use action verbs ("Delete", "Save", "Cancel")
+5. **Match button variant to action** - Use `destructive` for dangerous actions
+6. **Reset state on close** - Clear form data when closing dialogs
