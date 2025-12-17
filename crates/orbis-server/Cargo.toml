@@ -16,6 +16,9 @@ orbis-db = { workspace = true }
 orbis-auth = { workspace = true }
 orbis-plugin = { workspace = true }
 
+# Database (for direct queries in routes)
+sqlx = { workspace = true }
+
 # Web framework
 axum = { workspace = true }
 axum-extra = { workspace = true }
