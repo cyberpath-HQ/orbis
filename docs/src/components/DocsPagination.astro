@@ -1,0 +1,66 @@
+---
+import { docsNav, type NavItem } from '@/lib/navigation';
+
+const currentPath = Astro.url.pathname;
+
+// Flatten the navigation to find prev/next
+interface FlatNavItem {
+    title: string;
+    href: string;
+}
+
+function flattenNav(items: NavItem[]): FlatNavItem[] {
+    const result: FlatNavItem[] = [];
+    for (const item of items) {
+        if (item.href) {
+            result.push({ title: item.title, href: item.href });
+        }
+        if (item.items) {
+            result.push(...flattenNav(item.items));
+        }
+    }
+    return result;
+}
+
+const allItems = docsNav.flatMap((section) => flattenNav(section.items));
+const currentIndex = allItems.findIndex((item) => item.href === currentPath);
+const prevItem = currentIndex > 0 ? allItems[currentIndex - 1] : null;
+const nextItem = currentIndex < allItems.length - 1 ? allItems[currentIndex + 1] : null;
+---
+
+{(prevItem || nextItem) && (
+    <div class="flex flex-row items-center justify-between mt-12 pt-6 border-t">
+        {prevItem ? (
+            <a
+                href={prevItem.href}
+                class="group inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring hover:bg-accent hover:text-accent-foreground h-10 px-4"
+            >
+                <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="m15 18-6-6 6-6" />
+                </svg>
+                <span class="flex flex-col items-start">
+                    <span class="text-xs text-muted-foreground">Previous</span>
+                    <span>{prevItem.title}</span>
+                </span>
+            </a>
+        ) : (
+            <div />
+        )}
+        {nextItem ? (
+            <a
+                href={nextItem.href}
+                class="group inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring hover:bg-accent hover:text-accent-foreground h-10 px-4"
+            >
+                <span class="flex flex-col items-end">
+                    <span class="text-xs text-muted-foreground">Next</span>
+                    <span>{nextItem.title}</span>
+                </span>
+                <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="m9 18 6-6-6-6" />
+                </svg>
+            </a>
+        ) : (
+            <div />
+        )}
+    </div>
+)}
