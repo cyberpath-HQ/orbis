@@ -70,8 +70,8 @@ describe(`getNestedValue`, () => {
     });
 
     it(`should return undefined for null/undefined base`, () => {
-        expect(getNestedValue(null, `any.path`)).toBeUndefined();
-        expect(getNestedValue(undefined, `any.path`)).toBeUndefined();
+        expect(getNestedValue(null as unknown as Record<string, unknown>, `any.path`)).toBeUndefined();
+        expect(getNestedValue(undefined as unknown as Record<string, unknown>, `any.path`)).toBeUndefined();
     });
 });
 
@@ -95,8 +95,8 @@ describe(`setNestedValue`, () => {
     });
 
     it(`should create intermediate objects`, () => {
-        const obj = {};
-        const result = setNestedValue(obj, `user.profile.email`, `test@example.com`);
+        const obj: Record<string, unknown> = {};
+        const result = setNestedValue(obj, `user.profile.email`, `test@example.com`) as { user: { profile: { email: string } } };
         expect(result.user.profile.email).toBe(`test@example.com`);
     });
 
