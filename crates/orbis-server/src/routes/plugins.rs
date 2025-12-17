@@ -115,7 +115,15 @@ async fn get_plugin_pages(
                 "description": page.description,
                 "show_in_menu": page.show_in_menu,
                 "menu_order": page.menu_order,
-                "layout": page.layout
+                "sections": page.sections,
+                "state": page.state,
+                "computed": page.computed,
+                "actions": page.actions,
+                "hooks": page.hooks,
+                "dialogs": page.dialogs,
+                "requires_auth": page.requires_auth,
+                "permissions": page.permissions,
+                "roles": page.roles
             })
         })
         .collect();
@@ -144,7 +152,15 @@ pub async fn get_all_plugin_pages(state: &AppState, is_authenticated: bool) -> V
                 "description": page.description,
                 "show_in_menu": page.show_in_menu,
                 "menu_order": page.menu_order,
-                "layout": page.layout
+                "sections": page.sections,
+                "state": page.state,
+                "computed": page.computed,
+                "actions": page.actions,
+                "hooks": page.hooks,
+                "dialogs": page.dialogs,
+                "requires_auth": page.requires_auth,
+                "permissions": page.permissions,
+                "roles": page.roles
             })
         })
         .collect()
