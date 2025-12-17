@@ -74,7 +74,7 @@ anyhow = "1"
 # Security/Crypto
 argon2 = "0.5"
 jsonwebtoken = "10"
-rand = "0.8"
+rand = "0.9"
 uuid = { version = "1", features = ["v4", "v7", "serde"] }
 
 # Plugin system
