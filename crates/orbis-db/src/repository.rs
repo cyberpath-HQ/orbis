@@ -41,7 +41,6 @@ where
 }
 
 /// Base repository implementation helper.
-#[allow(dead_code)]
 pub struct BaseRepository {
     pool: DatabasePool,
 }
@@ -49,14 +48,12 @@ pub struct BaseRepository {
 impl BaseRepository {
     /// Create a new base repository.
     #[must_use]
-    #[allow(dead_code)]
     pub const fn new(pool: DatabasePool) -> Self {
         Self { pool }
     }
 
     /// Get a reference to the pool.
     #[must_use]
-    #[allow(dead_code)]
     pub const fn pool(&self) -> &DatabasePool {
         &self.pool
     }
