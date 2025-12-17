@@ -201,6 +201,15 @@ impl PluginRuntime {
     pub fn is_running(&self, name: &str) -> bool {
         self.instances.contains_key(name)
     }
+
+    /// Clear cached data for a plugin.
+    ///
+    /// This is used during hot reload to ensure fresh module compilation.
+    pub fn clear_cache(&self, name: &str) {
+        // Remove any cached instance
+        self.instances.remove(name);
+        tracing::debug!("Cleared cache for plugin: {}", name);
+    }
 }
 
 impl Default for PluginRuntime {
