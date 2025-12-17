@@ -1,25 +1,260 @@
 ---
-import '../styles/global.css';
-// Component Imports
-import Button from '../components/Button.astro';
-
-// Full Astro Component Syntax:
-// https://docs.astro.build/basics/astro-components/
+import BaseLayout from '@/layouts/BaseLayout.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro + TailwindCSS</title>
-	</head>
+<BaseLayout 
+    title="Orbis" 
+    description="Build powerful desktop applications with plugin-driven architecture. Orbis combines Rust performance with React UI through a declarative JSON schema system."
+>
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden border-b">
+        <div class="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,transparent,black)] dark:bg-grid-slate-700/25" />
+        <div class="container relative px-4 py-24 sm:py-32 md:px-8">
+            <div class="mx-auto max-w-3xl text-center">
+                <!-- Badge -->
+                <a 
+                    href="https://github.com/cyberpath-HQ/orbis"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center rounded-full border px-3 py-1 text-sm font-medium transition-colors hover:bg-accent mb-6"
+                >
+                    <span class="flex size-2 rounded-full bg-green-500 mr-2" />
+                    Now in Active Development
+                    <svg class="ml-2 size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="m9 18 6-6-6-6" />
+                    </svg>
+                </a>
+                
+                <!-- Title -->
+                <h1 class="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
+                    Build Desktop Apps with
+                    <span class="bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent">
+                        Plugin Power
+                    </span>
+                </h1>
+                
+                <!-- Description -->
+                <p class="mt-6 text-lg leading-8 text-muted-foreground sm:text-xl">
+                    Orbis is a plugin-driven desktop application platform built with Rust and React. 
+                    Define UIs with JSON schemas, sandbox plugins with WASM, and deploy anywhere.
+                </p>
+                
+                <!-- CTA Buttons -->
+                <div class="mt-10 flex items-center justify-center gap-x-4 flex-wrap gap-y-4">
+                    <a 
+                        href="/docs/"
+                        class="inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                        Get Started
+                        <svg class="ml-2 size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="m9 18 6-6-6-6" />
+                        </svg>
+                    </a>
+                    <a 
+                        href="https://github.com/cyberpath-HQ/orbis"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="inline-flex items-center justify-center rounded-md border px-6 py-3 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                        <svg class="mr-2 size-5" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        View on GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
 
-	<body>
-		<div class="grid place-items-center h-screen content-center">
-			<Button>Tailwind Button in Astro!</Button>
-			<a href="/markdown-page" class="p-4 underline">Markdown is also supported...</a>
-		</div>
-	</body>
-</html>
+    <!-- Features Section -->
+    <section class="py-24 sm:py-32">
+        <div class="container px-4 md:px-8">
+            <div class="mx-auto max-w-2xl text-center mb-16">
+                <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">
+                    Everything you need to build desktop apps
+                </h2>
+                <p class="mt-4 text-lg text-muted-foreground">
+                    A complete platform for building extensible, secure, and performant desktop applications.
+                </p>
+            </div>
+            
+            <div class="mx-auto grid max-w-5xl grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                <!-- Feature 1 -->
+                <div class="relative rounded-2xl border bg-card p-8">
+                    <div class="mb-4 inline-flex rounded-lg bg-primary/10 p-3">
+                        <svg class="size-6 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2v8" />
+                            <path d="m4.93 10.93 1.41 1.41" />
+                            <path d="M2 18h2" />
+                            <path d="M20 18h2" />
+                            <path d="m19.07 10.93-1.41 1.41" />
+                            <path d="M22 22H2" />
+                            <path d="m8 22 4-10 4 10" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold">Plugin Architecture</h3>
+                    <p class="mt-2 text-sm text-muted-foreground">
+                        Extend functionality through WASM-sandboxed plugins. Each plugin runs in isolation with configurable permissions.
+                    </p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="relative rounded-2xl border bg-card p-8">
+                    <div class="mb-4 inline-flex rounded-lg bg-primary/10 p-3">
+                        <svg class="size-6 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                            <polyline points="14 2 14 8 20 8" />
+                            <path d="M10 12a1 1 0 0 0-1 1v1a1 1 0 0 1-1 1 1 1 0 0 1-1-1v-1a1 1 0 0 0-1-1" />
+                            <path d="M16 12a1 1 0 0 0-1 1v1a1 1 0 0 1-1 1" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold">Schema-Driven UI</h3>
+                    <p class="mt-2 text-sm text-muted-foreground">
+                        Define interfaces using JSON schemas instead of writing React code. The Orbis renderer handles the rest.
+                    </p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="relative rounded-2xl border bg-card p-8">
+                    <div class="mb-4 inline-flex rounded-lg bg-primary/10 p-3">
+                        <svg class="size-6 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z" />
+                            <path d="M18 12h-6l-3 3" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold">Rust Performance</h3>
+                    <p class="mt-2 text-sm text-muted-foreground">
+                        Built on Tauri with a Rust backend for native performance and minimal memory footprint.
+                    </p>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="relative rounded-2xl border bg-card p-8">
+                    <div class="mb-4 inline-flex rounded-lg bg-primary/10 p-3">
+                        <svg class="size-6 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold">Two Deployment Modes</h3>
+                    <p class="mt-2 text-sm text-muted-foreground">
+                        Run standalone with SQLite for single-user apps, or in client-server mode with PostgreSQL for teams.
+                    </p>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="relative rounded-2xl border bg-card p-8">
+                    <div class="mb-4 inline-flex rounded-lg bg-primary/10 p-3">
+                        <svg class="size-6 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect width="18" height="18" x="3" y="3" rx="2" />
+                            <path d="M8 7v7" />
+                            <path d="M12 7v4" />
+                            <path d="M16 7v7" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold">shadcn/ui Components</h3>
+                    <p class="mt-2 text-sm text-muted-foreground">
+                        Beautiful, accessible UI components out of the box with full customization support.
+                    </p>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="relative rounded-2xl border bg-card p-8">
+                    <div class="mb-4 inline-flex rounded-lg bg-primary/10 p-3">
+                        <svg class="size-6 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+                            <path d="m9 12 2 2 4-4" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold">Secure by Default</h3>
+                    <p class="mt-2 text-sm text-muted-foreground">
+                        JWT authentication, Argon2 password hashing, and TLS support built-in for production-ready security.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Code Example Section -->
+    <section class="border-t bg-muted/50 py-24 sm:py-32">
+        <div class="container px-4 md:px-8">
+            <div class="mx-auto max-w-2xl text-center mb-16">
+                <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">
+                    Declarative UI in JSON
+                </h2>
+                <p class="mt-4 text-lg text-muted-foreground">
+                    Define your plugin UI with simple JSON schemas. No React knowledge required.
+                </p>
+            </div>
+            
+            <div class="mx-auto max-w-4xl">
+                <div class="rounded-lg border bg-card overflow-hidden">
+                    <div class="flex items-center gap-2 border-b bg-muted/50 px-4 py-3">
+                        <div class="flex gap-1.5">
+                            <div class="size-3 rounded-full bg-red-500/80" />
+                            <div class="size-3 rounded-full bg-yellow-500/80" />
+                            <div class="size-3 rounded-full bg-green-500/80" />
+                        </div>
+                        <span class="text-xs text-muted-foreground ml-2">page-definition.json</span>
+                    </div>
+                    <pre class="p-6 text-sm overflow-x-auto"><code class="language-json text-muted-foreground">{`{
+  "id": "dashboard",
+  "title": "Dashboard",
+  "state": {
+    "userName": { "type": "string", "default": "Guest" },
+    "count": { "type": "number", "default": 0 }
+  },
+  "layout": {
+    "type": "Container",
+    "children": [
+      {
+        "type": "Heading",
+        "level": 1,
+        "text": "Welcome, {{state.userName}}!"
+      },
+      {
+        "type": "Button",
+        "label": "Click Count: {{state.count}}",
+        "events": {
+          "onClick": [{
+            "type": "updateState",
+            "path": "count",
+            "value": "{{state.count + 1}}"
+          }]
+        }
+      }
+    ]
+  }
+}`}</code></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="border-t py-24 sm:py-32">
+        <div class="container px-4 md:px-8">
+            <div class="mx-auto max-w-2xl text-center">
+                <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">
+                    Ready to get started?
+                </h2>
+                <p class="mt-4 text-lg text-muted-foreground">
+                    Jump into the documentation and start building your first Orbis application today.
+                </p>
+                <div class="mt-10 flex items-center justify-center gap-x-4 flex-wrap gap-y-4">
+                    <a 
+                        href="/docs/getting-started/installation/"
+                        class="inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                        Read the Docs
+                    </a>
+                    <a 
+                        href="/docs/getting-started/quickstart/"
+                        class="inline-flex items-center justify-center rounded-md border px-6 py-3 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                        Quick Start Guide
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+</BaseLayout>

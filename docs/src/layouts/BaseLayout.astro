@@ -1,0 +1,132 @@
+---
+import '@/styles/global.css';
+import SEO from '@/components/SEO.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+
+export interface Props {
+    title: string;
+    description?: string;
+    ogImage?: string;
+    ogType?: `website` | `article`;
+    publishedTime?: string;
+    modifiedTime?: string;
+}
+
+const { title, description, ogImage, ogType, publishedTime, modifiedTime } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="sitemap" href="/sitemap-index.xml" />
+        <meta name="generator" content={Astro.generator} />
+        
+        <SEO
+            title={title}
+            description={description}
+            ogImage={ogImage}
+            ogType={ogType}
+            publishedTime={publishedTime}
+            modifiedTime={modifiedTime}
+        />
+        
+        <!-- Preconnect to external resources -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+        <!-- Theme script to prevent FOUC -->
+        <script is:inline>
+            const theme = (() => {
+                if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+                    return localStorage.getItem('theme');
+                }
+                if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    return 'dark';
+                }
+                return 'light';
+            })();
+            
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        </script>
+
+        <!-- Mermaid for diagrams -->
+        <script type="module">
+            import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+            
+            const theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+            mermaid.initialize({ 
+                startOnLoad: true,
+                theme: theme,
+                themeVariables: {
+                    primaryColor: '#3b82f6',
+                    primaryTextColor: '#fff',
+                    primaryBorderColor: '#2563eb',
+                    lineColor: '#64748b',
+                    secondaryColor: '#8b5cf6',
+                    tertiaryColor: '#10b981',
+                }
+            });
+            
+            // Reinitialize on theme change
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.attributeName === 'class') {
+                        const isDark = document.documentElement.classList.contains('dark');
+                        mermaid.initialize({ 
+                            theme: isDark ? 'dark' : 'light',
+                            startOnLoad: true,
+                        });
+                        mermaid.run();
+                    }
+                });
+            });
+            
+            observer.observe(document.documentElement, { attributes: true });
+        </script>
+    </head>
+    <body class="min-h-screen bg-background font-sans antialiased">
+        <div class="relative flex min-h-screen flex-col">
+            <Header />
+            <main class="flex-1">
+                <slot />
+            </main>
+            <Footer />
+        </div>
+        
+        <!-- Theme toggle script -->
+        <script>
+            function setupThemeToggle(): void {
+                const themeToggle = document.getElementById(`theme-toggle`);
+                if (!themeToggle) {
+                    return;
+                }
+                
+                themeToggle.addEventListener(`click`, () => {
+                    const isDark = document.documentElement.classList.contains(`dark`);
+                    if (isDark) {
+                        document.documentElement.classList.remove(`dark`);
+                        localStorage.setItem(`theme`, `light`);
+                    } else {
+                        document.documentElement.classList.add(`dark`);
+                        localStorage.setItem(`theme`, `dark`);
+                    }
+                });
+            }
+            
+            setupThemeToggle();
+            document.addEventListener(`astro:after-swap`, setupThemeToggle);
+        </script>
+
+        <!-- Code block copy functionality -->
+        <script src="../scripts/code-blocks.ts"></script>
+    </body>
+</html>
