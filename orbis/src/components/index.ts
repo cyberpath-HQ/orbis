@@ -1,1 +1,1 @@
-export { PluginRenderer } from './plugin-renderer';
+// Component exports (currently empty - all components are in lib/renderer.tsx)

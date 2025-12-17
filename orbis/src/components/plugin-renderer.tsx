@@ -1,5 +1,7 @@
+// This file should have been deleted during cleanup
+// TODO: Remove this file
 import React from 'react';
-import type { ComponentSchema } from '../types/plugin';
+import type { ComponentSchema } from '../types/schema';
 
 interface PluginRendererProps {
     schema:    ComponentSchema
