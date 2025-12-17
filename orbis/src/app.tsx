@@ -5,7 +5,8 @@
 import React, {
     useState,
     useEffect,
-    useMemo
+    useMemo,
+    useCallback
 } from 'react';
 import {
     Routes,
@@ -18,7 +19,8 @@ import { AppLayout } from '@/lib/layout';
 import { RouteGuard } from '@/lib/router';
 import { SchemaRenderer } from '@/lib/renderer';
 import { createPageStateStore } from '@/lib/state';
-import { PluginErrorBoundary, PageErrorBoundary } from '@/components';
+import { executeActions } from '@/lib/actions';
+import { PluginErrorBoundary, PageErrorBoundary, LoadingIndicator } from '@/components';
 import type { ApiClient } from '@/lib/actions';
 import type {
     PluginInfo, PluginPage, AppModeInfo
@@ -143,14 +145,7 @@ function App(): React.ReactElement {
 
     // Loading state
     if (status === `loading`) {
-        return (
-            <div className="flex min-h-screen items-center justify-center">
-                <div className="text-center space-y-4">
-                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent mx-auto" />
-                    <h2 className="text-xl font-semibold">Loading Orbis...</h2>
-                </div>
-            </div>
-        );
+        return <LoadingIndicator loading={true} message="Loading Orbis..." />;
     }
 
     // Error state
@@ -246,6 +241,40 @@ function PluginPageRenderer({
 
     // Get the actual store instance
     const state = stateStore();
+
+    // Execute onMount hook when page mounts
+    useEffect(() => {
+        if (page.hooks?.onMount) {
+            const actionContext = {
+                state,
+                apiClient,
+                navigate: () => {
+                    // Empty navigation stub
+                },
+            };
+            executeActions(page.hooks.onMount, actionContext).catch((error) => {
+                console.error(`Error executing onMount hook:`, error);
+            });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    // Execute onUnmount hook when page unmounts
+    useEffect(() => () => {
+        if (page.hooks?.onUnmount) {
+            const actionContext = {
+                state,
+                apiClient,
+                navigate: () => {
+                    // Empty navigation stub
+                },
+            };
+            executeActions(page.hooks.onUnmount, actionContext).catch((error) => {
+                console.error(`Error executing onUnmount hook:`, error);
+            });
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return (
         <PluginErrorBoundary pluginId={page.plugin}>
