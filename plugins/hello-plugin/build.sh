@@ -1,13 +1,19 @@
 #!/bin/bash
-set -e
+set -euo pipefail
+
+ORIG_DIR=$PWD
+cd "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Ensure we go back on any exit
+trap 'cd "$ORIG_DIR"' EXIT
 
 echo "Building Hello Plugin..."
 
 # Build the WASM module
-cargo build --target wasm32-unknown-unknown --release
+cargo build --target wasm32-unknown-unknown --release -p hello-plugin
 
 # Copy WASM file
-cp target/wasm32-unknown-unknown/release/hello_plugin.wasm hello_plugin.wasm
+cp ../../target/wasm32-unknown-unknown/release/hello_plugin.wasm hello_plugin.wasm
 
 echo "Creating plugin variants..."
 
