@@ -1,0 +1,47 @@
+---
+title: Heading
+description: Text heading component
+sidebar_position: 1
+---
+
+import CodeBlock from '@/components/mdx/CodeBlock.astro';
+
+
+# Heading
+
+Display headings with consistent typography and hierarchy.
+
+## Basic Usage
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "heading",
+  "level": 1,
+  "text": "Main Title"
+}
+```
+</CodeBlock>
+
+## Properties
+
+- `level` - Heading level (1-6)
+- `text` - Heading content
+- `className` - Additional CSS classes
+
+## Examples
+
+### Different Levels
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "stack",
+  "children": [
+    { "type": "heading", "level": 1, "text": "Heading 1" },
+    { "type": "heading", "level": 2, "text": "Heading 2" },
+    { "type": "heading", "level": 3, "text": "Heading 3" }
+  ]
+}
+```
+</CodeBlock>

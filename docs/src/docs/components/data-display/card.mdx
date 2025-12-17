@@ -1,0 +1,54 @@
+---
+title: Card
+description: Content card component
+sidebar_position: 2
+---
+
+import CodeBlock from '@/components/mdx/CodeBlock.astro';
+
+
+# Card
+
+Container component for grouping related content.
+
+## Basic Usage
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "card",
+  "title": "Card Title",
+  "description": "Card description text",
+  "children": [
+    { "type": "text", "content": "Card content" }
+  ]
+}
+```
+</CodeBlock>
+
+## Properties
+
+- `title` - Card title
+- `description` - Card description
+- `children` - Card content
+- `footer` - Footer content
+- `variant` - Style variant (default, outlined)
+
+## Examples
+
+### Card with Actions
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "card",
+  "title": "User Profile",
+  "children": [
+    { "type": "text", "content": "User information" }
+  ],
+  "footer": [
+    { "type": "button", "text": "Edit", "onClick": [] }
+  ]
+}
+```
+</CodeBlock>

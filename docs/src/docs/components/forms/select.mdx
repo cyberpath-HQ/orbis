@@ -1,0 +1,38 @@
+---
+title: Select
+description: Dropdown select component
+sidebar_position: 3
+---
+
+import CodeBlock from '@/components/mdx/CodeBlock.astro';
+
+
+# Select
+
+Dropdown selection component for choosing from multiple options.
+
+## Basic Usage
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "select",
+  "name": "country",
+  "options": [
+    { "label": "United States", "value": "us" },
+    { "label": "Canada", "value": "ca" },
+    { "label": "Mexico", "value": "mx" }
+  ],
+  "value": "${state.country}"
+}
+```
+</CodeBlock>
+
+## Properties
+
+- `name` - Select field name
+- `options` - Array of option objects
+- `value` - Currently selected value
+- `placeholder` - Placeholder text
+- `required` - Mark as required
+- `onChange` - Action on selection change

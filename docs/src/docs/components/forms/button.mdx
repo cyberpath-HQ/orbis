@@ -1,0 +1,96 @@
+---
+title: Button
+description: Interactive button component
+sidebar_position: 2
+---
+
+import CodeBlock from '@/components/mdx/CodeBlock.astro';
+
+
+# Button
+
+Trigger actions and events with interactive buttons.
+
+## Basic Usage
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "button",
+  "text": "Click Me",
+  "onClick": [
+    { "type": "update_state", "path": "clicked", "value": true }
+  ]
+}
+```
+</CodeBlock>
+
+## Properties
+
+- `text` - Button label (supports expressions like `${state.label}`)
+- `onClick` - Array of actions to execute on click
+- `variant` - Visual style (default, primary, secondary, outline, destructive, ghost)
+- `size` - Button size (default, sm, lg, icon)
+- `disabled` - Disable button interaction (supports expressions)
+- `icon` - Optional icon name
+- `loading` - Show loading spinner
+
+## Examples
+
+### Primary Button
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "button",
+  "text": "Save Changes",
+  "variant": "primary",
+  "onClick": [
+    { "type": "call_api", "api": "save_data", "payload": "${state.formData}" }
+  ]
+}
+```
+</CodeBlock>
+
+### Disabled State
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "button",
+  "text": "Submit",
+  "disabled": "${!state.isValid}",
+  "onClick": []
+}
+```
+</CodeBlock>
+
+### With Icon
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "button",
+  "text": "Delete",
+  "variant": "destructive",
+  "icon": "trash",
+  "onClick": [
+    { "type": "show_toast", "message": "Item deleted" }
+  ]
+}
+```
+</CodeBlock>
+
+### Loading State
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "button",
+  "text": "Processing...",
+  "loading": "${state.isProcessing}",
+  "disabled": "${state.isProcessing}",
+  "onClick": []
+}
+```
+</CodeBlock>

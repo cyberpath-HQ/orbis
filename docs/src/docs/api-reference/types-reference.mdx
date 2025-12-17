@@ -1,0 +1,602 @@
+---
+sidebar_position: 8
+title: Type Reference
+description: TypeScript type definitions for Orbis schemas
+---
+
+import CodeBlock from '@/components/mdx/CodeBlock.astro';
+
+
+## Type Reference
+
+Complete TypeScript type definitions for Orbis plugin development.
+
+## Core Types
+
+### PageDefinition
+
+Complete page schema definition.
+
+<CodeBlock lang="typescript">
+```typescript
+interface PageDefinition {
+  id: string;
+  title: string;
+  description?: string;
+  icon?: string;
+  initialState?: Record<string, any>;
+  stateConfig?: StateConfig;
+  onMount?: ActionSchema[];
+  onUnmount?: ActionSchema[];
+  layout?: LayoutConfig;
+  children: ComponentSchema[];
+}
+```
+</CodeBlock>
+
+### PluginManifest
+
+Plugin configuration.
+
+<CodeBlock lang="typescript">
+```typescript
+interface PluginManifest {
+  id: string;
+  name: string;
+  version: string;
+  description?: string;
+  author?: string;
+  license?: string;
+  homepage?: string;
+  repository?: string;
+  permissions?: Permission[];
+  routes?: RouteDefinition[];
+  apis?: ApiDefinition[];
+  settings?: SettingsDefinition;
+}
+```
+</CodeBlock>
+
+### StateConfig
+
+State configuration options.
+
+<CodeBlock lang="typescript">
+```typescript
+interface StateConfig {
+  persist?: string[];      // Fields to persist across sessions
+  sync?: boolean;          // Enable cross-tab sync
+}
+```
+</CodeBlock>
+
+## Component Types
+
+### ComponentSchema
+
+Base component schema (union type).
+
+<CodeBlock lang="typescript">
+```typescript
+type ComponentSchema =
+  | ContainerSchema
+  | FlexSchema
+  | GridSchema
+  | TextSchema
+  | HeadingSchema
+  | ButtonSchema
+  | LinkSchema
+  | FormSchema
+  | FieldSchema
+  | TableSchema
+  | CardSchema
+  | AlertSchema
+  | ModalSchema
+  | TabsSchema
+  | LoopSchema
+  | ConditionalSchema
+  | IconSchema
+  | ImageSchema
+  | BadgeSchema
+  | AvatarSchema
+  | ProgressSchema
+  | SkeletonSchema
+  | TooltipSchema
+  | DropdownSchema
+  | BreadcrumbSchema
+  | PageHeaderSchema
+  | AccordionSchema
+  | DividerSchema
+  | SpacerSchema
+  | SectionSchema
+  | ListSchema
+  | StatCardSchema
+  | ChartSchema
+  | LoadingOverlaySchema
+  | EmptyStateSchema
+  | DataDisplaySchema
+  | FragmentSchema
+  | SlotSchema
+  | CustomSchema;
+```
+</CodeBlock>
+
+### BaseComponentSchema
+
+Common properties for all components.
+
+<CodeBlock lang="typescript">
+```typescript
+interface BaseComponentSchema {
+  type: string;
+  id?: string;
+  className?: string;
+  style?: Record<string, string>;
+  visible?: string | boolean;
+  testId?: string;
+}
+```
+</CodeBlock>
+
+## Layout Components
+
+### ContainerSchema
+
+<CodeBlock lang="typescript">
+```typescript
+interface ContainerSchema extends BaseComponentSchema {
+  type: 'Container';
+  maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full';
+  padding?: Size;
+  center?: boolean;
+  children?: ComponentSchema[];
+}
+```
+</CodeBlock>
+
+### FlexSchema
+
+<CodeBlock lang="typescript">
+```typescript
+interface FlexSchema extends BaseComponentSchema {
+  type: 'Flex';
+  direction?: 'row' | 'column' | 'row-reverse' | 'column-reverse';
+  justify?: 'start' | 'end' | 'center' | 'between' | 'around' | 'evenly';
+  align?: 'start' | 'end' | 'center' | 'stretch' | 'baseline';
+  wrap?: boolean | 'wrap' | 'nowrap' | 'wrap-reverse';
+  gap?: Size;
+  children?: ComponentSchema[];
+}
+```
+</CodeBlock>
+
+### GridSchema
+
+<CodeBlock lang="typescript">
+```typescript
+interface GridSchema extends BaseComponentSchema {
+  type: 'Grid';
+  columns?: number | string;
+  rows?: number | string;
+  gap?: Size;
+  columnGap?: Size;
+  rowGap?: Size;
+  children?: ComponentSchema[];
+}
+```
+</CodeBlock>
+
+## Typography Components
+
+### TextSchema
+
+<CodeBlock lang="typescript">
+```typescript
+interface TextSchema extends BaseComponentSchema {
+  type: 'Text';
+  text: string;
+  variant?: 'default' | 'muted' | 'lead' | 'small' | 'large';
+  weight?: 'normal' | 'medium' | 'semibold' | 'bold';
+  align?: 'left' | 'center' | 'right' | 'justify';
+  truncate?: boolean;
+  lines?: number;
+}
+```
+</CodeBlock>
+
+### HeadingSchema
+
+<CodeBlock lang="typescript">
+```typescript
+interface HeadingSchema extends BaseComponentSchema {
+  type: 'Heading';
+  text: string;
+  level?: 1 | 2 | 3 | 4 | 5 | 6;
+  variant?: 'default' | 'gradient';
+}
+```
+</CodeBlock>
+
+## Form Components
+
+### FormSchema
+
+<CodeBlock lang="typescript">
+```typescript
+interface FormSchema extends BaseComponentSchema {
+  type: 'Form';
+  id: string;
+  children?: ComponentSchema[];
+  events?: {
+    onSubmit?: ActionSchema[];
+    onChange?: ActionSchema[];
+  };
+}
+```
+</CodeBlock>
+
+### FieldSchema
+
+<CodeBlock lang="typescript">
+```typescript
+interface FieldSchema extends BaseComponentSchema {
+  type: 'Field';
+  fieldType: FieldType;
+  name: string;
+  label?: string;
+  placeholder?: string;
+  value?: any;
+  defaultValue?: any;
+  required?: boolean;
+  requiredMessage?: string;
+  disabled?: string | boolean;
+  readOnly?: boolean;
+  validation?: ValidationRule[];
+  validateOn?: 'change' | 'blur' | 'submit';
+  options?: SelectOption[];
+  events?: {
+    onChange?: ActionSchema[];
+    onBlur?: ActionSchema[];
+    onFocus?: ActionSchema[];
+  };
+}
+
+type FieldType =
+  | 'text'
+  | 'email'
+  | 'password'
+  | 'number'
+  | 'tel'
+  | 'url'
+  | 'textarea'
+  | 'select'
+  | 'checkbox'
+  | 'radio'
+  | 'switch'
+  | 'date'
+  | 'time'
+  | 'datetime'
+  | 'file'
+  | 'color'
+  | 'range'
+  | 'hidden';
+
+interface SelectOption {
+  value: string;
+  label: string;
+  disabled?: boolean;
+}
+```
+</CodeBlock>
+
+### ValidationRule
+
+<CodeBlock lang="typescript">
+```typescript
+type ValidationRule =
+  | { type: 'email'; message?: string }
+  | { type: 'url'; message?: string }
+  | { type: 'minLength'; value: number; message?: string }
+  | { type: 'maxLength'; value: number; message?: string }
+  | { type: 'min'; value: number; message?: string }
+  | { type: 'max'; value: number; message?: string }
+  | { type: 'pattern'; value: string; message?: string }
+  | { type: 'match'; field: string; message?: string }
+  | { type: 'custom'; validate: string; message?: string };
+```
+</CodeBlock>
+
+## Interactive Components
+
+### ButtonSchema
+
+<CodeBlock lang="typescript">
+```typescript
+interface ButtonSchema extends BaseComponentSchema {
+  type: 'Button';
+  text?: string;
+  icon?: string;
+  iconPosition?: 'left' | 'right';
+  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
+  size?: 'default' | 'sm' | 'lg' | 'icon';
+  disabled?: string | boolean;
+  loading?: string | boolean;
+  events?: {
+    onClick?: ActionSchema[];
+  };
+}
+```
+</CodeBlock>
+
+### ModalSchema
+
+<CodeBlock lang="typescript">
+```typescript
+interface ModalSchema extends BaseComponentSchema {
+  type: 'Modal';
+  id: string;
+  title?: string;
+  description?: string;
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  closable?: boolean;
+  children?: ComponentSchema[];
+  footer?: ComponentSchema[];
+  events?: {
+    onClose?: ActionSchema[];
+  };
+}
+```
+</CodeBlock>
+
+## Action Types
+
+### ActionSchema
+
+<CodeBlock lang="typescript">
+```typescript
+type ActionSchema =
+  | UpdateStateAction
+  | CallApiAction
+  | NavigateAction
+  | ShowToastAction
+  | ShowDialogAction
+  | CloseDialogAction
+  | ValidateFormAction
+  | ResetFormAction
+  | SetLoadingAction
+  | DownloadAction
+  | CopyAction
+  | OpenUrlAction
+  | EmitAction
+  | DebouncedAction
+  | ConditionalAction
+  | SequenceAction;
+```
+</CodeBlock>
+
+### UpdateStateAction
+
+<CodeBlock lang="typescript">
+```typescript
+interface UpdateStateAction {
+  type: 'updateState';
+  path: string;
+  value: any;
+}
+```
+</CodeBlock>
+
+### CallApiAction
+
+<CodeBlock lang="typescript">
+```typescript
+interface CallApiAction {
+  type: 'callApi';
+  api: string;
+  method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+  params?: Record<string, any>;
+  storeAs?: string;
+  onStart?: ActionSchema[];
+  onSuccess?: ActionSchema[];
+  onError?: ActionSchema[];
+  onComplete?: ActionSchema[];
+}
+```
+</CodeBlock>
+
+### NavigateAction
+
+<CodeBlock lang="typescript">
+```typescript
+interface NavigateAction {
+  type: 'navigate';
+  route: string;
+  params?: Record<string, any>;
+  query?: Record<string, any>;
+  replace?: boolean;
+}
+```
+</CodeBlock>
+
+### ShowToastAction
+
+<CodeBlock lang="typescript">
+```typescript
+interface ShowToastAction {
+  type: 'showToast';
+  message: string;
+  level?: 'info' | 'success' | 'warning' | 'error';
+  title?: string;
+  duration?: number;
+}
+```
+</CodeBlock>
+
+### ConditionalAction
+
+<CodeBlock lang="typescript">
+```typescript
+interface ConditionalAction {
+  type: 'conditional';
+  condition: string;
+  then: ActionSchema[];
+  else?: ActionSchema[];
+}
+```
+</CodeBlock>
+
+### SequenceAction
+
+<CodeBlock lang="typescript">
+```typescript
+interface SequenceAction {
+  type: 'sequence';
+  actions: ActionSchema[];
+  stopOnError?: boolean;
+}
+```
+</CodeBlock>
+
+## Utility Types
+
+### Size
+
+<CodeBlock lang="typescript">
+```typescript
+type Size = 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+```
+</CodeBlock>
+
+### Variant
+
+<CodeBlock lang="typescript">
+```typescript
+type Variant = 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
+```
+</CodeBlock>
+
+### AlertVariant
+
+<CodeBlock lang="typescript">
+```typescript
+type AlertVariant = 'default' | 'info' | 'success' | 'warning' | 'destructive';
+```
+</CodeBlock>
+
+## Context Types
+
+### EventContext
+
+<CodeBlock lang="typescript">
+```typescript
+interface EventContext {
+  $value?: any;
+  $event?: Event;
+  $index?: number;
+  $item?: any;
+}
+```
+</CodeBlock>
+
+### ApiContext
+
+<CodeBlock lang="typescript">
+```typescript
+interface ApiContext {
+  $response?: any;
+  $error?: {
+    message: string;
+    code?: string;
+    status?: number;
+    details?: any;
+  };
+}
+```
+</CodeBlock>
+
+### NavigationContext
+
+<CodeBlock lang="typescript">
+```typescript
+interface NavigationContext {
+  params: Record<string, string>;
+  query: Record<string, string>;
+  route: {
+    path: string;
+    hash: string;
+  };
+}
+```
+</CodeBlock>
+
+### FormContext
+
+<CodeBlock lang="typescript">
+```typescript
+interface FormContext {
+  [formId: string]: {
+    [fieldName: string]: any;
+    $valid: boolean;
+    $dirty: boolean;
+    $errors: Record<string, string>;
+  };
+}
+```
+</CodeBlock>
+
+## Usage Examples
+
+### Complete Page
+
+<CodeBlock lang="typescript">
+```typescript
+const page: PageDefinition = {
+  id: 'users',
+  title: 'Users',
+  initialState: {
+    users: [],
+    loading: false
+  },
+  onMount: [
+    { type: 'callApi', api: 'getUsers', storeAs: 'users' }
+  ],
+  children: [
+    {
+      type: 'PageHeader',
+      title: 'User Management',
+      actions: [
+        {
+          type: 'Button',
+          text: 'Add User',
+          events: {
+            onClick: [{ type: 'navigate', route: '/users/new' }]
+          }
+        }
+      ]
+    },
+    {
+      type: 'Table',
+      data: '{{state.users}}',
+      columns: [
+        { key: 'name', header: 'Name' },
+        { key: 'email', header: 'Email' }
+      ]
+    }
+  ]
+};
+```
+</CodeBlock>
+
+### Type Guards
+
+<CodeBlock lang="typescript">
+```typescript
+function isButtonSchema(schema: ComponentSchema): schema is ButtonSchema {
+  return schema.type === 'Button';
+}
+
+function isFormSchema(schema: ComponentSchema): schema is FormSchema {
+  return schema.type === 'Form';
+}
+```
+</CodeBlock>

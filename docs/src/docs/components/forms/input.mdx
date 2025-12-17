@@ -1,0 +1,51 @@
+---
+title: Input
+description: Text input field component
+sidebar_position: 1
+---
+
+import CodeBlock from '@/components/mdx/CodeBlock.astro';
+
+
+# Input
+
+Text input field for forms and user input.
+
+## Basic Usage
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "input",
+  "name": "username",
+  "placeholder": "Enter username",
+  "value": "${state.username}"
+}
+```
+</CodeBlock>
+
+## Properties
+
+- `name` - Input field name
+- `type` - Input type (text, email, password, number, etc.)
+- `placeholder` - Placeholder text
+- `value` - Current value
+- `required` - Mark as required field
+- `disabled` - Disable the input
+- `onChange` - Action to execute on value change
+
+## Examples
+
+### Email Input
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "input",
+  "name": "email",
+  "type": "email",
+  "placeholder": "email@example.com",
+  "required": true
+}
+```
+</CodeBlock>

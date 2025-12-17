@@ -1,0 +1,338 @@
+---
+sidebar_position: 1
+title: Architecture
+description: Understanding how Orbis works under the hood
+---
+
+import CodeBlock from '@/components/mdx/CodeBlock.astro';
+import Mermaid from '@/components/mdx/Mermaid.astro';
+
+
+# Architecture
+
+Orbis uses a layered architecture that separates concerns between the frontend, backend, and plugin system.
+
+## System Overview
+
+<Mermaid>
+graph TB
+    subgraph User["User Interface"]
+        Pages[Plugin Pages]
+        Components[UI Components]
+    end
+    
+    subgraph Frontend["Frontend Layer (React + TypeScript)"]
+        Renderer[Schema Renderer]
+        StateStore[Zustand State Store]
+        ActionExecutor[Action Executor]
+        Router[React Router]
+    end
+    
+    subgraph Backend["Backend Layer (Rust + Tauri)"]
+        Commands[Tauri Commands]
+        PluginRT[Plugin Runtime]
+        AuthService[Auth Service]
+        DBLayer[Database Layer]
+    end
+    
+    subgraph Plugins["Plugin System"]
+        WASM[WASM Sandbox]
+        Manifest[Plugin Manifest]
+        Schemas[UI Schemas]
+    end
+    
+    subgraph Storage["Storage Layer"]
+        SQLite[(SQLite)]
+        PostgreSQL[(PostgreSQL)]
+    end
+    
+    Pages --> Components
+    Components --> Renderer
+    Renderer --> StateStore
+    Renderer --> ActionExecutor
+    ActionExecutor --> Commands
+    
+    Commands --> PluginRT
+    Commands --> AuthService
+    PluginRT --> WASM
+    PluginRT --> DBLayer
+    AuthService --> DBLayer
+    DBLayer --> SQLite
+    DBLayer --> PostgreSQL
+    
+    Manifest --> Schemas
+    Schemas --> Renderer
+</Mermaid>
+
+## Layers Explained
+
+### 1. User Interface Layer
+
+The visible part of the application where users interact with plugins.
+
+**Responsibilities:**
+- Display plugin pages
+- Handle user input
+- Show feedback (toasts, modals, etc.)
+
+**Key Insight:** Users don't see "Orbis" - they see plugin UIs rendered from schemas.
+
+### 2. Frontend Layer
+
+React application that interprets schemas and manages state.
+
+| Component | Purpose |
+|-----------|---------|
+| **Schema Renderer** | Converts JSON schemas to React components |
+| **State Store** | Manages reactive page state with Zustand |
+| **Action Executor** | Processes action schemas (clicks, form submits) |
+| **Router** | Handles navigation between plugin pages |
+
+<CodeBlock lang="tsx">
+```tsx
+// Simplified flow
+const schema = pluginPage.layout;
+const state = createPageStateStore(pluginPage.state);
+const rendered = <SchemaRenderer schema={schema} state={state} />;
+```
+</CodeBlock>
+
+### 3. Backend Layer
+
+Rust-powered backend running in Tauri.
+
+| Service | Purpose |
+|---------|---------|
+| **Tauri Commands** | IPC bridge between frontend and backend |
+| **Plugin Runtime** | Loads and executes WASM plugins |
+| **Auth Service** | Handles authentication and sessions |
+| **Database Layer** | Abstracts SQLite/PostgreSQL access |
+
+### 4. Plugin System
+
+Sandboxed plugin execution environment.
+
+| Component | Purpose |
+|-----------|---------|
+| **WASM Sandbox** | Secure plugin execution (wasmtime) |
+| **Plugin Manifest** | Declarative plugin configuration |
+| **UI Schemas** | JSON-based UI definitions |
+
+### 5. Storage Layer
+
+Pluggable database backend supporting two modes:
+
+- **SQLite**: Embedded database for standalone mode
+- **PostgreSQL**: External database for client-server mode
+
+## Deployment Modes
+
+Orbis supports two deployment architectures:
+
+### Standalone Mode
+
+Everything runs locally on the user's machine.
+
+<Mermaid>
+graph LR
+    subgraph Desktop["User's Computer"]
+        App[Orbis App]
+        DB[(SQLite)]
+        Plugins[Plugins]
+    end
+    
+    App --> DB
+    App --> Plugins
+</Mermaid>
+
+**Use Cases:**
+- Personal productivity apps
+- Development and testing
+- Offline-first applications
+
+### Client-Server Mode
+
+Multiple clients connect to a shared backend.
+
+<Mermaid>
+graph TB
+    subgraph Clients["Client Machines"]
+        Client1[Orbis Client 1]
+        Client2[Orbis Client 2]
+        Client3[Orbis Client 3]
+    end
+    
+    subgraph Server["Server"]
+        API[Orbis Server]
+        DB[(PostgreSQL)]
+        PluginHost[Plugin Host]
+    end
+    
+    Client1 --> API
+    Client2 --> API
+    Client3 --> API
+    API --> DB
+    API --> PluginHost
+</Mermaid>
+
+**Use Cases:**
+- Team collaboration
+- Enterprise deployments
+- Multi-user applications
+
+## Data Flow
+
+### Rendering Flow
+
+How a plugin page gets displayed:
+
+<Mermaid>
+sequenceDiagram
+    participant User
+    participant Router
+    participant Renderer
+    participant State
+    participant Action
+    
+    User->>Router: Navigate to /plugin/page
+    Router->>Renderer: Load PageDefinition
+    Renderer->>State: Initialize state from definition
+    State-->>Renderer: Initial state
+    Renderer-->>User: Rendered UI
+</Mermaid>
+
+### Interaction Flow
+
+How user interactions are processed:
+
+<Mermaid>
+sequenceDiagram
+    participant User
+    participant Component
+    participant Action
+    participant State
+    participant Backend
+    
+    User->>Component: Click button
+    Component->>Action: Execute onClick actions
+    Action->>State: updateState action
+    State-->>Component: State updated
+    Component-->>User: UI re-renders
+    
+    alt API call needed
+        Action->>Backend: callApi action
+        Backend-->>Action: Response
+        Action->>State: Update with response
+        State-->>Component: State updated
+        Component-->>User: UI re-renders
+    end
+</Mermaid>
+
+## Security Architecture
+
+### Plugin Sandboxing
+
+Plugins run in isolated WASM sandboxes with:
+
+- **No direct filesystem access** (requires permissions)
+- **No network access** (requires permissions)
+- **Memory isolation** (separate address space)
+- **Capability-based security** (explicit permission grants)
+
+<CodeBlock lang="rust">
+```rust
+// Plugin permissions in manifest
+{
+  "permissions": [
+    { "type": "network", "allowed_hosts": ["api.example.com"] },
+    { "type": "storage", "scope": "plugin-data" }
+  ]
+}
+```
+</CodeBlock>
+
+### Authentication Flow
+
+<Mermaid>
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant Backend
+    participant DB
+    
+    User->>Frontend: Enter credentials
+    Frontend->>Backend: login command
+    Backend->>DB: Validate credentials
+    DB-->>Backend: User data
+    Backend->>Backend: Generate JWT
+    Backend-->>Frontend: Session token
+    Frontend->>Frontend: Store in state
+    Frontend-->>User: Redirect to app
+</Mermaid>
+
+## Technology Stack
+
+### Frontend
+
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| React | 18.3 | UI framework |
+| TypeScript | 5.7 | Type safety |
+| Zustand | 5.0 | State management |
+| React Router | 7.10 | Navigation |
+| TanStack Form | 1.27 | Form handling |
+| shadcn/ui | Latest | UI components |
+| Tailwind CSS | 4.x | Styling |
+
+### Backend
+
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| Rust | 1.75+ | Core language |
+| Tauri | 2.x | Desktop framework |
+| wasmtime | 39.0 | WASM runtime |
+| SQLx | 0.8 | Database access |
+| Axum | 0.8 | HTTP server |
+| jsonwebtoken | 9.3 | JWT handling |
+| Argon2 | 0.5 | Password hashing |
+
+## Performance Considerations
+
+### Schema Renderer
+
+The `SchemaRenderer` processes JSON schemas into React components. Key optimizations:
+
+- Expression caching (avoid re-parsing)
+- Memoization for static components
+- Virtual scrolling for large lists
+
+### State Management
+
+Zustand with Immer provides:
+
+- Immutable updates without boilerplate
+- Selective re-renders via subscriptions
+- Efficient nested state updates
+
+### Plugin Loading
+
+- Lazy loading of plugin pages
+- Manifest caching
+- Hot reload in development
+
+## Extension Points
+
+Orbis is designed for extensibility:
+
+| Extension Point | Mechanism |
+|-----------------|-----------|
+| New components | Add to `ui.rs` + `components.ts` + `renderer.tsx` |
+| New actions | Add to `ui.rs` + `actions.ts` |
+| Custom schemas | Plugin manifest `pages` array |
+| Backend APIs | Tauri commands + plugin routes |
+
+## Next Steps
+
+- **[Plugin System](./plugin-system)** - Deep dive into how plugins work
+- **[Schema System](./schema-system)** - Understanding UI schemas
+- **[State Management](./state-management)** - Reactive state in depth

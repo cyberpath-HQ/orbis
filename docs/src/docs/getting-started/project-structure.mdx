@@ -1,0 +1,295 @@
+---
+sidebar_position: 3
+title: Project Structure
+description: Understanding the Orbis codebase layout
+---
+
+import CodeBlock from '@/components/mdx/CodeBlock.astro';
+
+
+# Project Structure
+
+This guide explains how the Orbis codebase is organized to help you navigate and understand where to find things.
+
+## High-Level Overview
+
+<CodeBlock lang="text">
+```text
+orbis-assets/
+├── crates/                 # Rust backend crates
+├── orbis/                  # Tauri desktop app + React frontend
+├── plugins/                # Example plugins
+├── docs/                   # Documentation (you're here!)
+├── target/                 # Rust build output
+├── Cargo.toml              # Workspace manifest
+└── docker-compose.yml      # Container orchestration
+```
+</CodeBlock>
+
+## Backend Crates
+
+The Rust backend is organized into focused crates for modularity:
+
+<CodeBlock lang="text">
+```text
+crates/
+├── orbis-core/            # Core types, errors, and utilities
+├── orbis-config/          # Configuration management
+├── orbis-db/              # Database layer (SQLite/PostgreSQL)
+├── orbis-auth/            # Authentication (JWT, Argon2)
+├── orbis-plugin/          # Plugin system and WASM runtime
+└── orbis-server/          # HTTP server (for client-server mode)
+```
+</CodeBlock>
+
+### orbis-core
+
+Foundation types used across all crates:
+
+| File | Purpose |
+|------|---------|
+| `error.rs` | Unified error types |
+| `types.rs` | Common data structures |
+| `mode.rs` | Deployment mode definitions |
+| `profile.rs` | User profile types |
+
+### orbis-config
+
+Configuration from environment and files:
+
+| File | Purpose |
+|------|---------|
+| `lib.rs` | Configuration aggregation |
+| `cli.rs` | Command-line argument parsing |
+| `database.rs` | Database connection settings |
+| `server.rs` | HTTP server configuration |
+| `tls.rs` | TLS/SSL certificate settings |
+| `logging.rs` | Log level configuration |
+
+### orbis-db
+
+Database abstraction supporting both SQLite and PostgreSQL:
+
+| File | Purpose |
+|------|---------|
+| `connection.rs` | Connection establishment |
+| `pool.rs` | Connection pooling |
+| `migrations.rs` | Schema migration runner |
+| `repository.rs` | Data access patterns |
+
+### orbis-auth
+
+Authentication and authorization:
+
+| File | Purpose |
+|------|---------|
+| `jwt.rs` | JWT token generation/validation |
+| `password.rs` | Argon2 password hashing |
+| `session.rs` | Session management |
+| `user.rs` | User data structures |
+
+### orbis-plugin
+
+The plugin system - **most important for plugin developers**:
+
+| File | Purpose |
+|------|---------|
+| `lib.rs` | Public API exports |
+| `manifest.rs` | Plugin manifest parsing and validation |
+| `ui.rs` | **UI schema type definitions (Rust)** |
+| `loader.rs` | Plugin loading logic |
+| `registry.rs` | Plugin registration and lookup |
+| `runtime.rs` | WASM execution runtime |
+| `sandbox.rs` | Security sandboxing |
+| `watcher.rs` | Hot reload file watching |
+
+:::tip Key File for UI Development
+`crates/orbis-plugin/src/ui.rs` is the **source of truth** for all UI component types. When adding new components, start here.
+:::
+
+### orbis-server
+
+HTTP server for client-server deployment:
+
+<CodeBlock lang="text">
+```text
+crates/orbis-server/
+├── src/
+│   ├── app.rs              # Application builder
+│   ├── state.rs            # Shared server state
+│   ├── middleware.rs       # Request middleware
+│   ├── extractors.rs       # Request extractors
+│   ├── error.rs            # Error handling
+│   ├── tls.rs              # TLS configuration
+│   └── routes/             # HTTP route handlers
+└── Cargo.toml
+```
+</CodeBlock>
+
+## Frontend (Tauri App)
+
+The frontend combines a Tauri shell with a React application:
+
+<CodeBlock lang="text">
+```text
+orbis/
+├── src/                    # React frontend source
+├── src-tauri/              # Tauri/Rust shell
+├── public/                 # Static assets
+├── package.json            # Node dependencies
+├── tsconfig.json           # TypeScript config
+├── vite.config.ts          # Vite bundler config
+└── vitest.config.ts        # Test configuration
+```
+</CodeBlock>
+
+### React Frontend (`orbis/src/`)
+
+<CodeBlock lang="text">
+```text
+src/
+├── main.tsx               # Application entry point
+├── app.tsx                # Root component
+├── app.css                # Global styles (Tailwind + shadcn)
+│
+├── lib/                   # Core functionality
+│   ├── renderer.tsx       # **Schema Renderer (1600+ lines)**
+│   ├── actions.ts         # **Action executor (16 action types)**
+│   ├── state.ts           # **State management (Zustand factory)**
+│   ├── router.tsx         # Routing configuration
+│   ├── layout.tsx         # App layout
+│   ├── utils.ts           # Utility functions
+│   ├── a11y.ts            # Accessibility utilities
+│   ├── performance.ts     # Performance optimization
+│   └── form-utils.ts      # Form helpers
+│
+├── components/            # UI components
+│   ├── ui/                # shadcn/ui components
+│   ├── error-boundary.tsx # Error handling
+│   ├── loading.tsx        # Loading states
+│   └── skip-link.tsx      # Accessibility
+│
+├── pages/                 # Application pages
+│   ├── dashboard.tsx      # Main dashboard
+│   ├── plugins.tsx        # Plugin management
+│   ├── settings.tsx       # Settings page
+│   ├── login.tsx          # Authentication
+│   └── not-found.tsx      # 404 page
+│
+├── hooks/                 # React hooks
+│   ├── use-plugin-management.ts
+│   ├── use-schema-form.ts
+│   ├── use-focus-trap.ts
+│   └── use-mobile.ts
+│
+├── types/                 # TypeScript definitions
+│   └── schema/            # **UI schema types**
+│       ├── base.ts        # Base types (StateFieldType, etc.)
+│       ├── components.ts  # Component schemas
+│       ├── actions.ts     # Action type definitions
+│       └── index.ts       # Type exports
+│
+├── api/                   # API client
+│   ├── index.ts           # API exports
+│   └── tauri.ts           # Tauri command wrappers
+│
+└── tests/                 # Unit tests
+```
+</CodeBlock>
+
+:::tip Key Files for Frontend Development
+- **`lib/renderer.tsx`** - Renders JSON schemas to React components
+- **`lib/actions.ts`** - Executes action schemas
+- **`lib/state.ts`** - Creates page state stores
+- **`types/schema/`** - TypeScript type definitions
+:::
+
+### Tauri Shell (`orbis/src-tauri/`)
+
+<CodeBlock lang="text">
+```text
+src-tauri/
+├── src/
+│   ├── lib.rs             # Tauri plugin registration
+│   ├── commands.rs        # Tauri command handlers
+│   └── state.rs           # Shared application state
+├── tauri.conf.json        # Tauri configuration
+├── capabilities/          # Security capabilities
+├── icons/                 # App icons
+└── Cargo.toml             # Rust dependencies
+```
+</CodeBlock>
+
+## Plugins Directory
+
+Example plugins for reference:
+
+<CodeBlock lang="text">
+```text
+plugins/
+├── README.md              # Plugin development guide
+└── hello-plugin/          # Sample plugin
+    ├── manifest.json      # Plugin manifest
+    ├── src/lib.rs         # WASM plugin code
+    ├── Cargo.toml         # Rust dependencies
+    ├── build.sh           # Build script
+    └── add_custom_section.py  # Manifest embedding tool
+```
+</CodeBlock>
+
+## Configuration Files
+
+| File | Purpose |
+|------|---------|
+| `Cargo.toml` | Rust workspace manifest |
+| `rustfmt.toml` | Rust formatting rules |
+| `docker-compose.yml` | Container setup |
+
+## Database Migrations
+
+<CodeBlock lang="text">
+```text
+crates/orbis-db/migrations/
+├── postgres/              # PostgreSQL migrations
+│   └── 001_initial.sql
+└── sqlite/                # SQLite migrations
+    └── 001_initial.sql
+```
+</CodeBlock>
+
+## Build Outputs
+
+<CodeBlock lang="text">
+```text
+target/
+├── debug/                 # Debug builds
+├── release/               # Release builds
+└── wasm32-unknown-unknown/
+    └── release/           # WASM plugin builds
+```
+</CodeBlock>
+
+## Quick Reference
+
+### Where to Find...
+
+| Looking for... | Location |
+|---------------|----------|
+| UI component types (Rust) | `crates/orbis-plugin/src/ui.rs` |
+| UI component types (TypeScript) | `orbis/src/types/schema/components.ts` |
+| Action types | `orbis/src/types/schema/actions.ts` |
+| Schema renderer | `orbis/src/lib/renderer.tsx` |
+| Action executor | `orbis/src/lib/actions.ts` |
+| State management | `orbis/src/lib/state.ts` |
+| Plugin manifest types | `crates/orbis-plugin/src/manifest.rs` |
+| Tauri commands | `orbis/src-tauri/src/commands.rs` |
+| Database queries | `crates/orbis-db/src/repository.rs` |
+| Authentication | `crates/orbis-auth/src/` |
+
+## Next Steps
+
+Now that you understand the codebase:
+
+- **[Architecture](../core-concepts/architecture)** - Learn how components interact
+- **[Plugin System](../core-concepts/plugin-system)** - Deep dive into plugins
+- **[Schema System](../core-concepts/schema-system)** - Understand UI schemas

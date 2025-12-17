@@ -1,0 +1,526 @@
+---
+sidebar_position: 3
+title: Schema System
+description: Defining UI with JSON schemas
+---
+
+import CodeBlock from '@/components/mdx/CodeBlock.astro';
+
+
+# Schema System
+
+The Orbis schema system allows you to define user interfaces declaratively using JSON. Instead of writing React components, you describe *what* you want, and Orbis renders it.
+
+## Overview
+
+Every UI in Orbis is defined by a **component schema** - a JSON object that describes the component type, its properties, and its children.
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Button",
+  "label": "Click Me",
+  "variant": "default",
+  "events": {
+    "onClick": [
+      { "type": "showToast", "message": "Hello!" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+This schema renders a button that shows a toast when clicked.
+
+## Schema Structure
+
+### Basic Component Schema
+
+Every component schema has:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "ComponentType",   // Required: component type
+  "id": "unique-id",         // Optional: unique identifier
+  "className": "...",        // Optional: CSS classes
+  "style": {},               // Optional: inline styles
+  "visible": true,           // Optional: visibility condition
+  "children": [],            // Optional: child components
+  "events": {},              // Optional: event handlers
+  // ...component-specific props
+}
+```
+</CodeBlock>
+
+### Component Types
+
+Orbis provides 35+ built-in component types:
+
+| Category | Components |
+|----------|------------|
+| **Layout** | Container, Flex, Grid, Spacer, Divider, Section |
+| **Typography** | Text, Heading |
+| **Forms** | Form, Field |
+| **Data Display** | Table, List, Card, StatCard, Badge, Avatar, Image |
+| **Feedback** | Alert, Progress, Skeleton, LoadingOverlay, EmptyState |
+| **Navigation** | Button, Link, Tabs, Breadcrumb, Dropdown, PageHeader |
+| **Overlays** | Modal, Tooltip |
+| **Advanced** | Accordion, Conditional, Loop, Icon, Fragment, Slot, Custom |
+
+## Core Properties
+
+### ID and ClassName
+
+Identify and style components:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Container",
+  "id": "main-content",
+  "className": "p-4 bg-background rounded-lg shadow"
+}
+```
+</CodeBlock>
+
+### Visibility
+
+Control when components are shown:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Alert",
+  "visible": "{{state.showAlert}}",
+  "message": "This appears conditionally"
+}
+```
+</CodeBlock>
+
+Visibility can be:
+- `true` / `false` - static
+- Expression string - dynamic based on state
+
+### Inline Styles
+
+Apply custom CSS:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Container",
+  "style": {
+    "padding": "20px",
+    "backgroundColor": "#f0f0f0",
+    "borderRadius": "8px"
+  }
+}
+```
+</CodeBlock>
+
+## Nesting Components
+
+Components can contain other components:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Card",
+  "title": "User Profile",
+  "content": {
+    "type": "Flex",
+    "direction": "column",
+    "gap": "1rem",
+    "children": [
+      {
+        "type": "Avatar",
+        "src": "{{state.user.avatar}}",
+        "size": "lg"
+      },
+      {
+        "type": "Heading",
+        "level": 2,
+        "text": "{{state.user.name}}"
+      },
+      {
+        "type": "Text",
+        "content": "{{state.user.bio}}"
+      }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+## Expressions
+
+Expressions make schemas dynamic by interpolating values from state.
+
+### Syntax
+
+Use double curly braces:
+
+<CodeBlock lang="json">
+```json
+{
+  "text": "Hello, {{state.username}}!",
+  "disabled": "{{state.isLoading}}",
+  "value": "{{state.count + 1}}"
+}
+```
+</CodeBlock>
+
+### Expression Context
+
+Expressions can access:
+
+| Source | Syntax | Description |
+|--------|--------|-------------|
+| State | `state.path.to.value` | Page state values |
+| Context | `context.key` | Contextual data (loops, etc.) |
+| Item | `$item` | Current item in loops |
+| Index | `$index` | Current index in loops |
+| Row | `$row` | Current row in tables |
+| Event | `$event.value` | Event data |
+
+### Expression Operations
+
+Expressions support JavaScript-like operations:
+
+<CodeBlock lang="json">
+```json
+{
+  "visible": "{{state.count > 0}}",
+  "text": "{{state.firstName + ' ' + state.lastName}}",
+  "className": "{{state.active ? 'active' : 'inactive'}}"
+}
+```
+</CodeBlock>
+
+Supported operators:
+- Arithmetic: `+`, `-`, `*`, `/`, `%`
+- Comparison: `==`, `===`, `!=`, `!==`, `>`, `>=`, `<`, `<=`
+- Logical: `&&`, `||`, `!`
+- Ternary: `condition ? trueValue : falseValue`
+
+## Event Handlers
+
+Events connect user interactions to actions:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Button",
+  "label": "Submit",
+  "events": {
+    "onClick": [
+      {
+        "type": "validateForm",
+        "formId": "my-form"
+      },
+      {
+        "type": "callApi",
+        "api": "my-plugin.submit",
+        "args": {
+          "data": "{{state.formData}}"
+        }
+      }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+### Available Events
+
+| Event | Triggered When |
+|-------|----------------|
+| `onClick` | Component is clicked |
+| `onChange` | Input value changes |
+| `onSubmit` | Form is submitted |
+| `onFocus` | Component gains focus |
+| `onBlur` | Component loses focus |
+| `onRowClick` | Table row is clicked |
+| `onSelect` | Item is selected |
+| `onPageChange` | Table page changes |
+| `onSortChange` | Table sort changes |
+| `onClose` | Modal/dialog closes |
+| `onOpen` | Modal/dialog opens |
+
+## Data Sources
+
+Components that display lists of data use data sources:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Table",
+  "dataSource": "state:users",
+  "columns": [
+    { "key": "name", "label": "Name" },
+    { "key": "email", "label": "Email" }
+  ]
+}
+```
+</CodeBlock>
+
+### Data Source Formats
+
+| Format | Example | Description |
+|--------|---------|-------------|
+| State reference | `state:users` | Array from state |
+| Prop reference | `prop:items` | Passed from parent |
+| Context reference | `context:data` | From context provider |
+
+## Validation Rules
+
+Form fields support validation:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Field",
+  "name": "email",
+  "fieldType": "email",
+  "validation": {
+    "required": { "message": "Email is required" },
+    "email": { "message": "Invalid email format" },
+    "maxLength": { "value": 100, "message": "Too long" }
+  }
+}
+```
+</CodeBlock>
+
+### Available Validations
+
+| Rule | Description |
+|------|-------------|
+| `required` | Field must have a value |
+| `min` / `max` | Number range |
+| `minLength` / `maxLength` | String length |
+| `pattern` | Regex pattern |
+| `email` | Email format |
+| `url` | URL format |
+| `custom` | Custom expression |
+
+## Layout Components
+
+### Container
+
+Basic wrapper component:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Container",
+  "className": "p-4",
+  "children": [...]
+}
+```
+</CodeBlock>
+
+### Flex
+
+Flexbox layout:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Flex",
+  "direction": "row",
+  "justify": "between",
+  "align": "center",
+  "gap": "1rem",
+  "children": [...]
+}
+```
+</CodeBlock>
+
+### Grid
+
+CSS Grid layout:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Grid",
+  "columns": { "sm": 1, "md": 2, "lg": 3 },
+  "gap": "1rem",
+  "children": [...]
+}
+```
+</CodeBlock>
+
+## Conditional Rendering
+
+### Using `visible`
+
+Simple show/hide:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Alert",
+  "visible": "{{state.hasError}}",
+  "message": "{{state.errorMessage}}"
+}
+```
+</CodeBlock>
+
+### Using Conditional Component
+
+Full conditional with else:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Conditional",
+  "condition": "{{state.isLoggedIn}}",
+  "then": {
+    "type": "Text",
+    "content": "Welcome back!"
+  },
+  "else": {
+    "type": "Button",
+    "label": "Sign In"
+  }
+}
+```
+</CodeBlock>
+
+## Iteration
+
+### Loop Component
+
+Render a template for each item:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Loop",
+  "dataSource": "state:items",
+  "itemVar": "item",
+  "indexVar": "i",
+  "template": {
+    "type": "Card",
+    "title": "{{item.name}}",
+    "content": {
+      "type": "Text",
+      "content": "Item #{{i + 1}}: {{item.description}}"
+    }
+  },
+  "emptyTemplate": {
+    "type": "EmptyState",
+    "title": "No items",
+    "description": "Add your first item to get started"
+  }
+}
+```
+</CodeBlock>
+
+### List Component
+
+Simplified list rendering:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "List",
+  "dataSource": "state:notifications",
+  "itemTemplate": {
+    "type": "Flex",
+    "children": [
+      { "type": "Icon", "name": "{{$item.icon}}" },
+      { "type": "Text", "content": "{{$item.message}}" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+## ARIA & Accessibility
+
+All components support ARIA properties:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Button",
+  "label": "Menu",
+  "ariaLabel": "Open navigation menu",
+  "ariaExpanded": "{{state.menuOpen}}",
+  "ariaControls": "nav-menu"
+}
+```
+</CodeBlock>
+
+Available ARIA properties:
+- `role`, `ariaLabel`, `ariaLabelledBy`, `ariaDescribedBy`
+- `ariaDisabled`, `ariaExpanded`, `ariaPressed`, `ariaSelected`
+- `ariaRequired`, `ariaInvalid`, `ariaErrorMessage`
+- `ariaLive`, `ariaAtomic`, `ariaBusy`
+- `tabIndex`
+
+## Schema Validation
+
+Orbis validates schemas at load time:
+
+- Required properties are checked
+- Types are verified
+- Unknown component types raise errors
+- Circular references are detected
+
+Invalid schemas produce helpful error messages in development mode.
+
+## Best Practices
+
+### Keep Schemas Focused
+
+Split complex UIs into multiple pages:
+
+<CodeBlock lang="json">
+```json
+{
+  "pages": [
+    { "id": "list", "route": "/items", "layout": {...} },
+    { "id": "detail", "route": "/items/:id", "layout": {...} },
+    { "id": "create", "route": "/items/new", "layout": {...} }
+  ]
+}
+```
+</CodeBlock>
+
+### Use Meaningful IDs
+
+IDs help with debugging and testing:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Button",
+  "id": "submit-order-btn",
+  "testId": "submit-order"
+}
+```
+</CodeBlock>
+
+### Leverage Components
+
+Use semantic components instead of generic containers:
+
+<CodeBlock lang="json">
+```json
+// ✅ Good
+{ "type": "Card", "title": "Settings", ... }
+
+// ❌ Avoid
+{ "type": "Container", "className": "card", ... }
+```
+</CodeBlock>
+
+## Next Steps
+
+- **[State Management](./state-management)** - Managing page state
+- **[Expressions](./expressions)** - Deep dive into expressions
+- **[Components](../components/overview)** - All available components

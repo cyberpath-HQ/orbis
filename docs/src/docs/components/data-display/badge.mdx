@@ -1,0 +1,48 @@
+---
+title: Badge
+description: Small status and label indicators
+sidebar_position: 3
+---
+
+import CodeBlock from '@/components/mdx/CodeBlock.astro';
+
+
+# Badge
+
+Display small labels, status indicators, and tags.
+
+## Basic Usage
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "badge",
+  "text": "New",
+  "variant": "primary"
+}
+```
+</CodeBlock>
+
+## Properties
+
+- `text` - Badge content
+- `variant` - Style variant (default, primary, success, warning, error)
+- `size` - Size (sm, md, lg)
+
+## Examples
+
+### Status Badges
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "stack",
+  "direction": "horizontal",
+  "children": [
+    { "type": "badge", "text": "Active", "variant": "success" },
+    { "type": "badge", "text": "Pending", "variant": "warning" },
+    { "type": "badge", "text": "Inactive", "variant": "default" }
+  ]
+}
+```
+</CodeBlock>

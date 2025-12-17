@@ -1,0 +1,659 @@
+---
+sidebar_position: 4
+title: Data Display Components
+description: Table, List, Card, StatCard, Badge, Avatar, Image, Chart, DataDisplay
+---
+
+import CodeBlock from '@/components/mdx/CodeBlock.astro';
+
+
+# Data Display Components
+
+Components for presenting data in various formats.
+
+## Table
+
+Data table with sorting, pagination, and row actions.
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Table",
+  "dataSource": "state:items",
+  "columns": [
+    { "key": "name", "label": "Name", "sortable": true },
+    { "key": "email", "label": "Email" },
+    { "key": "status", "label": "Status" },
+    { "key": "createdAt", "label": "Created", "sortable": true }
+  ],
+  "events": {
+    "onRowClick": [
+      { "type": "navigate", "to": "/items/{{$row.id}}" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+### Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `dataSource` | string | - | Data source path |
+| `columns` | array | `[]` | Column definitions |
+| `pageSize` | number | `10` | Rows per page |
+| `serverPagination` | boolean | `false` | Server-side pagination |
+| `selectable` | boolean | `false` | Row selection |
+| `striped` | boolean | `false` | Striped rows |
+| `bordered` | boolean | `false` | Show borders |
+| `emptyMessage` | string | "No data" | Empty state text |
+
+### Column Definition
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `key` | string | Data field key |
+| `label` | string | Header text |
+| `sortable` | boolean | Enable sorting |
+| `width` | string | Column width |
+| `align` | `left` \| `center` \| `right` | Text alignment |
+| `render` | object | Custom cell component |
+
+### Events
+
+| Event | Payload |
+|-------|---------|
+| `onRowClick` | `$row` - clicked row data |
+| `onSelect` | `$selected` - selected rows |
+| `onPageChange` | `$page` - new page number |
+| `onSortChange` | `{ column, direction }` |
+
+### Examples
+
+**With custom cell rendering:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "Table",
+  "dataSource": "state:users",
+  "columns": [
+    { "key": "name", "label": "Name" },
+    {
+      "key": "status",
+      "label": "Status",
+      "render": {
+        "type": "Badge",
+        "text": "{{$cell}}",
+        "variant": "{{$cell === 'active' ? 'success' : 'secondary'}}"
+      }
+    },
+    {
+      "key": "actions",
+      "label": "",
+      "width": "100px",
+      "render": {
+        "type": "Dropdown",
+        "trigger": { "type": "Button", "icon": "MoreVertical", "variant": "ghost" },
+        "items": [
+          { "label": "Edit", "action": [{ "type": "navigate", "to": "/users/{{$row.id}}/edit" }] },
+          { "label": "Delete", "action": [{ "type": "showDialog", "title": "Confirm Delete" }] }
+        ]
+      }
+    }
+  ]
+}
+```
+</CodeBlock>
+
+**With pagination:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "Table",
+  "dataSource": "state:items",
+  "pageSize": 25,
+  "serverPagination": true,
+  "events": {
+    "onPageChange": [
+      {
+        "type": "callApi",
+        "api": "getItems",
+        "args": { "page": "{{$page}}", "pageSize": 25 }
+      }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+---
+
+## List
+
+Flexible list display for arrays of data.
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "List",
+  "dataSource": "state:items",
+  "itemTemplate": {
+    "type": "Flex",
+    "justify": "between",
+    "align": "center",
+    "className": "p-4 hover:bg-gray-50",
+    "children": [
+      { "type": "Text", "content": "{{$item.name}}" },
+      { "type": "Badge", "text": "{{$item.status}}" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+### Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `dataSource` | string | - | Data source path |
+| `itemTemplate` | object | - | Template for each item |
+| `emptyMessage` | string | "No items" | Empty state text |
+| `dividers` | boolean | `true` | Show dividers |
+| `className` | string | - | CSS classes |
+
+### Examples
+
+**Navigation list:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "List",
+  "dataSource": "state:menuItems",
+  "itemTemplate": {
+    "type": "Link",
+    "to": "{{$item.path}}",
+    "children": [
+      {
+        "type": "Flex",
+        "align": "center",
+        "gap": "0.75rem",
+        "className": "p-3",
+        "children": [
+          { "type": "Icon", "name": "{{$item.icon}}" },
+          { "type": "Text", "content": "{{$item.label}}" }
+        ]
+      }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+**Activity feed:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "List",
+  "dataSource": "state:activities",
+  "itemTemplate": {
+    "type": "Flex",
+    "gap": "1rem",
+    "className": "p-4",
+    "children": [
+      { "type": "Avatar", "src": "{{$item.user.avatar}}", "size": "sm" },
+      {
+        "type": "Flex",
+        "direction": "column",
+        "children": [
+          { "type": "Text", "content": "{{$item.user.name}} {{$item.action}}" },
+          { "type": "Text", "variant": "muted", "content": "{{$item.timestamp}}" }
+        ]
+      }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+---
+
+## Card
+
+Content container with optional header, footer, and actions.
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Card",
+  "title": "Card Title",
+  "description": "Card description text",
+  "content": {
+    "type": "Text",
+    "content": "Card content goes here"
+  }
+}
+```
+</CodeBlock>
+
+### Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `title` | string | - | Card header title |
+| `description` | string | - | Header description |
+| `content` | object | - | Card body content |
+| `footer` | object | - | Card footer content |
+| `actions` | array | - | Header action buttons |
+| `className` | string | - | CSS classes |
+
+### Examples
+
+**Full card:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "Card",
+  "title": "Recent Orders",
+  "description": "Your latest transactions",
+  "actions": [
+    { "type": "Button", "label": "View All", "variant": "outline", "size": "sm" }
+  ],
+  "content": {
+    "type": "List",
+    "dataSource": "state:recentOrders"
+  },
+  "footer": {
+    "type": "Text",
+    "variant": "muted",
+    "content": "Last updated: {{state.lastUpdated}}"
+  }
+}
+```
+</CodeBlock>
+
+**Image card:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "Card",
+  "className": "overflow-hidden",
+  "content": {
+    "type": "Container",
+    "children": [
+      { "type": "Image", "src": "{{item.image}}", "className": "w-full h-48 object-cover" },
+      {
+        "type": "Container",
+        "className": "p-4",
+        "children": [
+          { "type": "Heading", "level": 3, "text": "{{item.title}}" },
+          { "type": "Text", "content": "{{item.description}}" }
+        ]
+      }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+---
+
+## StatCard
+
+Statistics display card with value, change indicator, and icon.
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "StatCard",
+  "title": "Total Revenue",
+  "value": "$12,345",
+  "change": "+12.5%",
+  "changeType": "increase",
+  "icon": "DollarSign"
+}
+```
+</CodeBlock>
+
+### Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `title` | string | - | Stat label |
+| `value` | string | - | Main value |
+| `change` | string | - | Change indicator |
+| `changeType` | `increase` \| `decrease` \| `neutral` | - | Change direction |
+| `icon` | string | - | Icon name |
+| `description` | string | - | Additional text |
+
+### Example
+
+**Dashboard stats grid:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "Grid",
+  "columns": { "sm": 1, "md": 2, "lg": 4 },
+  "gap": "1rem",
+  "children": [
+    {
+      "type": "StatCard",
+      "title": "Total Users",
+      "value": "{{state.stats.users}}",
+      "change": "{{state.stats.usersChange}}%",
+      "changeType": "increase",
+      "icon": "Users"
+    },
+    {
+      "type": "StatCard",
+      "title": "Revenue",
+      "value": "${{state.stats.revenue}}",
+      "change": "{{state.stats.revenueChange}}%",
+      "changeType": "{{state.stats.revenueChange > 0 ? 'increase' : 'decrease'}}",
+      "icon": "DollarSign"
+    },
+    {
+      "type": "StatCard",
+      "title": "Active Sessions",
+      "value": "{{state.stats.sessions}}",
+      "icon": "Activity"
+    },
+    {
+      "type": "StatCard",
+      "title": "Conversion Rate",
+      "value": "{{state.stats.conversionRate}}%",
+      "change": "+2.1%",
+      "changeType": "increase",
+      "icon": "TrendingUp"
+    }
+  ]
+}
+```
+</CodeBlock>
+
+---
+
+## Badge
+
+Small label or tag for categorization.
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Badge",
+  "text": "Active",
+  "variant": "success"
+}
+```
+</CodeBlock>
+
+### Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `text` | string | - | Badge text |
+| `variant` | `default` \| `secondary` \| `success` \| `warning` \| `destructive` \| `outline` | `default` | Badge style |
+| `className` | string | - | CSS classes |
+
+### Variants
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Flex",
+  "gap": "0.5rem",
+  "children": [
+    { "type": "Badge", "text": "Default", "variant": "default" },
+    { "type": "Badge", "text": "Secondary", "variant": "secondary" },
+    { "type": "Badge", "text": "Success", "variant": "success" },
+    { "type": "Badge", "text": "Warning", "variant": "warning" },
+    { "type": "Badge", "text": "Destructive", "variant": "destructive" },
+    { "type": "Badge", "text": "Outline", "variant": "outline" }
+  ]
+}
+```
+</CodeBlock>
+
+---
+
+## Avatar
+
+User profile image with fallback.
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Avatar",
+  "src": "{{user.avatar}}",
+  "fallback": "{{user.initials}}",
+  "size": "md"
+}
+```
+</CodeBlock>
+
+### Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `src` | string | - | Image URL |
+| `alt` | string | - | Alt text |
+| `fallback` | string | - | Fallback text (initials) |
+| `size` | `xs` \| `sm` \| `md` \| `lg` \| `xl` | `md` | Avatar size |
+| `className` | string | - | CSS classes |
+
+### Sizes
+
+| Size | Dimension |
+|------|-----------|
+| `xs` | 24px |
+| `sm` | 32px |
+| `md` | 40px |
+| `lg` | 48px |
+| `xl` | 64px |
+
+### Examples
+
+**User with name:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "Flex",
+  "align": "center",
+  "gap": "0.75rem",
+  "children": [
+    { "type": "Avatar", "src": "{{user.avatar}}", "fallback": "JD", "size": "md" },
+    {
+      "type": "Flex",
+      "direction": "column",
+      "children": [
+        { "type": "Text", "content": "{{user.name}}", "className": "font-medium" },
+        { "type": "Text", "variant": "muted", "content": "{{user.email}}" }
+      ]
+    }
+  ]
+}
+```
+</CodeBlock>
+
+**Avatar group:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "Flex",
+  "className": "-space-x-2",
+  "children": [
+    { "type": "Avatar", "src": "/user1.jpg", "size": "sm", "className": "ring-2 ring-white" },
+    { "type": "Avatar", "src": "/user2.jpg", "size": "sm", "className": "ring-2 ring-white" },
+    { "type": "Avatar", "fallback": "+3", "size": "sm", "className": "ring-2 ring-white bg-gray-200" }
+  ]
+}
+```
+</CodeBlock>
+
+---
+
+## Image
+
+Image display with loading and error states.
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Image",
+  "src": "{{item.imageUrl}}",
+  "alt": "{{item.title}}",
+  "className": "w-full h-48 object-cover rounded"
+}
+```
+</CodeBlock>
+
+### Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `src` | string | - | Image URL |
+| `alt` | string | - | Alt text |
+| `fallback` | string | - | Fallback image URL |
+| `className` | string | - | CSS classes |
+
+---
+
+## Chart
+
+Data visualization charts.
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Chart",
+  "chartType": "line",
+  "dataSource": "state:chartData",
+  "options": {
+    "xAxis": "date",
+    "yAxis": "value",
+    "color": "#3b82f6"
+  }
+}
+```
+</CodeBlock>
+
+### Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `chartType` | `line` \| `bar` \| `pie` \| `donut` \| `area` | `line` | Chart type |
+| `dataSource` | string | - | Data source path |
+| `options` | object | - | Chart configuration |
+| `height` | string | `300px` | Chart height |
+| `className` | string | - | CSS classes |
+
+### Chart Types
+
+**Line chart:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "Chart",
+  "chartType": "line",
+  "dataSource": "state:salesData",
+  "options": {
+    "xAxis": "month",
+    "yAxis": "revenue",
+    "series": [
+      { "name": "Revenue", "dataKey": "revenue", "color": "#3b82f6" },
+      { "name": "Costs", "dataKey": "costs", "color": "#ef4444" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+**Bar chart:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "Chart",
+  "chartType": "bar",
+  "dataSource": "state:categoryData",
+  "options": {
+    "xAxis": "category",
+    "yAxis": "count"
+  }
+}
+```
+</CodeBlock>
+
+**Pie chart:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "Chart",
+  "chartType": "pie",
+  "dataSource": "state:distribution",
+  "options": {
+    "labelKey": "name",
+    "valueKey": "value"
+  }
+}
+```
+</CodeBlock>
+
+---
+
+## DataDisplay
+
+Key-value pair display.
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "DataDisplay",
+  "label": "Email",
+  "value": "{{user.email}}"
+}
+```
+</CodeBlock>
+
+### Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `label` | string | - | Field label |
+| `value` | string | - | Field value |
+| `layout` | `horizontal` \| `vertical` | `horizontal` | Label/value layout |
+| `className` | string | - | CSS classes |
+
+### Examples
+
+**User details:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "Flex",
+  "direction": "column",
+  "gap": "1rem",
+  "children": [
+    { "type": "DataDisplay", "label": "Name", "value": "{{user.name}}" },
+    { "type": "DataDisplay", "label": "Email", "value": "{{user.email}}" },
+    { "type": "DataDisplay", "label": "Role", "value": "{{user.role}}" },
+    { "type": "DataDisplay", "label": "Joined", "value": "{{user.createdAt}}" }
+  ]
+}
+```
+</CodeBlock>
+
+**Grid layout:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "Grid",
+  "columns": 2,
+  "gap": "1rem",
+  "children": [
+    { "type": "DataDisplay", "label": "Order ID", "value": "#{{order.id}}" },
+    { "type": "DataDisplay", "label": "Status", "value": "{{order.status}}" },
+    { "type": "DataDisplay", "label": "Total", "value": "${{order.total}}" },
+    { "type": "DataDisplay", "label": "Date", "value": "{{order.date}}" }
+  ]
+}
+```
+</CodeBlock>
