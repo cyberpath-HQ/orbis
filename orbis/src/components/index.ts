@@ -1,1 +1,8 @@
-// Component exports (currently empty - all components are in lib/renderer.tsx)
+// Component exports
+export {
+    ErrorBoundary,
+    ComponentErrorBoundary,
+    PageErrorBoundary,
+    PluginErrorBoundary,
+} from './error-boundary';
+
