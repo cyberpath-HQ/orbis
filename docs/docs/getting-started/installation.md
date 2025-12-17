@@ -4,9 +4,6 @@ title: Installation
 description: Set up your Orbis development environment
 ---
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
-
 # Installation
 
 This guide will help you set up your development environment for building Orbis applications and plugins.

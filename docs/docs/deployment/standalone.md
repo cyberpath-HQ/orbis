@@ -44,7 +44,8 @@ bun run tauri build
 
 ### Cross-Platform Builds
 
-#### Windows
+<Tabs>
+<TabItem value="windows" label="Windows">
 
 ```bash
 # On Windows
@@ -53,7 +54,8 @@ bun run tauri build
 # Output: Orbis_x.x.x_x64_en-US.msi
 ```
 
-#### macOS
+</TabItem>
+<TabItem value="macos" label="macOS">
 
 ```bash
 # On macOS
@@ -62,7 +64,8 @@ bun run tauri build
 # Output: Orbis_x.x.x_x64.dmg
 ```
 
-#### Linux
+</TabItem>
+<TabItem value="linux" label="Linux">
 
 ```bash
 # On Linux
@@ -73,16 +76,21 @@ bun run tauri build
 # - Orbis_x.x.x_amd64.deb
 ```
 
+</TabItem>
+</Tabs>
+
 ## Installation
 
-### Windows
+<Tabs>
+<TabItem value="windows" label="Windows">
 
 1. Download `.msi` installer
 2. Run installer
 3. Follow installation wizard
 4. Launch from Start Menu
 
-### macOS
+</TabItem>
+<TabItem value="macos" label="macOS">
 
 1. Download `.dmg` file
 2. Open DMG
@@ -91,20 +99,24 @@ bun run tauri build
 
 **Note:** May need to allow in Security & Privacy for unsigned builds.
 
-### Linux
+</TabItem>
+<TabItem value="linux" label="Linux">
 
-#### AppImage
+**AppImage:**
 
 ```bash
 chmod +x Orbis_x.x.x_amd64.AppImage
 ./Orbis_x.x.x_amd64.AppImage
 ```
 
-#### Debian/Ubuntu
+**Debian/Ubuntu:**
 
 ```bash
 sudo dpkg -i Orbis_x.x.x_amd64.deb
 ```
+
+</TabItem>
+</Tabs>
 
 ## Configuration
 
@@ -140,12 +152,13 @@ Default locations:
 
 ### Signing
 
-#### Windows
+<Tabs>
+<TabItem value="windows" label="Windows">
 
 Sign with code signing certificate:
 
-```bash
-# Set in tauri.conf.json
+```json
+// Set in tauri.conf.json
 {
   "tauri": {
     "bundle": {
@@ -158,7 +171,8 @@ Sign with code signing certificate:
 }
 ```
 
-#### macOS
+</TabItem>
+<TabItem value="macos" label="macOS">
 
 Sign and notarize:
 
@@ -172,9 +186,13 @@ export APPLE_PASSWORD="app-specific-password"
 bun run tauri build
 ```
 
-#### Linux
+</TabItem>
+<TabItem value="linux" label="Linux">
 
 No signing required for AppImage/deb.
+
+</TabItem>
+</Tabs>
 
 ### Auto-Update
 
