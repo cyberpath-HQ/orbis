@@ -5,7 +5,8 @@
 import React, {
     createContext,
     useContext,
-    useMemo
+    useMemo,
+    useEffect
 } from 'react';
 import {
     BrowserRouter,
@@ -15,6 +16,8 @@ import {
     Outlet,
     useLocation
 } from 'react-router-dom';
+import { invoke } from '@tauri-apps/api/core';
+import { toast } from 'sonner';
 import type { PageDefinition } from '../types/schema';
 
 // Auth context types
@@ -69,35 +72,92 @@ export function AuthProvider({
         roles:           [],
     });
 
+    // Check for existing session on mount
+    useEffect(() => {
+        const checkSession = async() => {
+            try {
+                const session = await invoke<{
+                    user_id: string;
+                    username: string;
+                    token: string;
+                    permissions: string[];
+                    created_at: string;
+                } | null>('get_session');
+
+                if (session) {
+                    setState({
+                        isAuthenticated: true,
+                        user: {
+                            id: session.user_id,
+                            name: session.username,
+                            email: session.username, // Use username as email for now
+                        },
+                        permissions: session.permissions,
+                        roles: [],
+                    });
+                }
+            } catch (error) {
+                console.error('Failed to check session:', error);
+            }
+        };
+
+        checkSession();
+    }, []);
+
     const value = useMemo<AuthContextValue>(() => ({
         ...state,
 
         login: async(email: string, password: string) => {
-            // TODO: Implement actual login via Tauri command
-            console.log(`Login attempt:`, email, password);
-            setState({
-                isAuthenticated: true,
-                user:            {
-                    id:    `1`,
-                    name:  `Demo User`,
-                    email: email,
-                },
-                permissions: [
-                    `read`,
-                    `write`,
-                ],
-                roles:       [ `user` ],
-            });
+            try {
+                const response = await invoke<{
+                    success: boolean;
+                    message: string;
+                    session?: {
+                        user_id: string;
+                        username: string;
+                        token: string;
+                        permissions: string[];
+                        created_at: string;
+                    };
+                }>('login', { username: email, password });
+
+                if (response.success && response.session) {
+                    setState({
+                        isAuthenticated: true,
+                        user: {
+                            id: response.session.user_id,
+                            name: response.session.username,
+                            email: email,
+                        },
+                        permissions: response.session.permissions,
+                        roles: [], // TODO: Get roles from session
+                    });
+                    toast.success('Login successful');
+                } else {
+                    toast.error(response.message || 'Login failed');
+                    throw new Error(response.message || 'Login failed');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                toast.error('Login failed');
+                throw error;
+            }
         },
 
         logout: async() => {
-            // TODO: Implement actual logout
-            setState({
-                isAuthenticated: false,
-                user:            null,
-                permissions:     [],
-                roles:           [],
-            });
+            try {
+                await invoke('logout');
+                setState({
+                    isAuthenticated: false,
+                    user: null,
+                    permissions: [],
+                    roles: [],
+                });
+                toast.success('Logged out successfully');
+            } catch (error) {
+                console.error('Logout error:', error);
+                toast.error('Logout failed');
+            }
         },
 
         hasPermission: (permission: string) => state.permissions.includes(permission),
