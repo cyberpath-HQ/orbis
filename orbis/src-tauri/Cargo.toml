@@ -43,6 +43,9 @@ serde_json = { workspace = true }
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
 
+# HTTP Client (for client mode)
+reqwest = { version = "0.12", features = ["json"] }
+
 # Utilities
 chrono = { workspace = true }
 
