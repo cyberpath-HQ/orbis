@@ -617,4 +617,45 @@ export default defineConfig([
             ],
         },
     },
+
+    // Test files - relaxed rules for testing
+    {
+        files: [
+            "**/*.test.ts",
+            "**/*.test.tsx",
+            "**/*.spec.ts",
+            "**/*.spec.tsx",
+            "**/tests/**/*.ts",
+            "**/tests/**/*.tsx",
+        ],
+        rules: {
+            // Allow magic numbers in tests (test data, assertions)
+            "@typescript-eslint/no-magic-numbers": "off",
+
+            // Relax naming conventions for test variables
+            "@typescript-eslint/naming-convention": "off",
+
+            // Allow more flexible function parameters
+            "@typescript-eslint/max-params": "off",
+
+            // Allow explicit return types to be optional in tests
+            "@typescript-eslint/explicit-function-return-type": "off",
+
+            // Allow type assertions in tests
+            "@typescript-eslint/no-unsafe-type-assertion": "off",
+            "@typescript-eslint/consistent-type-assertions": "off",
+
+            // Allow non-null assertions in tests
+            "@typescript-eslint/no-non-null-assertion": "off",
+
+            // Allow empty functions in tests (mocks, stubs)
+            "@typescript-eslint/no-empty-function": "off",
+
+            // Allow inline comments (common in test descriptions)
+            "no-inline-comments": "off",
+
+            // Allow console for debugging
+            "no-console": "off",
+        },
+    },
 ]);

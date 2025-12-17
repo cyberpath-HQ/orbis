@@ -8,10 +8,10 @@ mod migrations;
 mod pool;
 mod repository;
 
-pub use connection::{Connection, DatabaseConnection};
+pub use connection::{Connection, DatabaseConnection, QueryExecutor};
 pub use migrations::{run_migrations, MigrationRunner};
 pub use pool::{create_pool, DatabasePool};
-pub use repository::Repository;
+pub use repository::{BaseRepository, Repository};
 
 use orbis_config::DatabaseConfig;
 use std::sync::Arc;

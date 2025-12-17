@@ -1,9 +1,9 @@
 //! Application router and middleware setup.
 
-use crate::middleware::{cors_layer, compression_layer, logging_layer};
+use crate::middleware::{with_auth, cors_layer, compression_layer, logging_layer};
 use crate::routes;
 use crate::state::AppState;
-use axum::Router;
+use axum::{http::StatusCode, Router};
 use tower::ServiceBuilder;
 use tower_http::timeout::TimeoutLayer;
 use std::time::Duration;
@@ -35,15 +35,16 @@ pub fn create_app(state: AppState) -> Router {
 
     // Build middleware stack
     let middleware = ServiceBuilder::new()
-        .layer(TimeoutLayer::new(Duration::from_secs(
-            config.server.request_timeout_seconds,
-        )));
+        .layer(TimeoutLayer::with_status_code(
+            StatusCode::REQUEST_TIMEOUT,
+            Duration::from_secs(config.server.request_timeout_seconds),
+        ));
 
     // Create the main router
     let mut app = Router::new()
         // Health check
         .merge(routes::health::router())
-        // API routes
+        // API routes (protected by auth middleware)
         .nest("/api", api_routes(state.clone()))
         // Plugin routes
         .nest("/api/plugins", routes::plugins::router(state.clone()))
@@ -71,8 +72,8 @@ pub fn create_app(state: AppState) -> Router {
     app
 }
 
-/// Create API routes.
-fn api_routes(_state: AppState) -> Router<AppState> {
+/// Create API routes with auth middleware applied.
+fn api_routes(state: AppState) -> Router<AppState> {
     let router = Router::new()
         // Auth routes
         .merge(routes::auth::router())
@@ -85,10 +86,11 @@ fn api_routes(_state: AppState) -> Router<AppState> {
         // Plugin management routes
         .merge(routes::plugin_management::router());
 
-    // TODO: Apply auth middleware when axum 0.8 middleware API is stabilized
-    // if state.is_auth_required() {
-    //     router = router.layer(...);
-    // }
-
-    router
+    // Apply auth middleware to all API routes
+    // The middleware itself handles public route exceptions (login, register, etc.)
+    if state.is_auth_required() {
+        with_auth(router, state)
+    } else {
+        router
+    }
 }

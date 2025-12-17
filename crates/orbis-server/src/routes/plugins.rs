@@ -216,33 +216,3 @@ async fn get_plugin_pages(
         }
     })))
 }
-
-/// Get all plugin pages for the UI.
-pub async fn get_all_plugin_pages(state: &AppState, is_authenticated: bool) -> Vec<Value> {
-    state
-        .plugins()
-        .get_all_pages()
-        .iter()
-        .filter(|(_, page)| !page.requires_auth || is_authenticated)
-        .map(|(plugin_name, page)| {
-            json!({
-                "plugin": plugin_name,
-                "route": page.full_route(plugin_name),
-                "title": page.title,
-                "icon": page.icon,
-                "description": page.description,
-                "show_in_menu": page.show_in_menu,
-                "menu_order": page.menu_order,
-                "sections": page.sections,
-                "state": page.state,
-                "computed": page.computed,
-                "actions": page.actions,
-                "hooks": page.hooks,
-                "dialogs": page.dialogs,
-                "requires_auth": page.requires_auth,
-                "permissions": page.permissions,
-                "roles": page.roles
-            })
-        })
-        .collect()
-}

@@ -65,7 +65,6 @@ impl DatabaseConnection for Connection<'_> {
 
 /// Helper trait for executing queries on either backend.
 #[async_trait]
-#[allow(dead_code)]
 pub trait QueryExecutor {
     /// Execute a query and return the number of affected rows.
     async fn execute(&self, query: &str) -> orbis_core::Result<u64>;

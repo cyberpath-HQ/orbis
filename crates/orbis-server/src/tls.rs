@@ -4,7 +4,6 @@ use orbis_config::TlsConfig;
 use rustls::ServerConfig;
 use std::fs::File;
 use std::io::BufReader;
-use std::sync::Arc;
 
 /// Create TLS server configuration.
 ///

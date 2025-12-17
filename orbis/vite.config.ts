@@ -48,6 +48,37 @@ export default defineConfig(async() => ({
 
         // produce sourcemaps for debug builds
         sourcemap: Boolean(process.env.TAURI_DEBUG),
+
+        // Code splitting configuration
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    // Vendor chunk for large dependencies
+                    'vendor-react': [
+                        `react`,
+                        `react-dom`,
+                        `react-router-dom`,
+                    ],
+                    'vendor-ui': [
+                        `@radix-ui/react-dialog`,
+                        `@radix-ui/react-dropdown-menu`,
+                        `@radix-ui/react-select`,
+                        `@radix-ui/react-tabs`,
+                        `@radix-ui/react-tooltip`,
+                    ],
+                    'vendor-form': [
+                        `@tanstack/react-form`,
+                        `zod`,
+                    ],
+                    'vendor-icons': [
+                        `lucide-react`,
+                    ],
+                },
+            },
+        },
+
+        // Increase the warning limit since Tauri apps are single bundles
+        chunkSizeWarningLimit: 600,
     },
     resolve: {
         alias: {
