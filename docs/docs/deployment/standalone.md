@@ -1,0 +1,291 @@
+---
+sidebar_position: 2
+title: Standalone Deployment
+description: Desktop application deployment
+---
+
+## Standalone Deployment
+
+Deploy Orbis as a single-user desktop application.
+
+## Overview
+
+Standalone mode provides:
+
+- Local SQLite database
+- No server required
+- Single-user access
+- Desktop integration
+- Offline capability
+
+## Building for Desktop
+
+### Prerequisites
+
+- Rust toolchain
+- Node.js 18+
+- Tauri CLI
+
+### Build Commands
+
+```bash
+# Install dependencies
+cd orbis
+bun install
+
+# Build for current platform
+bun run tauri build
+
+# Output location
+# Windows: target/release/bundle/msi/
+# macOS: target/release/bundle/dmg/
+# Linux: target/release/bundle/appimage/
+```
+
+### Cross-Platform Builds
+
+#### Windows
+
+```bash
+# On Windows
+bun run tauri build
+
+# Output: Orbis_x.x.x_x64_en-US.msi
+```
+
+#### macOS
+
+```bash
+# On macOS
+bun run tauri build
+
+# Output: Orbis_x.x.x_x64.dmg
+```
+
+#### Linux
+
+```bash
+# On Linux
+bun run tauri build
+
+# Outputs:
+# - Orbis_x.x.x_amd64.AppImage
+# - Orbis_x.x.x_amd64.deb
+```
+
+## Installation
+
+### Windows
+
+1. Download `.msi` installer
+2. Run installer
+3. Follow installation wizard
+4. Launch from Start Menu
+
+### macOS
+
+1. Download `.dmg` file
+2. Open DMG
+3. Drag Orbis to Applications
+4. Launch from Applications
+
+**Note:** May need to allow in Security & Privacy for unsigned builds.
+
+### Linux
+
+#### AppImage
+
+```bash
+chmod +x Orbis_x.x.x_amd64.AppImage
+./Orbis_x.x.x_amd64.AppImage
+```
+
+#### Debian/Ubuntu
+
+```bash
+sudo dpkg -i Orbis_x.x.x_amd64.deb
+```
+
+## Configuration
+
+### Data Directory
+
+Default locations:
+
+| Platform | Location |
+|----------|----------|
+| Windows | `%APPDATA%\Orbis\` |
+| macOS | `~/Library/Application Support/Orbis/` |
+| Linux | `~/.config/orbis/` |
+
+### Database Location
+
+```
+[Data Directory]/
+├── orbis.db          # SQLite database
+├── config.toml       # Configuration
+└── plugins/          # Plugins directory
+```
+
+### Plugin Directory
+
+```
+[Data Directory]/plugins/
+├── my-plugin/
+│   ├── manifest.json
+│   └── plugin.wasm
+```
+
+## Distribution
+
+### Signing
+
+#### Windows
+
+Sign with code signing certificate:
+
+```bash
+# Set in tauri.conf.json
+{
+  "tauri": {
+    "bundle": {
+      "windows": {
+        "certificateThumbprint": "YOUR_THUMBPRINT",
+        "digestAlgorithm": "sha256"
+      }
+    }
+  }
+}
+```
+
+#### macOS
+
+Sign and notarize:
+
+```bash
+# Set environment
+export APPLE_SIGNING_IDENTITY="Developer ID Application: Your Name"
+export APPLE_ID="your@apple.id"
+export APPLE_PASSWORD="app-specific-password"
+
+# Build with signing
+bun run tauri build
+```
+
+#### Linux
+
+No signing required for AppImage/deb.
+
+### Auto-Update
+
+Configure in `tauri.conf.json`:
+
+```json
+{
+  "tauri": {
+    "updater": {
+      "active": true,
+      "endpoints": [
+        "https://releases.yoursite.com/orbis/latest.json"
+      ],
+      "dialog": true,
+      "pubkey": "YOUR_PUBLIC_KEY"
+    }
+  }
+}
+```
+
+Update manifest (`latest.json`):
+
+```json
+{
+  "version": "1.0.1",
+  "notes": "Bug fixes and improvements",
+  "pub_date": "2025-01-01T00:00:00Z",
+  "platforms": {
+    "darwin-x86_64": {
+      "signature": "...",
+      "url": "https://releases.yoursite.com/orbis/Orbis_1.0.1_x64.dmg.tar.gz"
+    },
+    "windows-x86_64": {
+      "signature": "...",
+      "url": "https://releases.yoursite.com/orbis/Orbis_1.0.1_x64_en-US.msi.zip"
+    },
+    "linux-x86_64": {
+      "signature": "...",
+      "url": "https://releases.yoursite.com/orbis/Orbis_1.0.1_amd64.AppImage.tar.gz"
+    }
+  }
+}
+```
+
+## Backup and Migration
+
+### Backup
+
+```bash
+# Copy entire data directory
+cp -r ~/.config/orbis/ ~/orbis-backup/
+```
+
+### Restore
+
+```bash
+# Restore from backup
+cp -r ~/orbis-backup/ ~/.config/orbis/
+```
+
+### Migration to Server
+
+Export data for server import:
+
+```bash
+# Export SQLite to SQL
+sqlite3 ~/.config/orbis/orbis.db .dump > export.sql
+
+# Import to PostgreSQL (with adjustments)
+psql orbis < export.sql
+```
+
+## Troubleshooting
+
+### Application Won't Start
+
+1. Check logs:
+   - Windows: Event Viewer
+   - macOS: Console.app
+   - Linux: `~/.config/orbis/logs/`
+
+2. Reset configuration:
+
+```bash
+rm -rf ~/.config/orbis/config.toml
+```
+
+### Database Corruption
+
+1. Backup current database
+2. Run integrity check:
+
+```bash
+sqlite3 ~/.config/orbis/orbis.db "PRAGMA integrity_check;"
+```
+
+3. If corrupted, restore from backup or recreate
+
+### Plugin Issues
+
+1. Check plugin compatibility
+2. View plugin logs
+3. Disable problematic plugins:
+
+```bash
+mv ~/.config/orbis/plugins/bad-plugin ~/.config/orbis/plugins-disabled/
+```
+
+## Best Practices
+
+1. **Regular backups** - Backup data directory regularly
+2. **Update plugins** - Keep plugins updated
+3. **Monitor disk space** - SQLite can grow large
+4. **Check for updates** - Install security updates

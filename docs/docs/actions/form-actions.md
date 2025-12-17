@@ -1,0 +1,399 @@
+---
+sidebar_position: 7
+title: Form Actions
+description: Validate and reset forms
+---
+
+## Form Actions
+
+Actions for managing form state and validation.
+
+## validateForm
+
+Validates a form and returns validation results.
+
+### Syntax
+
+```json
+{
+  "type": "validateForm",
+  "formId": "myForm"
+}
+```
+
+### Properties
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `formId` | string | ✅ | Form identifier to validate |
+| `onValid` | array | - | Actions if validation passes |
+| `onInvalid` | array | - | Actions if validation fails |
+
+### Examples
+
+**Basic validation:**
+
+```json
+{
+  "type": "Button",
+  "text": "Submit",
+  "events": {
+    "onClick": [
+      {
+        "type": "validateForm",
+        "formId": "contactForm",
+        "onValid": [
+          { "type": "callApi", "api": "submitContact" }
+        ],
+        "onInvalid": [
+          { "type": "showToast", "message": "Please fix the errors", "level": "warning" }
+        ]
+      }
+    ]
+  }
+}
+```
+
+**With form definition:**
+
+```json
+{
+  "type": "Form",
+  "id": "userForm",
+  "children": [
+    {
+      "type": "Field",
+      "fieldType": "text",
+      "name": "email",
+      "label": "Email",
+      "required": true,
+      "validation": [
+        { "type": "email", "message": "Enter a valid email" }
+      ]
+    },
+    {
+      "type": "Field",
+      "fieldType": "password",
+      "name": "password",
+      "label": "Password",
+      "required": true,
+      "validation": [
+        { "type": "minLength", "value": 8, "message": "At least 8 characters" }
+      ]
+    },
+    {
+      "type": "Button",
+      "text": "Register",
+      "events": {
+        "onClick": [
+          {
+            "type": "validateForm",
+            "formId": "userForm",
+            "onValid": [
+              { "type": "callApi", "api": "register", "params": { "data": "{{form.userForm}}" } }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+**Validation before navigation:**
+
+```json
+{
+  "type": "validateForm",
+  "formId": "settingsForm",
+  "onValid": [
+    { "type": "callApi", "api": "saveSettings" },
+    { "type": "navigate", "route": "/dashboard" }
+  ],
+  "onInvalid": [
+    { "type": "showToast", "message": "Please complete all required fields", "level": "warning" }
+  ]
+}
+```
+
+---
+
+## resetForm
+
+Resets a form to its initial state.
+
+### Syntax
+
+```json
+{
+  "type": "resetForm",
+  "formId": "myForm"
+}
+```
+
+### Properties
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `formId` | string | ✅ | Form identifier to reset |
+| `values` | object | - | Optional values to reset to |
+
+### Examples
+
+**Basic reset:**
+
+```json
+{
+  "type": "Button",
+  "text": "Clear",
+  "variant": "ghost",
+  "events": {
+    "onClick": [
+      { "type": "resetForm", "formId": "searchForm" }
+    ]
+  }
+}
+```
+
+**Reset to specific values:**
+
+```json
+{
+  "type": "resetForm",
+  "formId": "filterForm",
+  "values": {
+    "status": "all",
+    "dateRange": "last7days",
+    "category": ""
+  }
+}
+```
+
+**Reset after successful submit:**
+
+```json
+{
+  "type": "callApi",
+  "api": "createItem",
+  "params": { "data": "{{form.newItemForm}}" },
+  "onSuccess": [
+    { "type": "showToast", "message": "Item created!", "level": "success" },
+    { "type": "resetForm", "formId": "newItemForm" }
+  ]
+}
+```
+
+**Reset on dialog close:**
+
+```json
+{
+  "type": "Button",
+  "text": "Cancel",
+  "events": {
+    "onClick": [
+      { "type": "resetForm", "formId": "editForm" },
+      { "type": "closeDialog", "id": "editDialog" }
+    ]
+  }
+}
+```
+
+---
+
+## Form Data Access
+
+Form data is accessible via the `form` namespace:
+
+```json
+{
+  "type": "callApi",
+  "api": "submitForm",
+  "params": {
+    "formData": "{{form.myForm}}",
+    "email": "{{form.myForm.email}}",
+    "name": "{{form.myForm.name}}"
+  }
+}
+```
+
+### Form State Variables
+
+| Variable | Type | Description |
+|----------|------|-------------|
+| `form.<id>` | object | Complete form data |
+| `form.<id>.<field>` | any | Specific field value |
+| `form.<id>.$valid` | boolean | Form validity state |
+| `form.<id>.$dirty` | boolean | Has form been modified |
+| `form.<id>.$errors` | object | Field error messages |
+
+### Examples
+
+**Conditional submit button:**
+
+```json
+{
+  "type": "Button",
+  "text": "Submit",
+  "disabled": "{{!form.myForm.$valid}}",
+  "events": {
+    "onClick": [
+      { "type": "callApi", "api": "submit" }
+    ]
+  }
+}
+```
+
+**Show unsaved changes warning:**
+
+```json
+{
+  "type": "Conditional",
+  "conditions": [
+    {
+      "when": "{{form.settingsForm.$dirty}}",
+      "render": {
+        "type": "Alert",
+        "variant": "warning",
+        "title": "Unsaved Changes",
+        "message": "You have unsaved changes"
+      }
+    }
+  ]
+}
+```
+
+**Display validation errors:**
+
+```json
+{
+  "type": "Conditional",
+  "conditions": [
+    {
+      "when": "{{form.myForm.$errors.email}}",
+      "render": {
+        "type": "Text",
+        "text": "{{form.myForm.$errors.email}}",
+        "className": "text-red-500 text-sm"
+      }
+    }
+  ]
+}
+```
+
+---
+
+## Common Patterns
+
+### Submit and Reset Pattern
+
+```json
+{
+  "type": "Flex",
+  "gap": "md",
+  "children": [
+    {
+      "type": "Button",
+      "text": "Reset",
+      "variant": "ghost",
+      "events": {
+        "onClick": [
+          { "type": "resetForm", "formId": "myForm" }
+        ]
+      }
+    },
+    {
+      "type": "Button",
+      "text": "Submit",
+      "events": {
+        "onClick": [
+          {
+            "type": "validateForm",
+            "formId": "myForm",
+            "onValid": [
+              { "type": "setLoading", "key": "submitting", "value": true },
+              {
+                "type": "callApi",
+                "api": "submit",
+                "params": { "data": "{{form.myForm}}" },
+                "onSuccess": [
+                  { "type": "showToast", "message": "Submitted!", "level": "success" },
+                  { "type": "resetForm", "formId": "myForm" }
+                ],
+                "onComplete": [
+                  { "type": "setLoading", "key": "submitting", "value": false }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+### Multi-Step Form Validation
+
+```json
+{
+  "type": "Button",
+  "text": "Next",
+  "events": {
+    "onClick": [
+      {
+        "type": "validateForm",
+        "formId": "step{{state.currentStep}}Form",
+        "onValid": [
+          { "type": "updateState", "path": "currentStep", "value": "{{state.currentStep + 1}}" }
+        ],
+        "onInvalid": [
+          { "type": "showToast", "message": "Please complete this step", "level": "warning" }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### Confirm Before Reset
+
+```json
+{
+  "type": "Button",
+  "text": "Clear All",
+  "variant": "ghost",
+  "events": {
+    "onClick": [
+      {
+        "type": "showDialog",
+        "id": "confirmReset",
+        "title": "Clear Form",
+        "message": "Are you sure you want to clear all fields?",
+        "buttons": [
+          {
+            "label": "Cancel",
+            "variant": "ghost",
+            "action": [{ "type": "closeDialog", "id": "confirmReset" }]
+          },
+          {
+            "label": "Clear",
+            "variant": "destructive",
+            "action": [
+              { "type": "resetForm", "formId": "myForm" },
+              { "type": "closeDialog", "id": "confirmReset" }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### Best Practices
+
+1. **Always validate before submit** - Prevent invalid API calls
+2. **Show clear error messages** - Help users fix issues
+3. **Reset forms appropriately** - Clear after success, preserve on error
+4. **Disable submit while invalid** - Use `disabled="{{!form.id.$valid}}"`
+5. **Track dirty state** - Warn about unsaved changes

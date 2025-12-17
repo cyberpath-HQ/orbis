@@ -1,0 +1,194 @@
+---
+sidebar_position: 1
+title: API Reference Overview
+description: Complete API reference for Orbis plugin development
+---
+
+## API Reference
+
+This section provides detailed reference documentation for all Orbis APIs available to plugin developers.
+
+## What's Covered
+
+### [State Management](./state-management)
+
+Complete reference for state operations:
+
+- State initialization and types
+- State access patterns
+- Computed state
+- State persistence
+
+### [Expressions](./expressions)
+
+Expression syntax and evaluation:
+
+- Basic interpolation
+- Operators and functions
+- Built-in variables
+- Expression contexts
+
+### [Event Handlers](./event-handlers)
+
+All available event types:
+
+- Component events (onClick, onChange, etc.)
+- Form events
+- Lifecycle events
+- Custom events
+
+### [Special Values](./special-values)
+
+Built-in variables and special values:
+
+- `$value`, `$event`, `$index`
+- `$response`, `$error`
+- `$now`, `$window`
+- Context variables
+
+### [Validation Rules](./validation)
+
+Form validation reference:
+
+- Built-in validators
+- Custom validation
+- Async validation
+- Error messages
+
+### [Data Sources](./data-sources)
+
+Data loading and management:
+
+- API data sources
+- Static data
+- Computed data
+- Caching strategies
+
+### [Type Reference](./types-reference)
+
+TypeScript type definitions:
+
+- Schema types
+- Action types
+- Event types
+- Utility types
+
+## Quick Reference
+
+### State Access
+
+```json
+"{{state.fieldName}}"           // State value
+"{{state.nested.field}}"        // Nested value
+"{{state.items[0]}}"            // Array access
+"{{state.items.length}}"        // Array length
+```
+
+### Form Access
+
+```json
+"{{form.formId}}"               // Complete form data
+"{{form.formId.fieldName}}"     // Field value
+"{{form.formId.$valid}}"        // Validation state
+"{{form.formId.$dirty}}"        // Modified state
+"{{form.formId.$errors}}"       // Error messages
+```
+
+### Event Context
+
+```json
+"{{$value}}"                    // Current value (onChange)
+"{{$event}}"                    // Full event object
+"{{$index}}"                    // Loop index
+"{{$item}}"                     // Loop item
+```
+
+### API Response
+
+```json
+"{{$response}}"                 // Full response
+"{{$response.data}}"            // Response data
+"{{$response.items}}"           // Response items
+"{{$error.message}}"            // Error message
+```
+
+### Navigation Context
+
+```json
+"{{params.id}}"                 // Route params
+"{{query.search}}"              // Query params
+"{{route.path}}"                // Current path
+```
+
+### Loading States
+
+```json
+"{{loading.keyName}}"           // Loading flag
+"{{loading.submit}}"            // Submit loading
+"{{loading.fetch}}"             // Fetch loading
+```
+
+## Type System
+
+### Primitive Types
+
+| Type | Example | Description |
+|------|---------|-------------|
+| `string` | `"hello"` | Text value |
+| `number` | `42` | Numeric value |
+| `boolean` | `true` | Boolean value |
+
+### Complex Types
+
+| Type | Example | Description |
+|------|---------|-------------|
+| `object` | `{"key": "value"}` | Object value |
+| `array` | `[1, 2, 3]` | Array value |
+
+### Schema Types
+
+| Type | Description |
+|------|-------------|
+| `ComponentSchema` | UI component definition |
+| `ActionSchema` | Action definition |
+| `PageDefinition` | Complete page schema |
+| `PluginManifest` | Plugin configuration |
+
+## Common Patterns
+
+### CRUD Operations
+
+```json
+{ "type": "callApi", "api": "createItem", "params": { "data": "{{form.addForm}}" } }
+{ "type": "callApi", "api": "getItems", "storeAs": "items" }
+{ "type": "callApi", "api": "updateItem", "params": { "id": "{{state.id}}", "data": "{{form.editForm}}" } }
+{ "type": "callApi", "api": "deleteItem", "params": { "id": "{{state.id}}" } }
+```
+
+### Form Workflow
+
+```json
+[
+  { "type": "validateForm", "formId": "myForm" },
+  { "type": "callApi", "api": "submit", "params": { "data": "{{form.myForm}}" } },
+  { "type": "resetForm", "formId": "myForm" },
+  { "type": "showToast", "message": "Submitted!", "level": "success" }
+]
+```
+
+### Loading Pattern
+
+```json
+[
+  { "type": "setLoading", "key": "submit", "value": true },
+  { "type": "callApi", "api": "submit", "onComplete": [
+    { "type": "setLoading", "key": "submit", "value": false }
+  ]}
+]
+```
+
+## See Also
+
+- [Components Reference](../components/overview) - UI component documentation
+- [Actions Reference](../actions/overview) - Action documentation
+- [Plugin Development](../plugin-development/overview) - Getting started with plugins

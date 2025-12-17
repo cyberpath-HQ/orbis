@@ -1,47 +1,134 @@
 ---
 sidebar_position: 1
+slug: /
+title: Introduction
+description: Welcome to Orbis - Build powerful desktop applications with plugin-driven architecture
 ---
 
-# Tutorial Intro
+Orbis is a **plugin-driven desktop application platform** built with Rust and React. It enables developers to create powerful, extensible desktop applications using a declarative JSON-based UI schema system.
 
-Let's discover **Docusaurus in less than 5 minutes**.
+## What is Orbis?
+
+Orbis provides a unique approach to building desktop applications:
+
+- **🔌 Plugin Architecture**: Extend functionality through WASM-sandboxed plugins
+- **📝 Schema-Driven UI**: Define interfaces using JSON schemas instead of writing React code
+- **🦀 Rust Backend**: High-performance, secure backend powered by Tauri
+- **⚡ Two Deployment Modes**: Run standalone (SQLite) or in client-server mode (PostgreSQL)
+- **🎨 shadcn/ui Components**: Beautiful, accessible UI components out of the box
+
+## Key Features
+
+### Declarative UI System
+
+Plugins define their UI through JSON schemas that the Orbis renderer interprets:
+
+```json
+{
+  "type": "Container",
+  "children": [
+    {
+      "type": "Heading",
+      "level": 1,
+      "text": "Hello, {{state.username}}!"
+    },
+    {
+      "type": "Button",
+      "label": "Click Me",
+      "events": {
+        "onClick": [
+          {
+            "type": "updateState",
+            "path": "clickCount",
+            "value": "{{state.clickCount + 1}}"
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+### Plugin Sandboxing
+
+Plugins run in WASM sandboxes with configurable permissions, ensuring security:
+
+- Network access control
+- Filesystem restrictions
+- Inter-plugin communication
+- Resource limits
+
+### Reactive State Management
+
+Built-in state management with Zustand provides reactive updates:
+
+```json
+{
+  "state": {
+    "username": { "type": "string", "default": "Guest" },
+    "clickCount": { "type": "number", "default": 0 }
+  }
+}
+```
+
+## Architecture Overview
+
+```mermaid
+graph TB
+    subgraph Frontend["Frontend"]
+        UI[Schema Renderer]
+        State[Zustand State]
+        Actions[Action Executor]
+    end
+    
+    subgraph Backend["Backend"]
+        Commands[Tauri Commands]
+        PluginRuntime[Plugin Runtime]
+        Auth[Authentication]
+    end
+    
+    subgraph Storage
+        SQLite[(SQLite)]
+        PostgreSQL[(PostgreSQL)]
+    end
+    
+    UI --> State
+    State --> Actions
+    Actions --> Commands
+    Commands --> PluginRuntime
+    Commands --> Auth
+    PluginRuntime --> Storage
+    Auth --> Storage
+```
 
 ## Getting Started
 
-Get started by **creating a new site**.
+Ready to build with Orbis? Start here:
 
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
+1. **[Installation](./getting-started/installation)** - Set up your development environment
+2. **[Quickstart](./getting-started/quickstart)** - Build your first plugin in 5 minutes
+3. **[Project Structure](./getting-started/project-structure)** - Understand the codebase layout
 
-### What you'll need
+## Core Concepts
 
-- [Node.js](https://nodejs.org/en/download/) version 20.0 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
+Learn the fundamentals:
 
-## Generate a new site
+- **[Architecture](./core-concepts/architecture)** - How Orbis works under the hood
+- **[Plugin System](./core-concepts/plugin-system)** - Creating and loading plugins
+- **[Schema System](./core-concepts/schema-system)** - Defining UI with JSON
+- **[State Management](./core-concepts/state-management)** - Managing reactive state
+- **[Expressions](./core-concepts/expressions)** - Dynamic value interpolation
 
-Generate a new Docusaurus site using the **classic template**.
+## Reference
 
-The classic template will automatically be added to your project after you run the command:
+Detailed documentation for all features:
 
-```bash
-npm init docusaurus@latest my-website classic
-```
+- **[Components](./components/overview)** - 35+ UI components
+- **[Actions](./actions/overview)** - 16 action types for interactivity
+- **[API Reference](./api-reference/overview)** - Complete API documentation
 
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
+## Community
 
-The command also installs all necessary dependencies you need to run Docusaurus.
-
-## Start your site
-
-Run the development server:
-
-```bash
-cd my-website
-npm run start
-```
-
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
-
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
-
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
+- 🐛 [Report Issues](https://github.com/cyberpath-HQ/orbis/issues)
+- 📖 [Contributing Guide](https://github.com/cyberpath-HQ/orbis/blob/main/CONTRIBUTING.md)
+- ⭐ [Star us on GitHub](https://github.com/cyberpath-HQ/orbis)
