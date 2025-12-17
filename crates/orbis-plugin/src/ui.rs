@@ -12,7 +12,7 @@ use std::collections::HashMap;
 
 /// State field type enumeration.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
+#[serde(rename_all = "snake_case")]
 pub enum StateFieldType {
     String,
     Number,
@@ -47,7 +47,7 @@ pub struct StateFieldDefinition {
 
 /// Action that can be executed in response to events.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(tag = "type", rename_all = "camelCase")]
+#[serde(tag = "type", rename_all = "snake_case")]
 pub enum Action {
     /// Update state at a path.
     UpdateState {
@@ -174,7 +174,7 @@ pub struct ArgMapping {
 
 /// Toast notification level.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
+#[serde(rename_all = "snake_case")]
 pub enum ToastLevel {
     Info,
     Success,
@@ -188,7 +188,7 @@ pub enum ToastLevel {
 
 /// Event handlers that can be attached to components.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "snake_case")]
 pub struct EventHandlers {
     #[serde(default)]
     pub on_click: Vec<Action>,
@@ -330,7 +330,7 @@ pub struct DialogDefinition {
 
 /// Page lifecycle hooks.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "snake_case")]
 pub struct PageLifecycleHooks {
     #[serde(default)]
     pub on_mount: Vec<Action>,
