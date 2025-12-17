@@ -6,3 +6,11 @@ export {
     PluginErrorBoundary,
 } from './error-boundary';
 
+export {
+    LoadingIndicator,
+    InlineSpinner,
+    ButtonSpinner,
+    PageSkeleton,
+    TableSkeleton,
+} from './loading';
+
