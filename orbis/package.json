@@ -8,11 +8,18 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "tauri:debug": "ORBIS_LOG=debug tauri",
-    "tauri": "ORBIS_LOG=info tauri"
+    "tauri": "ORBIS_LOG=info tauri",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-accordion": "^1.2.12",
+    "@radix-ui/react-alert-dialog": "^1.1.15",
     "@radix-ui/react-avatar": "^1.1.11",
     "@radix-ui/react-checkbox": "^1.3.3",
     "@radix-ui/react-dialog": "^1.1.15",
@@ -33,6 +40,7 @@
     "@stylistic/eslint-plugin-ts": "^4.4.1",
     "@tailwindcss/vite": "^4.1.18",
     "@tanstack/react-form": "^1.27.4",
+    "@tanstack/react-virtual": "^3.13.13",
     "@tanstack/zod-form-adapter": "^0.42.1",
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-cli": "~2",
@@ -59,13 +67,23 @@
     "zustand": "^5.0.9"
   },
   "devDependencies": {
+    "@playwright/test": "^1.57.0",
     "@tauri-apps/cli": "^2",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.1",
+    "@testing-library/user-event": "^14.6.1",
     "@types/node": "^25.0.2",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react": "^4.6.0",
+    "@vitest/coverage-v8": "^4.0.16",
+    "@vitest/ui": "^4.0.16",
+    "happy-dom": "^20.0.11",
+    "jsdom": "^27.3.0",
+    "msw": "^2.12.4",
     "tw-animate-css": "^1.4.0",
     "typescript": "~5.8.3",
-    "vite": "^7.0.4"
+    "vite": "^7.0.4",
+    "vitest": "^4.0.16"
   }
 }
