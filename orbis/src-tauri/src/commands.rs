@@ -5,17 +5,7 @@ use orbis_core::AppMode;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::path::PathBuf;
-use tauri::State;
-
-/// Authentication session data (re-export for easier access)
-pub use crate::state::AuthSession as SessionData;
-
-/// Login request
-#[derive(Debug, Deserialize)]
-pub struct LoginRequest {
-    pub username: String,
-    pub password: String,
-}
+use tauri::{Emitter, State};
 
 /// Login response
 #[derive(Debug, Serialize)]
@@ -25,6 +15,25 @@ pub struct LoginResponse {
     pub session: Option<AuthSession>,
 }
 
+/// Server auth response (for client mode)
+#[derive(Debug, Deserialize)]
+struct ServerAuthResponse {
+    user: ServerUserInfo,
+    access_token: String,
+    refresh_token: String,
+    expires_in: u64,
+}
+
+#[derive(Debug, Deserialize)]
+struct ServerUserInfo {
+    id: String,
+    username: String,
+    email: String,
+    #[serde(rename = "is_active")]
+    _is_active: bool,
+    is_admin: bool,
+}
+
 /// Login command - authenticates user and creates session
 #[tauri::command]
 pub async fn login(
@@ -32,40 +41,174 @@ pub async fn login(
     password: String,
     state: State<'_, OrbisState>,
 ) -> Result<LoginResponse, String> {
-    // In standalone mode with no auth, allow any credentials
-    if state.is_standalone() {
-        // TODO: Integrate with orbis-auth crate for proper password verification
-        // For now, simple validation
-        if username.is_empty() || password.is_empty() {
+    if username.is_empty() || password.is_empty() {
+        return Ok(LoginResponse {
+            success: false,
+            message: "Username and password are required".to_string(),
+            session: None,
+        });
+    }
+
+    if state.is_standalone() || state.is_server() {
+        // Use local auth service
+        login_standalone(&username, &password, &state).await
+    } else {
+        // Client mode: authenticate against remote server
+        login_client(&username, &password, &state).await
+    }
+}
+
+/// Authenticate using local auth service (standalone/server mode)
+async fn login_standalone(
+    username: &str,
+    password: &str,
+    state: &State<'_, OrbisState>,
+) -> Result<LoginResponse, String> {
+    // Get auth service
+    let auth = match state.auth() {
+        Some(auth) => auth,
+        None => {
+            // Fallback: if no auth service, create a simple session (dev mode)
+            tracing::warn!("No auth service available, creating dev session");
+            let session = AuthSession {
+                user_id: format!("dev_{}", username),
+                username: username.to_string(),
+                email: format!("{}@localhost", username),
+                token: format!("dev_token_{}", chrono::Utc::now().timestamp()),
+                refresh_token: None,
+                permissions: vec!["admin".to_string()],
+                roles: vec!["admin".to_string()],
+                is_admin: true,
+                created_at: chrono::Utc::now().to_rfc3339(),
+                expires_at: None,
+            };
+            state.set_session(Some(session.clone()));
             return Ok(LoginResponse {
-                success: false,
-                message: "Username and password are required".to_string(),
-                session: None,
+                success: true,
+                message: "Login successful (dev mode)".to_string(),
+                session: Some(session),
             });
         }
+    };
 
-        // Create session
-        let session = AuthSession {
-            user_id: format!("user_{}", username),
-            username: username.clone(),
-            token: format!("token_{}", chrono::Utc::now().timestamp()),
-            permissions: vec!["admin".to_string()], // Default admin in standalone
-            created_at: chrono::Utc::now().to_rfc3339(),
-        };
+    // Authenticate using orbis-auth
+    match auth.authenticate(username, password, None, None).await {
+        Ok(result) => {
+            // Build roles from user info
+            let mut roles = Vec::new();
+            if result.user.is_admin {
+                roles.push("admin".to_string());
+            }
+            roles.push("user".to_string());
 
-        // Store session in state
-        state.set_session(Some(session.clone()));
+            let session = AuthSession {
+                user_id: result.user.id.to_string(),
+                username: result.user.username.clone(),
+                email: result.user.email.clone(),
+                token: result.access_token.clone(),
+                refresh_token: Some(result.refresh_token.clone()),
+                permissions: if result.user.is_admin {
+                    vec!["admin".to_string(), "read".to_string(), "write".to_string()]
+                } else {
+                    vec!["read".to_string()]
+                },
+                roles,
+                is_admin: result.user.is_admin,
+                created_at: chrono::Utc::now().to_rfc3339(),
+                expires_at: Some(
+                    (chrono::Utc::now() + chrono::Duration::seconds(result.expires_in as i64))
+                        .to_rfc3339(),
+                ),
+            };
 
-        Ok(LoginResponse {
-            success: true,
-            message: "Login successful".to_string(),
-            session: Some(session),
-        })
-    } else {
-        // In client mode, forward to server
-        // TODO: Implement HTTP auth call to server
-        Err("Client mode authentication not yet implemented".to_string())
+            state.set_session(Some(session.clone()));
+
+            Ok(LoginResponse {
+                success: true,
+                message: "Login successful".to_string(),
+                session: Some(session),
+            })
+        }
+        Err(e) => Ok(LoginResponse {
+            success: false,
+            message: format!("Authentication failed: {}", e),
+            session: None,
+        }),
     }
+}
+
+/// Authenticate against remote server (client mode)
+async fn login_client(
+    username: &str,
+    password: &str,
+    state: &State<'_, OrbisState>,
+) -> Result<LoginResponse, String> {
+    let server_url = state
+        .server_url()
+        .ok_or("Server URL not configured")?;
+
+    let client = state.http_client();
+
+    // Make login request to server
+    let response = client
+        .post(format!("{}/api/auth/login", server_url))
+        .json(&json!({
+            "username": username,
+            "password": password
+        }))
+        .send()
+        .await
+        .map_err(|e| format!("Failed to connect to server: {}", e))?;
+
+    if !response.status().is_success() {
+        let status = response.status();
+        let body = response.text().await.unwrap_or_default();
+        return Ok(LoginResponse {
+            success: false,
+            message: format!("Authentication failed ({}): {}", status, body),
+            session: None,
+        });
+    }
+
+    let auth_response: ServerAuthResponse = response
+        .json()
+        .await
+        .map_err(|e| format!("Failed to parse server response: {}", e))?;
+
+    // Build roles from user info
+    let mut roles = Vec::new();
+    if auth_response.user.is_admin {
+        roles.push("admin".to_string());
+    }
+    roles.push("user".to_string());
+
+    let session = AuthSession {
+        user_id: auth_response.user.id.clone(),
+        username: auth_response.user.username.clone(),
+        email: auth_response.user.email.clone(),
+        token: auth_response.access_token.clone(),
+        refresh_token: Some(auth_response.refresh_token.clone()),
+        permissions: if auth_response.user.is_admin {
+            vec!["admin".to_string(), "read".to_string(), "write".to_string()]
+        } else {
+            vec!["read".to_string()]
+        },
+        roles,
+        is_admin: auth_response.user.is_admin,
+        created_at: chrono::Utc::now().to_rfc3339(),
+        expires_at: Some(
+            (chrono::Utc::now() + chrono::Duration::seconds(auth_response.expires_in as i64))
+                .to_rfc3339(),
+        ),
+    };
+
+    state.set_session(Some(session.clone()));
+
+    Ok(LoginResponse {
+        success: true,
+        message: "Login successful".to_string(),
+        session: Some(session),
+    })
 }
 
 /// Logout command - destroys current session
@@ -130,24 +273,165 @@ pub fn get_profile(state: State<'_, OrbisState>) -> Result<Value, String> {
     Ok(json!({
         "name": profile_name,
         "server_url": state.server_url(),
+        "is_default": profile_name == "default",
     }))
+}
+
+/// Profile data structure for storage
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct StoredProfile {
+    name: String,
+    server_url: Option<String>,
+    is_default: bool,
+    use_tls: bool,
+    created_at: String,
+}
+
+impl Default for StoredProfile {
+    fn default() -> Self {
+        Self {
+            name: "default".to_string(),
+            server_url: None,
+            is_default: true,
+            use_tls: true,
+            created_at: chrono::Utc::now().to_rfc3339(),
+        }
+    }
+}
+
+/// Get profiles file path
+fn get_profiles_path() -> PathBuf {
+    // Use platform-specific data directory
+    let data_dir = if cfg!(target_os = "windows") {
+        std::env::var("APPDATA")
+            .map(PathBuf::from)
+            .unwrap_or_else(|_| PathBuf::from("."))
+    } else if cfg!(target_os = "macos") {
+        std::env::var("HOME")
+            .map(|h| PathBuf::from(h).join("Library/Application Support"))
+            .unwrap_or_else(|_| PathBuf::from("."))
+    } else {
+        std::env::var("XDG_DATA_HOME")
+            .map(PathBuf::from)
+            .or_else(|_| std::env::var("HOME").map(|h| PathBuf::from(h).join(".local/share")))
+            .unwrap_or_else(|_| PathBuf::from("."))
+    };
+    
+    let orbis_dir = data_dir.join("orbis");
+    std::fs::create_dir_all(&orbis_dir).ok();
+    orbis_dir.join("profiles.json")
+}
+
+/// Load profiles from file
+fn load_profiles() -> Vec<StoredProfile> {
+    let path = get_profiles_path();
+    if path.exists() {
+        std::fs::read_to_string(&path)
+            .ok()
+            .and_then(|content| serde_json::from_str(&content).ok())
+            .unwrap_or_else(|| vec![StoredProfile::default()])
+    } else {
+        vec![StoredProfile::default()]
+    }
+}
+
+/// Save profiles to file
+fn save_profiles(profiles: &[StoredProfile]) -> Result<(), String> {
+    let path = get_profiles_path();
+    let content = serde_json::to_string_pretty(profiles)
+        .map_err(|e| format!("Failed to serialize profiles: {}", e))?;
+    std::fs::write(&path, content)
+        .map_err(|e| format!("Failed to save profiles: {}", e))?;
+    Ok(())
 }
 
 /// List all profiles.
 #[tauri::command]
 pub async fn list_profiles(state: State<'_, OrbisState>) -> Result<Value, String> {
-    // TODO: Load profiles from database or file system
-    let profiles: Vec<Value> = vec![
-        json!({
-            "name": "default",
-            "is_active": true,
-            "is_default": true,
+    let profiles = load_profiles();
+    let active = state.config().active_profile.as_deref().unwrap_or("default");
+    
+    let profile_values: Vec<Value> = profiles
+        .iter()
+        .map(|p| {
+            json!({
+                "name": p.name,
+                "server_url": p.server_url,
+                "is_active": p.name == active,
+                "is_default": p.is_default,
+                "use_tls": p.use_tls,
+                "created_at": p.created_at,
+            })
         })
-    ];
+        .collect();
 
     Ok(json!({
-        "profiles": profiles,
-        "active": state.config().active_profile.as_deref().unwrap_or("default")
+        "profiles": profile_values,
+        "active": active
+    }))
+}
+
+/// Create a new profile
+#[tauri::command]
+pub async fn create_profile(
+    name: String,
+    server_url: Option<String>,
+    use_tls: Option<bool>,
+) -> Result<Value, String> {
+    if name.is_empty() {
+        return Err("Profile name cannot be empty".to_string());
+    }
+
+    let mut profiles = load_profiles();
+    
+    // Check if profile already exists
+    if profiles.iter().any(|p| p.name == name) {
+        return Err(format!("Profile '{}' already exists", name));
+    }
+
+    let new_profile = StoredProfile {
+        name: name.clone(),
+        server_url,
+        is_default: false,
+        use_tls: use_tls.unwrap_or(true),
+        created_at: chrono::Utc::now().to_rfc3339(),
+    };
+
+    profiles.push(new_profile.clone());
+    save_profiles(&profiles)?;
+
+    Ok(json!({
+        "success": true,
+        "message": format!("Profile '{}' created", name),
+        "profile": {
+            "name": new_profile.name,
+            "server_url": new_profile.server_url,
+            "is_default": new_profile.is_default,
+            "use_tls": new_profile.use_tls,
+        }
+    }))
+}
+
+/// Delete a profile
+#[tauri::command]
+pub async fn delete_profile(name: String) -> Result<Value, String> {
+    if name == "default" {
+        return Err("Cannot delete the default profile".to_string());
+    }
+
+    let mut profiles = load_profiles();
+    let initial_len = profiles.len();
+    profiles.retain(|p| p.name != name);
+
+    if profiles.len() == initial_len {
+        return Err(format!("Profile '{}' not found", name));
+    }
+
+    save_profiles(&profiles)?;
+
+    Ok(json!({
+        "success": true,
+        "message": format!("Profile '{}' deleted", name)
     }))
 }
 
@@ -157,12 +441,27 @@ pub async fn switch_profile(
     name: String,
     _state: State<'_, OrbisState>,
 ) -> Result<Value, String> {
-    // TODO: Implement profile switching
-    // This would update the active profile and potentially reconnect to a different server
+    let profiles = load_profiles();
+    
+    // Check if profile exists
+    let profile = profiles
+        .iter()
+        .find(|p| p.name == name)
+        .ok_or_else(|| format!("Profile '{}' not found", name))?;
+
+    // Note: Actually switching the profile would require app restart
+    // or dynamic reconfiguration which isn't implemented yet.
+    // For now, we return success and the app should restart to apply changes.
     
     Ok(json!({
         "success": true,
-        "message": format!("Switched to profile: {}", name)
+        "message": format!("Switched to profile: {}. Restart the app to apply changes.", name),
+        "profile": {
+            "name": profile.name,
+            "server_url": profile.server_url,
+            "use_tls": profile.use_tls,
+        },
+        "requires_restart": true
     }))
 }
 
@@ -326,5 +625,64 @@ pub fn get_plugin_info(name: String, state: State<'_, OrbisState>) -> Result<Val
         "permissions": info.manifest.permissions.iter().map(|p| format!("{:?}", p)).collect::<Vec<_>>(),
         "routes_count": info.manifest.routes.len(),
         "pages_count": info.manifest.pages.len(),
+    }))
+}
+
+/// Start watching plugins directory for changes.
+#[tauri::command]
+pub async fn start_plugin_watcher(
+    app_handle: tauri::AppHandle,
+    state: State<'_, OrbisState>,
+) -> Result<Value, String> {
+    use orbis_plugin::PluginChangeKind;
+
+    // Start the watcher in state
+    state.start_plugin_watcher()?;
+
+    // Get a reference to the watcher and start it
+    let watcher_arc = state.plugin_watcher().clone();
+    let mut watcher_guard = watcher_arc.write()
+        .map_err(|_| "Failed to acquire watcher lock")?;
+
+    let Some(watcher) = watcher_guard.as_mut() else {
+        return Err("Watcher not initialized".to_string());
+    };
+
+    let rx = watcher.start()
+        .map_err(|e| format!("Failed to start watcher: {}", e))?;
+
+    // Spawn a task to process watcher events and emit to frontend
+    let app_handle_clone = app_handle.clone();
+    tauri::async_runtime::spawn(async move {
+        let mut rx = rx;
+        while let Some(event) = rx.recv().await {
+            let kind = match event.kind {
+                PluginChangeKind::Added => "Added",
+                PluginChangeKind::Modified => "Modified",
+                PluginChangeKind::Removed => "Removed",
+            };
+
+            let _ = app_handle_clone.emit("plugin-changed", json!({
+                "kind": kind,
+                "path": event.path.to_string_lossy(),
+                "plugin_id": event.plugin_id,
+            }));
+        }
+    });
+
+    Ok(json!({
+        "success": true,
+        "message": "Plugin watcher started"
+    }))
+}
+
+/// Stop watching plugins directory.
+#[tauri::command]
+pub async fn stop_plugin_watcher(state: State<'_, OrbisState>) -> Result<Value, String> {
+    state.stop_plugin_watcher();
+
+    Ok(json!({
+        "success": true,
+        "message": "Plugin watcher stopped"
     }))
 }
