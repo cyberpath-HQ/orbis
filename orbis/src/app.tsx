@@ -223,12 +223,11 @@ function PluginPageRenderer({
 }: PluginPageRendererProps): React.ReactElement {
     // Create page state store
     const stateStore = useMemo(() => {
-        // Convert page layout state definition if present
-        const pageWithState = page as unknown as { state?: PageDefinition[`state`] };
-        if (pageWithState.state) {
+        // Use page state definition if present
+        if (page.state) {
             return createPageStateStore(
                 Object.fromEntries(
-                    Object.entries(pageWithState.state).map(([
+                    Object.entries(page.state).map(([
                         key,
                         def,
                     ]) => [
@@ -247,9 +246,6 @@ function PluginPageRenderer({
     // Get the actual store instance
     const state = stateStore();
 
-    // Type alias for ComponentSchema
-    type NewComponentSchema = import(`@/types/schema`).ComponentSchema;
-
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
@@ -261,11 +257,14 @@ function PluginPageRenderer({
                 </div>
             </div>
 
-            <SchemaRenderer
-                schema={page.layout as unknown as NewComponentSchema}
-                state={state}
-                apiClient={apiClient}
-            />
+            {page.sections.map((section, index) => (
+                <SchemaRenderer
+                    key={index}
+                    schema={section}
+                    state={state}
+                    apiClient={apiClient}
+                />
+            ))}
         </div>
     );
 }
