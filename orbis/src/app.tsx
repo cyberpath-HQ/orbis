@@ -12,18 +12,19 @@ import {
     Route
 } from 'react-router-dom';
 import { invoke } from '@tauri-apps/api/core';
+import { Toaster } from 'sonner';
 
 import { AppLayout } from '@/lib/layout';
 import { RouteGuard } from '@/lib/router';
 import { SchemaRenderer } from '@/lib/renderer';
 import { createPageStateStore } from '@/lib/state';
+import { PluginErrorBoundary, PageErrorBoundary } from '@/components';
 import type { ApiClient } from '@/lib/actions';
 import type {
     PluginInfo, PluginPage, AppModeInfo
 } from '@/types/plugin';
 import type {
     NavigationConfig,
-    PageDefinition
 } from '@/types/schema';
 
 // Core system pages
@@ -247,26 +248,37 @@ function PluginPageRenderer({
     const state = stateStore();
 
     return (
-        <div className="space-y-6">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight">{page.title}</h1>
-                    {page.description && (
-                        <p className="text-muted-foreground">{page.description}</p>
-                    )}
+        <PluginErrorBoundary pluginId={page.plugin}>
+            <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h1 className="text-3xl font-bold tracking-tight">{page.title}</h1>
+                        {page.description && (
+                            <p className="text-muted-foreground">{page.description}</p>
+                        )}
+                    </div>
                 </div>
-            </div>
 
-            {page.sections.map((section, index) => (
-                <SchemaRenderer
-                    key={index}
-                    schema={section}
-                    state={state}
-                    apiClient={apiClient}
-                />
-            ))}
-        </div>
+                {page.sections.map((section, index) => (
+                    <PageErrorBoundary key={index}>
+                        <SchemaRenderer
+                            schema={section}
+                            state={state}
+                            apiClient={apiClient}
+                        />
+                    </PageErrorBoundary>
+                ))}
+            </div>
+        </PluginErrorBoundary>
     );
 }
 
 export default App;
+
+/**
+ * Toaster Component for Global Toast Notifications
+ * Positioned at top-right for non-intrusive notifications
+ */
+export function AppToaster(): React.ReactElement {
+    return <Toaster position="top-right" richColors closeButton />;
+}
