@@ -29,8 +29,48 @@ export type BooleanExpression = boolean | Expression;
 // Formats: "state:path.to.data", "prop:propName", "context:contextKey"
 export type DataSource = string;
 
+// ARIA accessibility properties
+export interface AriaProps {
+    // Basic ARIA
+    role?:           string
+    ariaLabel?:      Expression
+    ariaLabelledBy?: string
+    ariaDescribedBy?: string
+    ariaHidden?:     BooleanExpression
+    
+    // Interactive states
+    ariaDisabled?:   BooleanExpression
+    ariaExpanded?:   BooleanExpression
+    ariaPressed?:    BooleanExpression | `mixed`
+    ariaSelected?:   BooleanExpression
+    ariaChecked?:    BooleanExpression | `mixed`
+    
+    // Form/input
+    ariaRequired?:   BooleanExpression
+    ariaInvalid?:    BooleanExpression
+    ariaErrorMessage?: string
+    ariaPlaceholder?: Expression
+    
+    // Live regions
+    ariaLive?:       `off` | `polite` | `assertive`
+    ariaAtomic?:     BooleanExpression
+    ariaBusy?:       BooleanExpression
+    ariaRelevant?:   `additions` | `removals` | `text` | `all`
+    
+    // Relationships
+    ariaControls?:   string
+    ariaOwns?:       string
+    ariaFlowTo?:     string
+    
+    // Current state
+    ariaCurrent?:    boolean | `page` | `step` | `location` | `date` | `time`
+    
+    // Keyboard
+    tabIndex?:       number
+}
+
 // Base properties shared by all components
-export interface BaseComponentProps {
+export interface BaseComponentProps extends AriaProps {
     id?:        string
     className?: string
     style?:     Record<string, string | number>
