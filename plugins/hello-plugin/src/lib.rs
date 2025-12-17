@@ -12,7 +12,7 @@ pub struct PluginManifest {
 
 /// Get the plugin manifest.
 /// This function is called to retrieve the embedded manifest.
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn get_manifest() -> *const u8 {
     let manifest = PluginManifest {
         name: "Hello-Plugin".to_string(),
@@ -29,20 +29,20 @@ pub extern "C" fn get_manifest() -> *const u8 {
 }
 
 /// Initialize the plugin.
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn init() -> i32 {
     0 // Success
 }
 
 /// Execute the plugin's main functionality.
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn execute() -> i32 {
     // Plugin logic here
     0 // Success
 }
 
 /// Clean up plugin resources.
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn cleanup() -> i32 {
     0 // Success
 }
