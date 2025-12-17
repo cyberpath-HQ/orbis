@@ -107,6 +107,30 @@ import {
     type ActionContext,
     type ApiClient
 } from './actions';
+import { useForm } from '@tanstack/react-form';
+import {
+    buildFormSchema,
+    getInitialFormValues
+} from './form-utils';
+
+// Form context for sharing form instance with field renderers
+// We use `any` for the form instance type due to TanStack Form's complex generics
+interface FormContextValue {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    form:     any
+    formId:   string
+    isInForm: boolean
+}
+
+const FormContext = React.createContext<FormContextValue>({
+    form:     null,
+    formId:   ``,
+    isInForm: false,
+});
+
+function useFormContext(): FormContextValue {
+    return React.useContext(FormContext);
+}
 
 // Renderer context
 interface RendererContext {
@@ -456,6 +480,7 @@ function FieldRenderer({
     schema,
 }: { schema: FieldSchema }): React.ReactElement {
     const ctx = useRendererContext();
+    const formCtx = useFormContext();
     const stateData = ctx.state.getState();
     const handleChange = useEventHandler(schema.events?.onChange);
 
@@ -467,20 +492,53 @@ function FieldRenderer({
         ? evaluateBooleanExpression(schema.disabled, stateData)
         : false;
 
-    const value = schema.bindTo
-        ? getNestedValue(stateData, schema.bindTo)
-        : schema.defaultValue;
+    // Get value from form context if inside a form, otherwise from state
+    const formFieldMeta = formCtx.isInForm && formCtx.form
+        ? formCtx.form.state.fieldMeta[schema.name]
+        : null;
+    const formValue = formCtx.isInForm && formCtx.form
+        ? formCtx.form.state.values[schema.name]
+        : undefined;
+
+    const value = formCtx.isInForm && formValue !== undefined
+        ? formValue
+        : schema.bindTo
+            ? getNestedValue(stateData, schema.bindTo)
+            : schema.defaultValue;
+
+    // Get validation error from form if inside form context
+    const fieldError = formFieldMeta?.errors?.[0]
+        ? String(formFieldMeta.errors[0])
+        : undefined;
+    const isTouched = formFieldMeta?.isTouched ?? false;
+    const showError = isTouched && fieldError;
 
     const onValueChange = (newValue: unknown): void => {
+        // Update form state if inside form
+        if (formCtx.isInForm && formCtx.form) {
+            formCtx.form.setFieldValue(schema.name, newValue);
+        }
+
+        // Also update page state if bindTo is set
         if (schema.bindTo) {
             ctx.state.setState(schema.bindTo, newValue);
         }
+
         void handleChange({
             value: newValue,
         });
     };
 
+    const onBlur = (): void => {
+        // Trigger validation on blur if inside form
+        if (formCtx.isInForm && formCtx.form) {
+            void formCtx.form.validateField(schema.name, `blur`);
+        }
+    };
+
     const renderInput = (): React.ReactElement => {
+        const errorClass = showError ? `border-destructive` : ``;
+
         switch (schema.fieldType) {
             case `textarea`:
                 return (
@@ -492,6 +550,10 @@ function FieldRenderer({
                         required={schema.required}
                         value={String(value ?? ``)}
                         onChange={(e) => onValueChange(e.target.value)}
+                        onBlur={onBlur}
+                        className={errorClass}
+                        aria-invalid={showError ? `true` : undefined}
+                        aria-describedby={showError ? `${ schema.id }-error` : undefined}
                     />
                 );
 
@@ -504,6 +566,7 @@ function FieldRenderer({
                             disabled={isDisabled}
                             checked={Boolean(value)}
                             onCheckedChange={onValueChange}
+                            aria-invalid={showError ? `true` : undefined}
                         />
                         {label && <Label htmlFor={schema.id}>{label}</Label>}
                     </div>
@@ -518,6 +581,7 @@ function FieldRenderer({
                             disabled={isDisabled}
                             checked={Boolean(value)}
                             onCheckedChange={onValueChange}
+                            aria-invalid={showError ? `true` : undefined}
                         />
                         {label && <Label htmlFor={schema.id}>{label}</Label>}
                     </div>
@@ -529,6 +593,7 @@ function FieldRenderer({
                         value={String(value ?? ``)}
                         onValueChange={onValueChange}
                         disabled={isDisabled}
+                        aria-invalid={showError ? `true` : undefined}
                     >
                         {schema.options?.map((opt) => (
                             <div key={opt.value} className="flex items-center space-x-2">
@@ -546,7 +611,10 @@ function FieldRenderer({
                         onValueChange={onValueChange}
                         disabled={isDisabled}
                     >
-                        <SelectTrigger>
+                        <SelectTrigger
+                            className={errorClass}
+                            aria-invalid={showError ? `true` : undefined}
+                        >
                             <SelectValue placeholder={placeholder} />
                         </SelectTrigger>
                         <SelectContent>
@@ -571,6 +639,10 @@ function FieldRenderer({
                         readOnly={schema.readOnly}
                         value={String(value ?? ``)}
                         onChange={(e) => onValueChange(e.target.value)}
+                        onBlur={onBlur}
+                        className={errorClass}
+                        aria-invalid={showError ? `true` : undefined}
+                        aria-describedby={showError ? `${ schema.id }-error` : undefined}
                     />
                 );
         }
@@ -581,6 +653,11 @@ function FieldRenderer({
             <div className={`space-y-2 ${ schema.className ?? `` }`} style={schema.style as React.CSSProperties}>
                 {renderInput()}
                 {description && <p className="text-sm text-muted-foreground">{description}</p>}
+                {showError && (
+                    <p id={`${ schema.id }-error`} className="text-sm text-destructive" role="alert">
+                        {fieldError}
+                    </p>
+                )}
             </div>
         );
     }
@@ -588,13 +665,20 @@ function FieldRenderer({
     return (
         <div className={`space-y-2 ${ schema.className ?? `` }`} style={schema.style as React.CSSProperties}>
             {label && (
-                <Label htmlFor={schema.id}>
+                <Label htmlFor={schema.id} className={showError ? `text-destructive` : undefined}>
                     {label}
                     {schema.required && <span className="text-destructive ml-1">*</span>}
                 </Label>
             )}
             {renderInput()}
-            {description && <p className="text-sm text-muted-foreground">{description}</p>}
+            {description && !showError && (
+                <p className="text-sm text-muted-foreground">{description}</p>
+            )}
+            {showError && (
+                <p id={`${ schema.id }-error`} className="text-sm text-destructive" role="alert">
+                    {fieldError}
+                </p>
+            )}
         </div>
     );
 }
@@ -602,12 +686,49 @@ function FieldRenderer({
 function FormRenderer({
     schema,
 }: { schema: FormSchema }): React.ReactElement {
-    const handleSubmit = useEventHandler(schema.events?.onSubmit);
+    const ctx = useRendererContext();
+    const handleSubmitAction = useEventHandler(schema.events?.onSubmit);
+    const submitLabel = useResolvedValue(schema.submitLabel);
+    const cancelLabel = useResolvedValue(schema.cancelLabel);
 
-    const onFormSubmit = (e: React.FormEvent): void => {
-        e.preventDefault();
-        void handleSubmit(e);
-    };
+    // Build Zod schema for validation
+    const zodSchema = useMemo(
+        () => buildFormSchema(schema.fields),
+        [schema.fields]
+    );
+
+    // Get initial values from page state or field defaults
+    const initialValues = useMemo(
+        () => getInitialFormValues(schema.fields, ctx.state.getState()),
+        [schema.fields, ctx.state]
+    );
+
+    // Create TanStack Form instance with zod standard schema validation
+    const form = useForm({
+        defaultValues: initialValues,
+        validators: {
+            onChange: zodSchema,
+            onBlur:   zodSchema,
+        },
+        onSubmit: async({ value }) => {
+            // Sync all form values to page state based on bindTo
+            for (const field of schema.fields) {
+                if (field.bindTo && field.name in value) {
+                    ctx.state.setState(field.bindTo, value[field.name]);
+                }
+            }
+
+            // Execute onSubmit actions
+            await handleSubmitAction(value);
+        },
+    });
+
+    // Form context value
+    const formContextValue = useMemo<FormContextValue>(() => ({
+        form,
+        formId:   schema.id,
+        isInForm: true,
+    }), [form, schema.id]);
 
     const layoutClasses = {
         vertical:   `space-y-4`,
@@ -615,25 +736,47 @@ function FormRenderer({
         inline:     `flex flex-wrap gap-4 items-end`,
     };
 
+    const handleFormSubmit = (e: React.FormEvent): void => {
+        e.preventDefault();
+        void form.handleSubmit();
+    };
+
+    const handleReset = (): void => {
+        form.reset();
+    };
+
+    const isSubmitting = form.state.isSubmitting;
+
     return (
-        <form
-            id={schema.id}
-            className={`${ layoutClasses[schema.layout ?? `vertical`] } ${ schema.className ?? `` }`}
-            style={schema.style as React.CSSProperties}
-            onSubmit={onFormSubmit}
-        >
-            {schema.fields.map((field) => (
-                <FieldRenderer key={field.id} schema={field} />
-            ))}
-            <div className="flex gap-2">
-                <Button type="submit">{useResolvedValue(schema.submitLabel) || `Submit`}</Button>
-                {schema.cancelLabel && (
-                    <Button type="button" variant="outline">
-                        {useResolvedValue(schema.cancelLabel)}
+        <FormContext.Provider value={formContextValue}>
+            <form
+                id={schema.id}
+                className={`${ layoutClasses[schema.layout ?? `vertical`] } ${ schema.className ?? `` }`}
+                style={schema.style as React.CSSProperties}
+                onSubmit={handleFormSubmit}
+                noValidate
+            >
+                {schema.fields.map((field) => (
+                    <FieldRenderer key={field.id} schema={field} />
+                ))}
+                <div className="flex gap-2">
+                    <Button type="submit" disabled={isSubmitting}>
+                        {isSubmitting && <LucideIcons.Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        {submitLabel || `Submit`}
                     </Button>
-                )}
-            </div>
-        </form>
+                    {cancelLabel && (
+                        <Button type="button" variant="outline" onClick={handleReset}>
+                            {cancelLabel}
+                        </Button>
+                    )}
+                    {schema.showReset && (
+                        <Button type="button" variant="ghost" onClick={handleReset}>
+                            Reset
+                        </Button>
+                    )}
+                </div>
+            </form>
+        </FormContext.Provider>
     );
 }
 
