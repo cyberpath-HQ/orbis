@@ -5,7 +5,18 @@ use orbis_config::Config;
 use orbis_core::AppMode;
 use orbis_db::Database;
 use orbis_plugin::PluginManager;
-use std::sync::Arc;
+use std::sync::{Arc, RwLock};
+use serde::{Deserialize, Serialize};
+
+/// Authentication session data
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AuthSession {
+    pub user_id: String,
+    pub username: String,
+    pub token: String,
+    pub permissions: Vec<String>,
+    pub created_at: String,
+}
 
 /// Orbis application state.
 pub struct OrbisState {
@@ -26,6 +37,9 @@ pub struct OrbisState {
 
     /// Application configuration.
     config: Config,
+
+    /// Current authentication session.
+    session: Arc<RwLock<Option<AuthSession>>>,
 }
 
 impl OrbisState {
@@ -43,6 +57,7 @@ impl OrbisState {
             plugins: Some(plugins),
             server_url: None,
             config,
+            session: Arc::new(RwLock::new(None)),
         }
     }
 
@@ -55,6 +70,7 @@ impl OrbisState {
             plugins: None,
             server_url: Some(server_url),
             config,
+            session: Arc::new(RwLock::new(None)),
         }
     }
 
@@ -110,5 +126,26 @@ impl OrbisState {
     #[must_use]
     pub fn is_server(&self) -> bool {
         matches!(self.mode, AppMode::ClientServer) && self.db.is_some()
+    }
+
+    /// Get current session (read-only).
+    pub fn get_session(&self) -> Option<AuthSession> {
+        self.session.read().ok()?.clone()
+    }
+
+    /// Set session.
+    pub fn set_session(&self, session: Option<AuthSession>) {
+        if let Ok(mut s) = self.session.write() {
+            *s = session;
+        }
+    }
+
+    /// Check if user is authenticated.
+    pub fn is_authenticated(&self) -> bool {
+        self.session
+            .read()
+            .ok()
+            .map(|s| s.is_some())
+            .unwrap_or(false)
     }
 }

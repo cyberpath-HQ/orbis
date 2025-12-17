@@ -1,9 +1,95 @@
 //! Tauri commands for IPC.
 
-use crate::OrbisState;
+use crate::{OrbisState, state::AuthSession};
 use orbis_core::AppMode;
+use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use tauri::State;
+
+/// Authentication session data (re-export for easier access)
+pub use crate::state::AuthSession as SessionData;
+
+/// Login request
+#[derive(Debug, Deserialize)]
+pub struct LoginRequest {
+    pub username: String,
+    pub password: String,
+}
+
+/// Login response
+#[derive(Debug, Serialize)]
+pub struct LoginResponse {
+    pub success: bool,
+    pub message: String,
+    pub session: Option<AuthSession>,
+}
+
+/// Login command - authenticates user and creates session
+#[tauri::command]
+pub async fn login(
+    username: String,
+    password: String,
+    state: State<'_, OrbisState>,
+) -> Result<LoginResponse, String> {
+    // In standalone mode with no auth, allow any credentials
+    if state.is_standalone() {
+        // TODO: Integrate with orbis-auth crate for proper password verification
+        // For now, simple validation
+        if username.is_empty() || password.is_empty() {
+            return Ok(LoginResponse {
+                success: false,
+                message: "Username and password are required".to_string(),
+                session: None,
+            });
+        }
+
+        // Create session
+        let session = AuthSession {
+            user_id: format!("user_{}", username),
+            username: username.clone(),
+            token: format!("token_{}", chrono::Utc::now().timestamp()),
+            permissions: vec!["admin".to_string()], // Default admin in standalone
+            created_at: chrono::Utc::now().to_rfc3339(),
+        };
+
+        // Store session in state
+        state.set_session(Some(session.clone()));
+
+        Ok(LoginResponse {
+            success: true,
+            message: "Login successful".to_string(),
+            session: Some(session),
+        })
+    } else {
+        // In client mode, forward to server
+        // TODO: Implement HTTP auth call to server
+        Err("Client mode authentication not yet implemented".to_string())
+    }
+}
+
+/// Logout command - destroys current session
+#[tauri::command]
+pub async fn logout(state: State<'_, OrbisState>) -> Result<Value, String> {
+    // Clear session
+    state.set_session(None);
+
+    Ok(json!({
+        "success": true,
+        "message": "Logged out successfully"
+    }))
+}
+
+/// Get current session
+#[tauri::command]
+pub async fn get_session(state: State<'_, OrbisState>) -> Result<Option<AuthSession>, String> {
+    Ok(state.get_session())
+}
+
+/// Verify current session is valid
+#[tauri::command]
+pub async fn verify_session(state: State<'_, OrbisState>) -> Result<bool, String> {
+    Ok(state.is_authenticated())
+}
 
 /// Health check command.
 #[tauri::command]

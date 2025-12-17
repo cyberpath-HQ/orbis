@@ -13,7 +13,7 @@ use orbis_server::Server;
 use tauri::Manager;
 
 /// Application state shared across Tauri commands.
-pub use state::OrbisState;
+pub use state::{OrbisState, AuthSession};
 
 /// Initialize logging.
 fn init_logging(config: &Config) {
@@ -106,6 +106,10 @@ pub fn run() {
             commands::switch_profile,
             commands::get_plugins,
             commands::get_plugin_pages,
+            commands::login,
+            commands::logout,
+            commands::get_session,
+            commands::verify_session,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
