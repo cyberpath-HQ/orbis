@@ -5,8 +5,7 @@
 import React, {
     useState,
     useEffect,
-    useMemo,
-    useCallback
+    useMemo
 } from 'react';
 import {
     Routes,
@@ -182,7 +181,7 @@ function App(): React.ReactElement {
                 {/* Protected routes */}
                 <Route element={<RouteGuard requiresAuth={false} />}>
                     <Route path="/" element={<DashboardPage mode={mode} plugins={plugins} />} />
-                    <Route path="/plugins" element={<PluginsPage plugins={plugins} />} />
+                    <Route path="/plugins" element={<PluginsPage />} />
                     <Route path="/settings" element={<SettingsPage />} />
                     <Route path="/settings/*" element={<SettingsPage />} />
                 </Route>

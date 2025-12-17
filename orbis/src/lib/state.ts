@@ -5,6 +5,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import type { StateDefinition } from '../types/schema';
+import { getCachedExpression, setCachedExpression } from './performance';
 
 /**
  * Get nested value from object using dot notation path
@@ -195,22 +196,37 @@ export function createPageStateStore(initialDefinition?: StateDefinition) {
 
 /**
  * Expression interpolation - replaces {{path}} with values from state
+ * Uses caching for performance optimization
  */
 export function interpolateExpression(
     expression: string,
     state: Record<string, unknown>,
     context?: Record<string, unknown>
 ): string {
+    // Generate cache key based on expression and relevant state
+    const cacheKey = `${expression}::${JSON.stringify(state)}::${context ? JSON.stringify(context) : ''}`;
+    
+    // Check cache first
+    const cached = getCachedExpression(cacheKey, {});
+    if (cached !== undefined && typeof cached === 'string') {
+        return cached;
+    }
+
     const combined = {
         ...state,
         ...context,
     };
 
-    return expression.replace(/\{\{([^}]+)\}\}/g, (_, path: string) => {
+    const result = expression.replace(/\{\{([^}]+)\}\}/g, (_, path: string) => {
         const trimmedPath = path.trim();
         const value = getNestedValue(combined, trimmedPath);
         return value !== undefined ? String(value) : ``;
     });
+
+    // Cache the result
+    setCachedExpression(cacheKey, {}, result);
+    
+    return result;
 }
 
 /**

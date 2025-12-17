@@ -38,6 +38,7 @@ import {
     DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
+import { SkipLink } from '@/components';
 
 import { useAuth } from './router';
 import type {
@@ -123,6 +124,9 @@ export function AppLayout({
 
     return (
         <SidebarProvider>
+            {/* Skip link for keyboard navigation accessibility */}
+            <SkipLink targetId="main-content" />
+
             <div className="flex min-h-screen w-full">
                 <Sidebar>
                     <SidebarHeader className="border-b px-4 py-3">
@@ -223,7 +227,7 @@ export function AppLayout({
                         <div className="flex-1" />
                     </header>
 
-                    <main className="flex-1 p-6">
+                    <main id="main-content" className="flex-1 p-6" role="main" aria-label="Main content">
                         {children}
                     </main>
                 </SidebarInset>

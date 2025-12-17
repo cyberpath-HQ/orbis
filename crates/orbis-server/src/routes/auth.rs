@@ -5,7 +5,7 @@ use axum::{
     routing::{get, post},
     Json, Router,
 };
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use serde_json::{json, Value};
 
 use crate::error::ServerResult;
@@ -27,25 +27,6 @@ pub fn router() -> Router<AppState> {
 struct LoginRequest {
     username: String,
     password: String,
-}
-
-/// Login response.
-#[derive(Debug, Serialize)]
-struct AuthResponse {
-    access_token: String,
-    refresh_token: String,
-    expires_in: u64,
-    user: UserResponse,
-}
-
-/// User response.
-#[derive(Debug, Serialize)]
-struct UserResponse {
-    id: String,
-    username: String,
-    email: String,
-    display_name: Option<String>,
-    is_admin: bool,
 }
 
 /// Login handler.

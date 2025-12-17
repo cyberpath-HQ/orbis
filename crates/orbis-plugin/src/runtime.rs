@@ -42,8 +42,15 @@ struct PluginInstance {
     engine: Engine,
     #[cfg(feature = "wasm")]
     module: Module,
-    #[allow(dead_code)]
     sandbox_config: SandboxConfig,
+}
+
+impl PluginInstance {
+    /// Get the sandbox configuration.
+    #[must_use]
+    pub const fn sandbox_config(&self) -> &SandboxConfig {
+        &self.sandbox_config
+    }
 }
 
 /// Plugin runtime for executing plugin code.
@@ -62,6 +69,33 @@ impl PluginRuntime {
             #[cfg(feature = "wasm")]
             engine: Engine::default(),
         }
+    }
+
+    /// Check if a plugin has a specific permission.
+    #[must_use]
+    pub fn has_permission(&self, plugin_name: &str, permission: &str) -> bool {
+        self.instances
+            .get(plugin_name)
+            .map(|instance| instance.sandbox_config().has_permission(permission))
+            .unwrap_or(false)
+    }
+
+    /// Check if a plugin is allowed to access a network host.
+    #[must_use]
+    pub fn can_access_network(&self, plugin_name: &str, host: &str) -> bool {
+        self.instances
+            .get(plugin_name)
+            .map(|instance| instance.sandbox_config().can_access_network(host))
+            .unwrap_or(false)
+    }
+
+    /// Check if a plugin is allowed to access a file path.
+    #[must_use]
+    pub fn can_access_path(&self, plugin_name: &str, path: &str) -> bool {
+        self.instances
+            .get(plugin_name)
+            .map(|instance| instance.sandbox_config().can_access_path(path))
+            .unwrap_or(false)
     }
 
     /// Initialize a plugin.
@@ -200,6 +234,15 @@ impl PluginRuntime {
     #[must_use]
     pub fn is_running(&self, name: &str) -> bool {
         self.instances.contains_key(name)
+    }
+
+    /// Clear cached data for a plugin.
+    ///
+    /// This is used during hot reload to ensure fresh module compilation.
+    pub fn clear_cache(&self, name: &str) {
+        // Remove any cached instance
+        self.instances.remove(name);
+        tracing::debug!("Cleared cache for plugin: {}", name);
     }
 }
 

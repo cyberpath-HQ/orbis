@@ -266,34 +266,6 @@ impl PluginLoader {
             "No embedded manifest found in WASM custom section"
         ))
     }
-    
-    /// Read a LEB128-encoded unsigned integer.
-    /// This is kept for potential future use but not needed with wasmparser.
-    #[allow(dead_code)]
-    fn read_leb128(&self, bytes: &[u8]) -> Result<(usize, usize), ()> {
-        let mut result = 0usize;
-        let mut shift = 0;
-        let mut pos = 0;
-        
-        loop {
-            if pos >= bytes.len() || shift >= 64 {
-                return Err(());
-            }
-            
-            let byte = bytes[pos];
-            pos += 1;
-            
-            result |= ((byte & 0x7F) as usize) << shift;
-            
-            if byte & 0x80 == 0 {
-                break;
-            }
-            
-            shift += 7;
-        }
-        
-        Ok((result, pos))
-    }
 
     /// Load plugin WASM code.
     ///

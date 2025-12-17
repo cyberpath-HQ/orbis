@@ -132,6 +132,48 @@ impl SandboxConfig {
         self.allowed_hosts.push(host.into());
         self
     }
+
+    /// Check if a string permission is allowed.
+    #[must_use]
+    pub fn has_permission(&self, permission: &str) -> bool {
+        match permission.to_lowercase().as_str() {
+            "database_read" | "db_read" => self.allow_db_read,
+            "database_write" | "db_write" => self.allow_db_write,
+            "file_read" => self.allow_file_read,
+            "file_write" => self.allow_file_write,
+            "network" => self.allow_network,
+            "system" => self.allow_system,
+            "shell" => self.allow_shell,
+            "environment" | "env" => self.allow_environment,
+            _ => false,
+        }
+    }
+
+    /// Check if a network host is accessible.
+    #[must_use]
+    pub fn can_access_network(&self, host: &str) -> bool {
+        if !self.allow_network {
+            return false;
+        }
+        // Empty allowed_hosts means all hosts are allowed when network is enabled
+        if self.allowed_hosts.is_empty() {
+            return true;
+        }
+        self.allowed_hosts.iter().any(|h| host.contains(h) || h == "*")
+    }
+
+    /// Check if a file path is accessible.
+    #[must_use]
+    pub fn can_access_path(&self, path: &str) -> bool {
+        if !self.allow_file_read && !self.allow_file_write {
+            return false;
+        }
+        // Empty allowed_paths means no paths are allowed even with permission
+        if self.allowed_paths.is_empty() {
+            return false;
+        }
+        self.allowed_paths.iter().any(|p| path.starts_with(p) || p == "*")
+    }
 }
 
 impl Default for SandboxConfig {

@@ -25,6 +25,9 @@ wasmparser = { workspace = true }
 # Archive handling for packed plugins
 zip = { workspace = true }
 
+# File watching for hot reload
+notify = { workspace = true }
+
 # Async
 tokio = { workspace = true }
 async-trait = { workspace = true }
