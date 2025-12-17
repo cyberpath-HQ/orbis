@@ -4,6 +4,7 @@ use crate::{OrbisState, state::AuthSession};
 use orbis_core::AppMode;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
+use std::path::PathBuf;
 use tauri::State;
 
 /// Authentication session data (re-export for easier access)
@@ -220,5 +221,110 @@ pub fn get_plugin_pages(state: State<'_, OrbisState>) -> Result<Value, String> {
     Ok(json!({
         "pages": pages,
         "count": pages.len()
+    }))
+}
+
+/// Reload a specific plugin (hot reload).
+#[tauri::command]
+pub async fn reload_plugin(name: String, state: State<'_, OrbisState>) -> Result<Value, String> {
+    let pm = state.plugins().ok_or("Plugins not available in client mode")?;
+
+    let info = pm.reload_plugin(&name).await.map_err(|e| e.to_string())?;
+
+    Ok(json!({
+        "success": true,
+        "message": format!("Plugin '{}' reloaded successfully", name),
+        "plugin": {
+            "id": info.id.to_string(),
+            "name": info.manifest.name,
+            "version": info.manifest.version,
+            "state": format!("{:?}", info.state),
+        }
+    }))
+}
+
+/// Enable a disabled plugin.
+#[tauri::command]
+pub async fn enable_plugin(name: String, state: State<'_, OrbisState>) -> Result<Value, String> {
+    let pm = state.plugins().ok_or("Plugins not available in client mode")?;
+
+    pm.enable_plugin(&name).await.map_err(|e| e.to_string())?;
+
+    Ok(json!({
+        "success": true,
+        "message": format!("Plugin '{}' enabled", name)
+    }))
+}
+
+/// Disable a running plugin.
+#[tauri::command]
+pub async fn disable_plugin(name: String, state: State<'_, OrbisState>) -> Result<Value, String> {
+    let pm = state.plugins().ok_or("Plugins not available in client mode")?;
+
+    pm.disable_plugin(&name).await.map_err(|e| e.to_string())?;
+
+    Ok(json!({
+        "success": true,
+        "message": format!("Plugin '{}' disabled", name)
+    }))
+}
+
+/// Uninstall a plugin.
+#[tauri::command]
+pub async fn uninstall_plugin(name: String, state: State<'_, OrbisState>) -> Result<Value, String> {
+    let pm = state.plugins().ok_or("Plugins not available in client mode")?;
+
+    pm.unload_plugin(&name).await.map_err(|e| e.to_string())?;
+
+    Ok(json!({
+        "success": true,
+        "message": format!("Plugin '{}' uninstalled", name)
+    }))
+}
+
+/// Install a plugin from a local path.
+#[tauri::command]
+pub async fn install_plugin(path: String, state: State<'_, OrbisState>) -> Result<Value, String> {
+    let pm = state.plugins().ok_or("Plugins not available in client mode")?;
+
+    let plugin_path = PathBuf::from(&path);
+    if !plugin_path.exists() {
+        return Err(format!("Plugin path does not exist: {}", path));
+    }
+
+    let info = pm.load_plugin(&plugin_path).await.map_err(|e| e.to_string())?;
+
+    Ok(json!({
+        "success": true,
+        "message": format!("Plugin '{}' installed successfully", info.manifest.name),
+        "plugin": {
+            "id": info.id.to_string(),
+            "name": info.manifest.name,
+            "version": info.manifest.version,
+            "description": info.manifest.description,
+            "state": format!("{:?}", info.state),
+        }
+    }))
+}
+
+/// Get detailed information about a specific plugin.
+#[tauri::command]
+pub fn get_plugin_info(name: String, state: State<'_, OrbisState>) -> Result<Value, String> {
+    let pm = state.plugins().ok_or("Plugins not available in client mode")?;
+
+    let info = pm.registry().get(&name).ok_or_else(|| format!("Plugin '{}' not found", name))?;
+
+    Ok(json!({
+        "id": info.id.to_string(),
+        "name": info.manifest.name,
+        "version": info.manifest.version,
+        "description": info.manifest.description,
+        "author": info.manifest.author,
+        "license": info.manifest.license,
+        "state": format!("{:?}", info.state),
+        "loaded_at": info.loaded_at.to_rfc3339(),
+        "permissions": info.manifest.permissions.iter().map(|p| format!("{:?}", p)).collect::<Vec<_>>(),
+        "routes_count": info.manifest.routes.len(),
+        "pages_count": info.manifest.pages.len(),
     }))
 }
