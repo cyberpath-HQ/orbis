@@ -5,7 +5,8 @@
 
 import React, {
     useMemo,
-    useCallback
+    useCallback,
+    memo
 } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as LucideIcons from 'lucide-react';
@@ -112,6 +113,8 @@ import {
     buildFormSchema,
     getInitialFormValues
 } from './form-utils';
+import { extractAriaProps } from './a11y';
+import { shallowEqual } from './performance';
 
 // Form context for sharing form instance with field renderers
 // We use `any` for the form instance type due to TanStack Form's complex generics
@@ -185,12 +188,12 @@ export function SchemaRenderer({
     );
 }
 
-// Component renderer
+// Component renderer (memoized for performance)
 interface ComponentRendererProps {
     schema: ComponentSchema
 }
 
-function ComponentRenderer({
+const ComponentRenderer = memo(function ComponentRenderer({
     schema,
 }: ComponentRendererProps): React.ReactElement | null {
     const ctx = useRendererContext();
@@ -295,7 +298,21 @@ function ComponentRenderer({
         default:
             return null;
     }
-}
+}, (prevProps, nextProps) => {
+    // Custom comparison for memoization
+    // Only re-render if schema reference changed or schema.id changed
+    if (prevProps.schema === nextProps.schema) {
+        return true;
+    }
+    if (prevProps.schema.id !== nextProps.schema.id) {
+        return false;
+    }
+    // Use shallow comparison for schema object
+    return shallowEqual(
+        prevProps.schema as unknown as Record<string, unknown>,
+        nextProps.schema as unknown as Record<string, unknown>
+    );
+});
 
 // Event handler helper
 function useEventHandler(actions?: Array<Action>): (event?: unknown) => Promise<void> {
@@ -352,11 +369,16 @@ function getIcon(name: string): React.ComponentType<{ className?: string }> | nu
 function ContainerRenderer({
     schema,
 }: { schema: ContainerSchema }): React.ReactElement {
+    const ctx = useRendererContext();
+    const stateData = ctx.state.getState();
     const handleClick = useEventHandler(schema.events?.onClick);
 
     const handleOnClick = (): void => {
         void handleClick();
     };
+
+    // Extract ARIA props for accessibility
+    const ariaProps = extractAriaProps(schema, stateData);
 
     return (
         <div
@@ -364,6 +386,11 @@ function ContainerRenderer({
             className={schema.className}
             style={schema.style as React.CSSProperties}
             onClick={schema.events?.onClick ? handleOnClick : undefined}
+            role={ariaProps.role as string | undefined}
+            aria-label={ariaProps[`aria-label`] as string | undefined}
+            aria-labelledby={ariaProps[`aria-labelledby`] as string | undefined}
+            aria-describedby={ariaProps[`aria-describedby`] as string | undefined}
+            aria-hidden={ariaProps[`aria-hidden`] as boolean | undefined}
         >
             {schema.children.map((child, i) => (
                 <ComponentRenderer key={child.id ?? i} schema={child} />
@@ -458,6 +485,9 @@ function ButtonRenderer({
         }
     };
 
+    // Extract ARIA props for accessibility
+    const ariaProps = extractAriaProps(schema, { ...stateData, $loading: isLoading });
+
     return (
         <Button
             id={schema.id}
@@ -467,6 +497,10 @@ function ButtonRenderer({
             onClick={handleOnClick}
             className={schema.className}
             style={schema.style as React.CSSProperties}
+            aria-label={ariaProps[`aria-label`] as string | undefined}
+            aria-disabled={isDisabled || isLoading}
+            aria-busy={isLoading}
+            {...(ariaProps.role && { role: ariaProps.role as string })}
         >
             {isLoading && <LucideIcons.Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {Icon && schema.iconPosition !== `right` && <Icon className="mr-2 h-4 w-4" />}

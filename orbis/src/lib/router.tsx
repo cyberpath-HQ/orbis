@@ -79,9 +79,14 @@ export function AuthProvider({
                 const session = await invoke<{
                     user_id: string;
                     username: string;
+                    email: string;
                     token: string;
+                    refresh_token: string | null;
                     permissions: string[];
+                    roles: string[];
+                    is_admin: boolean;
                     created_at: string;
+                    expires_at: string | null;
                 } | null>('get_session');
 
                 if (session) {
@@ -90,10 +95,10 @@ export function AuthProvider({
                         user: {
                             id: session.user_id,
                             name: session.username,
-                            email: session.username, // Use username as email for now
+                            email: session.email,
                         },
                         permissions: session.permissions,
-                        roles: [],
+                        roles: session.roles,
                     });
                 }
             } catch (error) {
@@ -115,9 +120,14 @@ export function AuthProvider({
                     session?: {
                         user_id: string;
                         username: string;
+                        email: string;
                         token: string;
+                        refresh_token: string | null;
                         permissions: string[];
+                        roles: string[];
+                        is_admin: boolean;
                         created_at: string;
+                        expires_at: string | null;
                     };
                 }>('login', { username: email, password });
 
@@ -127,10 +137,10 @@ export function AuthProvider({
                         user: {
                             id: response.session.user_id,
                             name: response.session.username,
-                            email: email,
+                            email: response.session.email,
                         },
                         permissions: response.session.permissions,
-                        roles: [], // TODO: Get roles from session
+                        roles: response.session.roles,
                     });
                     toast.success('Login successful');
                 } else {
