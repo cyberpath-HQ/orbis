@@ -5,8 +5,8 @@ import type * as Preset from '@docusaurus/preset-classic';
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-  title: 'Orbis Docs',
-  tagline: 'Documentation for Orbis Project',
+  title: 'Orbis Documentation',
+  tagline: 'Build powerful desktop applications with plugin-driven architecture',
   favicon: 'img/favicon.ico',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
@@ -14,22 +14,16 @@ const config: Config = {
     v4: true, // Improve compatibility with the upcoming Docusaurus v4
   },
 
-  // Set the production url of your site here
+  // Production URL
   url: 'https://docs.orbis.cyberpath-hq.com',
-  // Set the /<baseUrl>/ pathname under which your site is served
-  // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
 
-  // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'cyberpath-HQ', // Usually your GitHub org/user name.
-  projectName: 'orbis', // Usually your repo name.
+  // GitHub deployment config
+  organizationName: 'cyberpath-HQ',
+  projectName: 'orbis',
 
   onBrokenLinks: 'throw',
 
-  // Even if you don't use internationalization, you can use this field to set
-  // useful metadata like html lang. For example, if your site is Chinese, you
-  // may want to replace "en" with "zh-Hans".
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],
@@ -40,12 +34,16 @@ const config: Config = {
       'classic',
       {
         docs: {
-          routeBasePath: '/',
           sidebarPath: './sidebars.ts',
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/cyberpath-HQ/orbis/tree/main/packages/create-docusaurus/templates/shared/',
+          editUrl: 'https://github.com/cyberpath-HQ/orbis/tree/main/docs/',
+          // Enable versioning
+          lastVersion: 'current',
+          versions: {
+            current: {
+              label: '1.x',
+              badge: true,
+            },
+          },
         },
         blog: false,
         theme: {
@@ -56,23 +54,45 @@ const config: Config = {
   ],
 
   themeConfig: {
-    // Replace with your project's social card
-    image: 'img/docusaurus-social-card.jpg',
+    image: 'img/orbis-social-card.png',
+    
+    // Announcement bar for important notices
+    announcementBar: {
+      id: 'v1_release',
+      content: '🎉 Orbis v1.0 is now available! <a href="/docs/">Get started</a>',
+      backgroundColor: 'var(--ifm-color-primary)',
+      textColor: 'var(--ifm-color-primary-contrast-foreground)',
+      isCloseable: true,
+    },
+
     colorMode: {
+      defaultMode: 'light',
+      disableSwitch: false,
       respectPrefersColorScheme: true,
     },
+
     navbar: {
-      title: 'My Site',
+      title: 'Orbis',
       logo: {
-        alt: 'My Site Logo',
+        alt: 'Orbis Logo',
         src: 'img/logo.svg',
       },
       items: [
         {
           type: 'docSidebar',
-          sidebarId: 'tutorialSidebar',
+          sidebarId: 'docsSidebar',
           position: 'left',
-          label: 'Tutorial',
+          label: 'Docs',
+        },
+        {
+          to: '/docs/api-reference/overview',
+          position: 'left',
+          label: 'API Reference',
+        },
+        {
+          type: 'docsVersionDropdown',
+          position: 'right',
+          dropdownActiveClassDisabled: true,
         },
         {
           href: 'https://github.com/cyberpath-HQ/orbis',
@@ -81,15 +101,41 @@ const config: Config = {
         },
       ],
     },
+
     footer: {
       style: 'dark',
       links: [
         {
-          title: 'Docs',
+          title: 'Learn',
           items: [
             {
-              label: 'Tutorial',
-              to: '/docs/intro',
+              label: 'Getting Started',
+              to: '/docs/',
+            },
+            {
+              label: 'Core Concepts',
+              to: '/docs/core-concepts/architecture',
+            },
+            {
+              label: 'Plugin Development',
+              to: '/docs/plugin-development/overview',
+            },
+          ],
+        },
+        {
+          title: 'Reference',
+          items: [
+            {
+              label: 'Components',
+              to: '/docs/components/overview',
+            },
+            {
+              label: 'Actions',
+              to: '/docs/actions/overview',
+            },
+            {
+              label: 'API',
+              to: '/docs/api-reference/state-management',
             },
           ],
         },
@@ -97,16 +143,12 @@ const config: Config = {
           title: 'Community',
           items: [
             {
-              label: 'Stack Overflow',
-              href: 'https://stackoverflow.com/questions/tagged/docusaurus',
+              label: 'GitHub',
+              href: 'https://github.com/cyberpath-HQ/orbis',
             },
             {
               label: 'Discord',
-              href: 'https://discordapp.com/invite/docusaurus',
-            },
-            {
-              label: 'X',
-              href: 'https://x.com/docusaurus',
+              href: 'https://discord.gg/orbis',
             },
           ],
         },
@@ -114,23 +156,50 @@ const config: Config = {
           title: 'More',
           items: [
             {
-              label: 'Blog',
-              to: '/blog',
+              label: 'Changelog',
+              to: '/docs/changelog',
             },
             {
-              label: 'GitHub',
-              href: 'https://github.com/facebook/docusaurus',
+              label: 'Contributing',
+              href: 'https://github.com/cyberpath-HQ/orbis/blob/main/CONTRIBUTING.md',
             },
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Orbis. Built with Docusaurus.`,
     },
+
     prism: {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
+      additionalLanguages: ['rust', 'json', 'bash', 'typescript'],
+    },
+
+    // Table of contents
+    tableOfContents: {
+      minHeadingLevel: 2,
+      maxHeadingLevel: 4,
+    },
+
+    // Docs features
+    docs: {
+      sidebar: {
+        hideable: true,
+        autoCollapseCategories: true,
+      },
     },
   } satisfies Preset.ThemeConfig,
+
+  // Markdown features
+  markdown: {
+    mermaid: true,
+    hooks: {
+      onBrokenMarkdownLinks: `throw`,
+    }
+  },
+
+  // Additional themes for diagrams
+  themes: ['@docusaurus/theme-mermaid'],
 };
 
 export default config;
