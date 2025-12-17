@@ -10,7 +10,8 @@ import React, {
 } from 'react';
 import {
     Routes,
-    Route
+    Route,
+    useNavigate
 } from 'react-router-dom';
 import { invoke } from '@tauri-apps/api/core';
 import { Toaster } from 'sonner';
@@ -217,6 +218,8 @@ function PluginPageRenderer({
     page,
     apiClient,
 }: PluginPageRendererProps): React.ReactElement {
+    const navigate = useNavigate();
+
     // Create page state store
     const stateStore = useMemo(() => {
         // Use page state definition if present
@@ -248,9 +251,7 @@ function PluginPageRenderer({
             const actionContext = {
                 state,
                 apiClient,
-                navigate: () => {
-                    // Empty navigation stub
-                },
+                navigate,
             };
             executeActions(page.hooks.onMount, actionContext).catch((error) => {
                 console.error(`Error executing onMount hook:`, error);
@@ -265,9 +266,7 @@ function PluginPageRenderer({
             const actionContext = {
                 state,
                 apiClient,
-                navigate: () => {
-                    // Empty navigation stub
-                },
+                navigate,
             };
             executeActions(page.hooks.onUnmount, actionContext).catch((error) => {
                 console.error(`Error executing onUnmount hook:`, error);

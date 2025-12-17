@@ -214,7 +214,8 @@ export function interpolateExpression(
 }
 
 /**
- * Evaluate a boolean expression
+ * Evaluate a boolean expression with support for complex logic
+ * Supports: ==, ===, !=, !==, >, >=, <, <=, &&, ||, !, parentheses
  */
 export function evaluateBooleanExpression(
     expression: boolean | string,
@@ -238,38 +239,306 @@ export function evaluateBooleanExpression(
         return false;
     }
 
-    // Try to evaluate simple comparisons
-    const comparisonMatch = /^(.+?)\s*(===?|!==?|>=?|<=?)\s*(.+)$/.exec(interpolated);
-    if (comparisonMatch) {
+    // Try to evaluate the expression using the expression parser
+    try {
+        return evaluateComplexExpression(interpolated);
+    }
+    catch {
+        // Fallback to simple comparison for backward compatibility
+        const comparisonMatch = /^(.+?)\s*(===?|!==?|>=?|<=?)\s*(.+)$/.exec(interpolated);
+        if (comparisonMatch) {
+            const [
+                , left,
+                op,
+                right,
+            ] = comparisonMatch;
+            const leftVal = parseValue(left.trim());
+            const rightVal = parseValue(right.trim());
+
+            switch (op) {
+                case `==`:
+                case `===`:
+                    return leftVal === rightVal;
+                case `!=`:
+                case `!==`:
+                    return leftVal !== rightVal;
+                case `>`:
+                    return Number(leftVal) > Number(rightVal);
+                case `>=`:
+                    return Number(leftVal) >= Number(rightVal);
+                case `<`:
+                    return Number(leftVal) < Number(rightVal);
+                case `<=`:
+                    return Number(leftVal) <= Number(rightVal);
+            }
+        }
+
+        // Check for truthy value
+        return Boolean(interpolated);
+    }
+}
+
+/**
+ * Evaluate complex boolean expressions with AND, OR, NOT and parentheses
+ */
+function evaluateComplexExpression(expr: string): boolean {
+    expr = expr.trim();
+
+    // Handle parentheses first
+    let openParen = expr.lastIndexOf(`(`);
+    while (openParen !== -1) {
+        const closeParen = expr.indexOf(`)`, openParen);
+        if (closeParen === -1) {
+            throw new Error(`Unmatched parenthesis`);
+        }
+        const inner = expr.slice(openParen + 1, closeParen);
+        const result = evaluateComplexExpression(inner);
+        expr = expr.slice(0, openParen) + String(result) + expr.slice(closeParen + 1);
+        openParen = expr.lastIndexOf(`(`);
+    }
+
+    // Handle OR (lowest precedence)
+    if (expr.includes(`||`)) {
+        const parts = splitByOperator(expr, `||`);
+        return parts.some((part) => evaluateComplexExpression(part.trim()));
+    }
+
+    // Handle AND (higher precedence than OR)
+    if (expr.includes(`&&`)) {
+        const parts = splitByOperator(expr, `&&`);
+        return parts.every((part) => evaluateComplexExpression(part.trim()));
+    }
+
+    // Handle NOT (highest precedence)
+    if (expr.startsWith(`!`) && !expr.startsWith(`!=`)) {
+        return !evaluateComplexExpression(expr.slice(1).trim());
+    }
+
+    // Handle comparison operators
+    const comparisonOps = [
+        `===`,
+        `!==`,
+        `==`,
+        `!=`,
+        `>=`,
+        `<=`,
+        `>`,
+        `<`,
+    ];
+    for (const op of comparisonOps) {
+        const opIndex = expr.indexOf(op);
+        if (opIndex !== -1) {
+            const left = parseValue(expr.slice(0, opIndex).trim());
+            const right = parseValue(expr.slice(opIndex + op.length).trim());
+
+            switch (op) {
+                case `===`:
+                case `==`:
+                    return left === right;
+                case `!==`:
+                case `!=`:
+                    return left !== right;
+                case `>`:
+                    return Number(left) > Number(right);
+                case `>=`:
+                    return Number(left) >= Number(right);
+                case `<`:
+                    return Number(left) < Number(right);
+                case `<=`:
+                    return Number(left) <= Number(right);
+            }
+        }
+    }
+
+    // Handle simple boolean values
+    if (expr === `true`) {
+        return true;
+    }
+    if (expr === `false`) {
+        return false;
+    }
+
+    // Truthy evaluation for other values
+    const value = parseValue(expr);
+    return Boolean(value);
+}
+
+/**
+ * Split expression by operator, respecting parentheses
+ */
+function splitByOperator(expr: string, op: string): Array<string> {
+    const parts: Array<string> = [];
+    let depth = 0;
+    let current = ``;
+
+    for (let i = 0; i < expr.length; i++) {
+        const char = expr[i];
+        if (char === `(`) {
+            depth++;
+            current += char;
+        }
+        else if (char === `)`) {
+            depth--;
+            current += char;
+        }
+        else if (depth === 0 && expr.slice(i, i + op.length) === op) {
+            parts.push(current);
+            current = ``;
+            i += op.length - 1;
+        }
+        else {
+            current += char;
+        }
+    }
+    parts.push(current);
+    return parts;
+}
+
+/**
+ * Evaluate a mathematical expression
+ * Supports: +, -, *, /, %, parentheses
+ */
+export function evaluateMathExpression(
+    expression: string,
+    state: Record<string, unknown>,
+    context?: Record<string, unknown>
+): number {
+    const combined = {
+        ...state,
+        ...context,
+    };
+    const interpolated = interpolateExpression(expression, combined);
+
+    try {
+        return evaluateMathExpressionInternal(interpolated);
+    }
+    catch {
+        return 0;
+    }
+}
+
+function evaluateMathExpressionInternal(expr: string): number {
+    expr = expr.trim();
+
+    // Handle parentheses
+    let openParen = expr.lastIndexOf(`(`);
+    while (openParen !== -1) {
+        const closeParen = expr.indexOf(`)`, openParen);
+        if (closeParen === -1) {
+            throw new Error(`Unmatched parenthesis`);
+        }
+        const inner = expr.slice(openParen + 1, closeParen);
+        const result = evaluateMathExpressionInternal(inner);
+        expr = expr.slice(0, openParen) + String(result) + expr.slice(closeParen + 1);
+        openParen = expr.lastIndexOf(`(`);
+    }
+
+    // Handle addition and subtraction (lowest precedence)
+    const addMatch = expr.match(/^(.+?)\s*([+-])\s*([^+-]+)$/);
+    if (addMatch) {
         const [
             , left,
             op,
             right,
-        ] = comparisonMatch;
-        const leftVal = parseValue(left.trim());
-        const rightVal = parseValue(right.trim());
+        ] = addMatch;
+        const leftVal = evaluateMathExpressionInternal(left);
+        const rightVal = evaluateMathExpressionInternal(right);
+        return op === `+` ? leftVal + rightVal : leftVal - rightVal;
+    }
 
+    // Handle multiplication, division, modulo (higher precedence)
+    const mulMatch = expr.match(/^(.+?)\s*([*/%])\s*([^*/%]+)$/);
+    if (mulMatch) {
+        const [
+            , left,
+            op,
+            right,
+        ] = mulMatch;
+        const leftVal = evaluateMathExpressionInternal(left);
+        const rightVal = evaluateMathExpressionInternal(right);
         switch (op) {
-            case `==`:
-            case `===`:
-                return leftVal === rightVal;
-            case `!=`:
-            case `!==`:
-                return leftVal !== rightVal;
-            case `>`:
-                return Number(leftVal) > Number(rightVal);
-            case `>=`:
-                return Number(leftVal) >= Number(rightVal);
-            case `<`:
-                return Number(leftVal) < Number(rightVal);
-            case `<=`:
-                return Number(leftVal) <= Number(rightVal);
+            case `*`:
+                return leftVal * rightVal;
+            case `/`:
+                return rightVal !== 0 ? leftVal / rightVal : 0;
+            case `%`:
+                return rightVal !== 0 ? leftVal % rightVal : 0;
         }
     }
 
-    // Check for truthy value
-    return Boolean(interpolated);
+    // Parse as number
+    const num = Number(expr);
+    if (!isNaN(num)) {
+        return num;
+    }
+
+    return 0;
 }
+
+/**
+ * String manipulation functions for expressions
+ */
+export const stringFunctions = {
+    uppercase:   (str: string) => str.toUpperCase(),
+    lowercase:   (str: string) => str.toLowerCase(),
+    capitalize:  (str: string) => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase(),
+    trim:        (str: string) => str.trim(),
+    length:      (str: string) => str.length,
+    includes:    (str: string, search: string) => str.includes(search),
+    startsWith:  (str: string, search: string) => str.startsWith(search),
+    endsWith:    (str: string, search: string) => str.endsWith(search),
+    replace:     (str: string, search: string, replacement: string) => str.replace(search, replacement),
+    replaceAll:  (str: string, search: string, replacement: string) => str.split(search).join(replacement),
+    substring:   (str: string, start: number, end?: number) => str.substring(start, end),
+    split:       (str: string, separator: string) => str.split(separator),
+    join:        (arr: Array<string>, separator: string) => arr.join(separator),
+    concat:      (...args: Array<string>) => args.join(``),
+    padStart:    (str: string, length: number, fillChar: string = ` `) => str.padStart(length, fillChar),
+    padEnd:      (str: string, length: number, fillChar: string = ` `) => str.padEnd(length, fillChar),
+    repeat:      (str: string, count: number) => str.repeat(count),
+    reverse:     (str: string) => str.split(``).reverse().join(``),
+    truncate:    (str: string, length: number, suffix: string = `...`) =>
+        str.length > length ? str.slice(0, length - suffix.length) + suffix : str,
+};
+
+/**
+ * Array manipulation functions for expressions
+ */
+export const arrayFunctions = {
+    length:   (arr: Array<unknown>) => arr.length,
+    first:    (arr: Array<unknown>) => arr[0],
+    last:     (arr: Array<unknown>) => arr[arr.length - 1],
+    isEmpty:  (arr: Array<unknown>) => arr.length === 0,
+    includes: (arr: Array<unknown>, item: unknown) => arr.includes(item),
+    indexOf:  (arr: Array<unknown>, item: unknown) => arr.indexOf(item),
+    slice:    (arr: Array<unknown>, start: number, end?: number) => arr.slice(start, end),
+    reverse:  (arr: Array<unknown>) => [...arr].reverse(),
+    unique:   (arr: Array<unknown>) => [...new Set(arr)],
+    flatten:  (arr: Array<unknown>) => arr.flat(),
+    count:    (arr: Array<unknown>, predicate?: (item: unknown) => boolean) =>
+        predicate ? arr.filter(predicate).length : arr.length,
+};
+
+/**
+ * Math utility functions for expressions
+ */
+export const mathFunctions = {
+    abs:     (n: number) => Math.abs(n),
+    ceil:    (n: number) => Math.ceil(n),
+    floor:   (n: number) => Math.floor(n),
+    round:   (n: number, decimals: number = 0) => {
+        const factor = Math.pow(10, decimals);
+        return Math.round(n * factor) / factor;
+    },
+    min:     (...args: Array<number>) => Math.min(...args),
+    max:     (...args: Array<number>) => Math.max(...args),
+    sum:     (...args: Array<number>) => args.reduce((a, b) => a + b, 0),
+    average: (...args: Array<number>) => args.reduce((a, b) => a + b, 0) / args.length,
+    clamp:   (n: number, min: number, max: number) => Math.min(Math.max(n, min), max),
+    random:  (min: number = 0, max: number = 1) => Math.random() * (max - min) + min,
+    pow:     (base: number, exponent: number) => Math.pow(base, exponent),
+    sqrt:    (n: number) => Math.sqrt(n),
+};
 
 function parseValue(str: string): unknown {
     if (str === `true`) {

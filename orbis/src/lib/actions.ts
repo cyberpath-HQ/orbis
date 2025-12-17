@@ -177,11 +177,19 @@ export async function executeAction(
             break;
 
         case `download`:
+            await executeDownload(action, context);
+            break;
+
         case `validateForm`:
+            await executeValidateForm(action, context);
+            break;
+
         case `resetForm`:
+            executeResetForm(action, context);
+            break;
+
         case `emit`:
-            // These will be implemented as needed
-            console.warn(`Action type not yet implemented: ${ action.type }`);
+            executeEmit(action, context);
             break;
     }
 }
@@ -417,4 +425,326 @@ function resolveObjectValues(
     }
 
     return result;
+}
+
+/**
+ * Download a file from URL or blob
+ */
+async function executeDownload(action: { url: string
+    filename?:                                 string }, context: ActionContext): Promise<void> {
+    const url = resolveValue(action.url, context) as string;
+    const filename = action.filename
+        ? resolveValue(action.filename, context) as string
+        : url.split(`/`).pop() ?? `download`;
+
+    try {
+        // Check if it's a data URL or blob
+        if (url.startsWith(`data:`) || url.startsWith(`blob:`)) {
+            const link = document.createElement(`a`);
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        else {
+            // Fetch the file and download
+            const response = await fetch(url);
+            const blob = await response.blob();
+            const blobUrl = URL.createObjectURL(blob);
+
+            const link = document.createElement(`a`);
+            link.href = blobUrl;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            URL.revokeObjectURL(blobUrl);
+        }
+
+        toast.success(`Download started: ${ filename }`);
+    }
+    catch (error) {
+        toast.error(`Download failed: ${ error instanceof Error ? error.message : String(error) }`);
+    }
+}
+
+/**
+ * Form state tracking for validation
+ */
+const FORM_STATES = new Map<string, {
+    fields:     Map<string, { value: unknown
+        errors:                      Array<string>
+        touched:                     boolean }>
+    isValid:    boolean
+    isSubmitted: boolean
+}>();
+
+/**
+ * Register a form field for tracking
+ */
+export function registerFormField(
+    formId: string,
+    fieldName: string,
+    value: unknown
+): void {
+    if (!FORM_STATES.has(formId)) {
+        FORM_STATES.set(formId, {
+            fields:      new Map(),
+            isValid:     true,
+            isSubmitted: false,
+        });
+    }
+
+    const formState = FORM_STATES.get(formId)!;
+    formState.fields.set(fieldName, {
+        value,
+        errors:  [],
+        touched: false,
+    });
+}
+
+/**
+ * Update a form field value
+ */
+export function updateFormField(
+    formId: string,
+    fieldName: string,
+    value: unknown
+): void {
+    const formState = FORM_STATES.get(formId);
+    if (formState) {
+        const field = formState.fields.get(fieldName);
+        if (field) {
+            field.value = value;
+            field.touched = true;
+        }
+    }
+}
+
+/**
+ * Set field errors
+ */
+export function setFieldErrors(
+    formId: string,
+    fieldName: string,
+    errors: Array<string>
+): void {
+    const formState = FORM_STATES.get(formId);
+    if (formState) {
+        const field = formState.fields.get(fieldName);
+        if (field) {
+            field.errors = errors;
+        }
+    }
+}
+
+/**
+ * Get form field errors
+ */
+export function getFieldErrors(formId: string, fieldName: string): Array<string> {
+    const formState = FORM_STATES.get(formId);
+    if (formState) {
+        const field = formState.fields.get(fieldName);
+        if (field) {
+            return field.errors;
+        }
+    }
+    return [];
+}
+
+/**
+ * Validate form using schema validation rules from state
+ */
+async function executeValidateForm(
+    action: {
+        formId:     string
+        onValid?:   Array<Action>
+        onInvalid?: Array<Action>
+    },
+    context: ActionContext
+): Promise<void> {
+    const formId = action.formId;
+    let formState = FORM_STATES.get(formId);
+
+    if (!formState) {
+        // No form state, try to validate from DOM
+        const form = document.getElementById(formId) as HTMLFormElement | null;
+        if (form) {
+            const isValid = form.checkValidity();
+
+            if (isValid) {
+                if (action.onValid) {
+                    await executeActions(action.onValid, context);
+                }
+            }
+            else {
+                form.reportValidity();
+                if (action.onInvalid) {
+                    await executeActions(action.onInvalid, context);
+                }
+            }
+            return;
+        }
+
+        console.warn(`Form not found: ${ formId }`);
+        return;
+    }
+
+    // Validate all fields
+    let isValid = true;
+    const stateData = context.state.getState();
+
+    for (const [
+        fieldName,
+        field,
+    ] of formState.fields) {
+        const errors: Array<string> = [];
+
+        // Get validation rules from state if defined
+        const validationPath = `__validation.${ formId }.${ fieldName }`;
+        const rules = stateData[validationPath] as {
+            required?: boolean
+            minLength?: number
+            maxLength?: number
+            pattern?:   string
+            min?:       number
+            max?:       number
+            custom?:    string // Expression to evaluate
+        } | undefined;
+
+        if (rules) {
+            const value = field.value;
+
+            if (rules.required && (value === null || value === undefined || value === ``)) {
+                errors.push(`This field is required`);
+            }
+
+            if (rules.minLength && typeof value === `string` && value.length < rules.minLength) {
+                errors.push(`Minimum length is ${ rules.minLength }`);
+            }
+
+            if (rules.maxLength && typeof value === `string` && value.length > rules.maxLength) {
+                errors.push(`Maximum length is ${ rules.maxLength }`);
+            }
+
+            if (rules.pattern && typeof value === `string`) {
+                const regex = new RegExp(rules.pattern);
+                if (!regex.test(value)) {
+                    errors.push(`Invalid format`);
+                }
+            }
+
+            if (rules.min !== undefined && typeof value === `number` && value < rules.min) {
+                errors.push(`Minimum value is ${ rules.min }`);
+            }
+
+            if (rules.max !== undefined && typeof value === `number` && value > rules.max) {
+                errors.push(`Maximum value is ${ rules.max }`);
+            }
+        }
+
+        field.errors = errors;
+        if (errors.length > 0) {
+            isValid = false;
+        }
+    }
+
+    formState.isValid = isValid;
+    formState.isSubmitted = true;
+
+    if (isValid) {
+        if (action.onValid) {
+            await executeActions(action.onValid, context);
+        }
+    }
+    else {
+        if (action.onInvalid) {
+            await executeActions(action.onInvalid, context);
+        }
+    }
+}
+
+/**
+ * Reset form to initial state
+ */
+function executeResetForm(
+    action: { formId: string },
+    context: ActionContext
+): void {
+    const formId = action.formId;
+
+    // Clear form state tracking
+    FORM_STATES.delete(formId);
+
+    // Reset DOM form if exists
+    const form = document.getElementById(formId) as HTMLFormElement | null;
+    if (form) {
+        form.reset();
+    }
+
+    // Clear any form-related state
+    const formStatePath = `__forms.${ formId }`;
+    context.state.setState(formStatePath, {});
+}
+
+/**
+ * Custom event emitter for inter-component communication
+ */
+const EVENT_LISTENERS = new Map<string, Set<(payload: unknown) => void>>();
+
+/**
+ * Subscribe to a custom event
+ */
+export function subscribeToEvent(
+    eventName: string,
+    callback: (payload: unknown) => void
+): () => void {
+    if (!EVENT_LISTENERS.has(eventName)) {
+        EVENT_LISTENERS.set(eventName, new Set());
+    }
+
+    EVENT_LISTENERS.get(eventName)!.add(callback);
+
+    // Return unsubscribe function
+    return () => {
+        EVENT_LISTENERS.get(eventName)?.delete(callback);
+    };
+}
+
+/**
+ * Emit a custom event
+ */
+function executeEmit(
+    action: {
+        event:    string
+        payload?: Record<string, unknown>
+    },
+    context: ActionContext
+): void {
+    const eventName = action.event;
+    const payload = action.payload
+        ? resolveObjectValues(action.payload, context)
+        : {};
+
+    const listeners = EVENT_LISTENERS.get(eventName);
+    if (listeners) {
+        for (const callback of listeners) {
+            try {
+                callback(payload);
+            }
+            catch (error) {
+                console.error(`Error in event listener for "${ eventName }":`, error);
+            }
+        }
+    }
+
+    // Also dispatch a DOM custom event for external integration
+    const customEvent = new CustomEvent(`orbis:${ eventName }`, {
+        detail:     payload,
+        bubbles:    true,
+        cancelable: true,
+    });
+    document.dispatchEvent(customEvent);
 }

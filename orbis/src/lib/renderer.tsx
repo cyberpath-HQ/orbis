@@ -643,15 +643,150 @@ function TableRenderer({
     const ctx = useRendererContext();
     const stateData = ctx.state.getState();
     const handleRowClick = useEventHandler(schema.events?.onRowClick);
+    const handleSortChange = useEventHandler(schema.events?.onSortChange);
+    const handlePageChange = useEventHandler(schema.events?.onPageChange);
+    const handleSelect = useEventHandler(schema.events?.onSelect);
+
+    // Local state for sorting and pagination
+    const [
+        sortColumn,
+        setSortColumn,
+    ] = React.useState<string | null>(null);
+    const [
+        sortDirection,
+        setSortDirection,
+    ] = React.useState<`asc` | `desc`>(`asc`);
+    const [
+        currentPage,
+        setCurrentPage,
+    ] = React.useState(1);
+    const [
+        selectedRows,
+        setSelectedRows,
+    ] = React.useState<Set<string | number>>(new Set());
 
     const dataPath = schema.dataSource.startsWith(`state:`)
         ? schema.dataSource.slice(6)
         : schema.dataSource;
-    const data = (getNestedValue(stateData, dataPath) ?? []) as Array<Record<string, unknown>>;
+    let data = (getNestedValue(stateData, dataPath) ?? []) as Array<Record<string, unknown>>;
 
     const isLoading = schema.loading
         ? evaluateBooleanExpression(schema.loading, stateData)
         : false;
+
+    // Apply sorting
+    if (sortColumn && schema.sortable !== false) {
+        data = [...data].sort((a, b) => {
+            const aVal = a[sortColumn];
+            const bVal = b[sortColumn];
+
+            if (aVal === bVal) {
+                return 0;
+            }
+            if (aVal === null || aVal === undefined) {
+                return 1;
+            }
+            if (bVal === null || bVal === undefined) {
+                return -1;
+            }
+
+            let comparison = 0;
+            if (typeof aVal === `string` && typeof bVal === `string`) {
+                comparison = aVal.localeCompare(bVal);
+            }
+            else if (typeof aVal === `number` && typeof bVal === `number`) {
+                comparison = aVal - bVal;
+            }
+            else {
+                comparison = String(aVal).localeCompare(String(bVal));
+            }
+
+            return sortDirection === `asc` ? comparison : -comparison;
+        });
+    }
+
+    // Get pagination config
+    const paginationConfig = typeof schema.pagination === `object`
+        ? schema.pagination
+        : schema.pagination
+            ? {
+                pageSize: 10,
+            }
+            : null;
+    const pageSize = paginationConfig?.pageSize ?? 10;
+    const totalPages = Math.ceil(data.length / pageSize);
+    const totalItems = data.length;
+
+    // Apply pagination
+    let paginatedData = data;
+    if (paginationConfig) {
+        const start = (currentPage - 1) * pageSize;
+        paginatedData = data.slice(start, start + pageSize);
+    }
+
+    // Handle sort click
+    const onSortClick = (columnKey: string): void => {
+        const col = schema.columns.find((c) => c.key === columnKey);
+        if (!col?.sortable && !schema.sortable) {
+            return;
+        }
+
+        let newDirection: `asc` | `desc` = `asc`;
+        if (sortColumn === columnKey) {
+            newDirection = sortDirection === `asc` ? `desc` : `asc`;
+        }
+
+        setSortColumn(columnKey);
+        setSortDirection(newDirection);
+
+        void handleSortChange({
+            column:    columnKey,
+            direction: newDirection,
+        });
+    };
+
+    // Handle page change
+    const onPageChange = (page: number): void => {
+        setCurrentPage(page);
+        void handlePageChange({
+            page,
+            pageSize,
+        });
+    };
+
+    // Handle row selection
+    const onRowSelect = (rowKey: string | number, selected: boolean): void => {
+        const newSelected = new Set(selectedRows);
+        if (selected) {
+            if (schema.selectable === `single`) {
+                newSelected.clear();
+            }
+            newSelected.add(rowKey);
+        }
+        else {
+            newSelected.delete(rowKey);
+        }
+        setSelectedRows(newSelected);
+
+        void handleSelect({
+            selected: Array.from(newSelected),
+            row:      rowKey,
+            action:   selected ? `select` : `deselect`,
+        });
+    };
+
+    // Handle select all
+    const onSelectAll = (selected: boolean): void => {
+        if (selected) {
+            const allKeys = paginatedData.map((row, index) =>
+                schema.rowKey ? row[schema.rowKey] : index
+            );
+            setSelectedRows(new Set(allKeys as Array<string | number>));
+        }
+        else {
+            setSelectedRows(new Set());
+        }
+    };
 
     if (isLoading) {
         return (
@@ -676,62 +811,172 @@ function TableRenderer({
         );
     }
 
+    const isSelectable = schema.selectable === true || schema.selectable === `single` || schema.selectable === `multiple`;
+    const allSelected = paginatedData.length > 0 && paginatedData.every((row, index) => {
+        const key = schema.rowKey ? row[schema.rowKey] : index;
+        return selectedRows.has(key as string | number);
+    });
+
     return (
-        <div className={`rounded-md border ${ schema.className ?? `` }`} style={schema.style as React.CSSProperties}>
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        {schema.columns.map((col) => (
-                            <TableHead
-                                key={col.key}
-                                style={{
-                                    width: col.width,
-                                }}
-                                className={col.align ? `text-${ col.align }` : undefined}
-                            >
-                                {useResolvedValue(col.label)}
-                            </TableHead>
-                        ))}
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {data.map((row, rowIndex) => (
-                        <TableRow
-                            key={schema.rowKey ? String(row[schema.rowKey]) : rowIndex}
-                            className={schema.events?.onRowClick ? `cursor-pointer` : undefined}
-                            onClick={() => {
-                                if (schema.events?.onRowClick) {
-                                    void handleRowClick({
-                                        row,
-                                        index: rowIndex,
-                                    });
-                                }
-                            }}
-                        >
-                            {schema.columns.map((col) => (
-                                <TableCell
-                                    key={col.key}
-                                    className={col.align ? `text-${ col.align }` : undefined}
-                                >
-                                    {col.render
-? (
-                                        <RendererContextValue.Provider value={{
-                                            ...ctx,
-                                            row,
-                                            index: rowIndex,
-                                        }}>
-                                            <ComponentRenderer schema={col.render} />
-                                        </RendererContextValue.Provider>
-                                    )
-: (
-                                        String(row[col.key] ?? ``)
-                                    )}
-                                </TableCell>
-                            ))}
+        <div className={`space-y-4 ${ schema.className ?? `` }`} style={schema.style as React.CSSProperties}>
+            <div className="rounded-md border">
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            {isSelectable && schema.selectable !== `single` && (
+                                <TableHead className="w-12">
+                                    <Checkbox
+                                        checked={allSelected}
+                                        onCheckedChange={onSelectAll}
+                                    />
+                                </TableHead>
+                            )}
+                            {isSelectable && schema.selectable === `single` && (
+                                <TableHead className="w-12" />
+                            )}
+                            {schema.columns.map((col) => {
+                                const isSortable = col.sortable !== false && (col.sortable || schema.sortable);
+                                const isSorted = sortColumn === col.key;
+
+                                return (
+                                    <TableHead
+                                        key={col.key}
+                                        style={{
+                                            width: col.width,
+                                        }}
+                                        className={`${ col.align ? `text-${ col.align }` : `` } ${ isSortable ? `cursor-pointer select-none hover:bg-muted/50` : `` }`}
+                                        onClick={isSortable ? () => onSortClick(col.key) : undefined}
+                                    >
+                                        <div className="flex items-center gap-1">
+                                            {useResolvedValue(col.label)}
+                                            {isSortable && (
+                                                <span className="ml-1">
+                                                    {isSorted
+                                                        ? sortDirection === `asc`
+                                                            ? <LucideIcons.ChevronUp className="h-4 w-4" />
+                                                            : <LucideIcons.ChevronDown className="h-4 w-4" />
+                                                        : <LucideIcons.ChevronsUpDown className="h-4 w-4 opacity-50" />
+                                                    }
+                                                </span>
+                                            )}
+                                        </div>
+                                    </TableHead>
+                                );
+                            })}
                         </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
+                    </TableHeader>
+                    <TableBody>
+                        {paginatedData.map((row, rowIndex) => {
+                            const rowKey = schema.rowKey ? row[schema.rowKey] : rowIndex;
+                            const isSelected = selectedRows.has(rowKey as string | number);
+
+                            return (
+                                <TableRow
+                                    key={String(rowKey)}
+                                    className={`${ schema.events?.onRowClick ? `cursor-pointer` : `` } ${ isSelected ? `bg-muted/50` : `` }`}
+                                    onClick={() => {
+                                        if (schema.events?.onRowClick) {
+                                            void handleRowClick({
+                                                row,
+                                                index: rowIndex,
+                                            });
+                                        }
+                                    }}
+                                >
+                                    {isSelectable && (
+                                        <TableCell className="w-12">
+                                            <Checkbox
+                                                checked={isSelected}
+                                                onCheckedChange={(checked) => onRowSelect(rowKey as string | number, Boolean(checked))}
+                                                onClick={(e) => e.stopPropagation()}
+                                            />
+                                        </TableCell>
+                                    )}
+                                    {schema.columns.map((col) => (
+                                        <TableCell
+                                            key={col.key}
+                                            className={col.align ? `text-${ col.align }` : undefined}
+                                        >
+                                            {col.render
+? (
+                                                <RendererContextValue.Provider value={{
+                                                    ...ctx,
+                                                    row,
+                                                    index: rowIndex,
+                                                }}>
+                                                    <ComponentRenderer schema={col.render} />
+                                                </RendererContextValue.Provider>
+                                            )
+: (
+                                                String(row[col.key] ?? ``)
+                                            )}
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            );
+                        })}
+                    </TableBody>
+                </Table>
+            </div>
+
+            {/* Pagination */}
+            {paginationConfig && totalPages > 1 && (
+                <div className="flex items-center justify-between px-2">
+                    {paginationConfig.showTotal !== false && (
+                        <div className="text-sm text-muted-foreground">
+                            Showing {(currentPage - 1) * pageSize + 1} to {Math.min(currentPage * pageSize, totalItems)} of {totalItems} items
+                        </div>
+                    )}
+                    <div className="flex items-center gap-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => onPageChange(currentPage - 1)}
+                            disabled={currentPage <= 1}
+                        >
+                            <LucideIcons.ChevronLeft className="h-4 w-4" />
+                        </Button>
+                        <div className="flex items-center gap-1">
+                            {Array.from({
+                                length: Math.min(totalPages, 5),
+                            }, (_, i) => {
+                                let pageNum: number;
+                                if (totalPages <= 5) {
+                                    pageNum = i + 1;
+                                }
+                                else if (currentPage <= 3) {
+                                    pageNum = i + 1;
+                                }
+                                else if (currentPage >= totalPages - 2) {
+                                    pageNum = totalPages - 4 + i;
+                                }
+                                else {
+                                    pageNum = currentPage - 2 + i;
+                                }
+                                return (
+                                    <Button
+                                        key={pageNum}
+                                        variant={currentPage === pageNum ? `default` : `outline`}
+                                        size="sm"
+                                        onClick={() => onPageChange(pageNum)}
+                                        className="w-8 h-8 p-0"
+                                    >
+                                        {pageNum}
+                                    </Button>
+                                );
+                            })}
+                        </div>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => onPageChange(currentPage + 1)}
+                            disabled={currentPage >= totalPages}
+                        >
+                            <LucideIcons.ChevronRight className="h-4 w-4" />
+                        </Button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
