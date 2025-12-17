@@ -13,7 +13,7 @@ use crate::state::AppState;
 /// Authenticated user extractor.
 pub struct AuthenticatedUser {
     /// User claims from JWT.
-    pub claims: Claims,
+    claims: Claims,
 
     /// User ID.
     pub user_id: uuid::Uuid,
@@ -23,6 +23,21 @@ pub struct AuthenticatedUser {
 
     /// Is admin.
     pub is_admin: bool,
+}
+
+impl AuthenticatedUser {
+    /// Get the JWT claims.
+    #[must_use]
+    pub const fn claims(&self) -> &Claims {
+        &self.claims
+    }
+
+    /// Get the token expiration time.
+    #[must_use]
+    pub fn expires_at(&self) -> chrono::DateTime<chrono::Utc> {
+        chrono::DateTime::from_timestamp(self.claims.exp as i64, 0)
+            .unwrap_or_default()
+    }
 }
 
 impl<S> FromRequestParts<S> for AuthenticatedUser

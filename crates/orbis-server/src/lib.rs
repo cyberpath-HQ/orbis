@@ -13,6 +13,7 @@ mod tls;
 
 pub use app::{create_app, OrbisApp};
 pub use error::ServerError;
+pub use extractors::AuthenticatedUser;
 pub use state::AppState;
 
 use orbis_auth::AuthService;

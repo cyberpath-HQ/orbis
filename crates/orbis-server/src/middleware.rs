@@ -6,8 +6,8 @@ use axum::{
     http::{header, Method, Request, StatusCode},
     middleware::Next,
     response::Response,
+    Router,
 };
-use std::time::Instant;
 use tower_http::{
     compression::CompressionLayer,
     cors::{Any, CorsLayer},
@@ -51,9 +51,9 @@ pub fn cors_layer(origins: &[String]) -> CorsLayer {
     }
 }
 
-/// Create auth middleware layer.
-pub fn auth_layer(state: AppState) -> impl Clone + Send + Sync + 'static {
-    axum::middleware::from_fn_with_state::<_, _, Body>(state, auth_middleware)
+/// Apply auth middleware to a router.
+pub fn with_auth(router: Router<AppState>, state: AppState) -> Router<AppState> {
+    router.layer(axum::middleware::from_fn_with_state(state, auth_middleware))
 }
 
 /// Auth middleware function.
@@ -111,24 +111,4 @@ fn is_public_route(path: &str) -> bool {
     ];
 
     public_routes.iter().any(|r| path.starts_with(r))
-}
-
-/// Request timing middleware.
-pub async fn timing_middleware(request: Request<Body>, next: Next) -> Response {
-    let start = Instant::now();
-    let method = request.method().clone();
-    let uri = request.uri().clone();
-
-    let response = next.run(request).await;
-
-    let duration = start.elapsed();
-    tracing::info!(
-        method = %method,
-        uri = %uri,
-        status = %response.status(),
-        duration_ms = %duration.as_millis(),
-        "Request completed"
-    );
-
-    response
 }
