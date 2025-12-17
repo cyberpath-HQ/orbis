@@ -31,9 +31,9 @@ pub use registry::{PluginInfo, PluginRegistry, PluginState};
 pub use runtime::{PluginContext, PluginRuntime};
 pub use sandbox::SandboxConfig;
 pub use ui::{
-    Action, ComponentSchema, DialogDefinition, EventHandlers, FormField, NavigationConfig,
-    NavigationItem, PageDefinition, PageLifecycleHooks, SelectOption, StateFieldDefinition,
-    StateFieldType, TabItem, TableColumn, ToastLevel, ValidationRule,
+    AccordionItem, Action, BreadcrumbItem, ComponentSchema, DialogDefinition, EventHandlers,
+    FormField, NavigationConfig, NavigationItem, PageDefinition, PageLifecycleHooks, SelectOption,
+    StateFieldDefinition, StateFieldType, TabItem, TableColumn, ToastLevel, ValidationRule,
 };
 pub use watcher::{PluginChangeEvent, PluginChangeKind, PluginWatcher, WatcherConfig};
 
@@ -47,7 +47,6 @@ pub struct PluginManager {
     loader: PluginLoader,
     runtime: PluginRuntime,
     plugins_dir: PathBuf,
-    #[allow(dead_code)]
     db: Database,
 }
 
@@ -72,6 +71,12 @@ impl PluginManager {
             plugins_dir,
             db,
         })
+    }
+
+    /// Get the database instance for plugin operations.
+    #[must_use]
+    pub const fn database(&self) -> &Database {
+        &self.db
     }
 
     /// Get the plugin registry.
