@@ -1,0 +1,88 @@
+---
+export interface Props {
+    lang?: string;
+    title?: string;
+    class?: string;
+}
+
+const { lang = 'text', title, class: className } = Astro.props;
+
+// Extract code content from slot
+const defaultSlot = await Astro.slots.render('default');
+// Extract text content from the rendered HTML
+const tempDiv = { innerHTML: defaultSlot };
+const codeMatch = defaultSlot.match(/<code[^>]*>([\s\S]*?)<\/code>/);
+const code = codeMatch ? codeMatch[1].replace(/<[^>]*>/g, '').trim() : '';
+---
+
+<div class:list={["code-block-wrapper not-prose my-6 rounded-lg border bg-muted/50 overflow-hidden", className]}>
+    <div class="flex items-center justify-between border-b bg-muted/80 px-4 py-2">
+        <div class="flex items-center gap-2">
+            {lang && (
+                <span class="inline-flex items-center rounded bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                    {lang}
+                </span>
+            )}
+            {title && (
+                <span class="text-sm text-muted-foreground">{title}</span>
+            )}
+        </div>
+        <button
+            type="button"
+            class="copy-button inline-flex items-center gap-1.5 rounded px-2 py-1 text-xs font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+            data-code={code}
+        >
+            <svg class="copy-icon size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+            </svg>
+            <svg class="check-icon hidden size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <span class="copy-text">Copy</span>
+            <span class="copied-text hidden">Copied!</span>
+        </button>
+    </div>
+    <div class="overflow-x-auto">
+        <slot />
+    </div>
+</div>
+
+<script>
+    function setupCodeBlocks(): void {
+        document.querySelectorAll<HTMLButtonElement>('.copy-button').forEach((button) => {
+            button.addEventListener('click', async () => {
+                const code = button.dataset.code;
+                if (!code) return;
+
+                try {
+                    await navigator.clipboard.writeText(code);
+                    
+                    // Update button UI
+                    const copyIcon = button.querySelector('.copy-icon');
+                    const checkIcon = button.querySelector('.check-icon');
+                    const copyText = button.querySelector('.copy-text');
+                    const copiedText = button.querySelector('.copied-text');
+                    
+                    copyIcon?.classList.add('hidden');
+                    checkIcon?.classList.remove('hidden');
+                    copyText?.classList.add('hidden');
+                    copiedText?.classList.remove('hidden');
+                    
+                    // Reset after 2 seconds
+                    setTimeout(() => {
+                        copyIcon?.classList.remove('hidden');
+                        checkIcon?.classList.add('hidden');
+                        copyText?.classList.remove('hidden');
+                        copiedText?.classList.add('hidden');
+                    }, 2000);
+                } catch (err) {
+                    console.error('Failed to copy code:', err);
+                }
+            });
+        });
+    }
+
+    setupCodeBlocks();
+    document.addEventListener('astro:after-swap', setupCodeBlocks);
+</script>

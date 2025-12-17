@@ -1,0 +1,69 @@
+---
+// Mermaid diagram component
+const id = `mermaid-${Math.random().toString(36).substr(2, 9)}`;
+
+// Get content from slot
+const slotContent = await Astro.slots.render('default');
+// Strip HTML tags to get plain text
+const code = slotContent.replace(/<[^>]*>/g, '').trim();
+---
+
+<div class="mermaid-wrapper not-prose my-8">
+    <div class="mermaid-container rounded-lg border bg-card p-6">
+        <pre id={id} class="mermaid">{code}</pre>
+    </div>
+</div>
+
+<script>
+    import mermaid from 'mermaid';
+
+    function initMermaid(): void {
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: document.documentElement.classList.contains('dark') ? 'dark' : 'default',
+            securityLevel: 'loose',
+            fontFamily: 'Inter, system-ui, sans-serif',
+        });
+
+        // Re-render on theme change
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.attributeName === 'class') {
+                    const isDark = document.documentElement.classList.contains('dark');
+                    mermaid.initialize({
+                        theme: isDark ? 'dark' : 'default',
+                    });
+                    mermaid.run();
+                }
+            });
+        });
+
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['class'],
+        });
+
+        mermaid.run();
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initMermaid);
+    } else {
+        initMermaid();
+    }
+
+    document.addEventListener('astro:after-swap', initMermaid);
+</script>
+
+<style>
+    .mermaid {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .mermaid svg {
+        max-width: 100%;
+        height: auto;
+    }
+</style>
