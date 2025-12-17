@@ -11,10 +11,8 @@ members = [
     
     # Main application
     "orbis/src-tauri",
-]
-exclude = [
     # Sample plugins are independent packages
-    "sample-plugins/*",
+    "plugins/*",
 ]
 
 [workspace.package]
@@ -73,7 +71,7 @@ anyhow = "1"
 
 # Security/Crypto
 argon2 = "0.5"
-jsonwebtoken = "10"
+jsonwebtoken = { version = "10", features = ["rust_crypto"] }
 rand = "0.9"
 uuid = { version = "1", features = ["v4", "v7", "serde"] }
 
