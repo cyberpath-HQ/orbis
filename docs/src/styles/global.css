@@ -286,14 +286,9 @@
   font-weight: 500;
 }
 
-/* Ensure inline code is readable in dark mode */
-.dark .prose code {
-  color: oklch(0.85 0 0);
-}
-
 .prose pre {
-  background-color: oklch(0.98 0 0) !important;
-  border: 1px solid var(--border);
+  background-color: oklch(0.99 0 0) !important;
+  /* border: 1px solid var(--border); */
   border-radius: 0.5rem;
   overflow-x: auto;
   padding: 1.1428571em 1.2857143em;
@@ -308,7 +303,7 @@
 html.dark .shiki,
 html.dark .shiki span {
   color: var(--shiki-dark) !important;
-  background-color: var(--shiki-dark-bg) !important;
+  /* background-color: var(--shiki-dark-bg) !important; */
   font-style: var(--shiki-dark-font-style) !important;
   font-weight: var(--shiki-dark-font-weight) !important;
   text-decoration: var(--shiki-dark-text-decoration) !important;
@@ -317,7 +312,7 @@ html.dark .shiki span {
 html:not(.dark) .shiki,
 html:not(.dark) .shiki span {
   color: var(--shiki-light) !important;
-  background-color: var(--shiki-light-bg) !important;
+  /* background-color: var(--shiki-light-bg) !important; */
   font-style: var(--shiki-light-font-style) !important;
   font-weight: var(--shiki-light-font-weight) !important;
   text-decoration: var(--shiki-light-text-decoration) !important;
@@ -328,12 +323,12 @@ html.dark .astro-code,
 html.dark .astro-code code,
 html.dark .astro-code span {
   color: var(--shiki-dark) !important;
-  background-color: var(--shiki-dark-bg) !important;
+  /* background-color: var(--shiki-dark-bg) !important; */
 }
 
 /* Also ensure dark theme variant on the pre wrapper is readable */
 html.dark pre.astro-code {
-  background-color: var(--shiki-dark-bg) !important;
+  /* background-color: var(--shiki-dark-bg) !important; */
 }
 
 
