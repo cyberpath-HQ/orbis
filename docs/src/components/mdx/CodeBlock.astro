@@ -10,7 +10,6 @@ const { lang = 'text', title, class: className } = Astro.props;
 // Extract code content from slot
 const defaultSlot = await Astro.slots.render('default');
 // Extract text content from the rendered HTML
-const tempDiv = { innerHTML: defaultSlot };
 const codeMatch = defaultSlot.match(/<code[^>]*>([\s\S]*?)<\/code>/);
 const code = codeMatch ? codeMatch[1].replace(/<[^>]*>/g, '').trim() : '';
 ---
@@ -30,8 +29,8 @@ const code = codeMatch ? codeMatch[1].replace(/<[^>]*>/g, '').trim() : '';
         <button
             type="button"
             class="copy-button inline-flex items-center gap-1.5 rounded px-2 py-1 text-xs font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
-            data-code={code}
         >
+            <span class="hidden code" set:html={code}/>
             <svg class="copy-icon size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
                 <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
@@ -52,7 +51,7 @@ const code = codeMatch ? codeMatch[1].replace(/<[^>]*>/g, '').trim() : '';
     function setupCodeBlocks(): void {
         document.querySelectorAll<HTMLButtonElement>('.copy-button').forEach((button) => {
             button.addEventListener('click', async () => {
-                const code = button.dataset.code;
+                const code = button.getElementsByClassName('code')[0]?.textContent;
                 if (!code) return;
 
                 try {
