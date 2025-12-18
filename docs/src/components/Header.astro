@@ -12,10 +12,9 @@ const currentPath = Astro.url.pathname;
         <!-- Logo -->
         <div class="mr-4 flex">
             <a href="/" class="mr-6 flex items-center space-x-2">
-                <svg viewBox="0 0 24 24" class="size-6 text-primary" fill="currentColor">
-                    <circle cx="12" cy="12" r="10" />
-                </svg>
-                <span class="font-bold inline-block">Orbis</span>
+                <img src="/logo.svg" alt="Orbis Logo" class="h-8 w-auto dark:hidden"/>
+                <img src="/logo-white.svg" alt="Orbis Logo" class="h-8 w-auto hidden dark:block"/>
+                <span class="sr-only font-semibold sm:inline-block text-foreground">Orbis</span>
             </a>
         </div>
 
