@@ -4,11 +4,34 @@ const id = `mermaid-${Math.random().toString(36).substr(2, 9)}`;
 
 // Get content from slot
 const slotContent = await Astro.slots.render('default');
-// Strip HTML tags to get plain text
-const code = slotContent.replace(/<[^>]*>/g, '').trim();
+
+// Extract text content while preserving structure
+// Remove HTML tags but keep newlines and whitespace
+const tempDiv = slotContent
+    .replace(/<p>/gi, '')
+    .replace(/<\/p>/gi, '\n')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .trim();
+
+// Normalize common smartypants replacements that may have modified characters
+let code = tempDiv
+    .replace(/\u2014/g, '--')   // em dash → --
+    .replace(/\u2013/g, '--')   // en dash → --
+    .replace(/[\u201C\u201D]/g, '"') // curly double quotes → "
+    .replace(/[\u2018\u2019]/g, "'") // curly single quotes → '
+    .replace(/\u2026/g, '...')  // ellipsis → ...
+    // Also replace any HTML entities that could remain
+    .replace(/&mdash;|&ndash;/g, '--')
+    .replace(/&ldquo;|&rdquo;/g, '"')
+    .replace(/&lsquo;|&rsquo;/g, "'");
 ---
 
-<div class="mermaid-wrapper not-prose my-8">
+<div class="mermaid-wrapper not-prose my-8" style="font-variant-ligatures: none;">
     <div class="mermaid-container rounded-lg border bg-card p-6">
         <pre id={id} class="mermaid">{code}</pre>
     </div>
@@ -56,6 +79,14 @@ const code = slotContent.replace(/<[^>]*>/g, '').trim();
 </script>
 
 <style>
+    .mermaid-wrapper,
+    .mermaid-wrapper *,
+    .mermaid,
+    .mermaid * {
+        font-variant-ligatures: none !important;
+        font-feature-settings: "liga" off, "calt" off !important;
+    }
+
     .mermaid {
         display: flex;
         justify-content: center;
