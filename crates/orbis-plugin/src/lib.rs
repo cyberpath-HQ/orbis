@@ -18,24 +18,25 @@
 //! - Secure WASM sandboxing
 
 mod loader;
-mod manifest;
 mod registry;
 mod runtime;
 mod sandbox;
-mod ui;
 mod watcher;
 
 pub use loader::{PluginLoader, PluginSource};
-pub use manifest::{PluginDependency, PluginManifest, PluginPermission, PluginRoute};
 pub use registry::{PluginInfo, PluginRegistry, PluginState};
 pub use runtime::{PluginContext, PluginRuntime};
 pub use sandbox::SandboxConfig;
-pub use ui::{
-    AccordionItem, Action, BreadcrumbItem, ComponentSchema, DialogDefinition, EventHandlers,
-    FormField, NavigationConfig, NavigationItem, PageDefinition, PageLifecycleHooks, SelectOption,
-    StateFieldDefinition, StateFieldType, TabItem, TableColumn, ToastLevel, ValidationRule,
-};
 pub use watcher::{PluginChangeEvent, PluginChangeKind, PluginWatcher, WatcherConfig};
+
+// Re-export public API types from orbis-plugin-api
+pub use orbis_plugin_api::{
+    AccordionItem, Action, ArgMapping, BreadcrumbItem, ComponentSchema, CustomValidation,
+    DialogDefinition, Error as PluginApiError, EventHandlers, FormField, NavigationConfig,
+    NavigationItem, PageDefinition, PageLifecycleHooks, PluginDependency, PluginManifest,
+    PluginPermission, PluginRoute, Result as PluginApiResult, SelectOption, StateFieldDefinition,
+    StateFieldType, TabItem, TableColumn, ToastLevel, ValidationRule,
+};
 
 use orbis_db::Database;
 use std::path::PathBuf;

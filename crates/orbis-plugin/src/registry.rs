@@ -1,6 +1,7 @@
 //! Plugin registry for tracking loaded plugins.
 
-use super::{PluginManifest, PluginSource};
+use super::{PluginSource};
+use orbis_plugin_api::PluginManifest;
 use chrono::{DateTime, Utc};
 use dashmap::DashMap;
 use serde::{Deserialize, Serialize};

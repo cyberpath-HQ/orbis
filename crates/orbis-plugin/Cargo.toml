@@ -14,9 +14,10 @@ default = ["wasm"]
 wasm = ["wasmtime"]
 
 [dependencies]
-orbis-core = { workspace = true }
+orbis-core = { workspace = true, features = ["orbis-plugin-api"] }
 orbis-config = { workspace = true }
 orbis-db = { workspace = true }
+orbis-plugin-api = { workspace = true }
 
 # Plugin runtime (WASM only)
 wasmtime = { workspace = true, optional = true }
