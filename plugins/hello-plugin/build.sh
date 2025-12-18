@@ -26,12 +26,11 @@ cp manifest.json unpacked-external/
 # 2. Unpacked with embedded manifest (no manifest.json)
 echo "  - unpacked-embedded/"
 mkdir -p unpacked-embedded
-cat manifest.json | python3 add_custom_section.py hello_plugin.wasm -s manifest -o unpacked-embedded/hello_plugin.wasm
+cat manifest.json | python3 ../add_custom_section.py hello_plugin.wasm -s manifest -o unpacked-embedded/hello_plugin.wasm
 
 # 3. Standalone WASM with embedded manifest
 echo "  - standalone.wasm"
-cat manifest.json | python3 add_custom_section.py hello_plugin.wasm -s manifest -o standalone.wasm
-
+cat manifest.json | python3 ../add_custom_section.py hello_plugin.wasm -s manifest -o standalone.wasm
 # 4. Packed ZIP with external manifest
 echo "  - packed-external.zip"
 cd unpacked-external

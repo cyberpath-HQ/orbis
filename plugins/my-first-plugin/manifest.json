@@ -1,0 +1,98 @@
+{
+  "name": "my-first-plugin",
+  "version": "1.0.0",
+  "description": "My first Orbis plugin",
+  "author": "Your Name",
+  "sections": [
+    {
+      "id": "home",
+      "title": "My First Plugin",
+      "route": "/my-first-plugin",
+      "icon": "Home",
+      "state": {
+        "username": {
+          "type": "string",
+          "default": "World"
+        },
+        "clickCount": {
+          "type": "number",
+          "default": 0
+        }
+      },
+      "layout": {
+        "type": "Container",
+        "className": "p-6 max-w-2xl mx-auto",
+        "children": [
+          {
+            "type": "Heading",
+            "level": 1,
+            "text": "Hello, {{state.username}}!"
+          },
+          {
+            "type": "Text",
+            "content": "Welcome to your first Orbis plugin. Click the button below to see reactivity in action.",
+            "className": "text-muted-foreground mt-2"
+          },
+          {
+            "type": "Card",
+            "className": "mt-6",
+            "content": {
+              "type": "Flex",
+              "direction": "column",
+              "gap": "1rem",
+              "children": [
+                {
+                  "type": "Field",
+                  "id": "username-input",
+                  "name": "username",
+                  "fieldType": "text",
+                  "label": "Your Name",
+                  "placeholder": "Enter your name...",
+                  "bindTo": "username"
+                },
+                {
+                  "type": "Flex",
+                  "align": "center",
+                  "gap": "1rem",
+                  "children": [
+                    {
+                      "type": "Button",
+                      "label": "Click Me!",
+                      "variant": "default",
+                      "events": {
+                        "onClick": [
+                          {
+                            "type": "updateState",
+                            "path": "clickCount",
+                            "value": "{{state.clickCount + 1}}"
+                          },
+                          {
+                            "type": "showToast",
+                            "message": "Button clicked {{state.clickCount + 1}} times!",
+                            "level": "success"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "Badge",
+                      "text": "Clicks: {{state.clickCount}}",
+                      "variant": "secondary"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "type": "Alert",
+            "variant": "default",
+            "title": "How it works",
+            "message": "This plugin uses the Orbis schema system. The UI is defined in JSON and rendered automatically. State changes trigger reactive updates.",
+            "className": "mt-6"
+          }
+        ]
+      }
+    }
+  ]
+}
