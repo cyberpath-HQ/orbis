@@ -109,6 +109,7 @@ pub fn run() {
             commands::get_plugins,
             commands::get_plugin_pages,
             commands::get_plugin_info,
+            commands::call_plugin_api,
             commands::reload_plugin,
             commands::enable_plugin,
             commands::disable_plugin,
