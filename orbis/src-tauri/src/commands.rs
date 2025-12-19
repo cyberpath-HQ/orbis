@@ -535,10 +535,20 @@ pub fn get_plugin_pages(state: State<'_, OrbisState>) -> Result<Value, String> {
 
 /// Reload a specific plugin (hot reload).
 #[tauri::command]
-pub async fn reload_plugin(name: String, state: State<'_, OrbisState>) -> Result<Value, String> {
+pub async fn reload_plugin(
+    name: String,
+    state: State<'_, OrbisState>,
+    app: tauri::AppHandle,
+) -> Result<Value, String> {
     let pm = state.plugins().ok_or("Plugins not available in client mode")?;
 
     let info = pm.reload_plugin(&name).await.map_err(|e| e.to_string())?;
+
+    // Emit event to notify frontend of reload
+    let _ = app.emit("plugin-state-changed", json!({
+        "plugin": name,
+        "state": format!("{:?}", info.state)
+    }));
 
     Ok(json!({
         "success": true,
