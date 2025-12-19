@@ -158,11 +158,23 @@ pub fn return_json<T: serde::Serialize>(value: &T) -> Result<i32, serde_json::Er
 /// Wraps a handler function to handle FFI details automatically
 ///
 /// Converts: `fn(Context) -> Result<Response>` into `extern "C" fn(i32, i32) -> i32`
+///
+/// # Usage
+///
+/// ```rust,ignore
+/// // Define your handler function
+/// fn my_handler_impl(ctx: Context) -> Result<Response> {
+///     Ok(Response::json(&json!({"status": "ok"}))?)
+/// }
+///
+/// // Wrap it for FFI export
+/// wrap_handler!(my_handler, my_handler_impl);
+/// ```
 #[macro_export]
 macro_rules! wrap_handler {
-    ($handler:ident) => {
+    ($export_name:ident, $handler_fn:ident) => {
         #[unsafe(no_mangle)]
-        pub extern "C" fn $handler(ctx_ptr: i32, ctx_len: i32) -> i32 {
+        pub extern "C" fn $export_name(ctx_ptr: i32, ctx_len: i32) -> i32 {
             use $crate::sdk::prelude::*;
 
             // Deserialize context
@@ -177,7 +189,7 @@ macro_rules! wrap_handler {
             };
 
             // Call the actual handler
-            match $handler(ctx) {
+            match $handler_fn(ctx) {
                 Ok(response) => response.to_raw().unwrap_or(0),
                 Err(e) => {
                     log::error!("Handler error: {}", e);
