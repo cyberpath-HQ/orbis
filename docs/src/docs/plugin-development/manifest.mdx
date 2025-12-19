@@ -23,7 +23,7 @@ Orbis supports two types of plugins:
 2. **WASM plugins**: Full-featured with server-side logic using the Orbis SDK
    - API routes with database access, HTTP requests, etc.
    - Rust/WASM compilation required
-   - Minimal boilerplate with `orbis_plugin!()` and `#[wrap_handler]`
+   - Minimal boilerplate with `orbis_plugin!()` and `wrap_handler!`
    - See [WASM Plugins](./wasm-plugins) for SDK documentation
 
 This document covers the manifest structure common to both types.
@@ -357,7 +357,7 @@ API routes for backend functionality (WASM plugins only).
 |-------|------|----------|-------------|
 | `path` | string | ✅ | Route path (supports `:param`) |
 | `method` | string | ✅ | HTTP method (GET, POST, PUT, DELETE, PATCH) |
-| `handler` | string | ✅ | WASM function name (SDK: use `#[wrap_handler]`) |
+| `handler` | string | ✅ | WASM function name (SDK: use `wrap_handler!()`) |
 | `middleware` | array | ❌ | Applied middleware |
 
 ### Handler Implementation with SDK

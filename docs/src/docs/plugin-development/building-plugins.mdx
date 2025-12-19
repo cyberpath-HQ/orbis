@@ -94,24 +94,26 @@ use serde_json::json;
 // Zero-boilerplate initialization
 orbis_plugin!();
 
-#[wrap_handler]
-pub fn get_items(ctx: Context) -> Result<Response> {
-    let items: Vec<String> = state::get("items").unwrap_or_default();
-    Ok(Response::json(&json!({ "items": items })))
+fn get_items_impl(ctx: Context) -> Result<Response> {
+    let items: Vec<String> = state::get("items")?.unwrap_or_default();
+    Response::json(&json!({ "items": items }))
 }
 
-#[wrap_handler]
-pub fn create_item(ctx: Context) -> Result<Response> {
+fn create_item_impl(ctx: Context) -> Result<Response> {
     #[derive(Deserialize)]
     struct NewItem { name: String }
     
     let item: NewItem = ctx.body_as()?;
-    let mut items: Vec<String> = state::get("items").unwrap_or_default();
+    let mut items: Vec<String> = state::get("items")?.unwrap_or_default();
     items.push(item.name);
     state::set("items", &items)?;
     
-    Ok(Response::json(&json!({ "message": "Created", "total": items.len() })))
+    Response::json(&json!({ "message": "Created", "total": items.len() }))
 }
+
+// Export handlers for FFI
+wrap_handler!(get_items, get_items_impl);
+wrap_handler!(create_item, create_item_impl);
 ```
 </CodeBlock>
 

@@ -60,19 +60,21 @@ use crate::{models::*, services};
 use orbis_plugin_api::sdk::prelude::*;
 use serde_json::json;
 
-#[wrap_handler]
-pub fn get_items(ctx: Context) -> Result<Response> {
+fn get_items_impl(ctx: Context) -> Result<Response> {
     let filter = ctx.query_param("filter").unwrap_or("all");
     let items = services::get_filtered_items(filter)?;
-    Ok(Response::json(&items))
+    Response::json(&items)
 }
 
-#[wrap_handler]
-pub fn create_item(ctx: Context) -> Result<Response> {
+fn create_item_impl(ctx: Context) -> Result<Response> {
     let new_item: NewItem = ctx.body_as()?;
     let item = services::create_item(new_item)?;
-    Ok(Response::json(&json!({ "item": item })))
+    Response::json(&json!({ "item": item }))
 }
+
+// Export handlers
+wrap_handler!(get_items, get_items_impl);
+wrap_handler!(create_item, create_item_impl);
 ```
 </CodeBlock>
 
@@ -149,13 +151,14 @@ pub fn calculate_discount(price: f64, user_tier: &str) -> f64 {
     }
 }
 
-#[wrap_handler]
-pub fn get_price(ctx: Context) -> Result<Response> {
+fn get_price_impl(ctx: Context) -> Result<Response> {
     let tier = ctx.query_param("tier").unwrap_or("basic");
     let price = 100.0;
     let final_price = calculate_discount(price, tier);
-    Ok(Response::json(&json!({ "price": final_price })))
+    Response::json(&json!({ "price": final_price }))
 }
+
+wrap_handler!(get_price, get_price_impl);
 ```
 </CodeBlock>
 
@@ -164,8 +167,7 @@ pub fn get_price(ctx: Context) -> Result<Response> {
 <CodeBlock lang="rust">
 ```rust
 // Bad: Logic embedded in handler (hard to test)
-#[wrap_handler]
-pub fn get_price(ctx: Context) -> Result<Response> {
+fn get_price_impl(ctx: Context) -> Result<Response> {
     let tier = ctx.query_param("tier").unwrap_or("basic");
     let price = 100.0;
     let final_price = match tier {
@@ -173,8 +175,10 @@ pub fn get_price(ctx: Context) -> Result<Response> {
         "gold" => price * 0.9,
         _ => price,
     };
-    Ok(Response::json(&json!({ "price": final_price })))
+    Response::json(&json!({ "price": final_price }))
 }
+
+wrap_handler!(get_price, get_price_impl);
 ```
 </CodeBlock>
 
@@ -183,17 +187,18 @@ pub fn get_price(ctx: Context) -> Result<Response> {
 <CodeBlock lang="rust">
 ```rust
 // Good: Type-safe parsing
-#[wrap_handler]
-pub fn get_item(ctx: Context) -> Result<Response> {
+fn get_item_impl(ctx: Context) -> Result<Response> {
     let id: i32 = ctx.query_param_as("id")?;
-    let items: Vec<Item> = state::get("items").unwrap_or_default();
+    let items: Vec<Item> = state::get("items")?.unwrap_or_default();
     
     let item = items.iter()
         .find(|i| i.id == id)
         .ok_or_else(|| Error::NotFound)?;
     
-    Ok(Response::json(item))
+    Response::json(item)
 }
+
+wrap_handler!(get_item, get_item_impl);
 ```
 </CodeBlock>
 
@@ -202,12 +207,13 @@ pub fn get_item(ctx: Context) -> Result<Response> {
 <CodeBlock lang="rust">
 ```rust
 // Bad: Manual string parsing (error-prone)
-#[wrap_handler]
-pub fn get_item(ctx: Context) -> Result<Response> {
+fn get_item_impl(ctx: Context) -> Result<Response> {
     let id_str = ctx.query_param("id").unwrap_or("0");
     let id = id_str.parse::<i32>().unwrap(); // panics on invalid input!
     // ...
 }
+
+wrap_handler!(get_item, get_item_impl);
 ```
 </CodeBlock>
 
@@ -216,13 +222,12 @@ pub fn get_item(ctx: Context) -> Result<Response> {
 <CodeBlock lang="rust">
 ```rust
 // Good: Proper logging
-#[wrap_handler]
-pub fn delete_item(ctx: Context) -> Result<Response> {
+fn delete_item_impl(ctx: Context) -> Result<Response> {
     let id: i32 = ctx.query_param_as("id")?;
     
     log::info!("Deleting item with id: {}", id);
     
-    let mut items: Vec<Item> = state::get("items").unwrap_or_default();
+    let mut items: Vec<Item> = state::get("items")?.unwrap_or_default();
     items.retain(|item| item.id != id);
     state::set("items", &items)?;
     
