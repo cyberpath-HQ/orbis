@@ -24,15 +24,30 @@ flowchart LR
 
 ## Project Structure
 
+### Manifest-Only Plugin
+
+<CodeBlock lang="text">
+```text
+my-plugin/
+├── manifest.json
+└── assets/ (optional)
+    ├── logo.png
+    └── styles.css
+```
+</CodeBlock>
+
+### WASM Plugin (with SDK)
+
 <CodeBlock lang="text">
 ```text
 my-plugin/
 ├── Cargo.toml
 ├── manifest.json
-├── build.sh
-├── add_custom_section.py
+├── build.sh (optional)
 ├── src/
-│   └── lib.rs
+│   ├── lib.rs
+│   ├── handlers.rs (optional - organize routes)
+│   └── models.rs (optional - data structures)
 └── target/
     └── wasm32-unknown-unknown/
         └── release/
@@ -42,7 +57,7 @@ my-plugin/
 
 ## Cargo Configuration
 
-### Cargo.toml
+### Basic Setup
 
 <CodeBlock lang="toml">
 ```toml
@@ -52,9 +67,10 @@ version = "1.0.0"
 edition = "2021"
 
 [lib]
-crate-type = ["cdylib"]
+crate-type = ["cdylib"]  # Required for WASM
 
 [dependencies]
+orbis-plugin-api = { path = "../../crates/orbis-plugin-api" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 
@@ -64,6 +80,38 @@ lto = true                # Link-time optimization
 strip = true              # Strip symbols
 codegen-units = 1         # Single codegen unit
 panic = "abort"           # Abort on panic (smaller)
+```
+</CodeBlock>
+
+### SDK-Powered Plugin Example
+
+<CodeBlock lang="rust">
+```rust
+// src/lib.rs
+use orbis_plugin_api::sdk::prelude::*;
+use serde_json::json;
+
+// Zero-boilerplate initialization
+orbis_plugin!();
+
+#[wrap_handler]
+pub fn get_items(ctx: Context) -> Result<Response> {
+    let items: Vec<String> = state::get("items").unwrap_or_default();
+    Ok(Response::json(&json!({ "items": items })))
+}
+
+#[wrap_handler]
+pub fn create_item(ctx: Context) -> Result<Response> {
+    #[derive(Deserialize)]
+    struct NewItem { name: String }
+    
+    let item: NewItem = ctx.body_as()?;
+    let mut items: Vec<String> = state::get("items").unwrap_or_default();
+    items.push(item.name);
+    state::set("items", &items)?;
+    
+    Ok(Response::json(&json!({ "message": "Created", "total": items.len() })))
+}
 ```
 </CodeBlock>
 
@@ -78,28 +126,40 @@ panic = "abort"           # Abort on panic (smaller)
 
 ## Build Script
 
-### Basic Build (build.sh)
+### SDK-Based Build (Recommended)
+
+For plugins using the Orbis SDK, the build process is simple:
 
 <CodeBlock lang="bash">
 ```bash
 #!/bin/bash
 set -e
 
-echo "Building plugin..."
+echo "Building plugin with Orbis SDK..."
 
 # Build the WASM binary
 cargo build --target wasm32-unknown-unknown --release
 
-# Get the output path
 WASM_FILE="target/wasm32-unknown-unknown/release/my_plugin.wasm"
-
-# Embed manifest as custom section
-python3 add_custom_section.py "$WASM_FILE" manifest.json
 
 echo "Build complete: $WASM_FILE"
 echo "Size: $(du -h $WASM_FILE | cut -f1)"
+
+# Optional: Optimize with wasm-opt
+if command -v wasm-opt &> /dev/null; then
+    echo "Optimizing with wasm-opt..."
+    wasm-opt -Os -o "${WASM_FILE}.opt" "$WASM_FILE"
+    mv "${WASM_FILE}.opt" "$WASM_FILE"
+    echo "Optimized size: $(du -h $WASM_FILE | cut -f1)"
+fi
 ```
 </CodeBlock>
+
+**Note:** The SDK eliminates the need for manual manifest embedding. Just place `manifest.json` next to the WASM file.
+
+### Advanced: Embedded Manifest Build
+
+If you want to embed the manifest inside the WASM binary:
 
 ### Manifest Embedding Script (add_custom_section.py)
 
@@ -166,36 +226,62 @@ if __name__ == '__main__':
 ```
 </CodeBlock>
 
-## Alternative: External Manifest
+## Alternative: External Manifest (Recommended with SDK)
 
-Instead of embedding, you can use an external manifest file:
+The simplest deployment uses an external manifest file:
 
 <CodeBlock lang="text">
 ```text
-my-plugin/
+~/.orbis/plugins/my-plugin/
 ├── my_plugin.wasm
 └── manifest.json
 ```
 </CodeBlock>
 
 Orbis searches for manifests in this order:
-1. Custom section in WASM binary
-2. `manifest.json` next to WASM file
-3. `<plugin_name>.json` next to WASM file
+1. `manifest.json` next to WASM file ✅ **Recommended for SDK plugins**
+2. `<plugin_name>.json` next to WASM file
+3. Custom section in WASM binary (advanced)
+
+**Advantages of external manifest:**
+- Simpler build process (no embedding script needed)
+- Easier to update manifest without rebuilding WASM
+- Smaller WASM binary size
+- Works seamlessly with the SDK
 
 ## Development Workflow
 
-### Watch Mode
+### Watch Mode (SDK Plugins)
 
-For rapid iteration, use cargo-watch:
+For rapid iteration during development:
 
 <CodeBlock lang="bash">
 ```bash
 # Install cargo-watch
 cargo install cargo-watch
 
-# Auto-rebuild on changes
+# Auto-rebuild on Rust file changes
 cargo watch -x 'build --target wasm32-unknown-unknown --release'
+
+# In another terminal, watch and copy to plugin directory
+cargo watch -s 'cp target/wasm32-unknown-unknown/release/my_plugin.wasm ~/.orbis/plugins/my-plugin/'
+```
+</CodeBlock>
+
+### Testing During Development
+
+<CodeBlock lang="bash">
+```bash
+# Build and install in one command
+build_and_install() {
+    cargo build --target wasm32-unknown-unknown --release && \
+    cp target/wasm32-unknown-unknown/release/my_plugin.wasm ~/.orbis/plugins/my-plugin/ && \
+    cp manifest.json ~/.orbis/plugins/my-plugin/ && \
+    echo "Plugin updated! Reload Orbis to see changes."
+}
+
+# Use it
+build_and_install
 ```
 </CodeBlock>
 

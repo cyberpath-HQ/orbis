@@ -11,6 +11,23 @@ import CodeBlock from '@/components/mdx/CodeBlock.astro';
 
 The manifest file (`manifest.json`) is the heart of every Orbis plugin. It defines metadata, pages, routes, permissions, and configuration.
 
+## Plugin Types
+
+Orbis supports two types of plugins:
+
+1. **Manifest-only plugins**: Pure UI with no server logic (pages, state, actions only)
+   - Great for dashboards, reports, and simple UIs
+   - No compilation needed - just JSON
+   - Limited to client-side operations
+
+2. **WASM plugins**: Full-featured with server-side logic using the Orbis SDK
+   - API routes with database access, HTTP requests, etc.
+   - Rust/WASM compilation required
+   - Minimal boilerplate with `orbis_plugin!()` and `#[wrap_handler]`
+   - See [WASM Plugins](./wasm-plugins) for SDK documentation
+
+This document covers the manifest structure common to both types.
+
 ## Basic Structure
 
 <CodeBlock lang="json">
@@ -299,7 +316,7 @@ See [Page Definitions](./page-definitions) for full details.
 
 ## Routes
 
-API routes for backend functionality.
+API routes for backend functionality (WASM plugins only).
 
 <CodeBlock lang="json">
 ```json
@@ -339,9 +356,40 @@ API routes for backend functionality.
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `path` | string | ✅ | Route path (supports `:param`) |
-| `method` | string | ✅ | HTTP method |
-| `handler` | string | ✅ | WASM function name |
+| `method` | string | ✅ | HTTP method (GET, POST, PUT, DELETE, PATCH) |
+| `handler` | string | ✅ | WASM function name (SDK: use `#[wrap_handler]`) |
 | `middleware` | array | ❌ | Applied middleware |
+
+### Handler Implementation with SDK
+
+When using the Orbis SDK, handlers are simple functions wrapped with `#[wrap_handler]`:
+
+<CodeBlock lang="rust">
+```rust
+use orbis_plugin_api::sdk::prelude::*;
+
+#[wrap_handler]
+pub fn get_items(ctx: Context) -> Result<Response> {
+    let items: Vec<Item> = state::get("items").unwrap_or_default();
+    Ok(Response::json(&items))
+}
+
+#[wrap_handler]
+pub fn create_item(ctx: Context) -> Result<Response> {
+    let new_item: NewItem = ctx.body_as()?;
+    // ... business logic
+    Ok(Response::json(&created_item))
+}
+```
+</CodeBlock>
+
+The SDK automatically:
+- Parses request data
+- Handles memory management
+- Serializes responses
+- Manages errors
+
+See [WASM Plugins](./wasm-plugins) for complete SDK documentation.
 
 ### Path Parameters
 
@@ -369,15 +417,28 @@ Built-in middleware:
 
 ## WASM Entry
 
-Path to the compiled WASM binary.
+Path to the compiled WASM binary (required for WASM plugins).
 
 <CodeBlock lang="json">
 ```json
-"wasm_entry": "plugin.wasm"
+"wasm_entry": "my_plugin.wasm"
 ```
 </CodeBlock>
 
-Relative to the plugin directory or embedded in the WASM file.
+**Deployment Options:**
+
+1. **External file** (recommended with SDK):
+   ```
+   ~/.orbis/plugins/my-plugin/
+   ├── my_plugin.wasm
+   └── manifest.json
+   ```
+
+2. **Manifest embedded in WASM**:
+   - Use `add_custom_section.py` to embed manifest as custom section
+   - Manifest can be omitted in this case
+   
+**With SDK:** Just build with `cargo build --target wasm32-unknown-unknown --release` and place alongside manifest.json.
 
 ## Configuration
 

@@ -9,309 +9,340 @@ import CodeBlock from '@/components/mdx/CodeBlock.astro';
 
 # Quickstart
 
-Build your first Orbis plugin in 5 minutes. This tutorial walks you through creating a simple "Hello World" plugin with interactive UI.
+Build your first Orbis plugin in 5 minutes using the Orbis SDK. This tutorial walks you through creating a simple "Hello World" plugin with interactive UI and server-side logic.
 
 ## What You'll Build
 
 A plugin that:
-- Displays a greeting message
-- Has a button that updates state
-- Shows a counter of button clicks
+- Displays a greeting message with customizable name
+- Has server-side state management
+- Counts button clicks using API routes
+- Shows dynamic UI updates
 
-## Step 1: Create the Plugin Directory
+## Prerequisites
+
+- Rust installed (1.70+)
+- wasm32-unknown-unknown target: `rustup target add wasm32-unknown-unknown`
+- Basic familiarity with Rust and JSON
+
+## Step 1: Create the Project
 
 <CodeBlock lang="bash">
 ```bash
-mkdir -p plugins/my-first-plugin
-cd plugins/my-first-plugin
+# Create a new Rust library project
+cargo new --lib hello-plugin
+cd hello-plugin
 ```
 </CodeBlock>
 
-## Step 2: Create the Manifest
+## Step 2: Configure Cargo.toml
+
+<CodeBlock lang="toml">
+```toml
+[package]
+name = "hello-plugin"
+version = "1.0.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+orbis-plugin-api = { path = "../crates/orbis-plugin-api" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+[profile.release]
+opt-level = "s"        # Optimize for size
+lto = true             # Link-time optimization
+strip = true           # Strip symbols
+codegen-units = 1      # Single codegen unit
+panic = "abort"        # Abort on panic
+```
+</CodeBlock>
+
+## Step 3: Write the Plugin Code
+
+Create `src/lib.rs`:
+
+<CodeBlock lang="rust">
+```rust
+use orbis_plugin_api::sdk::prelude::*;
+use serde_json::json;
+
+// Initialize the plugin with zero boilerplate
+orbis_plugin!();
+
+/// Get personalized greeting
+#[wrap_handler]
+pub fn get_greeting(ctx: Context) -> Result<Response> {
+    // Get name from query parameter or use "World"
+    let name = ctx.query_param("name").unwrap_or("World");
+    
+    // Get click count from state
+    let count: i32 = state::get("count").unwrap_or(0);
+    
+    log::info!("Greeting requested for: {}", name);
+    
+    Ok(Response::json(&json!({
+        "message": format!("Hello, {}!", name),
+        "clickCount": count
+    })))
+}
+
+/// Increment click counter
+#[wrap_handler]
+pub fn increment_count(_ctx: Context) -> Result<Response> {
+    // Get current count
+    let count: i32 = state::get("count").unwrap_or(0);
+    let new_count = count + 1;
+    
+    // Save new count
+    state::set("count", new_count)?;
+    
+    log::info!("Count incremented to: {}", new_count);
+    
+    Ok(Response::json(&json!({
+        "count": new_count,
+        "message": format!("Clicked {} times!", new_count)
+    })))
+}
+```
+</CodeBlock>
+
+## Step 4: Create the Manifest
 
 Create `manifest.json`:
 
 <CodeBlock lang="json">
 ```json
 {
-  "name": "my-first-plugin",
+  "name": "hello-plugin",
   "version": "1.0.0",
-  "description": "My First Orbis Plugin",
-  "author": "Plugin Developer",
-  "homepage": "https://example.com",
+  "description": "A simple greeting plugin with click counter",
+  "author": "You",
   "license": "MIT",
-  "min_orbis_version": "0.1.0",
-  "dependencies": [],
-  "permissions": [
-    "database_read",
-    "network"
-  ],
+  "min_orbis_version": "1.0.0",
+  
+  "wasm_entry": "hello_plugin.wasm",
+  
   "routes": [
     {
+      "path": "/greeting",
       "method": "GET",
-      "path": "/api/data",
-      "handler": "get_data",
-      "description": "Fetch data from the plugin",
-      "requires_auth": true,
-      "permissions": [],
-      "rate_limit": 60
+      "handler": "get_greeting"
+    },
+    {
+      "path": "/increment",
+      "method": "POST",
+      "handler": "increment_count"
     }
   ],
+  
   "pages": [
     {
-      "route": "/dashboard",
-      "title": "Dashboard",
-      "icon": "LayoutDashboard",
-      "description": "Plugin dashboard with data visualization",
-      "show_in_menu": true,
-      "menu_order": 0,
-      "parent_route": null,
-      "requires_auth": true,
-      "permissions": [],
-      "roles": [],
+      "id": "greeting-page",
+      "title": "Hello",
+      "icon": "wave",
+      "route": "/hello",
+      
       "state": {
-        "data": {
-          "type": "array",
-          "default": [],
-          "nullable": false,
-          "description": "Data from API"
+        "name": {
+          "type": "string",
+          "default": "World"
         },
-        "loading": {
-          "type": "boolean",
-          "default": false,
-          "nullable": false,
-          "description": "Loading state"
+        "count": {
+          "type": "number",
+          "default": 0
+        },
+        "message": {
+          "type": "string",
+          "default": ""
         }
       },
-      "computed": {},
-      "sections": [
-        {
-          "type": "Container",
-          "id": "main",
-          "className": "p-6",
-          "style": null,
-          "visible": null,
-          "children": [
-            {
-              "type": "Text",
-              "id": null,
-              "className": "text-2xl font-bold mb-4",
-              "style": null,
-              "visible": null,
-              "children": [],
-              "events": null,
-              "text": "Dashboard"
-            },
-            {
-              "type": "Text",
-              "id": null,
-              "className": null,
-              "style": null,
-              "visible": "${state.loading}",
-              "children": [],
-              "events": null,
-              "text": "Loading..."
-            },
-            {
-              "type": "Table",
-              "id": "dataTable",
-              "className": null,
-              "style": null,
-              "visible": "${!state.loading}",
-              "children": [],
-              "events": null,
-              "dataSource": "state:data",
-              "columns": [
-                {
-                  "key": "id",
-                  "label": "ID",
-                  "sortable": true
-                },
-                {
-                  "key": "name",
-                  "label": "Name",
-                  "sortable": true
-                },
-                {
-                  "key": "value",
-                  "label": "Value",
-                  "sortable": false
-                }
-              ]
-            }
-          ],
-          "events": null
-        }
-      ],
-      "actions": {},
-      "hooks": {
-        "on_mount": [
+      
+      "layout": {
+        "type": "Container",
+        "className": "flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-500 to-pink-500",
+        "children": [
           {
-            "type": "call_api",
-            "name": "fetchData",
-            "api": "/api/plugins/example-plugin/api/data",
-            "method": "GET",
-            "args_from_state": [],
-            "map_args": [],
-            "body": null,
-            "on_success": [
+            "type": "Card",
+            "className": "p-8 shadow-2xl max-w-md w-full",
+            "children": [
               {
-                "type": "update_state",
-                "path": "data",
-                "value": null,
-                "from": "response.data",
-                "merge": false
-              }
-            ],
-            "on_error": [
+                "type": "Text",
+                "text": "Hello, ${state.name}!",
+                "variant": "h1",
+                "className": "text-4xl font-bold text-center mb-2"
+              },
               {
-                "type": "show_toast",
-                "level": "error",
-                "message": "Failed to load data",
-                "title": "Error",
-                "duration": 5000
-              }
-            ],
-            "on_finally": [
+                "type": "Text",
+                "text": "Clicks: ${state.count}",
+                "variant": "p",
+                "className": "text-center text-gray-600 mb-6"
+              },
               {
-                "type": "update_state",
-                "path": "loading",
-                "value": false,
-                "from": null,
-                "merge": false
+                "type": "Input",
+                "fieldType": "text",
+                "placeholder": "Enter your name",
+                "value": "${state.name}",
+                "className": "mb-4",
+                "events": {
+                  "onChange": [
+                    {
+                      "type": "updateState",
+                      "path": "name",
+                      "value": "${$event.target.value}"
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "Button",
+                "text": "Click Me!",
+                "className": "w-full",
+                "events": {
+                  "onClick": [
+                    {
+                      "type": "callApi",
+                      "api": "/increment",
+                      "method": "POST",
+                      "onSuccess": [
+                        {
+                          "type": "updateState",
+                          "path": "count",
+                          "value": "${$response.count}"
+                        },
+                        {
+                          "type": "showToast",
+                          "message": "${$response.message}",
+                          "level": "success"
+                        }
+                      ]
+                    }
+                  ]
+                }
               }
             ]
           }
-        ],
-        "on_unmount": [],
-        "on_params_change": [],
-        "on_query_change": []
-      },
-      "dialogs": []
+        ]
+      }
     }
-  ],
-  "wasm_entry": "plugin.wasm",
-  "config": {}
+  ]
 }
 ```
 </CodeBlock>
 
-## Step 3: Load the Plugin
-
-Copy your plugin to the Orbis plugins directory:
+## Step 5: Build the Plugin
 
 <CodeBlock lang="bash">
 ```bash
-# From the project root
-cd orbis
-mkdir -p ./src-tauri/plugins/
-cp -r ../plugins/my-first-plugin ./src-tauri/plugins/my-first-plugin
+# Build WASM binary
+cargo build --target wasm32-unknown-unknown --release
+
+# Output will be at:
+# target/wasm32-unknown-unknown/release/hello_plugin.wasm
 ```
 </CodeBlock>
 
-## Step 4: Start the Development Server
+**Build optimization:** The `[profile.release]` settings reduce binary size from ~2MB to ~200KB.
+
+## Step 6: Install the Plugin
 
 <CodeBlock lang="bash">
 ```bash
+# Create plugin directory
+mkdir -p ~/.orbis/plugins/hello-plugin
+
+# Copy WASM binary and manifest
+cp target/wasm32-unknown-unknown/release/hello_plugin.wasm ~/.orbis/plugins/hello-plugin/
+cp manifest.json ~/.orbis/plugins/hello-plugin/
+
+# Or use custom plugin directory
+export ORBIS_PLUGINS_DIR=/path/to/plugins
+cp target/wasm32-unknown-unknown/release/hello_plugin.wasm $ORBIS_PLUGINS_DIR/hello-plugin/
+cp manifest.json $ORBIS_PLUGINS_DIR/hello-plugin/
+```
+</CodeBlock>
+
+## Step 7: Run Orbis
+
+<CodeBlock lang="bash">
+```bash
+# From the orbis project root
 cd orbis
 bun run tauri dev
 ```
 </CodeBlock>
 
-## Step 5: View Your Plugin
-
-Navigate to your plugin's route in the Orbis app. You should see:
-
-1. A heading that greets you by name
-2. An input field to change your name
-3. A button that counts clicks
-4. Toast notifications on each click
+Navigate to the "Hello" page in the sidebar. You should see:
+- A greeting with your custom name
+- An input to change the name
+- A button that increments the counter
+- Toast notifications on each click
 
 ## Understanding the Code
 
-### The Manifest Structure
+### Zero-Boilerplate Initialization
 
-<CodeBlock lang="json">
-```json
-{
-  "name": "my-first-plugin",     // Unique plugin identifier
-  "version": "1.0.0",            // Semantic version
-  "description": "...",          // Human-readable description
-  "pages": [...]                 // Array of page definitions
-}
+The `orbis_plugin!()` macro handles all FFI setup:
+<CodeBlock lang="rust">
+```rust
+orbis_plugin!();  // Expands to:
+// - init() function
+// - allocate/deallocate memory management
+// - execute() dispatcher
+// - All extern declarations for host functions
 ```
 </CodeBlock>
 
-### Page Definition
+### Type-Safe Handler Wrapping
 
-Each page has:
-
-| Field | Description |
-|-------|-------------|
-| `id` | Unique page identifier |
-| `title` | Display title in navigation |
-| `route` | URL path for the page |
-| `icon` | Icon from lucide-react |
-| `state` | Initial state definition |
-| `layout` | Root component schema |
-
-### State Definition
-
-State fields define reactive data:
-
-<CodeBlock lang="json">
-```json
-{
-  "state": {
-    "username": {
-      "type": "string",    // string, number, boolean, object, array
-      "default": "World"   // Initial value
-    }
-  }
+The `#[wrap_handler]` attribute eliminates manual FFI:
+<CodeBlock lang="rust">
+```rust
+#[wrap_handler]
+pub fn get_greeting(ctx: Context) -> Result<Response> {
+    // Your business logic here
 }
+
+// Expands to FFI-compatible export with:
+// - Request parsing from memory
+// - Error handling
+// - Response serialization
 ```
 </CodeBlock>
 
-### Component Schema
+### Context API
 
-Components are defined declaratively:
-
-<CodeBlock lang="json">
-```json
-{
-  "type": "Button",           // Component type
-  "label": "Click Me!",       // Props
-  "events": {                 // Event handlers
-    "onClick": [/* actions */]
-  }
-}
+The `Context` provides request data:
+<CodeBlock lang="rust">
+```rust
+ctx.query_param("name")         // Get query parameter
+ctx.query_param_as::<i32>("id") // Parse as type
+ctx.body_as::<MyStruct>()       // Deserialize body
 ```
 </CodeBlock>
 
-### Expressions
+### Response Builders
 
-Use `{{...}}` for dynamic values:
-
-<CodeBlock lang="json">
-```json
-{
-  "text": "Hello, {{state.username}}!",
-  "value": "{{state.clickCount + 1}}"
-}
+Convenient response creation:
+<CodeBlock lang="rust">
+```rust
+Response::json(&data)                    // JSON response
+Response::text("Hello")                  // Plain text
+Response::new(200, "OK", json!({}))     // Custom response
 ```
 </CodeBlock>
 
-### Actions
+### State Management
 
-Actions respond to events:
-
-<CodeBlock lang="json">
-```json
-{
-  "type": "updateState",
-  "path": "clickCount",
-  "value": "{{state.clickCount + 1}}"
-}
+Type-safe persistent state:
+<CodeBlock lang="rust">
+```rust
+state::get::<i32>("count")      // Get typed value
+state::set("count", 42)         // Set value
+state::delete("count")          // Remove value
 ```
 </CodeBlock>
 
@@ -319,11 +350,23 @@ Actions respond to events:
 
 Now that you've built your first plugin, explore:
 
-- **[Project Structure](./project-structure)** - Understand the codebase
+### Plugin Development
+- **[WASM Plugins](../plugin-development/wasm-plugins)** - Full SDK reference with advanced examples
+- **[Building Plugins](../plugin-development/building-plugins)** - Build optimization and packaging
+- **[Testing Plugins](../plugin-development/testing-plugins)** - Testing strategies
+
+### SDK Features
+- **[Database Access](../plugin-development/wasm-plugins#database-access)** - Query and execute SQL
+- **[HTTP Requests](../plugin-development/wasm-plugins#http-requests)** - Make external API calls
+- **[Logging](../plugin-development/wasm-plugins#logging)** - Debug and monitoring
+- **[Permissions](../plugin-development/wasm-plugins#permissions)** - Security and access control
+
+### UI Development
 - **[Schema System](../core-concepts/schema-system)** - Deep dive into UI schemas
 - **[Components](../components/overview)** - All available components
 - **[Actions](../actions/overview)** - All action types
+- **[State & Expressions](../core-concepts/state-management)** - Dynamic UI patterns
 
-## Full Plugin Example
+## Complete Example
 
-For a complete example, check the [hello-plugin](https://github.com/cyberpath-HQ/orbis/tree/main/plugins/hello-plugin) in the repository.
+For a production-ready example with database access and HTTP requests, see the [TODO Plugin](https://github.com/cyberpath-HQ/orbis/tree/main/plugins/todo-plugin) in the repository.

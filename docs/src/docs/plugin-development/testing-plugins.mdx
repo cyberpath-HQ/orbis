@@ -13,26 +13,46 @@ Comprehensive guide to testing your Orbis plugins.
 
 ## Testing Strategies
 
-| Level | Scope | Tools |
-|-------|-------|-------|
-| Unit | Rust functions | `cargo test` |
-| Integration | WASM execution | Plugin test harness |
-| E2E | Full UI | Playwright/Cypress |
+| Level | Scope | Tools | SDK Support |
+|-------|-------|-------|-------------|
+| Unit | Rust functions | `cargo test` | ✅ Full |
+| Integration | Handler logic | `cargo test` + mocks | ✅ SDK helpers |
+| E2E | Full WASM | wasmtime | ✅ Works seamlessly |
+| UI | Full UI flow | Playwright/Cypress | N/A |
 
-## Unit Testing
+## Unit Testing with SDK
 
-### Testing Rust Logic
+### Testing Business Logic
 
 <CodeBlock lang="rust">
 ```rust
 // src/lib.rs
+use orbis_plugin_api::sdk::prelude::*;
+use serde_json::json;
+
+orbis_plugin!();
+
 pub fn calculate_total(items: &[Item]) -> f64 {
     items.iter().map(|i| i.price * i.quantity as f64).sum()
+}
+
+#[wrap_handler]
+pub fn get_total(ctx: Context) -> Result<Response> {
+    let items: Vec<Item> = ctx.body_as()?;
+    let total = calculate_total(&items);
+    Ok(Response::json(&json!({ "total": total })))
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use serde::Deserialize;
+    
+    #[derive(Deserialize)]
+    struct Item {
+        price: f64,
+        quantity: i32,
+    }
 
     #[test]
     fn test_calculate_total() {
@@ -59,51 +79,113 @@ cargo test
 ```
 </CodeBlock>
 
-### Testing JSON Serialization
+### Testing SDK Helpers
 
 <CodeBlock lang="rust">
 ```rust
-#[derive(Serialize, Deserialize, Debug, PartialEq)]
-struct MyData {
-    name: String,
-    value: i32,
-}
-
-#[test]
-fn test_serialization() {
-    let data = MyData {
-        name: "test".to_string(),
-        value: 42,
-    };
+#[cfg(test)]
+mod tests {
+    use super::*;
     
-    let json = serde_json::to_string(&data).unwrap();
-    let parsed: MyData = serde_json::from_str(&json).unwrap();
+    #[test]
+    fn test_response_json() {
+        let data = json!({"status": "ok"});
+        let response = Response::json(&data);
+        
+        assert_eq!(response.status_code, 200);
+        assert!(response.body.contains("ok"));
+    }
     
-    assert_eq!(data, parsed);
+    #[test]
+    fn test_response_text() {
+        let response = Response::text("Hello, World!");
+        
+        assert_eq!(response.status_code, 200);
+        assert_eq!(response.body, "Hello, World!");
+    }
 }
 ```
 </CodeBlock>
 
-### Testing Route Handlers
+### Testing State Operations
 
 <CodeBlock lang="rust">
 ```rust
-#[test]
-fn test_get_items_handler() {
-    // Simulate request
+#[cfg(test)]
+mod tests {
+    use super::*;
+    
+    // Note: These tests work with real state if running in WASM
+    // For pure unit tests, you'd mock the state layer
+    
+    #[test]
+    fn test_state_serialization() {
+        use serde::{Serialize, Deserialize};
+        
+        #[derive(Serialize, Deserialize, PartialEq, Debug)]
+        struct User {
+            name: String,
+            age: i32,
+        }
+        
+        let user = User {
+            name: "Alice".to_string(),
+            age: 30,
+        };
+        
+        // Test that our types serialize correctly
+        let json = serde_json::to_string(&user).unwrap();
+        let parsed: User = serde_json::from_str(&json).unwrap();
+        
+        assert_eq!(user, parsed);
+    }
+}
+```
+</CodeBlock>
+
+## Integration Testing with SDK
+
+### Testing Handlers with Mock Context
+
+<CodeBlock lang="rust">
+```rust
+// tests/integration.rs
+use orbis_plugin_api::sdk::prelude::*;
+use serde_json::json;
+
+// Mock context for testing
+fn mock_context(method: &str, path: &str, body: Option<Value>) -> Context {
     let request = json!({
-        "method": "GET",
-        "path": "/items"
+        "method": method,
+        "path": path,
+        "query": {},
+        "headers": {},
+        "body": body.unwrap_or(json!({}))
     });
     
-    // Call handler
-    let response = handle_route(&request.to_string());
+    // Note: This is pseudo-code - actual Context creation
+    // would need access to the internal Context constructor
+    // In practice, you'd test the handler functions directly
+    // or use the full WASM integration test approach below
+}
+
+#[test]
+fn test_get_greeting_handler() {
+    // Direct function testing (best approach with SDK)
+    use my_plugin::handlers::get_greeting;
     
-    // Parse response
-    let result: serde_json::Value = serde_json::from_str(&response).unwrap();
-    
-    assert!(result["success"].as_bool().unwrap());
-    assert!(result["data"].is_array());
+    // Test with mock data
+    let result = get_greeting_impl("Alice");
+    assert_eq!(result, "Hello, Alice!");
+}
+
+// Better: Separate testable logic from handlers
+mod my_plugin {
+    pub mod handlers {
+        pub fn get_greeting_impl(name: &str) -> String {
+            format!("Hello, {}!", name)
+        }
+    }
 }
 ```
 </CodeBlock>

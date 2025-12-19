@@ -62,9 +62,14 @@ my-plugin/
 
 ## Quick Start
 
-### Minimal Manifest Plugin
+Orbis supports two types of plugins:
 
-Create `plugins/hello/manifest.json`:
+1. **Manifest-only plugins** - Pure UI with no server logic (simple dashboards, reports)
+2. **WASM plugins** - Full-featured with server-side logic using the Orbis SDK
+
+### Option 1: Minimal Manifest Plugin
+
+For simple UI-only plugins, create `plugins/hello/manifest.json`:
 
 <CodeBlock lang="json">
 ```json
@@ -98,6 +103,95 @@ Create `plugins/hello/manifest.json`:
 }
 ```
 </CodeBlock>
+
+### Option 2: WASM Plugin with SDK
+
+For plugins with server logic, API routes, state management, etc., use the Orbis SDK:
+
+**1. Create Project:**
+<CodeBlock lang="bash">
+```bash
+cargo new --lib my-plugin
+cd my-plugin
+```
+</CodeBlock>
+
+**2. Add Dependencies (Cargo.toml):**
+<CodeBlock lang="toml">
+```toml
+[package]
+name = "my-plugin"
+version = "1.0.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+orbis-plugin-api = { path = "../../crates/orbis-plugin-api" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+[profile.release]
+opt-level = "s"
+lto = true
+```
+</CodeBlock>
+
+**3. Write Plugin (src/lib.rs):**
+<CodeBlock lang="rust">
+```rust
+use orbis_plugin_api::sdk::prelude::*;
+use serde_json::json;
+
+orbis_plugin!();
+
+#[wrap_handler]
+pub fn get_greeting(ctx: Context) -> Result<Response> {
+    let name = ctx.query_param("name").unwrap_or("World");
+    Ok(Response::json(&json!({
+        "message": format!("Hello, {}!", name)
+    })))
+}
+```
+</CodeBlock>
+
+**4. Create Manifest:**
+<CodeBlock lang="json">
+```json
+{
+  "name": "my-plugin",
+  "version": "1.0.0",
+  "wasm_entry": "my_plugin.wasm",
+  "routes": [
+    { "path": "/greeting", "handler": "get_greeting" }
+  ],
+  "pages": [
+    {
+      "id": "home",
+      "title": "My Plugin",
+      "route": "/my-plugin",
+      "layout": {
+        "type": "Container",
+        "children": [
+          { "type": "Text", "text": "${state.message}" }
+        ]
+      }
+    }
+  ]
+}
+```
+</CodeBlock>
+
+**5. Build:**
+<CodeBlock lang="bash">
+```bash
+cargo build --target wasm32-unknown-unknown --release
+# Output: target/wasm32-unknown-unknown/release/my_plugin.wasm
+```
+</CodeBlock>
+
+See the [WASM Plugins guide](./wasm-plugins) for the complete SDK reference.
 
 That's it! Place it in the `plugins/` directory and restart Orbis.
 

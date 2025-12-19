@@ -13,7 +13,7 @@ Guidelines for building production-ready Orbis plugins.
 
 ## Code Organization
 
-### Project Structure
+### SDK-Based Project Structure
 
 <CodeBlock lang="text">
 ```text
@@ -23,9 +23,10 @@ my-plugin/
 ├── README.md
 ├── CHANGELOG.md
 ├── src/
-│   ├── lib.rs          # Entry points
+│   ├── lib.rs          # Plugin entry + macros
 │   ├── handlers.rs     # Route handlers
 │   ├── models.rs       # Data structures
+│   ├── services.rs     # Business logic
 │   └── utils.rs        # Helpers
 └── tests/
     ├── unit.rs
@@ -33,47 +34,200 @@ my-plugin/
 ```
 </CodeBlock>
 
-### Module Separation
+### Module Separation with SDK
 
 <CodeBlock lang="rust">
 ```rust
-// src/lib.rs - Keep minimal
+// src/lib.rs - Keep minimal, just SDK setup
+use orbis_plugin_api::sdk::prelude::*;
+
 mod handlers;
 mod models;
-mod utils;
+mod services;
 
-#[no_mangle]
-pub extern "C" fn init() -> i32 {
-    handlers::initialize()
-}
+// Initialize plugin with zero boilerplate
+orbis_plugin!();
 
-#[no_mangle]
-pub extern "C" fn execute(ptr: i32, len: i32) -> i32 {
-    handlers::dispatch(ptr, len)
-}
+// Export handlers
+pub use handlers::*;
 ```
 </CodeBlock>
 
 <CodeBlock lang="rust">
 ```rust
 // src/handlers.rs - Route handling
+use crate::{models::*, services};
+use orbis_plugin_api::sdk::prelude::*;
+use serde_json::json;
+
+#[wrap_handler]
+pub fn get_items(ctx: Context) -> Result<Response> {
+    let filter = ctx.query_param("filter").unwrap_or("all");
+    let items = services::get_filtered_items(filter)?;
+    Ok(Response::json(&items))
+}
+
+#[wrap_handler]
+pub fn create_item(ctx: Context) -> Result<Response> {
+    let new_item: NewItem = ctx.body_as()?;
+    let item = services::create_item(new_item)?;
+    Ok(Response::json(&json!({ "item": item })))
+}
+```
+</CodeBlock>
+
+<CodeBlock lang="rust">
+```rust
+// src/services.rs - Business logic (testable!)
 use crate::models::*;
+use orbis_plugin_api::sdk::prelude::*;
 
-pub fn initialize() -> i32 { 0 }
+pub fn get_filtered_items(filter: &str) -> Result<Vec<Item>> {
+    let all_items: Vec<Item> = state::get("items").unwrap_or_default();
+    
+    let filtered = if filter == "all" {
+        all_items
+    } else {
+        all_items.into_iter()
+            .filter(|item| item.category == filter)
+            .collect()
+    };
+    
+    Ok(filtered)
+}
 
-pub fn dispatch(ptr: i32, len: i32) -> i32 {
-    match parse_request(ptr, len) {
-        Ok(req) => handle_route(&req),
-        Err(_) => error_response("Invalid request"),
+pub fn create_item(new_item: NewItem) -> Result<Item> {
+    let mut items: Vec<Item> = state::get("items").unwrap_or_default();
+    
+    let item = Item {
+        id: items.len() as i32 + 1,
+        name: new_item.name,
+        category: new_item.category,
+    };
+    
+    items.push(item.clone());
+    state::set("items", &items)?;
+    
+    log::info!("Created item: {:?}", item);
+    Ok(item)
+}
+```
+</CodeBlock>
+
+<CodeBlock lang="rust">
+```rust
+// src/models.rs - Data structures
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Item {
+    pub id: i32,
+    pub name: String,
+    pub category: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct NewItem {
+    pub name: String,
+    pub category: String,
+}
+```
+</CodeBlock>
+
+### SDK Best Practices
+
+#### ✅ DO: Separate concerns
+
+<CodeBlock lang="rust">
+```rust
+// Good: Business logic separate from handlers
+pub fn calculate_discount(price: f64, user_tier: &str) -> f64 {
+    match user_tier {
+        "premium" => price * 0.8,
+        "gold" => price * 0.9,
+        _ => price,
     }
 }
 
-fn handle_route(req: &Request) -> i32 {
-    match (req.method.as_str(), req.path.as_str()) {
-        ("GET", "/items") => get_items(),
-        ("POST", "/items") => create_item(&req.body),
-        _ => not_found(),
-    }
+#[wrap_handler]
+pub fn get_price(ctx: Context) -> Result<Response> {
+    let tier = ctx.query_param("tier").unwrap_or("basic");
+    let price = 100.0;
+    let final_price = calculate_discount(price, tier);
+    Ok(Response::json(&json!({ "price": final_price })))
+}
+```
+</CodeBlock>
+
+#### ❌ DON'T: Mix logic in handlers
+
+<CodeBlock lang="rust">
+```rust
+// Bad: Logic embedded in handler (hard to test)
+#[wrap_handler]
+pub fn get_price(ctx: Context) -> Result<Response> {
+    let tier = ctx.query_param("tier").unwrap_or("basic");
+    let price = 100.0;
+    let final_price = match tier {
+        "premium" => price * 0.8,
+        "gold" => price * 0.9,
+        _ => price,
+    };
+    Ok(Response::json(&json!({ "price": final_price })))
+}
+```
+</CodeBlock>
+
+#### ✅ DO: Use type-safe helpers
+
+<CodeBlock lang="rust">
+```rust
+// Good: Type-safe parsing
+#[wrap_handler]
+pub fn get_item(ctx: Context) -> Result<Response> {
+    let id: i32 = ctx.query_param_as("id")?;
+    let items: Vec<Item> = state::get("items").unwrap_or_default();
+    
+    let item = items.iter()
+        .find(|i| i.id == id)
+        .ok_or_else(|| Error::NotFound)?;
+    
+    Ok(Response::json(item))
+}
+```
+</CodeBlock>
+
+#### ❌ DON'T: Manual parsing
+
+<CodeBlock lang="rust">
+```rust
+// Bad: Manual string parsing (error-prone)
+#[wrap_handler]
+pub fn get_item(ctx: Context) -> Result<Response> {
+    let id_str = ctx.query_param("id").unwrap_or("0");
+    let id = id_str.parse::<i32>().unwrap(); // panics on invalid input!
+    // ...
+}
+```
+</CodeBlock>
+
+#### ✅ DO: Use logging
+
+<CodeBlock lang="rust">
+```rust
+// Good: Proper logging
+#[wrap_handler]
+pub fn delete_item(ctx: Context) -> Result<Response> {
+    let id: i32 = ctx.query_param_as("id")?;
+    
+    log::info!("Deleting item with id: {}", id);
+    
+    let mut items: Vec<Item> = state::get("items").unwrap_or_default();
+    items.retain(|item| item.id != id);
+    state::set("items", &items)?;
+    
+    log::info!("Item deleted successfully");
+    Ok(Response::json(&json!({ "success": true })))
 }
 ```
 </CodeBlock>
