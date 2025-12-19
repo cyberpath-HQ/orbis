@@ -2,10 +2,11 @@
  * Main Orbis Application
  */
 
-import React, {
+import {
     useState,
     useEffect,
-    useMemo
+    useMemo,
+    useCallback
 } from 'react';
 import {
     Routes,
@@ -21,6 +22,7 @@ import { SchemaRenderer } from '@/lib/renderer';
 import { createPageStateStore } from '@/lib/state';
 import { executeActions } from '@/lib/actions';
 import { PluginErrorBoundary, PageErrorBoundary, LoadingIndicator } from '@/components';
+import { usePluginWatcher } from '@/hooks/use-plugin-management';
 import type { ApiClient } from '@/lib/actions';
 import type {
     PluginInfo, PluginPage, AppModeInfo
@@ -61,6 +63,18 @@ function App(): React.ReactElement {
         setError,
     ] = useState<string | null>(null);
 
+    // Refresh plugin pages
+    const refreshPluginPages = useCallback(async () => {
+        try {
+            const {
+                pages,
+            } = await invoke<{ pages: Array<PluginPage> }>(`get_plugin_pages`);
+            setPluginPages(pages);
+        } catch (err) {
+            console.error('Failed to refresh plugin pages:', err);
+        }
+    }, []);
+
     // Initialize application
     useEffect(() => {
         async function init(): Promise<void> {
@@ -80,10 +94,7 @@ function App(): React.ReactElement {
                 setPlugins(loadedPlugins);
 
                 // Get plugin pages
-                const {
-                    pages,
-                } = await invoke<{ pages: Array<PluginPage> }>(`get_plugin_pages`);
-                setPluginPages(pages);
+                await refreshPluginPages();
             }
             catch (err) {
                 setStatus(`error`);
@@ -92,7 +103,15 @@ function App(): React.ReactElement {
         }
 
         void init();
-    }, []);
+    }, [refreshPluginPages]);
+
+    // Listen for plugin changes and refresh pages
+    usePluginWatcher(
+        useCallback(() => {
+            // Refresh plugin pages when plugins change
+            void refreshPluginPages();
+        }, [refreshPluginPages])
+    );
 
     // Navigation configuration
     const navigation = useMemo<NavigationConfig>(() => ({

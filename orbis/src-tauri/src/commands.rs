@@ -493,12 +493,20 @@ pub fn get_plugins(state: State<'_, OrbisState>) -> Result<Value, String> {
     }))
 }
 
-/// Get plugin pages for UI rendering.
+/// Get plugin pages for UI rendering (only from running plugins).
 #[tauri::command]
 pub fn get_plugin_pages(state: State<'_, OrbisState>) -> Result<Value, String> {
     let pages = if let Some(pm) = state.plugins() {
+        // Only include pages from Running plugins
+        let running_plugins: std::collections::HashSet<_> = pm.registry()
+            .list_by_state(orbis_plugin::PluginState::Running)
+            .iter()
+            .map(|info| info.manifest.name.clone())
+            .collect();
+        
         pm.get_all_pages()
             .iter()
+            .filter(|(plugin, _)| running_plugins.contains(plugin))
             .map(|(plugin, page)| {
                 json!({
                     "plugin": plugin,
@@ -509,6 +517,8 @@ pub fn get_plugin_pages(state: State<'_, OrbisState>) -> Result<Value, String> {
                     "show_in_menu": page.show_in_menu,
                     "menu_order": page.menu_order,
                     "sections": page.sections,
+                    "state": page.state,
+                    "hooks": page.hooks,
                 })
             })
             .collect::<Vec<_>>()
