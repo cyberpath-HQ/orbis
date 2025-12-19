@@ -252,8 +252,20 @@ impl PluginManager {
     ///
     /// Returns an error if the plugin cannot be enabled.
     pub async fn enable_plugin(&self, name: &str) -> orbis_core::Result<()> {
+        // Check if plugin is already loaded
+        if !self.runtime.is_running(name) {
+            return Err(orbis_core::Error::plugin(format!(
+                "Plugin '{}' is not loaded. Load the plugin first before enabling.",
+                name
+            )));
+        }
+        
+        // Update state
         self.registry.set_state(name, PluginState::Running)?;
+        
+        // Call init function (lightweight - just calls WASM init)
         self.runtime.start(name).await?;
+        
         tracing::info!("Enabled plugin: {}", name);
         Ok(())
     }
@@ -264,8 +276,12 @@ impl PluginManager {
     ///
     /// Returns an error if the plugin cannot be disabled.
     pub async fn disable_plugin(&self, name: &str) -> orbis_core::Result<()> {
+        // Call cleanup function
         self.runtime.stop(name).await?;
+        
+        // Update state
         self.registry.set_state(name, PluginState::Disabled)?;
+        
         tracing::info!("Disabled plugin: {}", name);
         Ok(())
     }

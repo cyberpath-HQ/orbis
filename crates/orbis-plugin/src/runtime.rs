@@ -215,6 +215,7 @@ impl PluginInstance {
 }
 
 /// Plugin runtime for executing plugin code.
+#[derive(Clone)]
 pub struct PluginRuntime {
     instances: DashMap<String, Arc<PluginInstance>>,
     engine: Engine,
@@ -306,52 +307,26 @@ impl PluginRuntime {
 
     /// Start a plugin.
     ///
+    /// This is called when a plugin is enabled. The heavy initialization
+    /// (WASM compilation and module instantiation) happens in `initialize()`.
+    /// This method just verifies the plugin is ready to run.
+    ///
     /// # Errors
     ///
     /// Returns an error if the plugin cannot be started.
     pub async fn start(&self, name: &str) -> orbis_core::Result<()> {
-        let instance = self.instances.get(name).ok_or_else(|| {
+        // Just verify the plugin is initialized
+        let _instance = self.instances.get(name).ok_or_else(|| {
             orbis_core::Error::plugin(format!("Plugin '{}' not initialized", name))
         })?;
-
-        // Create store for initialization
-        let store_data =
-            StoreData::new(name.to_string(), instance.sandbox_config.clone(), instance.state.clone(), instance.config.clone());
-        let mut store = Store::new(&instance.engine, store_data);
-        store.limiter(|data| &mut data.limits);
-
-        // Add fuel for execution
-        store
-            .set_fuel(u64::from(instance.sandbox_config.time_limit_ms) * 1000)
-            .map_err(|e| orbis_core::Error::plugin(format!("Failed to set fuel: {}", e)))?;
-
-        // Create linker with host functions
-        let mut linker = Linker::new(&instance.engine);
-        Self::register_host_functions(&mut linker)?;
-
-        // Instantiate the module
-        let wasm_instance = linker
-            .instantiate(&mut store, &instance.module)
-            .map_err(|e| {
-                orbis_core::Error::plugin(format!("Failed to instantiate plugin: {}", e))
-            })?;
-
-        // Call init function if it exists
-        if let Some(init_func) = wasm_instance.get_func(&mut store, "init") {
-            let init_typed: TypedFunc<(), ()> = init_func.typed(&store).map_err(|e| {
-                orbis_core::Error::plugin(format!("Init function has wrong signature: {}", e))
-            })?;
-
-            init_typed.call(&mut store, ()).map_err(|e| {
-                orbis_core::Error::plugin(format!("Failed to execute init function: {}", e))
-            })?;
-        }
 
         tracing::debug!("Started plugin: {}", name);
         Ok(())
     }
 
     /// Stop a plugin.
+    ///
+    /// This is called when a plugin is disabled. It cleans up and removes the instance.
     ///
     /// # Errors
     ///
@@ -361,42 +336,10 @@ impl PluginRuntime {
             orbis_core::Error::plugin(format!("Plugin '{}' not running", name))
         })?;
 
-        // Create store for cleanup
-        let store_data =
-            StoreData::new(name.to_string(), instance.sandbox_config.clone(), instance.state.clone(), instance.config.clone());
-        let mut store = Store::new(&instance.engine, store_data);
-        store.limiter(|data| &mut data.limits);
-
-        // Add fuel for execution
-        store
-            .set_fuel(u64::from(instance.sandbox_config.time_limit_ms) * 1000)
-            .map_err(|e| orbis_core::Error::plugin(format!("Failed to set fuel: {}", e)))?;
-
-        // Create linker
-        let mut linker = Linker::new(&instance.engine);
-        Self::register_host_functions(&mut linker)?;
-
-        // Instantiate the module
-        let wasm_instance = linker
-            .instantiate(&mut store, &instance.module)
-            .map_err(|e| {
-                orbis_core::Error::plugin(format!("Failed to instantiate plugin: {}", e))
-            })?;
-
-        // Call cleanup function if it exists
-        if let Some(cleanup_func) = wasm_instance.get_func(&mut store, "cleanup") {
-            let cleanup_typed: TypedFunc<(), ()> = cleanup_func.typed(&store).map_err(|e| {
-                orbis_core::Error::plugin(format!("Cleanup function has wrong signature: {}", e))
-            })?;
-
-            cleanup_typed.call(&mut store, ()).map_err(|e| {
-                orbis_core::Error::plugin(format!("Failed to execute cleanup function: {}", e))
-            })?;
-        }
-
         // Clear plugin state
         instance.state.clear();
 
+        // Remove the instance
         self.instances.remove(name);
         tracing::debug!("Stopped plugin: {}", name);
         Ok(())
