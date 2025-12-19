@@ -236,8 +236,11 @@ impl PluginManager {
             orbis_core::Error::plugin(format!("Plugin '{}' not found", name))
         })?;
 
-        // Stop the plugin runtime
-        self.runtime.stop(&info.manifest.name).await?;
+        // Stop the plugin runtime (ignore errors if not running)
+        let _ = self.runtime.stop(&info.manifest.name).await;
+
+        // Clear runtime cache
+        self.runtime.clear_cache(name);
 
         // Unregister the plugin
         self.registry.unregister(name);
@@ -252,19 +255,27 @@ impl PluginManager {
     ///
     /// Returns an error if the plugin cannot be enabled.
     pub async fn enable_plugin(&self, name: &str) -> orbis_core::Result<()> {
-        // Check if plugin is already loaded
-        if !self.runtime.is_running(name) {
-            return Err(orbis_core::Error::plugin(format!(
-                "Plugin '{}' is not loaded. Load the plugin first before enabling.",
+        // Check if plugin exists in registry
+        let info = self.registry.get(name).ok_or_else(|| {
+            orbis_core::Error::plugin(format!(
+                "Plugin '{}' not found. Install the plugin first.",
                 name
-            )));
+            ))
+        })?;
+        
+        // Check if already running
+        if info.state == PluginState::Running {
+            return Ok(()); // Already enabled
+        }
+        
+        // If the plugin is not loaded in runtime, re-initialize it
+        if !self.runtime.is_running(name) {
+            // Need to reload the plugin into runtime
+            self.runtime.initialize(&info, &info.source).await?;
         }
         
         // Update state
         self.registry.set_state(name, PluginState::Running)?;
-        
-        // Call init function (lightweight - just calls WASM init)
-        self.runtime.start(name).await?;
         
         tracing::info!("Enabled plugin: {}", name);
         Ok(())
@@ -276,8 +287,18 @@ impl PluginManager {
     ///
     /// Returns an error if the plugin cannot be disabled.
     pub async fn disable_plugin(&self, name: &str) -> orbis_core::Result<()> {
-        // Call cleanup function
-        self.runtime.stop(name).await?;
+        // Check if plugin exists
+        let info = self.registry.get(name).ok_or_else(|| {
+            orbis_core::Error::plugin(format!("Plugin '{}' not found", name))
+        })?;
+        
+        // Check if already disabled
+        if info.state == PluginState::Disabled {
+            return Ok(()); // Already disabled
+        }
+        
+        // Stop the runtime instance if it exists (ignore errors if not running)
+        let _ = self.runtime.stop(name).await;
         
         // Update state
         self.registry.set_state(name, PluginState::Disabled)?;

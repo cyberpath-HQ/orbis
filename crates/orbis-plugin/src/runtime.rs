@@ -326,22 +326,19 @@ impl PluginRuntime {
 
     /// Stop a plugin.
     ///
-    /// This is called when a plugin is disabled. It cleans up and removes the instance.
+    /// This is called when a plugin is disabled. It clears runtime state
+    /// but keeps the compiled WASM module cached for fast re-enable.
     ///
     /// # Errors
     ///
     /// Returns an error if the plugin cannot be stopped.
     pub async fn stop(&self, name: &str) -> orbis_core::Result<()> {
-        let instance = self.instances.get(name).ok_or_else(|| {
-            orbis_core::Error::plugin(format!("Plugin '{}' not running", name))
-        })?;
-
-        // Clear plugin state
-        instance.state.clear();
-
-        // Remove the instance
-        self.instances.remove(name);
-        tracing::debug!("Stopped plugin: {}", name);
+        // Just verify plugin exists, don't remove it (keep module cached)
+        if let Some(instance) = self.instances.get(name) {
+            // Only clear runtime state, not the instance itself
+            instance.state.clear();
+            tracing::debug!("Stopped plugin: {}", name);
+        }
         Ok(())
     }
 

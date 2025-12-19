@@ -113,13 +113,15 @@ impl PluginRegistry {
     ///
     /// Returns an error if the plugin is not found.
     pub fn set_state(&self, name: &str, state: PluginState) -> orbis_core::Result<()> {
-        let mut entry = self.plugins.get_mut(name).ok_or_else(|| {
-            orbis_core::Error::plugin(format!("Plugin '{}' not found", name))
-        })?;
-
-        entry.value_mut().state = state;
+        // Update state in a separate scope to release lock before saving
+        {
+            let mut entry = self.plugins.get_mut(name).ok_or_else(|| {
+                orbis_core::Error::plugin(format!("Plugin '{}' not found", name))
+            })?;
+            entry.value_mut().state = state;
+        } // Lock released here
         
-        // Persist state after change
+        // Now safe to call save_state which iterates over plugins
         let _ = self.save_state();
         
         Ok(())
