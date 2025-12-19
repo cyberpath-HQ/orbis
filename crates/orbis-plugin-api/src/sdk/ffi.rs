@@ -46,41 +46,20 @@ unsafe extern "C" {
 // Memory management - Plugin side
 // ============================================================================
 
-/// Global allocator for WASM - allocates memory that can be written to by the host
-#[cfg(target_arch = "wasm32")]
-#[unsafe(no_mangle)]
-pub extern "C" fn allocate(size: i32) -> *mut u8 {
+/// Internal allocator for WASM - exported through orbis_plugin! macro
+pub fn allocate_internal(size: i32) -> *mut u8 {
     let layout = core::alloc::Layout::from_size_align(size as usize, 1).unwrap();
     // SAFETY: We're using the global allocator which is valid in WASM
     unsafe { std::alloc::alloc(layout) }
 }
 
-/// Allocate memory (non-WASM stub for compilation)
-#[cfg(not(target_arch = "wasm32"))]
-pub fn allocate(size: i32) -> *mut u8 {
-    let layout = std::alloc::Layout::from_size_align(size as usize, 1).unwrap();
-    unsafe { std::alloc::alloc(layout) }
-}
-
-/// Deallocate memory previously allocated by `allocate`
-#[cfg(target_arch = "wasm32")]
-#[unsafe(no_mangle)]
-pub extern "C" fn deallocate(ptr: *mut u8, size: i32) {
+/// Internal deallocator - exported through orbis_plugin! macro
+pub fn deallocate_internal(ptr: *mut u8, size: i32) {
     if ptr.is_null() {
         return;
     }
     let layout = core::alloc::Layout::from_size_align(size as usize, 1).unwrap();
     // SAFETY: ptr was allocated by allocate() with the same layout
-    unsafe { std::alloc::dealloc(ptr, layout) }
-}
-
-/// Deallocate memory (non-WASM stub)
-#[cfg(not(target_arch = "wasm32"))]
-pub fn deallocate(ptr: *mut u8, size: i32) {
-    if ptr.is_null() {
-        return;
-    }
-    let layout = std::alloc::Layout::from_size_align(size as usize, 1).unwrap();
     unsafe { std::alloc::dealloc(ptr, layout) }
 }
 
@@ -125,7 +104,7 @@ pub unsafe fn read_length_prefixed(ptr: *const u8) -> Vec<u8> {
 pub fn write_length_prefixed(data: &[u8]) -> *mut u8 {
     let len = data.len() as u32;
     let total_size = 4 + data.len();
-    let ptr = allocate(total_size as i32);
+    let ptr = allocate_internal(total_size as i32);
 
     unsafe {
         // Write length prefix
@@ -283,6 +262,28 @@ macro_rules! orbis_plugin {
         #[unsafe(no_mangle)]
         pub extern "C" fn cleanup() -> i32 {
             1
+        }
+        
+        // Memory management functions - defined directly to avoid optimization issues
+        #[unsafe(no_mangle)]
+        #[inline(never)]
+        pub extern "C" fn allocate(size: i32) -> *mut u8 {
+            use core::alloc::Layout;
+            let layout = Layout::from_size_align(size as usize, 1).unwrap();
+            // SAFETY: We're using the global allocator which is valid in WASM
+            unsafe { std::alloc::alloc(layout) }
+        }
+        
+        #[unsafe(no_mangle)]
+        #[inline(never)]
+        pub extern "C" fn deallocate(ptr: *mut u8, size: i32) {
+            if ptr.is_null() {
+                return;
+            }
+            use core::alloc::Layout;
+            let layout = Layout::from_size_align(size as usize, 1).unwrap();
+            // SAFETY: ptr was allocated by allocate() with the same layout
+            unsafe { std::alloc::dealloc(ptr, layout) }
         }
     };
 }

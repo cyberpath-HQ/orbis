@@ -1160,9 +1160,134 @@ impl PluginRuntime {
             orbis_core::Error::plugin(format!("allocate function has wrong signature: {}", e))
         })?;
 
-        let ptr = alloc_typed.call(&mut *store, len as i32).map_err(|e| {
-            orbis_core::Error::plugin(format!("Failed to allocate memory: {}", e))
-        })? as u32;
+        // Debug: log allocation attempt details
+        let plugin_name = store.data().plugin_name.clone();
+        let pages_before = memory.size(&*store);
+        let heap_base = instance
+            .get_global(&mut *store, "__heap_base")
+            .and_then(|g: wasmtime::Global| g.get(&mut *store).i32())
+            .unwrap_or(-1);
+        let global0 = instance
+            .get_export(&mut *store, "__stack_pointer")
+            .is_some();
+        
+        let len_i32 = len as i32;
+        let is_negative = len_i32 < 0;
+            
+        eprintln!(
+            "[ALLOC DEBUG] plugin={}, len={}, len_i32={}, is_negative={}, pages={}, mem_bytes={}, heap_base={}",
+            plugin_name, len, len_i32, is_negative, pages_before, pages_before as usize * 65536, heap_base
+        );
+
+        // Attempt allocation and capture any traps with additional diagnostics
+        let ptr = match alloc_typed.call(&mut *store, len as i32) {
+            Ok(p) => p as u32,
+            Err(e) => {
+                // Gather memory/sandbox diagnostics
+                let pages = memory.size(&*store);
+                let mem_bytes = (pages as usize) * 65536usize;
+                let sandbox_limit = store.data().sandbox.memory_limit;
+                let plugin_name = store.data().plugin_name.clone();
+
+                tracing::error!(
+                    plugin = %plugin_name,
+                    requested = %len,
+                    memory_pages = %pages,
+                    memory_bytes = %mem_bytes,
+                    sandbox_limit = %sandbox_limit,
+                    "WASM allocation trap: {}",
+                    e
+                );
+
+                // If requested allocation exceeds sandbox limit, return a clearer error
+                if (len as usize) > sandbox_limit {
+                    return Err(orbis_core::Error::plugin(format!(
+                        "Failed to allocate memory: requested {} bytes exceeds sandbox limit {}",
+                        len, sandbox_limit
+                    )));
+                }
+
+                // Try to grow memory as a fallback and retry allocation several times
+                let mut pages_needed = ((len as usize) + 65535) / 65536; // round up
+                if pages_needed == 0 {
+                    pages_needed = 1;
+                }
+
+                tracing::debug!(plugin = %plugin_name, requested = %len, pages_needed = %pages_needed, "Attempting to grow WASM memory as fallback");
+
+                // Compute how many pages we can still add under sandbox limit
+                let mut attempts = 0u8;
+                let mut pages_to_add = pages_needed;
+                loop {
+                    if attempts >= 4 {
+                        tracing::warn!(plugin = %plugin_name, "Reached maximum memory grow attempts (4)");
+                        break;
+                    }
+
+                    // Check sandbox limit in pages
+                    let mem_pages = memory.size(&*store) as usize;
+                    let mem_bytes = mem_pages * 65536usize;
+                    let remaining = if sandbox_limit > mem_bytes { sandbox_limit - mem_bytes } else { 0 };
+                    let max_addable = if remaining == 0 { 0 } else { (remaining + 65535) / 65536 };
+
+                    if max_addable == 0 {
+                        tracing::warn!(plugin = %plugin_name, "Cannot grow memory, sandbox limit reached ({} bytes)", sandbox_limit);
+                        break;
+                    }
+
+                    let add = std::cmp::min(pages_to_add, max_addable);
+
+                    match memory.grow(&mut *store, add as u64) {
+                        Ok(old_pages) => {
+                            tracing::info!(plugin = %plugin_name, old_pages = %old_pages, pages_added = %add, "Memory grow succeeded, retrying allocation");
+                            // Retry allocation
+                            match alloc_typed.call(&mut *store, len as i32) {
+                                Ok(p) => return Ok((p as u32, len)),
+                                Err(e2) => {
+                                    tracing::error!(plugin = %plugin_name, "Allocation after grow attempt failed: {}", e2);
+
+                                    // Dump useful globals for debugging
+                                    let heap_base = instance
+                                        .get_global(&mut *store, "__heap_base")
+                                        .and_then(|g: wasmtime::Global| g.get(&mut *store).i32())
+                                        .unwrap_or(-1);
+                                    let data_end = instance
+                                        .get_global(&mut *store, "__data_end")
+                                        .and_then(|g: wasmtime::Global| g.get(&mut *store).i32())
+                                        .unwrap_or(-1);
+                                    let current_pages = memory.size(&*store);
+
+                                    tracing::error!(
+                                        plugin = %plugin_name,
+                                        requested = %len,
+                                        heap_base = %heap_base,
+                                        data_end = %data_end,
+                                        memory_pages = %current_pages,
+                                        memory_bytes = %((current_pages as usize) * 65536usize),
+                                        "Allocation failed after grow with diagnostics"
+                                    );
+
+                                    // Prepare for next attempt: try to grow more (exponential)
+                                    attempts += 1;
+                                    pages_to_add = pages_to_add.saturating_mul(2);
+                                    continue;
+                                }
+                            }
+                        }
+                        Err(grow_err) => {
+                            tracing::warn!(plugin = %plugin_name, "Memory grow failed: {}", grow_err);
+                            break;
+                        }
+                    }
+                }
+
+                // If we get here, all grow+retry attempts failed
+                return Err(orbis_core::Error::plugin(format!(
+                    "Failed to allocate memory after grow attempts: {}",
+                    e
+                )));
+            }
+        };
 
         // Write data to allocated memory
         memory
@@ -1341,5 +1466,282 @@ mod tests {
 
         // Should fail on 11th call
         assert!(store_data.check_limits().is_err());
+    }
+
+    #[test]
+    fn test_allocate_via_runtime() {
+        // Load wasm
+        let bytes = std::fs::read("../../plugins/my-first-plugin/plugin.wasm").expect("wasm not found");
+
+        // Create engine and module
+        let engine = Engine::default();
+        let module = Module::new(&engine, &bytes).expect("compile module");
+
+        // Create store with StoreData
+        let sandbox = Arc::new(SandboxConfig::minimal());
+        let state = PluginState::new();
+        let config = PluginConfig::new();
+        let store_data = StoreData::new("my-first-plugin".to_string(), sandbox, state, config);
+
+        let mut store = Store::new(&engine, store_data);
+        store.limiter(|data| &mut data.limits);
+        // Set fuel (use set_fuel same as runtime.execute)
+        let _ = store.set_fuel(1_000_000).ok();
+
+        // Create linker and register host functions
+        let mut linker = Linker::new(&engine);
+        PluginRuntime::register_host_functions(&mut linker).expect("register hosts");
+
+        // Instantiate the module
+        let instance = linker.instantiate(&mut store, &module).expect("instantiate");
+
+        let memory = instance
+            .get_memory(&mut store, "memory")
+            .expect("memory not found");
+
+        // Prepare context JSON (small)
+        let context = PluginContext {
+            method: "POST".to_string(),
+            path: "/greeting".to_string(),
+            headers: std::collections::HashMap::new(),
+            query: std::collections::HashMap::new(),
+            body: serde_json::json!({"name": "Test"}),
+            user_id: None,
+            is_admin: false,
+        };
+
+        let data = serde_json::to_vec(&context).expect("serialize");
+
+        // Call allocate_and_write which mirrors runtime flow
+        let res = PluginRuntime::allocate_and_write(&mut store, &memory, &instance, &data);
+
+        match res {
+            Ok((ptr, len)) => {
+                assert!(ptr != 0);
+                assert_eq!(len as usize, data.len());
+            }
+            Err(e) => panic!("allocate_and_write failed: {}", e),
+        }
+    }
+
+    #[test]
+    fn test_allocate_minimal() {
+        // Test with minimal setup - no host functions, no fuel, no limits
+        let bytes = std::fs::read("../../plugins/test-plugin/test_plugin.wasm")
+            .or_else(|_| std::fs::read("../../target/wasm32-unknown-unknown/release/test_plugin.wasm"))
+            .expect("test_plugin.wasm not found");
+
+        // Create minimal engine config
+        let mut config = wasmtime::Config::new();
+        config.consume_fuel(false); // Disable fuel consumption
+        let engine = Engine::new(&config).expect("create engine");
+        let module = Module::new(&engine, &bytes).expect("compile module");
+
+        // Create simple store with unit type (no StoreData)
+        let mut store: Store<()> = Store::new(&engine, ());
+
+        // Create linker and add minimal required imports
+        let mut linker: Linker<()> = Linker::new(&engine);
+
+        // Add required imports based on WASM module
+        linker.func_wrap("env", "state_get", |_caller: wasmtime::Caller<'_, ()>, _key_ptr: i32, _key_len: i32| -> i32 {
+            // Return 0 = no value found
+            0i32
+        }).expect("wrap state_get");
+        
+        linker.func_wrap("env", "state_set", |_caller: wasmtime::Caller<'_, ()>, _key_ptr: i32, _key_len: i32, _val_ptr: i32, _val_len: i32| -> i32 {
+            // Return 0 = success
+            0i32
+        }).expect("wrap state_set");
+
+        // Instantiate
+        let instance = linker.instantiate(&mut store, &module).expect("instantiate");
+
+        // Check memory info
+        let memory = instance.get_memory(&mut store, "memory").expect("get memory");
+        let pages = memory.size(&store);
+        println!("Memory: {} pages = {} bytes", pages, pages * 65536);
+
+        // Check heap_base
+        if let Some(g) = instance.get_global(&mut store, "__heap_base") {
+            let hb = g.get(&mut store).i32().unwrap_or(-1);
+            println!("__heap_base = {}", hb);
+            let available = (pages as i32 * 65536) - hb;
+            println!("Available heap: {} bytes", available);
+        }
+
+        // Get allocate function
+        let allocate: wasmtime::TypedFunc<i32, i32> = instance
+            .get_typed_func(&mut store, "allocate")
+            .expect("get allocate");
+
+        // Try allocation with small size
+        println!("Calling allocate(16)...");
+        match allocate.call(&mut store, 16) {
+            Ok(ptr) => {
+                println!("SUCCESS! Allocated 16 bytes at ptr = {}", ptr);
+                assert!(ptr > 0, "Pointer should be non-zero");
+            }
+            Err(e) => {
+                panic!("allocate(16) FAILED: {}", e);
+            }
+        }
+    }
+
+    #[test]
+    fn test_allocate_with_fuel() {
+        // Same test but with fuel enabled
+        let bytes = std::fs::read("../../plugins/test-plugin/test_plugin.wasm")
+            .or_else(|_| std::fs::read("../../target/wasm32-unknown-unknown/release/test_plugin.wasm"))
+            .expect("test_plugin.wasm not found");
+
+        let mut config = wasmtime::Config::new();
+        config.consume_fuel(true); // Enable fuel
+        let engine = Engine::new(&config).expect("create engine");
+        let module = Module::new(&engine, &bytes).expect("compile module");
+
+        let mut store: Store<()> = Store::new(&engine, ());
+        store.set_fuel(10_000_000).expect("set fuel"); // Lots of fuel
+
+        let mut linker: Linker<()> = Linker::new(&engine);
+
+        linker.func_wrap("env", "state_get", |_caller: wasmtime::Caller<'_, ()>, _key_ptr: i32, _key_len: i32| -> i32 {
+            0i32
+        }).expect("wrap state_get");
+        
+        linker.func_wrap("env", "state_set", |_caller: wasmtime::Caller<'_, ()>, _key_ptr: i32, _key_len: i32, _val_ptr: i32, _val_len: i32| -> i32 {
+            0i32
+        }).expect("wrap state_set");
+
+        let instance = linker.instantiate(&mut store, &module).expect("instantiate");
+
+        let allocate: wasmtime::TypedFunc<i32, i32> = instance
+            .get_typed_func(&mut store, "allocate")
+            .expect("get allocate");
+
+        println!("[WITH FUEL] Calling allocate(16)...");
+        match allocate.call(&mut store, 16) {
+            Ok(ptr) => {
+                println!("[WITH FUEL] SUCCESS! Allocated 16 bytes at ptr = {}", ptr);
+                assert!(ptr > 0);
+            }
+            Err(e) => {
+                panic!("[WITH FUEL] allocate(16) FAILED: {}", e);
+            }
+        }
+    }
+
+    #[test]
+    fn test_allocate_with_limits() {
+        // Same test but with ResourceLimiter enabled
+        let bytes = std::fs::read("../../plugins/test-plugin/test_plugin.wasm")
+            .or_else(|_| std::fs::read("../../target/wasm32-unknown-unknown/release/test_plugin.wasm"))
+            .expect("test_plugin.wasm not found");
+
+        let mut config = wasmtime::Config::new();
+        config.consume_fuel(true);
+        let engine = Engine::new(&config).expect("create engine");
+        let module = Module::new(&engine, &bytes).expect("compile module");
+
+        // Use a limiter that limits memory to 16MB
+        let limits = wasmtime::StoreLimitsBuilder::new()
+            .memory_size(16 * 1024 * 1024) // 16MB limit like sandbox
+            .build();
+
+        let mut store: Store<wasmtime::StoreLimits> = Store::new(&engine, limits);
+        store.limiter(|s| s);
+        store.set_fuel(10_000_000).expect("set fuel");
+
+        let mut linker: Linker<wasmtime::StoreLimits> = Linker::new(&engine);
+
+        linker.func_wrap("env", "state_get", |_caller: wasmtime::Caller<'_, wasmtime::StoreLimits>, _key_ptr: i32, _key_len: i32| -> i32 {
+            0i32
+        }).expect("wrap state_get");
+        
+        linker.func_wrap("env", "state_set", |_caller: wasmtime::Caller<'_, wasmtime::StoreLimits>, _key_ptr: i32, _key_len: i32, _val_ptr: i32, _val_len: i32| -> i32 {
+            0i32
+        }).expect("wrap state_set");
+
+        let instance = linker.instantiate(&mut store, &module).expect("instantiate");
+
+        let allocate: wasmtime::TypedFunc<i32, i32> = instance
+            .get_typed_func(&mut store, "allocate")
+            .expect("get allocate");
+
+        // Test with 16 bytes (small)
+        println!("[WITH LIMITS] Calling allocate(16)...");
+        match allocate.call(&mut store, 16) {
+            Ok(ptr) => {
+                println!("[WITH LIMITS] SUCCESS! Allocated 16 bytes at ptr = {}", ptr);
+                assert!(ptr > 0);
+            }
+            Err(e) => {
+                panic!("[WITH LIMITS] allocate(16) FAILED: {}", e);
+            }
+        }
+
+        // Test with 116 bytes (same as integration test context)
+        println!("[WITH LIMITS] Calling allocate(116)...");
+        match allocate.call(&mut store, 116) {
+            Ok(ptr) => {
+                println!("[WITH LIMITS] SUCCESS! Allocated 116 bytes at ptr = {}", ptr);
+                assert!(ptr > 0);
+            }
+            Err(e) => {
+                panic!("[WITH LIMITS] allocate(116) FAILED: {}", e);
+            }
+        }
+    }
+
+    #[test]
+    fn test_allocate_exact_runtime_config() {
+        // Test with EXACT PluginRuntime configuration
+        let bytes = std::fs::read("../../plugins/test-plugin/test_plugin.wasm")
+            .or_else(|_| std::fs::read("../../target/wasm32-unknown-unknown/release/test_plugin.wasm"))
+            .expect("test_plugin.wasm not found");
+
+        // Exactly match PluginRuntime::new() config
+        let mut config = wasmtime::Config::new();
+        config.consume_fuel(true);
+        // TEST: Enable epoch_interruption only
+        config.epoch_interruption(true);
+        // TEST: Comment out max_wasm_stack to see if that's the issue
+        // config.max_wasm_stack(512 * 1024);
+        let engine = Engine::new(&config).expect("create engine");
+        let module = Module::new(&engine, &bytes).expect("compile module");
+
+        // Match StoreData creation
+        let sandbox = Arc::new(SandboxConfig::minimal());
+        let state = PluginState::new();
+        let plugin_config = PluginConfig::new();
+        let store_data = StoreData::new("test-plugin".to_string(), sandbox.clone(), state, plugin_config);
+
+        let mut store = Store::new(&engine, store_data);
+        store.limiter(|data| &mut data.limits);
+        
+        // Set fuel exactly like execute() does
+        let fuel = u64::from(sandbox.time_limit_ms) * 1000;
+        println!("[EXACT CONFIG] Setting fuel to {}", fuel);
+        store.set_fuel(fuel).expect("set fuel");
+
+        let mut linker: Linker<StoreData> = Linker::new(&engine);
+        PluginRuntime::register_host_functions(&mut linker).expect("register hosts");
+
+        let instance = linker.instantiate(&mut store, &module).expect("instantiate");
+
+        let allocate: wasmtime::TypedFunc<i32, i32> = instance
+            .get_typed_func(&mut store, "allocate")
+            .expect("get allocate");
+
+        println!("[EXACT CONFIG] Calling allocate(116)...");
+        match allocate.call(&mut store, 116) {
+            Ok(ptr) => {
+                println!("[EXACT CONFIG] SUCCESS! Allocated 116 bytes at ptr = {}", ptr);
+                assert!(ptr > 0);
+            }
+            Err(e) => {
+                panic!("[EXACT CONFIG] allocate(116) FAILED: {}", e);
+            }
+        }
     }
 }
