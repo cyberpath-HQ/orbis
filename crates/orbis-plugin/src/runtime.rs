@@ -89,12 +89,50 @@ impl PluginState {
     }
 }
 
+/// Plugin configuration storage
+#[derive(Debug, Clone, Default)]
+pub struct PluginConfig {
+    /// Configuration values
+    data: Arc<RwLock<HashMap<String, serde_json::Value>>>,
+}
+
+impl PluginConfig {
+    /// Create a new plugin config
+    #[must_use]
+    pub fn new() -> Self {
+        Self {
+            data: Arc::new(RwLock::new(HashMap::new())),
+        }
+    }
+
+    /// Create plugin config from manifest settings
+    #[must_use]
+    pub fn from_settings(settings: &HashMap<String, serde_json::Value>) -> Self {
+        Self {
+            data: Arc::new(RwLock::new(settings.clone())),
+        }
+    }
+
+    /// Get a config value
+    #[must_use]
+    pub fn get(&self, key: &str) -> Option<serde_json::Value> {
+        self.data.read().get(key).cloned()
+    }
+
+    /// Set a config value
+    pub fn set(&self, key: String, value: serde_json::Value) {
+        self.data.write().insert(key, value);
+    }
+}
+
 /// Store data combining WASM state and host data
 pub struct StoreData {
     /// Memory limits for the WASM instance
     limits: StoreLimits,
     /// Plugin state storage
     state: PluginState,
+    /// Plugin configuration
+    config: PluginConfig,
     /// Plugin name for logging and permissions
     plugin_name: String,
     /// Sandbox configuration
@@ -107,7 +145,7 @@ pub struct StoreData {
 
 impl StoreData {
     /// Create new store data
-    fn new(plugin_name: String, sandbox: Arc<SandboxConfig>, state: PluginState) -> Self {
+    fn new(plugin_name: String, sandbox: Arc<SandboxConfig>, state: PluginState, config: PluginConfig) -> Self {
         let limits = StoreLimitsBuilder::new()
             .memory_size(sandbox.memory_limit)
             .build();
@@ -115,6 +153,7 @@ impl StoreData {
         Self {
             limits,
             state,
+            config,
             plugin_name,
             sandbox,
             call_count: 0,
@@ -152,6 +191,7 @@ struct PluginInstance {
     module: Module,
     sandbox_config: Arc<SandboxConfig>,
     state: PluginState,
+    config: PluginConfig,
 }
 
 impl PluginInstance {
@@ -165,6 +205,12 @@ impl PluginInstance {
     #[must_use]
     pub const fn state(&self) -> &PluginState {
         &self.state
+    }
+
+    /// Get the plugin config
+    #[must_use]
+    pub const fn config(&self) -> &PluginConfig {
+        &self.config
     }
 }
 
@@ -236,12 +282,20 @@ impl PluginRuntime {
         })?;
 
         let state = PluginState::new();
+        
+        // Extract config from manifest
+        let config = if let Some(obj) = info.manifest.config.as_object() {
+            PluginConfig::from_settings(&obj.iter().map(|(k, v)| (k.clone(), v.clone())).collect())
+        } else {
+            PluginConfig::new()
+        };
 
         let instance = PluginInstance {
             engine: self.engine.clone(),
             module,
             sandbox_config: Arc::new(SandboxConfig::from_permissions(&info.manifest.permissions)),
             state,
+            config,
         };
 
         self.instances
@@ -262,7 +316,7 @@ impl PluginRuntime {
 
         // Create store for initialization
         let store_data =
-            StoreData::new(name.to_string(), instance.sandbox_config.clone(), instance.state.clone());
+            StoreData::new(name.to_string(), instance.sandbox_config.clone(), instance.state.clone(), instance.config.clone());
         let mut store = Store::new(&instance.engine, store_data);
         store.limiter(|data| &mut data.limits);
 
@@ -309,7 +363,7 @@ impl PluginRuntime {
 
         // Create store for cleanup
         let store_data =
-            StoreData::new(name.to_string(), instance.sandbox_config.clone(), instance.state.clone());
+            StoreData::new(name.to_string(), instance.sandbox_config.clone(), instance.state.clone(), instance.config.clone());
         let mut store = Store::new(&instance.engine, store_data);
         store.limiter(|data| &mut data.limits);
 
@@ -368,6 +422,7 @@ impl PluginRuntime {
             plugin_name.to_string(),
             instance.sandbox_config.clone(),
             instance.state.clone(),
+            instance.config.clone(),
         );
         let mut store = Store::new(&instance.engine, store_data);
         store.limiter(|data| &mut data.limits);
@@ -555,6 +610,198 @@ impl PluginRuntime {
                 orbis_core::Error::plugin(format!("Failed to register deallocate: {}", e))
             })?;
 
+        // Database functions
+        linker
+            .func_wrap(
+                "env",
+                "db_query",
+                |mut caller: Caller<'_, StoreData>,
+                 query_ptr: i32,
+                 query_len: i32,
+                 params_ptr: i32,
+                 params_len: i32|
+                 -> i32 {
+                    match Self::host_db_query(
+                        &mut caller,
+                        query_ptr as u32,
+                        query_len as u32,
+                        params_ptr as u32,
+                        params_len as u32,
+                    ) {
+                        Ok(ptr) => ptr as i32,
+                        Err(e) => {
+                            tracing::error!("db_query error: {}", e);
+                            0
+                        }
+                    }
+                },
+            )
+            .map_err(|e| {
+                orbis_core::Error::plugin(format!("Failed to register db_query: {}", e))
+            })?;
+
+        linker
+            .func_wrap(
+                "env",
+                "db_execute",
+                |mut caller: Caller<'_, StoreData>,
+                 query_ptr: i32,
+                 query_len: i32,
+                 params_ptr: i32,
+                 params_len: i32|
+                 -> i32 {
+                    match Self::host_db_execute(
+                        &mut caller,
+                        query_ptr as u32,
+                        query_len as u32,
+                        params_ptr as u32,
+                        params_len as u32,
+                    ) {
+                        Ok(rows) => rows as i32,
+                        Err(e) => {
+                            tracing::error!("db_execute error: {}", e);
+                            -1
+                        }
+                    }
+                },
+            )
+            .map_err(|e| {
+                orbis_core::Error::plugin(format!("Failed to register db_execute: {}", e))
+            })?;
+
+        // HTTP functions
+        linker
+            .func_wrap(
+                "env",
+                "http_request",
+                |mut caller: Caller<'_, StoreData>,
+                 method_ptr: i32,
+                 method_len: i32,
+                 url_ptr: i32,
+                 url_len: i32,
+                 headers_ptr: i32,
+                 headers_len: i32,
+                 body_ptr: i32,
+                 body_len: i32|
+                 -> i32 {
+                    match Self::host_http_request(
+                        &mut caller,
+                        method_ptr as u32,
+                        method_len as u32,
+                        url_ptr as u32,
+                        url_len as u32,
+                        headers_ptr as u32,
+                        headers_len as u32,
+                        body_ptr as u32,
+                        body_len as u32,
+                    ) {
+                        Ok(ptr) => ptr as i32,
+                        Err(e) => {
+                            tracing::error!("http_request error: {}", e);
+                            0
+                        }
+                    }
+                },
+            )
+            .map_err(|e| {
+                orbis_core::Error::plugin(format!("Failed to register http_request: {}", e))
+            })?;
+
+        // Event functions
+        linker
+            .func_wrap(
+                "env",
+                "emit_event",
+                |mut caller: Caller<'_, StoreData>,
+                 event_ptr: i32,
+                 event_len: i32,
+                 payload_ptr: i32,
+                 payload_len: i32|
+                 -> i32 {
+                    match Self::host_emit_event(
+                        &mut caller,
+                        event_ptr as u32,
+                        event_len as u32,
+                        payload_ptr as u32,
+                        payload_len as u32,
+                    ) {
+                        Ok(()) => 1,
+                        Err(e) => {
+                            tracing::error!("emit_event error: {}", e);
+                            0
+                        }
+                    }
+                },
+            )
+            .map_err(|e| {
+                orbis_core::Error::plugin(format!("Failed to register emit_event: {}", e))
+            })?;
+
+        // Config functions
+        linker
+            .func_wrap(
+                "env",
+                "get_config",
+                |mut caller: Caller<'_, StoreData>, key_ptr: i32, key_len: i32| -> i32 {
+                    match Self::host_get_config(&mut caller, key_ptr as u32, key_len as u32) {
+                        Ok(ptr) => ptr as i32,
+                        Err(e) => {
+                            tracing::error!("get_config error: {}", e);
+                            0
+                        }
+                    }
+                },
+            )
+            .map_err(|e| {
+                orbis_core::Error::plugin(format!("Failed to register get_config: {}", e))
+            })?;
+
+        // Crypto functions
+        linker
+            .func_wrap(
+                "env",
+                "crypto_hash",
+                |mut caller: Caller<'_, StoreData>,
+                 algorithm: i32,
+                 data_ptr: i32,
+                 data_len: i32|
+                 -> i32 {
+                    match Self::host_crypto_hash(
+                        &mut caller,
+                        algorithm,
+                        data_ptr as u32,
+                        data_len as u32,
+                    ) {
+                        Ok(ptr) => ptr as i32,
+                        Err(e) => {
+                            tracing::error!("crypto_hash error: {}", e);
+                            0
+                        }
+                    }
+                },
+            )
+            .map_err(|e| {
+                orbis_core::Error::plugin(format!("Failed to register crypto_hash: {}", e))
+            })?;
+
+        linker
+            .func_wrap(
+                "env",
+                "crypto_random",
+                |mut caller: Caller<'_, StoreData>, len: i32| -> i32 {
+                    match Self::host_crypto_random(&mut caller, len as u32) {
+                        Ok(ptr) => ptr as i32,
+                        Err(e) => {
+                            tracing::error!("crypto_random error: {}", e);
+                            0
+                        }
+                    }
+                },
+            )
+            .map_err(|e| {
+                orbis_core::Error::plugin(format!("Failed to register crypto_random: {}", e))
+            })?;
+
         Ok(())
     }
 
@@ -654,6 +901,268 @@ impl PluginRuntime {
         }
 
         Ok(())
+    }
+
+    /// Host function: Query database
+    fn host_db_query(
+        caller: &mut Caller<'_, StoreData>,
+        query_ptr: u32,
+        query_len: u32,
+        params_ptr: u32,
+        params_len: u32,
+    ) -> orbis_core::Result<u32> {
+        caller.data_mut().check_limits()?;
+
+        // Check permission
+        if !caller.data().sandbox.has_permission("database:read") {
+            return Err(orbis_core::Error::plugin(
+                "Plugin does not have database:read permission",
+            ));
+        }
+
+        let memory = Self::get_memory(caller)?;
+        let query_bytes = Self::read_memory(caller, &memory, query_ptr, query_len)?;
+        let _query = String::from_utf8(query_bytes).map_err(|e| {
+            orbis_core::Error::plugin(format!("Invalid UTF-8 in query: {}", e))
+        })?;
+
+        let params_bytes = Self::read_memory(caller, &memory, params_ptr, params_len)?;
+        let _params: Vec<serde_json::Value> = serde_json::from_slice(&params_bytes)
+            .map_err(|e| orbis_core::Error::plugin(format!("Invalid params JSON: {}", e)))?;
+
+        // TODO: Actually execute query against database
+        // For now, return empty result set as placeholder
+        let result: Vec<serde_json::Value> = vec![];
+        let result_bytes = serde_json::to_vec(&result).map_err(|e| {
+            orbis_core::Error::plugin(format!("Failed to serialize result: {}", e))
+        })?;
+
+        let (ptr, _) = Self::allocate_and_write_bytes(caller, &result_bytes)?;
+        Ok(ptr)
+    }
+
+    /// Host function: Execute database statement
+    fn host_db_execute(
+        caller: &mut Caller<'_, StoreData>,
+        query_ptr: u32,
+        query_len: u32,
+        params_ptr: u32,
+        params_len: u32,
+    ) -> orbis_core::Result<u64> {
+        caller.data_mut().check_limits()?;
+
+        // Check permission
+        if !caller.data().sandbox.has_permission("database:write") {
+            return Err(orbis_core::Error::plugin(
+                "Plugin does not have database:write permission",
+            ));
+        }
+
+        let memory = Self::get_memory(caller)?;
+        let query_bytes = Self::read_memory(caller, &memory, query_ptr, query_len)?;
+        let _query = String::from_utf8(query_bytes).map_err(|e| {
+            orbis_core::Error::plugin(format!("Invalid UTF-8 in query: {}", e))
+        })?;
+
+        let params_bytes = Self::read_memory(caller, &memory, params_ptr, params_len)?;
+        let _params: Vec<serde_json::Value> = serde_json::from_slice(&params_bytes)
+            .map_err(|e| orbis_core::Error::plugin(format!("Invalid params JSON: {}", e)))?;
+
+        // TODO: Actually execute statement against database
+        // For now, return 0 rows affected as placeholder
+        Ok(0)
+    }
+
+    /// Host function: Make HTTP request
+    fn host_http_request(
+        caller: &mut Caller<'_, StoreData>,
+        method_ptr: u32,
+        method_len: u32,
+        url_ptr: u32,
+        url_len: u32,
+        headers_ptr: u32,
+        headers_len: u32,
+        body_ptr: u32,
+        body_len: u32,
+    ) -> orbis_core::Result<u32> {
+        caller.data_mut().check_limits()?;
+
+        // Check permission
+        if !caller.data().sandbox.has_permission("network:http") {
+            return Err(orbis_core::Error::plugin(
+                "Plugin does not have network:http permission",
+            ));
+        }
+
+        let memory = Self::get_memory(caller)?;
+
+        let method_bytes = Self::read_memory(caller, &memory, method_ptr, method_len)?;
+        let _method = String::from_utf8(method_bytes).map_err(|e| {
+            orbis_core::Error::plugin(format!("Invalid UTF-8 in method: {}", e))
+        })?;
+
+        let url_bytes = Self::read_memory(caller, &memory, url_ptr, url_len)?;
+        let url = String::from_utf8(url_bytes).map_err(|e| {
+            orbis_core::Error::plugin(format!("Invalid UTF-8 in URL: {}", e))
+        })?;
+
+        // Check if URL host is allowed
+        if let Ok(parsed_url) = url::Url::parse(&url) {
+            if let Some(host) = parsed_url.host_str() {
+                if !caller.data().sandbox.can_access_network(host) {
+                    return Err(orbis_core::Error::plugin(format!(
+                        "Plugin is not allowed to access host: {}",
+                        host
+                    )));
+                }
+            }
+        }
+
+        let headers_bytes = Self::read_memory(caller, &memory, headers_ptr, headers_len)?;
+        let _headers: HashMap<String, String> = serde_json::from_slice(&headers_bytes)
+            .map_err(|e| orbis_core::Error::plugin(format!("Invalid headers JSON: {}", e)))?;
+
+        let _body_bytes = Self::read_memory(caller, &memory, body_ptr, body_len)?;
+
+        // TODO: Actually make HTTP request
+        // For now, return mock response
+        let response = serde_json::json!({
+            "status": 501,
+            "headers": {},
+            "body": "HTTP requests not yet implemented"
+        });
+        let response_bytes = serde_json::to_vec(&response).map_err(|e| {
+            orbis_core::Error::plugin(format!("Failed to serialize response: {}", e))
+        })?;
+
+        let (ptr, _) = Self::allocate_and_write_bytes(caller, &response_bytes)?;
+        Ok(ptr)
+    }
+
+    /// Host function: Emit event
+    fn host_emit_event(
+        caller: &mut Caller<'_, StoreData>,
+        event_ptr: u32,
+        event_len: u32,
+        payload_ptr: u32,
+        payload_len: u32,
+    ) -> orbis_core::Result<()> {
+        caller.data_mut().check_limits()?;
+
+        // Check permission
+        if !caller.data().sandbox.has_permission("events:emit") {
+            return Err(orbis_core::Error::plugin(
+                "Plugin does not have events:emit permission",
+            ));
+        }
+
+        let memory = Self::get_memory(caller)?;
+
+        let event_bytes = Self::read_memory(caller, &memory, event_ptr, event_len)?;
+        let event_name = String::from_utf8(event_bytes).map_err(|e| {
+            orbis_core::Error::plugin(format!("Invalid UTF-8 in event name: {}", e))
+        })?;
+
+        let payload_bytes = Self::read_memory(caller, &memory, payload_ptr, payload_len)?;
+        let payload: serde_json::Value = serde_json::from_slice(&payload_bytes)
+            .map_err(|e| orbis_core::Error::plugin(format!("Invalid payload JSON: {}", e)))?;
+
+        let plugin_name = caller.data().plugin_name.clone();
+        tracing::info!(
+            "[Plugin: {}] Emitting event '{}' with payload: {:?}",
+            plugin_name,
+            event_name,
+            payload
+        );
+
+        // TODO: Actually emit event to event system
+        Ok(())
+    }
+
+    /// Host function: Get config value
+    fn host_get_config(
+        caller: &mut Caller<'_, StoreData>,
+        key_ptr: u32,
+        key_len: u32,
+    ) -> orbis_core::Result<u32> {
+        caller.data_mut().check_limits()?;
+
+        let memory = Self::get_memory(caller)?;
+        let key_bytes = Self::read_memory(caller, &memory, key_ptr, key_len)?;
+        let key = String::from_utf8(key_bytes).map_err(|e| {
+            orbis_core::Error::plugin(format!("Invalid UTF-8 in config key: {}", e))
+        })?;
+
+        let value = caller.data().config.get(&key);
+
+        if let Some(val) = value {
+            let val_bytes = serde_json::to_vec(&val).map_err(|e| {
+                orbis_core::Error::plugin(format!("Failed to serialize config value: {}", e))
+            })?;
+
+            let (ptr, _) = Self::allocate_and_write_bytes(caller, &val_bytes)?;
+            Ok(ptr)
+        } else {
+            Ok(0) // Null pointer for missing key
+        }
+    }
+
+    /// Host function: Hash data
+    fn host_crypto_hash(
+        caller: &mut Caller<'_, StoreData>,
+        algorithm: i32,
+        data_ptr: u32,
+        data_len: u32,
+    ) -> orbis_core::Result<u32> {
+        caller.data_mut().check_limits()?;
+
+        let memory = Self::get_memory(caller)?;
+        let data = Self::read_memory(caller, &memory, data_ptr, data_len)?;
+
+        use sha2::{Digest, Sha256, Sha512};
+
+        let hash: Vec<u8> = match algorithm {
+            0 => {
+                // SHA-256
+                let mut hasher = Sha256::new();
+                hasher.update(&data);
+                hasher.finalize().to_vec()
+            }
+            1 => {
+                // SHA-512
+                let mut hasher = Sha512::new();
+                hasher.update(&data);
+                hasher.finalize().to_vec()
+            }
+            _ => {
+                return Err(orbis_core::Error::plugin(format!(
+                    "Unknown hash algorithm: {}",
+                    algorithm
+                )));
+            }
+        };
+
+        let (ptr, _) = Self::allocate_and_write_bytes(caller, &hash)?;
+        Ok(ptr)
+    }
+
+    /// Host function: Generate random bytes
+    fn host_crypto_random(caller: &mut Caller<'_, StoreData>, len: u32) -> orbis_core::Result<u32> {
+        caller.data_mut().check_limits()?;
+
+        if len > 1024 * 1024 {
+            return Err(orbis_core::Error::plugin(format!(
+                "Random bytes request too large: {} bytes",
+                len
+            )));
+        }
+
+        use rand::RngCore;
+        let mut bytes = vec![0u8; len as usize];
+        rand::rng().fill_bytes(&mut bytes);
+
+        let (ptr, _) = Self::allocate_and_write_bytes(caller, &bytes)?;
+        Ok(ptr)
     }
 
     /// Get memory from caller
@@ -882,7 +1391,8 @@ mod tests {
         });
 
         let state = PluginState::new();
-        let mut store_data = StoreData::new("test".to_string(), sandbox, state);
+        let config = PluginConfig::new();
+        let mut store_data = StoreData::new("test".to_string(), sandbox, state, config);
 
         // Should succeed for first 10 calls
         for _ in 0..10 {
