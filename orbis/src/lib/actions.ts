@@ -122,11 +122,11 @@ export async function executeAction(
     context: ActionContext
 ): Promise<void> {
     switch (action.type) {
-        case `updateState`:
+        case `update_state`:
             executeUpdateState(action, context);
             break;
 
-        case `callApi`:
+        case `call_api`:
             await executeCallApi(action, context);
             break;
 
@@ -134,11 +134,11 @@ export async function executeAction(
             executeNavigate(action, context);
             break;
 
-        case `showToast`:
+        case `show_toast`:
             executeShowToast(action, context);
             break;
 
-        case `debouncedAction`:
+        case `debounced_action`:
             executeDebouncedAction(action, context);
             break;
 
@@ -150,11 +150,11 @@ export async function executeAction(
             await executeSequence(action, context);
             break;
 
-        case `setLoading`:
+        case `set_loading`:
             context.state.setLoading(action.target ?? `global`, action.loading);
             break;
 
-        case `showDialog`:
+        case `show_dialog`:
             // Dialog handling will be done through state
             context.state.setState(`__dialogs.${ action.dialogId }`, {
                 open: true,
@@ -162,7 +162,7 @@ export async function executeAction(
             });
             break;
 
-        case `closeDialog`:
+        case `close_dialog`:
             context.state.setState(`__dialogs.${ action.dialogId ?? `current` }`, {
                 open: false,
             });
@@ -172,7 +172,7 @@ export async function executeAction(
             await executeCopy(action, context);
             break;
 
-        case `openUrl`:
+        case `open_url`:
             executeOpenUrl(action, context);
             break;
 
@@ -180,11 +180,11 @@ export async function executeAction(
             await executeDownload(action, context);
             break;
 
-        case `validateForm`:
+        case `validate_form`:
             await executeValidateForm(action, context);
             break;
 
-        case `resetForm`:
+        case `reset_form`:
             executeResetForm(action, context);
             break;
 

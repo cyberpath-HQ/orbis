@@ -217,6 +217,7 @@ export function interpolateExpression(
         ...context,
     };
 
+    console.log('Interpolating expression:', expression, 'with state:', combined);
     const result = expression.replace(/\{\{([^}]+)\}\}/g, (_, path: string) => {
         const trimmedPath = path.trim();
         const value = getNestedValue(combined, trimmedPath);

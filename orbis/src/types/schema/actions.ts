@@ -30,7 +30,7 @@ export interface BaseAction {
 
 // Update state action - modifies page state
 export interface UpdateStateAction extends BaseAction {
-    type:   `updateState`
+    type:   `update_state`
     path:   string
     value?: unknown
     from?:  Expression
@@ -39,7 +39,7 @@ export interface UpdateStateAction extends BaseAction {
 
 // API call action - calls a backend API
 export interface CallApiAction extends BaseAction {
-    type:           `callApi`
+    type:           `call_api`
     name?:          string
     api:            string
     method?:        `GET` | `POST` | `PUT` | `PATCH` | `DELETE`
@@ -63,7 +63,7 @@ export interface NavigateAction extends BaseAction {
 
 // Toast notification action
 export interface ShowToastAction extends BaseAction {
-    type:      `showToast`
+    type:      `show_toast`
     level:     `info` | `success` | `warning` | `error`
     message:   Expression
     title?:    Expression
@@ -72,20 +72,20 @@ export interface ShowToastAction extends BaseAction {
 
 // Show dialog action
 export interface ShowDialogAction extends BaseAction {
-    type:     `showDialog`
+    type:     `show_dialog`
     dialogId: string
     data?:    Record<string, Expression>
 }
 
 // Close dialog action
 export interface CloseDialogAction extends BaseAction {
-    type:      `closeDialog`
+    type:      `close_dialog`
     dialogId?: string
 }
 
 // Debounced action - delays execution
 export interface DebouncedAction extends BaseAction {
-    type:    `debouncedAction`
+    type:    `debounced_action`
     delayMs: number
     action:  Action
     key?:    string
@@ -93,7 +93,7 @@ export interface DebouncedAction extends BaseAction {
 
 // Validate form action
 export interface ValidateFormAction extends BaseAction {
-    type:       `validateForm`
+    type:       `validate_form`
     formId:     string
     onValid?:   Array<Action>
     onInvalid?: Array<Action>
@@ -101,13 +101,13 @@ export interface ValidateFormAction extends BaseAction {
 
 // Reset form action
 export interface ResetFormAction extends BaseAction {
-    type:   `resetForm`
+    type:   `reset_form`
     formId: string
 }
 
 // Set loading action
 export interface SetLoadingAction extends BaseAction {
-    type:    `setLoading`
+    type:    `set_loading`
     loading: boolean
     target?: string
 }
@@ -128,7 +128,7 @@ export interface CopyAction extends BaseAction {
 
 // Open external URL action
 export interface OpenUrlAction extends BaseAction {
-    type:    `openUrl`
+    type:    `open_url`
     url:     Expression
     newTab?: boolean
 }

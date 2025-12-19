@@ -199,13 +199,19 @@ const ComponentRenderer = memo(function ComponentRenderer({
     const ctx = useRendererContext();
     const stateData = ctx.state.getState();
 
+    if (!schema) {
+        return null;
+    }
+
     // Check visibility
-    if (schema.visible !== undefined) {
+    if (schema.visible !== undefined && schema.visible !== null) {
         const isVisible = evaluateBooleanExpression(schema.visible, stateData);
         if (!isVisible) {
             return null;
         }
     }
+
+    console.log(`Rendering component:`, schema.type, `ID:`, schema.id);
 
     // Render based on type
     switch (schema.type) {
@@ -307,6 +313,7 @@ const ComponentRenderer = memo(function ComponentRenderer({
     if (prevProps.schema.id !== nextProps.schema.id) {
         return false;
     }
+
     // Use shallow comparison for schema object
     return shallowEqual(
         prevProps.schema as unknown as Record<string, unknown>,
@@ -332,6 +339,8 @@ function useEventHandler(actions?: Array<Action>): (event?: unknown) => Promise<
             item:      ctx.item,
             index:     ctx.index,
         };
+
+        console.log(`Executing actions:`, event, `with context:`, actionContext);
 
         await executeActions(actions, actionContext);
     }, [
@@ -458,7 +467,7 @@ function ButtonRenderer({
     const label = useResolvedValue(schema.label);
 
     const handleOnClick = (): void => {
-        void handleClick();
+        void handleClick(`click`);
     };
 
     const isDisabled = schema.disabled
@@ -486,7 +495,10 @@ function ButtonRenderer({
     };
 
     // Extract ARIA props for accessibility
-    const ariaProps = extractAriaProps(schema, { ...stateData, $loading: isLoading });
+    const ariaProps = extractAriaProps(schema, {
+        ...stateData,
+        $loading: isLoading,
+    });
 
     return (
         <Button
@@ -500,7 +512,9 @@ function ButtonRenderer({
             aria-label={ariaProps[`aria-label`] as string | undefined}
             aria-disabled={isDisabled || isLoading}
             aria-busy={isLoading}
-            {...(ariaProps.role && { role: ariaProps.role as string })}
+            {...(ariaProps.role && {
+                role: ariaProps.role as string,
+            })}
         >
             {isLoading && <LucideIcons.Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {Icon && schema.iconPosition !== `right` && <Icon className="mr-2 h-4 w-4" />}
@@ -728,23 +742,28 @@ function FormRenderer({
     // Build Zod schema for validation
     const zodSchema = useMemo(
         () => buildFormSchema(schema.fields),
-        [schema.fields]
+        [ schema.fields ]
     );
 
     // Get initial values from page state or field defaults
     const initialValues = useMemo(
         () => getInitialFormValues(schema.fields, ctx.state.getState()),
-        [schema.fields, ctx.state]
+        [
+            schema.fields,
+            ctx.state,
+        ]
     );
 
     // Create TanStack Form instance with zod standard schema validation
     const form = useForm({
         defaultValues: initialValues,
-        validators: {
+        validators:    {
             onChange: zodSchema,
             onBlur:   zodSchema,
         },
-        onSubmit: async({ value }) => {
+        onSubmit: async({
+            value,
+        }) => {
             // Sync all form values to page state based on bindTo
             for (const field of schema.fields) {
                 if (field.bindTo && field.name in value) {
@@ -762,7 +781,10 @@ function FormRenderer({
         form,
         formId:   schema.id,
         isInForm: true,
-    }), [form, schema.id]);
+    }), [
+        form,
+        schema.id,
+    ]);
 
     const layoutClasses = {
         vertical:   `space-y-4`,
@@ -779,7 +801,9 @@ function FormRenderer({
         form.reset();
     };
 
-    const isSubmitting = form.state.isSubmitting;
+    const {
+        isSubmitting,
+    } = form.state;
 
     return (
         <FormContext.Provider value={formContextValue}>
@@ -853,7 +877,7 @@ function TableRenderer({
 
     // Apply sorting
     if (sortColumn && schema.sortable !== false) {
-        data = [...data].sort((a, b) => {
+        data = [ ...data ].sort((a, b) => {
             const aVal = a[sortColumn];
             const bVal = b[sortColumn];
 
@@ -955,8 +979,7 @@ function TableRenderer({
     // Handle select all
     const onSelectAll = (selected: boolean): void => {
         if (selected) {
-            const allKeys = paginatedData.map((row, index) =>
-                schema.rowKey ? row[schema.rowKey] : index
+            const allKeys = paginatedData.map((row, index) => schema.rowKey ? row[schema.rowKey] : index
             );
             setSelectedRows(new Set(allKeys as Array<string | number>));
         }
