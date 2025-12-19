@@ -64,9 +64,12 @@ impl PluginManager {
                 orbis_core::Error::plugin(format!("Failed to create plugins directory: {}", e))
             })?;
         }
+        
+        // State file in plugin directory
+        let state_file = plugins_dir.join(".plugin_states.json");
 
         Ok(Self {
-            registry: PluginRegistry::new(),
+            registry: PluginRegistry::with_persistence(state_file),
             loader: PluginLoader::new(),
             runtime: PluginRuntime::new(),
             plugins_dir,
@@ -168,6 +171,20 @@ impl PluginManager {
         }
 
         tracing::info!("Loaded {} plugins", loaded.len());
+        
+        // Restore saved states (enabled/disabled) from previous session
+        self.registry.restore_states()?;
+        
+        // Auto-start plugins that were previously running
+        for plugin in &loaded {
+            if plugin.state == PluginState::Running {
+                tracing::info!("Auto-starting previously running plugin: {}", plugin.manifest.name);
+                if let Err(e) = self.runtime.start(&plugin.manifest.name).await {
+                    tracing::error!("Failed to auto-start plugin {}: {}", plugin.manifest.name, e);
+                }
+            }
+        }
+        
         Ok(loaded)
     }
 
