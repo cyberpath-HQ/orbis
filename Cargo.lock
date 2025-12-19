@@ -2438,6 +2438,7 @@ checksum = "2304e00983f87ffb38b55b444b5e3b60a884b5d30c0fca7d82fe33449bbe55ea"
 name = "hello-plugin"
 version = "0.1.0"
 dependencies = [
+ "orbis-plugin-api",
  "serde",
  "serde_json",
 ]
@@ -3373,6 +3374,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "my-first-plugin"
+version = "0.1.0"
+dependencies = [
+ "orbis-plugin-api",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "native-tls"
 version = "0.2.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3947,6 +3957,7 @@ dependencies = [
  "bon",
  "chrono",
  "derive_more 2.1.0",
+ "orbis-plugin-api",
  "semver",
  "serde",
  "serde_json",
@@ -3986,6 +3997,7 @@ dependencies = [
  "orbis-config",
  "orbis-core",
  "orbis-db",
+ "orbis-plugin-api",
  "parking_lot",
  "semver",
  "serde",
@@ -3997,6 +4009,16 @@ dependencies = [
  "wasmparser 0.226.0",
  "wasmtime",
  "zip 2.4.2",
+]
+
+[[package]]
+name = "orbis-plugin-api"
+version = "0.1.0"
+dependencies = [
+ "semver",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.17",
 ]
 
 [[package]]

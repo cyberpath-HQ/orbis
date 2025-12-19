@@ -5,6 +5,7 @@ members = [
     "crates/orbis-core",
     "crates/orbis-config",
     "crates/orbis-db",
+    "crates/orbis-plugin-api",
     "crates/orbis-plugin",
     "crates/orbis-server",
     "crates/orbis-auth",
@@ -27,6 +28,7 @@ readme = "README.md"
 orbis-core = { path = "crates/orbis-core" }
 orbis-config = { path = "crates/orbis-config" }
 orbis-db = { path = "crates/orbis-db" }
+orbis-plugin-api = { path = "crates/orbis-plugin-api" }
 orbis-plugin = { path = "crates/orbis-plugin" }
 orbis-server = { path = "crates/orbis-server" }
 orbis-auth = { path = "crates/orbis-auth" }
