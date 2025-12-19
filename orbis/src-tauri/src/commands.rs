@@ -554,10 +554,20 @@ pub async fn reload_plugin(name: String, state: State<'_, OrbisState>) -> Result
 
 /// Enable a disabled plugin.
 #[tauri::command]
-pub async fn enable_plugin(name: String, state: State<'_, OrbisState>) -> Result<Value, String> {
+pub async fn enable_plugin(
+    name: String,
+    state: State<'_, OrbisState>,
+    app: tauri::AppHandle,
+) -> Result<Value, String> {
     let pm = state.plugins().ok_or("Plugins not available in client mode")?;
 
     pm.enable_plugin(&name).await.map_err(|e| e.to_string())?;
+
+    // Emit event to notify frontend of state change
+    let _ = app.emit("plugin-state-changed", json!({
+        "plugin": name,
+        "state": "Running"
+    }));
 
     Ok(json!({
         "success": true,
@@ -567,10 +577,20 @@ pub async fn enable_plugin(name: String, state: State<'_, OrbisState>) -> Result
 
 /// Disable a running plugin.
 #[tauri::command]
-pub async fn disable_plugin(name: String, state: State<'_, OrbisState>) -> Result<Value, String> {
+pub async fn disable_plugin(
+    name: String,
+    state: State<'_, OrbisState>,
+    app: tauri::AppHandle,
+) -> Result<Value, String> {
     let pm = state.plugins().ok_or("Plugins not available in client mode")?;
 
     pm.disable_plugin(&name).await.map_err(|e| e.to_string())?;
+
+    // Emit event to notify frontend of state change
+    let _ = app.emit("plugin-state-changed", json!({
+        "plugin": name,
+        "state": "Disabled"
+    }));
 
     Ok(json!({
         "success": true,
@@ -580,10 +600,20 @@ pub async fn disable_plugin(name: String, state: State<'_, OrbisState>) -> Resul
 
 /// Uninstall a plugin.
 #[tauri::command]
-pub async fn uninstall_plugin(name: String, state: State<'_, OrbisState>) -> Result<Value, String> {
+pub async fn uninstall_plugin(
+    name: String,
+    state: State<'_, OrbisState>,
+    app: tauri::AppHandle,
+) -> Result<Value, String> {
     let pm = state.plugins().ok_or("Plugins not available in client mode")?;
 
     pm.unload_plugin(&name).await.map_err(|e| e.to_string())?;
+
+    // Emit event to notify frontend of state change
+    let _ = app.emit("plugin-state-changed", json!({
+        "plugin": name,
+        "state": "Unloaded"
+    }));
 
     Ok(json!({
         "success": true,

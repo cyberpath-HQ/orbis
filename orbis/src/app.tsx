@@ -14,6 +14,7 @@ import {
     useNavigate
 } from 'react-router-dom';
 import { invoke } from '@tauri-apps/api/core';
+import { listen } from '@tauri-apps/api/event';
 import { Toaster } from 'sonner';
 
 import { AppLayout } from '@/lib/layout';
@@ -69,6 +70,7 @@ function App(): React.ReactElement {
             const {
                 pages,
             } = await invoke<{ pages: Array<PluginPage> }>(`get_plugin_pages`);
+            console.log('Plugin pages received:', pages.length, pages);
             setPluginPages(pages);
         } catch (err) {
             console.error('Failed to refresh plugin pages:', err);
@@ -112,6 +114,27 @@ function App(): React.ReactElement {
             void refreshPluginPages();
         }, [refreshPluginPages])
     );
+
+    // Listen for plugin state changes (enable/disable) and refresh pages
+    useEffect(() => {
+        let unlisten: (() => void) | undefined;
+
+        const setupListener = async () => {
+            unlisten = await listen<{ plugin: string; state: string }>('plugin-state-changed', () => {
+                // Refresh plugin pages when any plugin state changes
+                console.log('Plugin state changed, refreshing pages');
+                void refreshPluginPages();
+            });
+        };
+
+        void setupListener();
+
+        return () => {
+            if (unlisten) {
+                unlisten();
+            }
+        };
+    }, [refreshPluginPages]);
 
     // Navigation configuration
     const navigation = useMemo<NavigationConfig>(() => ({
@@ -193,8 +216,10 @@ function App(): React.ReactElement {
             mode={mode ?? undefined}
         >
             <Routes>
-                {/* Public routes */}
-                <Route path="/login" element={<LoginPage />} />
+                {/* Public routes - only show login in client-server mode */}
+                {mode?.mode === 'client' || mode?.mode === 'server' ? (
+                    <Route path="/login" element={<LoginPage />} />
+                ) : null}
                 <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
                 {/* Protected routes */}
