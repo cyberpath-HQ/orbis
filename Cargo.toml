@@ -76,6 +76,7 @@ argon2 = "0.5"
 jsonwebtoken = { version = "10", features = ["rust_crypto"] }
 rand = "0.9"
 uuid = { version = "1", features = ["v4", "v7", "serde"] }
+sha2 = "0.10"
 
 # Plugin system
 wasmtime = "39"
@@ -84,6 +85,9 @@ seccompiler = "0.4"
 zip = { version = "2", default-features = false, features = ["deflate"] }
 # notify 7.x is required for compatibility with notify-debouncer-mini
 notify = "7"
+
+# Networking
+url = "2"
 
 # Utilities
 chrono = { version = "0.4", features = ["serde"] }
