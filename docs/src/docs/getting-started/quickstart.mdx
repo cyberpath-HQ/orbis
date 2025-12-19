@@ -141,7 +141,9 @@ Copy your plugin to the Orbis plugins directory:
 <CodeBlock lang="bash">
 ```bash
 # From the project root
-cp -r plugins/my-first-plugin plugins/
+cd orbis
+mkdir -p ./src-tauri/plugins/
+cp -r ../plugins/my-first-plugin ./src-tauri/plugins/my-first-plugin
 ```
 </CodeBlock>
 
