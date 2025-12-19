@@ -65,16 +65,6 @@
           "children": [
             {
               "type": "Text",
-              "id": "title",
-              "className": "text-3xl font-bold mb-2",
-              "style": null,
-              "visible": null,
-              "children": [],
-              "events": null,
-              "content": "Hello World Plugin"
-            },
-            {
-              "type": "Text",
               "id": "subtitle",
               "className": "text-muted-foreground mb-6",
               "style": null,
@@ -89,136 +79,134 @@
               "className": null,
               "style": null,
               "visible": null,
-              "children": [
-                {
-                  "type": "Container",
-                  "id": "cardContent",
-                  "className": "p-6 space-y-4",
-                  "style": null,
-                  "visible": null,
-                  "children": [
-                    {
-                      "type": "Field",
-                      "id": "nameField",
-                      "name": "name",
-                      "className": null,
-                      "style": null,
-                      "visible": null,
-                      "children": [],
-                      "events": {
-                        "onChange": [
-                          {
-                            "type": "update_state",
-                            "path": "name",
-                            "value": null,
-                            "from": "event.value",
-                            "merge": false
-                          }
-                        ]
-                      },
-                      "label": "Your Name",
-                      "fieldType": "text",
-                      "placeholder": "Enter your name...",
-                      "defaultValue": "{{state.name}}",
-                      "bindTo": "name",
-                      "required": false,
-                      "disabled": false
-                    },
-                    {
-                      "type": "Button",
-                      "id": "greetButton",
-                      "className": "w-full",
-                      "style": null,
-                      "visible": null,
-                      "children": [],
-                      "events": {
-                        "onClick": [
-                          {
-                            "type": "call_api",
-                            "name": "createGreeting",
-                            "api": "plugin.create_greeting",
-                            "method": "POST",
-                            "args_from_state": [],
-                            "map_args": [],
-                            "body": {
-                              "name": "{{state.name}}"
-                            },
-                            "on_success": [
-                              {
-                                "type": "update_state",
-                                "path": "message",
-                                "value": null,
-                                "from": "response.message",
-                                "merge": false
-                              },
-                              {
-                                "type": "update_state",
-                                "path": "name",
-                                "value": null,
-                                "from": "response.name",
-                                "merge": false
-                              },
-                              {
-                                "type": "show_toast",
-                                "level": "success",
-                                "message": "{{response.message}}",
-                                "title": "Greeting Created",
-                                "duration": 3000
-                              }
-                            ],
-                            "on_error": [
-                              {
-                                "type": "show_toast",
-                                "level": "error",
-                                "message": "Failed to create greeting",
-                                "title": "Error",
-                                "duration": 5000
-                              }
-                            ],
-                            "on_finally": []
-                          }
-                        ]
-                      },
-                      "label": "Say Hello",
-                      "variant": "default",
-                      "size": "default",
-                      "disabled": false,
-                      "loading": false
-                    },
-                    {
-                      "type": "Divider",
-                      "id": "sep1",
-                      "className": "my-4",
-                      "style": null,
-                      "visible": null,
-                      "children": [],
-                      "events": null,
-                      "orientation": "horizontal"
-                    },
-                    {
-                      "type": "Container",
-                      "id": "messageContainer",
-                      "className": "p-4 bg-primary/10 rounded-lg text-center",
-                      "style": null,
-                      "visible": null,
-                      "children": [
+              "content": {
+                "type": "Container",
+                "id": "cardContent",
+                "className": "p-6 space-y-4",
+                "style": null,
+                "visible": null,
+                "children": [
+                  {
+                    "type": "Field",
+                    "id": "nameField",
+                    "name": "name",
+                    "className": null,
+                    "style": null,
+                    "visible": null,
+                    "children": [],
+                    "events": {
+                      "onChange": [
                         {
-                          "type": "Text",
-                          "id": "messageText",
-                          "className": "text-2xl font-semibold text-primary",
-                          "style": null,
-                          "visible": null,
-                          "children": [],
-                          "events": null,
-                          "content": "{{state.message}}"
+                          "type": "update_state",
+                          "path": "name",
+                          "value": null,
+                          "from": "event.value",
+                          "merge": false
                         }
-                      ],
-                      "events": null
-                    }
-                  ],
-                  "events": null
-                }
-              ],
+                      ]
+                    },
+                    "label": "Your Name",
+                    "fieldType": "text",
+                    "placeholder": "Enter your name...",
+                    "defaultValue": "{{state.name}}",
+                    "bindTo": "name",
+                    "required": false,
+                    "disabled": false
+                  },
+                  {
+                    "type": "Button",
+                    "id": "greetButton",
+                    "className": "w-full",
+                    "style": null,
+                    "visible": null,
+                    "children": [],
+                    "events": {
+                      "onClick": [
+                        {
+                          "type": "call_api",
+                          "name": "createGreeting",
+                          "api": "plugin.create_greeting",
+                          "method": "POST",
+                          "args_from_state": [],
+                          "map_args": [],
+                          "body": {
+                            "name": "{{state.name}}"
+                          },
+                          "on_success": [
+                            {
+                              "type": "update_state",
+                              "path": "message",
+                              "value": null,
+                              "from": "response.message",
+                              "merge": false
+                            },
+                            {
+                              "type": "update_state",
+                              "path": "name",
+                              "value": null,
+                              "from": "response.name",
+                              "merge": false
+                            },
+                            {
+                              "type": "show_toast",
+                              "level": "success",
+                              "message": "{{response.message}}",
+                              "title": "Greeting Created",
+                              "duration": 3000
+                            }
+                          ],
+                          "on_error": [
+                            {
+                              "type": "show_toast",
+                              "level": "error",
+                              "message": "Failed to create greeting",
+                              "title": "Error",
+                              "duration": 5000
+                            }
+                          ],
+                          "on_finally": []
+                        }
+                      ]
+                    },
+                    "label": "Say Hello",
+                    "variant": "default",
+                    "size": "default",
+                    "disabled": false,
+                    "loading": false
+                  },
+                  {
+                    "type": "Divider",
+                    "id": "sep1",
+                    "className": "my-4",
+                    "style": null,
+                    "visible": null,
+                    "children": [],
+                    "events": null,
+                    "orientation": "horizontal"
+                  },
+                  {
+                    "type": "Container",
+                    "id": "messageContainer",
+                    "className": "p-4 bg-primary/10 rounded-lg text-center",
+                    "style": null,
+                    "visible": null,
+                    "children": [
+                      {
+                        "type": "Text",
+                        "id": "messageText",
+                        "className": "text-2xl font-semibold text-primary",
+                        "style": null,
+                        "visible": null,
+                        "children": [],
+                        "events": null,
+                        "content": "{{state.message}}"
+                      }
+                    ],
+                    "events": null
+                  }
+                ],
+                "events": null
+              },
               "events": null
             }
           ],
