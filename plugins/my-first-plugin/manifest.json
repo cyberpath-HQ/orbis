@@ -1,7 +1,7 @@
 {
-  "name": "example-plugin",
+  "name": "my-first-plugin",
   "version": "1.0.0",
-  "description": "An example plugin demonstrating the API",
+  "description": "My First Orbis Plugin",
   "author": "Plugin Developer",
   "homepage": "https://example.com",
   "license": "MIT",
