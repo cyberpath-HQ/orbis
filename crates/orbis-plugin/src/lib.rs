@@ -176,11 +176,14 @@ impl PluginManager {
         self.registry.restore_states()?;
         
         // Auto-start plugins that were previously running
+        // Note: Must get updated state from registry, not stale loaded vector
         for plugin in &loaded {
-            if plugin.state == PluginState::Running {
-                tracing::info!("Auto-starting previously running plugin: {}", plugin.manifest.name);
-                if let Err(e) = self.runtime.start(&plugin.manifest.name).await {
-                    tracing::error!("Failed to auto-start plugin {}: {}", plugin.manifest.name, e);
+            if let Some(info) = self.registry.get(&plugin.manifest.name) {
+                if info.state == PluginState::Running {
+                    tracing::info!("Auto-starting previously running plugin: {}", info.manifest.name);
+                    if let Err(e) = self.runtime.start(&info.manifest.name).await {
+                        tracing::error!("Failed to auto-start plugin {}: {}", info.manifest.name, e);
+                    }
                 }
             }
         }
