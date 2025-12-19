@@ -2,64 +2,38 @@
 //!
 //! This is a minimal test plugin to verify the runtime works correctly.
 
-/// Initialize the plugin
-#[no_mangle]
-pub extern "C" fn init() {
-    // Empty init function
+use orbis_plugin_api::sdk::prelude::*;
+use serde_json::json;
+
+// Zero-boilerplate plugin initialization
+orbis_plugin!();
+
+/// Test handler that echoes back request information
+fn test_handler_impl(ctx: Context) -> Result<Response> {
+    log::info!("Test handler called: {} {}", ctx.method, ctx.path);
+    
+    Response::json(&json!({
+        "status": "success",
+        "method": ctx.method,
+        "path": ctx.path,
+        "message": "Test handler executed successfully"
+    }))
 }
 
-/// Cleanup the plugin
-#[no_mangle]
-pub extern "C" fn cleanup() {
-    // Empty cleanup function
+/// State test handler - demonstrates state management
+fn state_test_impl(_ctx: Context) -> Result<Response> {
+    let counter: i32 = state::get("counter")?.unwrap_or(0);
+    let new_counter = counter + 1;
+    state::set("counter", &new_counter)?;
+    
+    log::info!("State counter incremented to: {}", new_counter);
+    
+    Response::json(&json!({
+        "counter": new_counter,
+        "message": "State updated successfully"
+    }))
 }
 
-/// Simple allocate function for WASM (using global allocator)
-#[no_mangle]
-pub extern "C" fn allocate(size: i32) -> *mut u8 {
-    let mut buf = Vec::with_capacity(size as usize);
-    let ptr = buf.as_mut_ptr();
-    std::mem::forget(buf);
-    ptr
-}
-
-/// Simple deallocate function for WASM
-#[no_mangle]
-pub extern "C" fn deallocate(ptr: *mut u8, size: i32) {
-    unsafe {
-        let _ = Vec::from_raw_parts(ptr, 0, size as usize);
-    }
-}
-
-/// Test handler that processes the context and returns a response
-#[no_mangle]
-pub extern "C" fn test_handler(ptr: i32, len: i32) -> i32 {
-    // Read input
-    let input_bytes = unsafe {
-        std::slice::from_raw_parts(ptr as *const u8, len as usize)
-    };
-    
-    // Simple echo response
-    let response = format!(
-        r#"{{"status":"success","data":{{"received_bytes":{},"echo":"ok"}}}}"#,
-        input_bytes.len()
-    );
-    
-    let response_bytes = response.as_bytes();
-    let response_len = response_bytes.len() as u32;
-    
-    // Allocate memory for length + data
-    let total_size = 4 + response_bytes.len();
-    let result_ptr = allocate(total_size as i32);
-    
-    unsafe {
-        // Write length
-        *(result_ptr as *mut u32) = response_len;
-        
-        // Write data
-        let data_ptr = result_ptr.add(4);
-        std::ptr::copy_nonoverlapping(response_bytes.as_ptr(), data_ptr, response_bytes.len());
-    }
-    
-    result_ptr as i32
-}
+// Export handlers with wrap_handler! macro
+wrap_handler!(test_handler, test_handler_impl);
+wrap_handler!(state_test, state_test_impl);
