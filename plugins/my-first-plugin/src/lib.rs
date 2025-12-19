@@ -1,44 +1,63 @@
-//! My First Plugin - A starter plugin template
+//! My First Plugin - A simple Hello World plugin with state persistence
 
 use orbis_plugin_api::sdk::prelude::*;
 use serde::{Deserialize, Serialize};
-use serde_json::json;
 
 // Zero-boilerplate plugin initialization
 orbis_plugin!();
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Message {
-    pub content: String,
+pub struct GreetRequest {
+    pub name: String,
 }
 
-/// Get welcome message
-fn get_data_impl(_ctx: Context) -> Result<Response> {
-    let message = Message {
-        content: "Hello from My First Plugin!".to_string(),
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GreetResponse {
+    pub message: String,
+    pub name: String,
+}
+
+/// Get current greeting (restored from state)
+fn get_greeting_impl(_ctx: Context) -> Result<Response> {
+    // Try to load saved state
+    let saved_name: Option<String> = state::get("saved_name")?;
+    let saved_message: Option<String> = state::get("saved_message")?;
+    
+    let response = GreetResponse {
+        name: saved_name.unwrap_or_default(),
+        message: saved_message.unwrap_or_else(|| "Hello World!".to_string()),
     };
     
-    log::info!("Sending welcome message");
+    log::info!("Retrieved greeting: {} for {}", response.message, response.name);
     
-    Response::json(&message)
+    Response::json(&response)
 }
 
-/// Create a new message
-fn create_message_impl(ctx: Context) -> Result<Response> {
-    let message: Message = ctx.body_as()?;
+/// Create a greeting for a name
+fn create_greeting_impl(ctx: Context) -> Result<Response> {
+    let request: GreetRequest = ctx.body_as()?;
     
-    log::info!("Received message: {}", message.content);
+    let message = if request.name.is_empty() {
+        "Hello World!".to_string()
+    } else {
+        format!("Hello {}!", request.name)
+    };
     
-    // Store in state
-    state::set("last_message", &message)?;
+    log::info!("Creating greeting: {} for {}", message, request.name);
     
-    Response::json(&json!({
-        "success": true,
-        "message": message
-    }))
+    // Persist state
+    state::set("saved_name", &request.name)?;
+    state::set("saved_message", &message)?;
+    
+    let response = GreetResponse {
+        name: request.name,
+        message,
+    };
+    
+    Response::json(&response)
 }
 
 // Export handlers with wrap_handler! macro
-wrap_handler!(get_data, get_data_impl);
-wrap_handler!(create_message, create_message_impl);
+wrap_handler!(get_greeting, get_greeting_impl);
+wrap_handler!(create_greeting, create_greeting_impl);
 

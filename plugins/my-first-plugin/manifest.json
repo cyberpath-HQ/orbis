@@ -1,51 +1,57 @@
 {
   "name": "my-first-plugin",
   "version": "1.0.0",
-  "description": "My First Orbis Plugin",
+  "description": "A simple Hello World plugin that greets you by name",
   "author": "Plugin Developer",
   "homepage": "https://example.com",
   "license": "MIT",
   "min_orbis_version": "0.1.0",
   "dependencies": [],
-  "permissions": [
-    "database_read",
-    "network"
-  ],
+  "permissions": [],
   "routes": [
     {
       "method": "GET",
-      "path": "/api/data",
-      "handler": "get_data",
-      "description": "Fetch data from the plugin",
-      "requires_auth": true,
+      "path": "/greeting",
+      "handler": "get_greeting",
+      "description": "Get the current greeting",
+      "requires_auth": false,
+      "permissions": [],
+      "rate_limit": 60
+    },
+    {
+      "method": "POST",
+      "path": "/greeting",
+      "handler": "create_greeting",
+      "description": "Create a greeting for a name",
+      "requires_auth": false,
       "permissions": [],
       "rate_limit": 60
     }
   ],
   "pages": [
     {
-      "route": "/dashboard",
-      "title": "Dashboard",
-      "icon": "LayoutDashboard",
-      "description": "Plugin dashboard with data visualization",
+      "route": "/hello",
+      "title": "Hello World",
+      "icon": "Hand",
+      "description": "A simple hello world greeting",
       "show_in_menu": true,
       "menu_order": 0,
       "parent_route": null,
-      "requires_auth": true,
+      "requires_auth": false,
       "permissions": [],
       "roles": [],
       "state": {
-        "data": {
-          "type": "array",
-          "default": [],
+        "name": {
+          "type": "string",
+          "default": "",
           "nullable": false,
-          "description": "Data from API"
+          "description": "Name to greet"
         },
-        "loading": {
-          "type": "boolean",
-          "default": false,
+        "message": {
+          "type": "string",
+          "default": "Hello World!",
           "nullable": false,
-          "description": "Loading state"
+          "description": "Greeting message"
         }
       },
       "computed": {},
@@ -53,56 +59,167 @@
         {
           "type": "Container",
           "id": "main",
-          "className": "p-6",
+          "className": "p-6 max-w-2xl mx-auto space-y-6",
           "style": null,
           "visible": null,
           "children": [
             {
               "type": "Text",
-              "id": null,
-              "className": "text-2xl font-bold mb-4",
+              "id": "title",
+              "className": "text-3xl font-bold mb-2",
               "style": null,
               "visible": null,
               "children": [],
               "events": null,
-              "text": "Dashboard"
+              "content": "Hello World Plugin"
             },
             {
               "type": "Text",
-              "id": null,
-              "className": null,
+              "id": "subtitle",
+              "className": "text-muted-foreground mb-6",
               "style": null,
-              "visible": "${state.loading}",
+              "visible": null,
               "children": [],
               "events": null,
-              "text": "Loading..."
+              "content": "Enter your name to receive a personalized greeting. Your name will be saved for next time!"
             },
             {
-              "type": "Table",
-              "id": "dataTable",
+              "type": "Card",
+              "id": "greetingCard",
               "className": null,
               "style": null,
-              "visible": "${!state.loading}",
-              "children": [],
-              "events": null,
-              "dataSource": "state:data",
-              "columns": [
+              "visible": null,
+              "children": [
                 {
-                  "key": "id",
-                  "label": "ID",
-                  "sortable": true
-                },
-                {
-                  "key": "name",
-                  "label": "Name",
-                  "sortable": true
-                },
-                {
-                  "key": "value",
-                  "label": "Value",
-                  "sortable": false
+                  "type": "Container",
+                  "id": "cardContent",
+                  "className": "p-6 space-y-4",
+                  "style": null,
+                  "visible": null,
+                  "children": [
+                    {
+                      "type": "Field",
+                      "id": "nameField",
+                      "name": "name",
+                      "className": null,
+                      "style": null,
+                      "visible": null,
+                      "children": [],
+                      "events": {
+                        "onChange": [
+                          {
+                            "type": "update_state",
+                            "path": "name",
+                            "value": null,
+                            "from": "event.value",
+                            "merge": false
+                          }
+                        ]
+                      },
+                      "label": "Your Name",
+                      "fieldType": "text",
+                      "placeholder": "Enter your name...",
+                      "defaultValue": "{{state.name}}",
+                      "bindTo": "name",
+                      "required": false,
+                      "disabled": false
+                    },
+                    {
+                      "type": "Button",
+                      "id": "greetButton",
+                      "className": "w-full",
+                      "style": null,
+                      "visible": null,
+                      "children": [],
+                      "events": {
+                        "onClick": [
+                          {
+                            "type": "call_api",
+                            "name": "createGreeting",
+                            "api": "plugin.create_greeting",
+                            "method": "POST",
+                            "args_from_state": [],
+                            "map_args": [],
+                            "body": {
+                              "name": "{{state.name}}"
+                            },
+                            "on_success": [
+                              {
+                                "type": "update_state",
+                                "path": "message",
+                                "value": null,
+                                "from": "response.message",
+                                "merge": false
+                              },
+                              {
+                                "type": "update_state",
+                                "path": "name",
+                                "value": null,
+                                "from": "response.name",
+                                "merge": false
+                              },
+                              {
+                                "type": "show_toast",
+                                "level": "success",
+                                "message": "{{response.message}}",
+                                "title": "Greeting Created",
+                                "duration": 3000
+                              }
+                            ],
+                            "on_error": [
+                              {
+                                "type": "show_toast",
+                                "level": "error",
+                                "message": "Failed to create greeting",
+                                "title": "Error",
+                                "duration": 5000
+                              }
+                            ],
+                            "on_finally": []
+                          }
+                        ]
+                      },
+                      "label": "Say Hello",
+                      "variant": "default",
+                      "size": "default",
+                      "disabled": false,
+                      "loading": false
+                    },
+                    {
+                      "type": "Divider",
+                      "id": "sep1",
+                      "className": "my-4",
+                      "style": null,
+                      "visible": null,
+                      "children": [],
+                      "events": null,
+                      "orientation": "horizontal"
+                    },
+                    {
+                      "type": "Container",
+                      "id": "messageContainer",
+                      "className": "p-4 bg-primary/10 rounded-lg text-center",
+                      "style": null,
+                      "visible": null,
+                      "children": [
+                        {
+                          "type": "Text",
+                          "id": "messageText",
+                          "className": "text-2xl font-semibold text-primary",
+                          "style": null,
+                          "visible": null,
+                          "children": [],
+                          "events": null,
+                          "content": "{{state.message}}"
+                        }
+                      ],
+                      "events": null
+                    }
+                  ],
+                  "events": null
                 }
-              ]
+              ],
+              "events": null
             }
           ],
           "events": null
@@ -113,8 +230,8 @@
         "on_mount": [
           {
             "type": "call_api",
-            "name": "fetchData",
-            "api": "/api/plugins/example-plugin/api/data",
+            "name": "loadGreeting",
+            "api": "plugin.get_greeting",
             "method": "GET",
             "args_from_state": [],
             "map_args": [],
@@ -122,30 +239,21 @@
             "on_success": [
               {
                 "type": "update_state",
-                "path": "data",
+                "path": "name",
                 "value": null,
-                "from": "response.data",
+                "from": "response.name",
                 "merge": false
-              }
-            ],
-            "on_error": [
-              {
-                "type": "show_toast",
-                "level": "error",
-                "message": "Failed to load data",
-                "title": "Error",
-                "duration": 5000
-              }
-            ],
-            "on_finally": [
+              },
               {
                 "type": "update_state",
-                "path": "loading",
-                "value": false,
-                "from": null,
+                "path": "message",
+                "value": null,
+                "from": "response.message",
                 "merge": false
               }
-            ]
+            ],
+            "on_error": [],
+            "on_finally": []
           }
         ],
         "on_unmount": [],
