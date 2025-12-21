@@ -339,8 +339,7 @@ function PluginPageRenderer({
                 console.error(`Error executing onMount hook:`, error);
             });
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [ page, stateStore, apiClient, navigate ]);
 
     // Execute onUnmount hook when page unmounts
     useEffect(() => () => {
