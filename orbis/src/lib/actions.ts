@@ -15,7 +15,7 @@ import type {
     SequenceAction
 } from '../types/schema';
 import {
-    type PageStateStore,
+    type PageStateStoreHook,
     getNestedValue,
     interpolateExpression,
     evaluateBooleanExpression
@@ -26,7 +26,7 @@ const DEBOUNCE_TIMERS = new Map<string, ReturnType<typeof setTimeout>>();
 
 // Action execution context
 export interface ActionContext {
-    state:     PageStateStore
+    state:     PageStateStoreHook
     navigate:  NavigateFunction
     apiClient: ApiClient
     event?:    unknown
@@ -103,8 +103,9 @@ function resolveValue(
     }
 
     // Interpolate expressions
-    const stateData = context.state.getState();
-    return interpolateExpression(value, stateData, {
+    const stateData = context.state.getState().state;
+    const result = interpolateExpression(value, stateData, {
+        state:     stateData,  // Add "state" key for {{state.field}} syntax
         $event:    context.event,
         $row:      context.row,
         $item:     context.item,
@@ -112,6 +113,8 @@ function resolveValue(
         $response: context.response,
         $error:    context.error,
     });
+    console.log(`[resolveValue] Input: "${ value }", Output:`, result, `State:`, stateData);
+    return result;
 }
 
 /**
@@ -221,6 +224,8 @@ function executeUpdateState(action: UpdateStateAction, context: ActionContext): 
         value = actionValue;
     }
 
+    console.log(`Updating state at "${ path }" with value:`, value);
+
     if (should_merge && typeof value === `object` && value !== null) {
         context.state.mergeState(path, value as Record<string, unknown>);
     }
@@ -235,15 +240,15 @@ async function executeCallApi(action: CallApiAction, context: ActionContext): Pr
     // Build arguments
     const args: Record<string, unknown> = {};
 
-    if (action.argsFromState) {
-        for (const statePath of action.argsFromState) {
+    if (action.args_from_state) {
+        for (const statePath of action.args_from_state) {
             const value = context.state.getValue(statePath);
             args[statePath] = value;
         }
     }
 
-    if (action.mapArgs) {
-        for (const mapping of action.mapArgs) {
+    if (action.map_args) {
+        for (const mapping of action.map_args) {
             const value = resolveValue(mapping.from, context);
             args[mapping.to] = value;
         }
@@ -261,24 +266,26 @@ async function executeCallApi(action: CallApiAction, context: ActionContext): Pr
     try {
         const response = await context.apiClient.call(action.api, method, args);
 
-        if (action.onSuccess) {
-            await executeActions(action.onSuccess, {
+        console.log(`API call successful: ${ action.api }`, response);
+
+        if (action.on_success) {
+            await executeActions(action.on_success, {
                 ...context,
                 response,
             });
         }
     }
     catch (error) {
-        if (action.onError) {
-            await executeActions(action.onError, {
+        if (action.on_error) {
+            await executeActions(action.on_error, {
                 ...context,
                 error,
             });
         }
     }
     finally {
-        if (action.onFinally) {
-            await executeActions(action.onFinally, context);
+        if (action.on_finally) {
+            await executeActions(action.on_finally, context);
         }
     }
 }
@@ -356,7 +363,7 @@ function executeDebouncedAction(action: DebouncedAction, context: ActionContext)
 }
 
 async function executeConditional(action: ConditionalAction, context: ActionContext): Promise<void> {
-    const stateData = context.state.getState();
+    const stateData = context.state.getState().state;
     const is_condition_met = evaluateBooleanExpression(action.condition, stateData);
 
     if (is_condition_met) {
@@ -594,7 +601,7 @@ async function executeValidateForm(
 
     // Validate all fields
     let isValid = true;
-    const stateData = context.state.getState();
+    const stateData = context.state.getState().state;
 
     for (const [
         fieldName,

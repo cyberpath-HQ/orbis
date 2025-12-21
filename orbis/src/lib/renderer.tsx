@@ -98,7 +98,7 @@ import type {
     Action
 } from '../types/schema';
 import {
-    type PageStateStore,
+    type PageStateStoreHook,
     getNestedValue,
     interpolateExpression,
     evaluateBooleanExpression
@@ -137,7 +137,7 @@ function useFormContext(): FormContextValue {
 
 // Renderer context
 interface RendererContext {
-    state:     PageStateStore
+    state:     PageStateStoreHook
     apiClient: ApiClient
     navigate:  ReturnType<typeof useNavigate>
     row?:      Record<string, unknown>
@@ -158,7 +158,7 @@ function useRendererContext(): RendererContext {
 // Main schema renderer
 interface SchemaRendererProps {
     schema:    ComponentSchema
-    state:     PageStateStore
+    state:     PageStateStoreHook
     apiClient: ApiClient
 }
 
@@ -197,7 +197,8 @@ const ComponentRenderer = memo(function ComponentRenderer({
     schema,
 }: ComponentRendererProps): React.ReactElement | null {
     const ctx = useRendererContext();
-    const stateData = ctx.state.getState();
+    // Use the state hook to subscribe to changes (reactive)
+    const stateData = ctx.state((s) => s.state);
 
     if (!schema) {
         return null;
@@ -352,13 +353,14 @@ function useEventHandler(actions?: Array<Action>): (event?: unknown) => Promise<
 // Expression resolver helper
 function useResolvedValue(expression: string | undefined): string {
     const ctx = useRendererContext();
-    const stateData = ctx.state.getState();
+    const stateData = ctx.state((s) => s.state);
 
     if (!expression) {
         return ``;
     }
 
     return interpolateExpression(expression, stateData, {
+        state:  stateData,
         $row:   ctx.row,
         $item:  ctx.item,
         $index: ctx.index,
@@ -379,7 +381,8 @@ function ContainerRenderer({
     schema,
 }: { schema: ContainerSchema }): React.ReactElement {
     const ctx = useRendererContext();
-    const stateData = ctx.state.getState();
+    // Use the state hook to subscribe to changes (reactive)
+    const stateData = ctx.state((s) => s.state);
     const handleClick = useEventHandler(schema.events?.onClick);
 
     const handleOnClick = (): void => {
@@ -462,7 +465,8 @@ function ButtonRenderer({
     schema,
 }: { schema: ButtonSchema }): React.ReactElement {
     const ctx = useRendererContext();
-    const stateData = ctx.state.getState();
+
+    const stateData = ctx.state((s) => s.state);
     const handleClick = useEventHandler(schema.events?.onClick);
     const label = useResolvedValue(schema.label);
 
@@ -529,7 +533,8 @@ function FieldRenderer({
 }: { schema: FieldSchema }): React.ReactElement {
     const ctx = useRendererContext();
     const formCtx = useFormContext();
-    const stateData = ctx.state.getState();
+    // Use the state hook to subscribe to changes (reactive)
+    const stateData = ctx.state((s) => s.state);
     const handleChange = useEventHandler(schema.events?.onChange);
 
     const label = useResolvedValue(schema.label);
@@ -548,11 +553,17 @@ function FieldRenderer({
         ? formCtx.form.state.values[schema.name]
         : undefined;
 
-    const value = formCtx.isInForm && formValue !== undefined
-        ? formValue
-        : schema.bindTo
-            ? getNestedValue(stateData, schema.bindTo)
-            : schema.defaultValue;
+    // Calculate value - prefer form value, then bound state value, then default
+    let value: unknown;
+    if (formCtx.isInForm && formValue !== undefined) {
+        value = formValue;
+    } else if (schema.bindTo) {
+        value = getNestedValue(stateData, schema.bindTo);
+    } else {
+        value = schema.defaultValue;
+    }
+
+    console.log(`[FieldRenderer] Rendering field "${ schema.name }", bindTo: "${ schema.bindTo }", value:`, value, `stateData:`, stateData);
 
     // Get validation error from form if inside form context
     const fieldError = formFieldMeta?.errors?.[0]
@@ -562,6 +573,9 @@ function FieldRenderer({
     const showError = isTouched && fieldError;
 
     const onValueChange = (newValue: unknown): void => {
+        console.log(`[FieldRenderer] onValueChange called for "${ schema.name }" with value:`, newValue);
+        console.log(`[FieldRenderer] bindTo: "${ schema.bindTo }", isInForm: ${ formCtx.isInForm }`);
+
         // Update form state if inside form
         if (formCtx.isInForm && formCtx.form) {
             formCtx.form.setFieldValue(schema.name, newValue);
@@ -569,6 +583,7 @@ function FieldRenderer({
 
         // Also update page state if bindTo is set
         if (schema.bindTo) {
+            console.log(`[FieldRenderer] Calling setState for "${ schema.bindTo }"`);
             ctx.state.setState(schema.bindTo, newValue);
         }
 
@@ -746,12 +761,10 @@ function FormRenderer({
     );
 
     // Get initial values from page state or field defaults
+    // Note: we get state once during initialization, not reactively
     const initialValues = useMemo(
-        () => getInitialFormValues(schema.fields, ctx.state.getState()),
-        [
-            schema.fields,
-            ctx.state,
-        ]
+        () => getInitialFormValues(schema.fields, ctx.state.getState().state),
+        [schema.fields]
     );
 
     // Create TanStack Form instance with zod standard schema validation
@@ -842,7 +855,8 @@ function TableRenderer({
     schema,
 }: { schema: TableSchema }): React.ReactElement {
     const ctx = useRendererContext();
-    const stateData = ctx.state.getState();
+
+    const stateData = ctx.state((s) => s.state);
     const handleRowClick = useEventHandler(schema.events?.onRowClick);
     const handleSortChange = useEventHandler(schema.events?.onSortChange);
     const handlePageChange = useEventHandler(schema.events?.onPageChange);
@@ -1232,7 +1246,8 @@ function ListRenderer({
     schema,
 }: { schema: ListSchema }): React.ReactElement {
     const ctx = useRendererContext();
-    const stateData = ctx.state.getState();
+
+    const stateData = ctx.state((s) => s.state);
     const handleRowClick = useEventHandler(schema.events?.onRowClick);
 
     const dataPath = schema.dataSource.startsWith(`state:`)
@@ -1434,7 +1449,8 @@ function ProgressRenderer({
     schema,
 }: { schema: ProgressSchema }): React.ReactElement {
     const ctx = useRendererContext();
-    const stateData = ctx.state.getState();
+
+    const stateData = ctx.state((s) => s.state);
 
     const value = typeof schema.value === `string`
         ? Number(interpolateExpression(schema.value, stateData))
@@ -1533,7 +1549,8 @@ function ModalRenderer({
     schema,
 }: { schema: ModalSchema }): React.ReactElement {
     const ctx = useRendererContext();
-    const stateData = ctx.state.getState();
+
+    const stateData = ctx.state((s) => s.state);
 
     const dialogState = getNestedValue(stateData, `__dialogs.${ schema.id }`) as { open?: boolean } | undefined;
     const isOpen = dialogState?.open ?? false;
@@ -1883,7 +1900,8 @@ function LoadingOverlayRenderer({
     schema,
 }: { schema: LoadingOverlaySchema }): React.ReactElement {
     const ctx = useRendererContext();
-    const stateData = ctx.state.getState();
+
+    const stateData = ctx.state((s) => s.state);
     const isLoading = evaluateBooleanExpression(schema.loading, stateData);
     const text = useResolvedValue(schema.text);
 
@@ -1906,7 +1924,8 @@ function ConditionalRenderer({
     schema,
 }: { schema: ConditionalSchema }): React.ReactElement | null {
     const ctx = useRendererContext();
-    const stateData = ctx.state.getState();
+
+    const stateData = ctx.state((s) => s.state);
     const is_condition_met = evaluateBooleanExpression(schema.condition, stateData);
 
     if (is_condition_met) {
@@ -1924,7 +1943,8 @@ function LoopRenderer({
     schema,
 }: { schema: LoopSchema }): React.ReactElement {
     const ctx = useRendererContext();
-    const stateData = ctx.state.getState();
+
+    const stateData = ctx.state((s) => s.state);
 
     const dataPath = schema.dataSource.startsWith(`state:`)
         ? schema.dataSource.slice(6)
