@@ -26,45 +26,44 @@ Orbis is a modern, extensible desktop application platform built with Rust and R
 
 ### 🔧 Core Platform Features
 
-| Feature | Status | Description |
-|---------|--------|-------------|
-| **Cross-Platform Server** | ✅ Done | High-performance Rust/Axum backend that runs on Windows, Linux, and macOS |
-| **Schema-Driven UI** | ✅ Done | 35+ UI components rendered from JSON schemas with shadcn/ui |
-| **CLI Configuration** | ✅ Done | Full configuration via command line arguments and environment variables |
-| **Multi-Database Support** | ✅ Done | PostgreSQL and SQLite backends with automatic migrations |
-| **HTTPS/TLS Support** | ✅ Done | Optional TLS encryption with rustls |
-| **JSON API** | ✅ Done | RESTful API for communication and integration with existing tools |
+| Feature | Description |
+|---------|-------------|
+| **Cross-Platform Server** | High-performance Rust/Axum backend that runs on Windows, Linux, and macOS |
+| **Schema-Driven UI** | 35+ UI components rendered from JSON schemas with shadcn/ui |
+| **CLI Configuration** | Full configuration via command line arguments and environment variables |
+| **Multi-Database Support** | PostgreSQL and SQLite backends with automatic migrations |
+| **HTTPS/TLS Support** | Optional TLS encryption with rustls |
+| **JSON API** | RESTful API for communication and integration with existing tools |
 
 ### 🔌 Plugin System
 
-| Feature | Status | Description |
-|---------|--------|-------------|
-| **WASM Plugins** | ✅ Done | Secure, sandboxed WebAssembly plugins with wasmtime |
-| **Plugin Routes** | ✅ Done | Plugins can define custom API endpoints |
-| **Plugin Pages** | ✅ Done | Plugins define UI via JSON schemas (no React code needed) |
-| **Action System** | ✅ Done | 16 action types for interactive behaviors and state management |
-| **Plugin Registry** | ✅ Done | Hot-loading/unloading of plugins at runtime |
+| Feature | Description |
+|---------|-------------|
+| **WASM Plugins** | Secure, sandboxed WebAssembly plugins with wasmtime |
+| **Plugin Routes** | Plugins can define custom API endpoints |
+| **Plugin Pages** | Plugins define UI via JSON schemas (no React code needed) |
+| **Action System** | 16 action types for interactive behaviors and state management |
+| **Plugin Registry** | Hot-loading/unloading of plugins at runtime |
 
 ### 🎨 UI System
 
-| Feature | Status | Description |
-|---------|--------|-------------|
-| **Component Library** | ✅ Done | 35+ built-in components (Button, Form, Table, Chart, etc.) |
-| **State Management** | ✅ Done | Zustand + Immer for reactive state with page-level stores |
-| **Expression System** | ✅ Done | Dynamic value interpolation with `{{state.field}}` syntax |
-| **Error Boundaries** | ✅ Done | Plugin and page-level error isolation |
-| **Lifecycle Hooks** | ✅ Done | `onMount` and `onUnmount` hooks for pages |
-| **Toast Notifications** | ✅ Done | Sonner integration for user feedback |
+| Feature | Description |
+|---------|-------------|
+| **Component Library** | 35+ built-in components (Button, Form, Table, Chart, etc.) |
+| **State Management** | Zustand + Immer for reactive state with page-level stores |
+| **Expression System** | Dynamic value interpolation with `{{state.field}}` syntax |
+| **Error Boundaries** | Plugin and page-level error isolation |
+| **Lifecycle Hooks** | `onMount` and `onUnmount` hooks for pages |
+| **Toast Notifications** | Sonner integration for user feedback |
 
 ### 🔐 Security
 
-| Feature | Status | Description |
-|---------|--------|-------------|
-| **JWT Authentication** | ✅ Done | Secure token-based authentication |
-| **Argon2 Password Hashing** | ✅ Done | Industry-standard password security |
-| **Session Management** | ✅ Done | Secure session handling with refresh tokens |
-| **WASM Sandboxing** | ✅ Done | Plugins run in secure sandboxed environment |
-
+| Feature | Description |
+|---------|-------------|
+| **JWT Authentication** | Secure token-based authentication |
+| **Argon2 Password Hashing** | Industry-standard password security |
+| **Session Management** | Secure session handling with refresh tokens |
+| **WASM Sandboxing** | Plugins run in secure sandboxed environment |
 ### 🔄 Modes
 
 | Mode | Description |
