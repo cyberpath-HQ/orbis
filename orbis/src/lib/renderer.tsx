@@ -327,6 +327,8 @@ function useEventHandler(actions?: Array<Action>): (event?: unknown) => Promise<
     const ctx = useRendererContext();
 
     return useCallback(async(event?: unknown): Promise<void> => {
+        console.log(`useEventHandler triggered for event:`, event);
+        console.log(`With actions:`, actions);
         if (!actions || actions.length === 0) {
             return;
         }
@@ -467,10 +469,12 @@ function ButtonRenderer({
     const ctx = useRendererContext();
 
     const stateData = ctx.state((s) => s.state);
-    const handleClick = useEventHandler(schema.events?.onClick);
+    console.log(`[ButtonRenderer] Rendering button with schema:`, schema);
+    const handleClick = useEventHandler(schema.events?.on_click);
     const label = useResolvedValue(schema.label);
 
     const handleOnClick = (): void => {
+        console.log(`[ButtonRenderer] Button clicked:`, schema.id);
         void handleClick(`click`);
     };
 

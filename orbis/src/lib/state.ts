@@ -261,9 +261,56 @@ export function interpolateExpression(
     console.log(`Interpolating expression:`, expression, `with state:`, combined);
     const result = expression.replace(/\{\{([^}]+)\}\}/g, (_, path: string) => {
         const trimmedPath = path.trim();
+
+        // Check if this looks like an arithmetic expression
+        const has_arithmetic_ops = /[+\-*/%()]/.test(trimmedPath);
+
+        if (has_arithmetic_ops) {
+            // First replace any state references in the expression
+            // e.g., "state.count + 1" -> "5 + 1"
+            const interpolated_path = trimmedPath.replace(/[a-zA-Z_$][a-zA-Z0-9_$.]*/g, (ref) => {
+                const value = getNestedValue(combined, ref);
+                if (value !== undefined) {
+                    if (typeof value === `number` || typeof value === `boolean`) {
+                        return String(value);
+                    }
+                    if (typeof value === `string`) {
+                        return value;
+                    }
+                }
+                return ref;
+            });
+
+            console.log(`Evaluating arithmetic in template: "${ trimmedPath }" -> "${ interpolated_path }"`);
+
+            // Now evaluate the arithmetic expression
+            try {
+                const math_result = evaluateMathExpressionInternal(interpolated_path);
+                return String(math_result);
+            }
+            catch (error) {
+                console.warn(`Failed to evaluate arithmetic expression "${ interpolated_path }":`, error);
+                return interpolated_path;
+            }
+        }
+
+        // Regular path lookup
         const value = getNestedValue(combined, trimmedPath);
-        return value !== undefined ? String(value) : ``;
+
+        if (value !== undefined) {
+            console.log(`Resolved "{{${ trimmedPath }}}" to:`, value, typeof value);
+
+            if (typeof value === `number` || typeof value === `boolean`) {
+                return value;
+            }
+            if (typeof value === `string`) {
+                return value;
+            }
+            return JSON.stringify(value);
+        }
+        return ``;
     });
+    console.log(`Interpolated result:`, result);
 
     // Cache the result
     setCachedExpression(cacheKey, {}, result);

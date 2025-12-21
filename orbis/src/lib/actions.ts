@@ -18,7 +18,8 @@ import {
     type PageStateStoreHook,
     getNestedValue,
     interpolateExpression,
-    evaluateBooleanExpression
+    evaluateBooleanExpression,
+    evaluateMathExpression
 } from './state';
 
 // Debounce timers storage
@@ -102,19 +103,50 @@ function resolveValue(
         );
     }
 
-    // Interpolate expressions
+    // Check if this is a template expression (contains {{...}})
     const stateData = context.state.getState().state;
-    const result = interpolateExpression(value, stateData, {
-        state:     stateData,  // Add "state" key for {{state.field}} syntax
+    const contextData = {
+        state:     stateData,
         $event:    context.event,
         $row:      context.row,
         $item:     context.item,
         $index:    context.index,
         $response: context.response,
         $error:    context.error,
-    });
-    console.log(`[resolveValue] Input: "${ value }", Output:`, result, `State:`, stateData);
-    return result;
+    };
+
+    // If the value contains template expressions, process them
+    if (value.includes(`{{`)) {
+        // Check if this might be an arithmetic expression by looking for operators
+        // within or after the template expression
+        const has_arithmetic_ops = /[+\-*/%]/.test(value);
+
+        if (has_arithmetic_ops) {
+            // Try to evaluate as a math expression
+            // evaluateMathExpression will interpolate {{...}} first, then evaluate
+            try {
+                const mathResult = evaluateMathExpression(value, stateData, contextData);
+                console.log(`[resolveValue] Evaluated math expression "${ value }" to`, mathResult);
+                return mathResult;
+            }
+            catch (error) {
+                console.warn(
+                    `[resolveValue] Failed to evaluate as math, falling back to interpolation:`,
+                    error
+                );
+
+                // Fall through to regular interpolation
+            }
+        }
+
+        // Regular string interpolation
+        const interpolated = interpolateExpression(value, stateData, contextData);
+        console.log(`[resolveValue] Interpolated "${ value }" to "${ interpolated }"`);
+        return interpolated;
+    }
+
+    // No template expressions, return as-is
+    return value;
 }
 
 /**
@@ -216,6 +248,8 @@ function executeUpdateState(action: UpdateStateAction, context: ActionContext): 
         from, value: actionValue, merge: should_merge, path,
     } = action;
     let value: unknown;
+
+    console.log(`Executing updateState action for path "${ path }"`);
 
     if (from !== undefined) {
         value = resolveValue(from, context);
