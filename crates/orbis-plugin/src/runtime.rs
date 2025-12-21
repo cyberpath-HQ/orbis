@@ -50,6 +50,8 @@ pub struct PluginContext {
 pub struct PluginState {
     /// Key-value state storage (JSON values)
     data: Arc<RwLock<HashMap<String, serde_json::Value>>>,
+    /// Path to persist state to disk (if set)
+    persist_path: Arc<RwLock<Option<std::path::PathBuf>>>,
 }
 
 impl PluginState {
@@ -58,6 +60,45 @@ impl PluginState {
     pub fn new() -> Self {
         Self {
             data: Arc::new(RwLock::new(HashMap::new())),
+            persist_path: Arc::new(RwLock::new(None)),
+        }
+    }
+
+    /// Create a new plugin state with persistence
+    #[must_use]
+    pub fn with_persistence(path: std::path::PathBuf) -> Self {
+        let state = Self::new();
+        *state.persist_path.write() = Some(path.clone());
+        
+        // Try to load existing state
+        if path.exists() {
+            if let Ok(contents) = std::fs::read_to_string(&path) {
+                if let Ok(data) = serde_json::from_str::<HashMap<String, serde_json::Value>>(&contents) {
+                    *state.data.write() = data;
+                    tracing::debug!("Loaded plugin state from {:?}", path);
+                } else {
+                    tracing::warn!("Failed to parse plugin state from {:?}", path);
+                }
+            }
+        }
+        
+        state
+    }
+
+    /// Save state to disk if persistence is enabled
+    fn persist(&self) {
+        if let Some(ref path) = *self.persist_path.read() {
+            let data = self.data.read().clone();
+            if let Ok(json) = serde_json::to_string_pretty(&data) {
+                // Ensure parent directory exists
+                if let Some(parent) = path.parent() {
+                    let _ = std::fs::create_dir_all(parent);
+                }
+                
+                if let Err(e) = std::fs::write(path, json) {
+                    tracing::error!("Failed to persist plugin state to {:?}: {}", path, e);
+                }
+            }
         }
     }
 
@@ -70,16 +111,20 @@ impl PluginState {
     /// Set a value in the state
     pub fn set(&self, key: String, value: serde_json::Value) {
         self.data.write().insert(key, value);
+        self.persist();
     }
 
     /// Remove a value from the state
     pub fn remove(&self, key: &str) -> Option<serde_json::Value> {
-        self.data.write().remove(key)
+        let result = self.data.write().remove(key);
+        self.persist();
+        result
     }
 
     /// Clear all state
     pub fn clear(&self) {
         self.data.write().clear();
+        self.persist();
     }
 
     /// Get all keys
@@ -217,8 +262,9 @@ impl PluginInstance {
 /// Plugin runtime for executing plugin code.
 #[derive(Clone)]
 pub struct PluginRuntime {
-    instances: DashMap<String, Arc<PluginInstance>>,
-    engine: Engine,
+    instances:   DashMap<String, Arc<PluginInstance>>,
+    engine:      Engine,
+    plugins_dir: Arc<RwLock<Option<std::path::PathBuf>>>,
 }
 
 impl PluginRuntime {
@@ -233,9 +279,15 @@ impl PluginRuntime {
         let engine = Engine::new(&config).expect("Failed to create WASM engine");
 
         Self {
-            instances: DashMap::new(),
+            instances:   DashMap::new(),
             engine,
+            plugins_dir: Arc::new(RwLock::new(None)),
         }
+    }
+
+    /// Set the plugins directory for state persistence.
+    pub fn set_plugins_dir(&self, plugins_dir: std::path::PathBuf) {
+        *self.plugins_dir.write() = Some(plugins_dir);
     }
 
     /// Check if a plugin has a specific permission.
@@ -282,7 +334,14 @@ impl PluginRuntime {
             orbis_core::Error::plugin(format!("Failed to compile WASM module: {}", e))
         })?;
 
-        let state = PluginState::new();
+        // Create state with persistence if plugins directory is set
+        let state = if let Some(ref plugins_dir) = *self.plugins_dir.read() {
+            let state_dir = plugins_dir.join(".plugin_data");
+            let state_file = state_dir.join(format!("{}.json", info.manifest.name));
+            PluginState::with_persistence(state_file)
+        } else {
+            PluginState::new()
+        };
         
         // Extract config from manifest
         let config = if let Some(obj) = info.manifest.config.as_object() {

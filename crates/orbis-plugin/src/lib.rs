@@ -68,10 +68,13 @@ impl PluginManager {
         // State file in plugin directory
         let state_file = plugins_dir.join(".plugin_states.json");
 
+        let runtime = PluginRuntime::new();
+        runtime.set_plugins_dir(plugins_dir.clone());
+
         Ok(Self {
             registry: PluginRegistry::with_persistence(state_file),
-            loader: PluginLoader::new(),
-            runtime: PluginRuntime::new(),
+            loader:   PluginLoader::new(),
+            runtime,
             plugins_dir,
             db,
         })
