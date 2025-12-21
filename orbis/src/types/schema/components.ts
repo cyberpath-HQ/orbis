@@ -55,7 +55,7 @@ export interface ButtonSchema extends BaseComponentProps {
     loading?:      BooleanExpression
     icon?:         IconName
     iconPosition?: `left` | `right`
-    events?:       Pick<EventHandlers, `onClick`>
+    events?:       Pick<EventHandlers, `on_click`>
 }
 
 // Select option

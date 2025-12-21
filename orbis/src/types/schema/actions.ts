@@ -176,26 +176,26 @@ export type Action =
 
 // Event handler types
 export interface EventHandlers {
-    onClick?:          Array<Action>
-    onChange?:         Array<Action>
-    onSubmit?:         Array<Action>
-    onFocus?:          Array<Action>
-    onBlur?:           Array<Action>
-    onKeyDown?:        Array<Action>
-    onKeyUp?:          Array<Action>
-    onMouseEnter?:     Array<Action>
-    onMouseLeave?:     Array<Action>
-    onDoubleClick?:    Array<Action>
-    onRowClick?:       Array<Action>
-    onRowDoubleClick?: Array<Action>
-    onSelect?:         Array<Action>
-    onClear?:          Array<Action>
-    onSearch?:         Array<Action>
-    onPageChange?:     Array<Action>
-    onSortChange?:     Array<Action>
-    onFilterChange?:   Array<Action>
-    onLoad?:           Array<Action>
-    onError?:          Array<Action>
-    onClose?:          Array<Action>
-    onOpen?:           Array<Action>
+    on_click?:            Array<Action>
+    on_change?:           Array<Action>
+    on_submit?:           Array<Action>
+    on_focus?:            Array<Action>
+    on_blur?:             Array<Action>
+    on_key_down?:         Array<Action>
+    on_key_up?:           Array<Action>
+    on_mouse_enter?:      Array<Action>
+    on_mouse_leave?:      Array<Action>
+    on_double_click?:     Array<Action>
+    on_row_click?:        Array<Action>
+    on_row_double_click?: Array<Action>
+    on_select?:           Array<Action>
+    on_clear?:            Array<Action>
+    on_search?:           Array<Action>
+    on_page_change?:      Array<Action>
+    on_sort_change?:      Array<Action>
+    on_filter_change?:    Array<Action>
+    on_load?:             Array<Action>
+    on_error?:            Array<Action>
+    on_close?:            Array<Action>
+    on_open?:             Array<Action>
 }
