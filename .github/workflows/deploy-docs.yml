@@ -55,7 +55,7 @@ jobs:
 
   deploy:
     # Only deploy on push to main, not on PRs
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
     environment:
