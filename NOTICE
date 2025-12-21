@@ -1,0 +1,30 @@
+Orbis 
+Copyright 2025-2027 Cyberpath (https://cyberpath-hq.com)
+
+This product includes software developed by CyberPath members and Emanuele (ebalo) Balsamo.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+ATTRIBUTION NOTICE:
+--------------------
+Any application, product, or service that incorporates Orbis or
+substantial portions thereof must include clear and visible attribution
+to "Orbis by CyberPath" in one of the following locations:
+- Application's "About" page or dialog
+- Documentation or README
+- Splash screen or startup sequence
+
+TRADEMARK NOTICE:
+-----------------
+"Orbis" and the Orbis logo are trademarks of CyberPath.
+Use of these marks for endorsement of derivative products requires
+prior written permission.
+
+MODIFICATION NOTICE:
+--------------------
+Modifications to the core Orbis platform should be clearly documented
+to distinguish them from the original software.
