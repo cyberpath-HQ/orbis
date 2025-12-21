@@ -90,8 +90,8 @@ The manifest is the heart of every plugin. It defines metadata, pages, routes, a
 
 | Field | Required | Description |
 |-------|----------|-------------|
-| `name` | ✅ | Unique plugin identifier (alphanumeric, hyphens, underscores) |
-| `version` | ✅ | Semantic version (e.g., "1.0.0") |
+| `name` | Yes | Unique plugin identifier (alphanumeric, hyphens, underscores) |
+| `version` | Yes | Semantic version (e.g., "1.0.0") |
 | `description` | ❌ | Human-readable description |
 | `author` | ❌ | Plugin author |
 | `homepage` | ❌ | Plugin homepage URL |
@@ -439,11 +439,11 @@ stateDiagram-v2
 
 ### Do's
 
-✅ Use semantic versioning for plugins  
-✅ Declare all required permissions  
-✅ Handle errors gracefully  
-✅ Validate input in WASM handlers  
-✅ Clean up resources in `cleanup()`  
+- Use semantic versioning for plugins  
+- Declare all required permissions  
+- Handle errors gracefully  
+- Validate input in WASM handlers  
+- Clean up resources in `cleanup()`  
 
 ### Don'ts
 

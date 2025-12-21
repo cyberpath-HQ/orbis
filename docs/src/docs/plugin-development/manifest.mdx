@@ -303,12 +303,12 @@ UI pages exposed by the plugin.
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `id` | string | ✅ | Unique page ID |
-| `title` | string | ✅ | Display title |
-| `route` | string | ✅ | URL path |
+| `id` | string | Yes | Unique page ID |
+| `title` | string | Yes | Display title |
+| `route` | string | Yes | URL path |
 | `icon` | string | ❌ | lucide-react icon name |
 | `state` | object | ❌ | State definition |
-| `layout` | object | ✅ | Root component schema |
+| `layout` | object | Yes | Root component schema |
 | `onMount` | array | ❌ | Actions on page load |
 | `onUnmount` | array | ❌ | Actions on page leave |
 
@@ -355,9 +355,9 @@ API routes for backend functionality (WASM plugins only).
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `path` | string | ✅ | Route path (supports `:param`) |
-| `method` | string | ✅ | HTTP method (GET, POST, PUT, DELETE, PATCH) |
-| `handler` | string | ✅ | WASM function name (SDK: use `wrap_handler!()`) |
+| `path` | string | Yes | Route path (supports `:param`) |
+| `method` | string | Yes | HTTP method (GET, POST, PUT, DELETE, PATCH) |
+| `handler` | string | Yes | WASM function name (SDK: use `wrap_handler!()`) |
 | `middleware` | array | ❌ | Applied middleware |
 
 ### Handler Implementation with SDK

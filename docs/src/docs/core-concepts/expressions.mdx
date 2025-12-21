@@ -395,7 +395,7 @@ Expressions are single expressions:
 
 <CodeBlock lang="json">
 ```json
-// ✅ Good
+// Good
 "{{state.isLoggedIn && state.hasPermission}}"
 
 // ❌ Complex - hard to debug
@@ -407,7 +407,7 @@ Expressions are single expressions:
 
 <CodeBlock lang="json">
 ```json
-// ✅ Good
+// Good
 "{{state.isSubmitButtonDisabled}}"
 
 // ❌ Unclear
@@ -439,7 +439,7 @@ For complex logic, compute in actions:
 
 <CodeBlock lang="json">
 ```json
-// ✅ Handle potential undefined
+// Handle potential undefined
 "{{state.user?.name || 'Anonymous'}}"
 
 // Or use conditional rendering

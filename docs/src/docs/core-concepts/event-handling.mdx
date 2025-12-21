@@ -486,7 +486,7 @@ To handle parent clicks while ignoring child clicks:
 
 <CodeBlock lang="json">
 ```json
-// ✅ Good - clear purpose
+// Good - clear purpose
 {
   "onClick": [
     { "type": "updateState", "path": "isOpen", "value": true }
@@ -509,7 +509,7 @@ To handle parent clicks while ignoring child clicks:
 
 <CodeBlock lang="json">
 ```json
-// ✅ Good
+// Good
 { "type": "updateState", "path": "form.isSubmitting", "value": true }
 
 // ❌ Avoid

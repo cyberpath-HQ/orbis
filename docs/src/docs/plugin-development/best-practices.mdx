@@ -138,7 +138,7 @@ pub struct NewItem {
 
 ### SDK Best Practices
 
-#### ✅ DO: Separate concerns
+#### DO: Separate concerns
 
 <CodeBlock lang="rust">
 ```rust
@@ -182,7 +182,7 @@ wrap_handler!(get_price, get_price_impl);
 ```
 </CodeBlock>
 
-#### ✅ DO: Use type-safe helpers
+#### DO: Use type-safe helpers
 
 <CodeBlock lang="rust">
 ```rust
@@ -217,7 +217,7 @@ wrap_handler!(get_item, get_item_impl);
 ```
 </CodeBlock>
 
-#### ✅ DO: Use logging
+#### DO: Use logging
 
 <CodeBlock lang="rust">
 ```rust
@@ -843,17 +843,17 @@ Navigate to `/my-plugin` to access the dashboard.
 
 ### Prefer
 
-✅ **Organized state** - `data`, `ui`, `form` groups
+- **Organized state** - `data`, `ui`, `form` groups
 
-✅ **Utility classes** - Consistent styling
+- **Utility classes** - Consistent styling
 
-✅ **Debounced updates** - For search/filtering
+- **Debounced updates** - For search/filtering
 
-✅ **Action sequences** - Clear flow control
+- **Action sequences** - Clear flow control
 
-✅ **Configurable values** - Via plugin config
+- **Configurable values** - Via plugin config
 
-✅ **Graceful degradation** - Show errors, allow retry
+- **Graceful degradation** - Show errors, allow retry
 
 ## Next Steps
 

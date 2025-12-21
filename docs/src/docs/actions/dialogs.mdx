@@ -32,8 +32,8 @@ Displays a modal dialog to the user.
 
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
-| `id` | string | ✅ | Unique dialog identifier |
-| `title` | string | ✅ | Dialog title |
+| `id` | string | Yes | Unique dialog identifier |
+| `title` | string | Yes | Dialog title |
 | `message` | string | - | Dialog message |
 | `content` | ComponentSchema | - | Custom dialog content |
 | `buttons` | array | - | Dialog buttons |
@@ -73,7 +73,7 @@ Displays a modal dialog to the user.
 
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
-| `label` | string | ✅ | Button text |
+| `label` | string | Yes | Button text |
 | `variant` | string | - | Button style |
 | `action` | array | - | Actions on click |
 
@@ -241,7 +241,7 @@ Closes an open dialog.
 
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
-| `id` | string | ✅ | Dialog identifier to close |
+| `id` | string | Yes | Dialog identifier to close |
 
 ### Examples
 

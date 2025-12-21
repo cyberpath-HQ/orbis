@@ -31,8 +31,8 @@ Sets a loading state flag.
 
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
-| `key` | string | ✅ | Loading state identifier |
-| `value` | boolean | ✅ | Loading state value |
+| `key` | string | Yes | Loading state identifier |
+| `value` | boolean | Yes | Loading state value |
 
 ### Examples
 
@@ -140,7 +140,7 @@ Downloads a file.
 
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
-| `url` | string | ✅ | File URL to download |
+| `url` | string | Yes | File URL to download |
 | `filename` | string | - | Suggested filename |
 
 ### Examples
@@ -217,7 +217,7 @@ Copies text to clipboard.
 
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
-| `text` | string | ✅ | Text to copy |
+| `text` | string | Yes | Text to copy |
 
 ### Examples
 
@@ -289,7 +289,7 @@ Opens a URL in a new browser tab.
 
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
-| `url` | string | ✅ | URL to open |
+| `url` | string | Yes | URL to open |
 | `target` | string | - | Target window (default: `_blank`) |
 
 ### Examples
@@ -361,7 +361,7 @@ Emits a custom event for inter-component communication.
 
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
-| `event` | string | ✅ | Event name |
+| `event` | string | Yes | Event name |
 | `data` | any | - | Event payload |
 
 ### Examples

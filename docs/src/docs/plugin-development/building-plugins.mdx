@@ -241,7 +241,7 @@ The simplest deployment uses an external manifest file:
 </CodeBlock>
 
 Orbis searches for manifests in this order:
-1. `manifest.json` next to WASM file ✅ **Recommended for SDK plugins**
+1. `manifest.json` next to WASM file **Recommended for SDK plugins**
 2. `<plugin_name>.json` next to WASM file
 3. Custom section in WASM binary (advanced)
 
@@ -412,7 +412,7 @@ To force reload:
 
 <CodeBlock lang="toml">
 ```toml
-# ✅ Feature-minimal
+# Feature-minimal
 serde = { version = "1.0", default-features = false, features = ["derive", "alloc"] }
 
 # ❌ Avoid full features

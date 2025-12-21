@@ -34,9 +34,9 @@ Debounces action execution to prevent rapid repeated calls.
 
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
-| `key` | string | ✅ | Unique identifier for debounce group |
-| `delay` | number | ✅ | Delay in milliseconds |
-| `action` | array | ✅ | Actions to execute after delay |
+| `key` | string | Yes | Unique identifier for debounce group |
+| `delay` | number | Yes | Delay in milliseconds |
+| `action` | array | Yes | Actions to execute after delay |
 
 ### Examples
 
@@ -137,8 +137,8 @@ Executes actions based on conditions.
 
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
-| `condition` | string | ✅ | Condition expression |
-| `then` | array | ✅ | Actions if condition is true |
+| `condition` | string | Yes | Condition expression |
+| `then` | array | Yes | Actions if condition is true |
 | `else` | array | - | Actions if condition is false |
 
 ### Examples
@@ -263,7 +263,7 @@ Executes actions in sequence, waiting for each to complete.
 
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
-| `actions` | array | ✅ | Actions to execute in order |
+| `actions` | array | Yes | Actions to execute in order |
 | `stopOnError` | boolean | - | Stop if any action fails (default: true) |
 
 ### Examples
