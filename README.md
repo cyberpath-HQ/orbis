@@ -1,6 +1,8 @@
-# 🚀 Orbis
+<p align="center">
+  <img src="./docs/public/logo.svg" alt="Orbis Logo" width="350"/>
+</p>
+<h2 align="center">A Plugin-Driven Desktop Application Platform</h2>
 
-**Plugin-Driven Desktop Application Platform**
 
 Orbis is a modern, extensible desktop application platform built with Rust and React. It enables developers to create powerful applications using a declarative JSON-based UI schema system, with WASM-sandboxed plugins for secure extensibility.
 
