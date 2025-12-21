@@ -1,0 +1,54 @@
+---
+import { mainNav } from '@/lib/navigation';
+import ThemeToggle from '@/components/ThemeToggle.astro';
+import MobileNav from '@/components/MobileNav.astro';
+import SearchButton from '@/components/SearchButton.astro';
+
+const currentPath = Astro.url.pathname;
+---
+
+<header class="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <div class="container flex h-14 items-center px-4 md:px-8">
+        <!-- Logo -->
+        <div class="mr-4 flex">
+            <a href="/" class="mr-6 flex items-center space-x-2">
+                <img src="/logo.svg" alt="Orbis Logo" class="h-8 w-auto dark:hidden"/>
+                <img src="/logo-white.svg" alt="Orbis Logo" class="h-8 w-auto hidden dark:block"/>
+                <span class="sr-only font-semibold sm:inline-block text-foreground">Orbis</span>
+            </a>
+        </div>
+
+        <!-- Desktop Navigation -->
+        <nav class="hidden md:flex items-center gap-6 text-sm">
+            {mainNav.map((item) => (
+                <a
+                    href={item.href}
+                    target={item.external ? `_blank` : undefined}
+                    rel={item.external ? `noopener noreferrer` : undefined}
+                    class:list={[
+                        `transition-colors hover:text-foreground/80`,
+                        (item.href && currentPath.startsWith(item.href) && item.href !== '/') || (item.href === '/docs/' && currentPath.startsWith('/docs/'))
+                            ? `text-foreground font-medium` 
+                            : `text-foreground/60`,
+                    ]}
+                >
+                    {item.title}
+                    {item.external && (
+                        <svg class="inline-block ml-1 size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                            <polyline points="15 3 21 3 21 9" />
+                            <line x1="10" y1="14" x2="21" y2="3" />
+                        </svg>
+                    )}
+                </a>
+            ))}
+        </nav>
+
+        <!-- Right Side Actions -->
+        <div class="flex flex-1 items-center justify-end space-x-2">
+            <SearchButton />
+            <ThemeToggle />
+            <MobileNav />
+        </div>
+    </div>
+</header>

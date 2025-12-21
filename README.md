@@ -1,10 +1,20 @@
-# 🚀 Orbis
+<p align="center">
+  <img src="./docs/public/logo.svg" alt="Orbis Logo" width="350"/>
+</p>
+<h2 align="center">A Plugin-Driven Desktop Application Platform</h2>
 
-**NextGen Extensible Asset Management Platform**
 
-Orbis is a modern, enterprise-grade asset management platform designed to provide comprehensive visibility and control over your IT infrastructure. Built with performance, security, and extensibility in mind.
+Orbis is a modern, extensible desktop application platform built with Rust and React. It enables developers to create powerful applications using a declarative JSON-based UI schema system, with WASM-sandboxed plugins for secure extensibility.
 
-> ⚠️ **IMPORTANT**: This project is **NOT production ready** and is under **active development**. Breaking changes may be applied at any time until production stability is reached. Use at your own risk.
+### 🎯 Key Highlights
+
+- **🔌 No React Required**: Build UI with JSON schemas - plugins don't ship React code
+- **🦀 Tauri Desktop App**: Native performance with Rust backend, React frontend
+- **🔒 WASM Sandboxing**: Secure plugin isolation with configurable permissions
+- **📊 35+ Components**: Rich component library including forms, tables, charts, and more
+- **⚡ Reactive State**: Zustand-powered state management with expression interpolation
+- **🎨 shadcn/ui**: Beautiful, accessible components out of the box
+- **🔄 Two Modes**: Standalone (SQLite) or Client-Server (PostgreSQL)
 
 ---
 
@@ -15,7 +25,7 @@ Orbis is a modern, enterprise-grade asset management platform designed to provid
 | Feature | Status | Description |
 |---------|--------|-------------|
 | **Cross-Platform Server** | ✅ Done | High-performance Rust/Axum backend that runs on Windows, Linux, and macOS |
-| **React GUI** | ✅ Done | Modern, intuitive web interface with plugin UI rendering |
+| **Schema-Driven UI** | ✅ Done | 35+ UI components rendered from JSON schemas with shadcn/ui |
 | **CLI Configuration** | ✅ Done | Full configuration via command line arguments and environment variables |
 | **Multi-Database Support** | ✅ Done | PostgreSQL and SQLite backends with automatic migrations |
 | **HTTPS/TLS Support** | ✅ Done | Optional TLS encryption with rustls |
@@ -27,8 +37,20 @@ Orbis is a modern, enterprise-grade asset management platform designed to provid
 |---------|--------|-------------|
 | **WASM Plugins** | ✅ Done | Secure, sandboxed WebAssembly plugins with wasmtime |
 | **Plugin Routes** | ✅ Done | Plugins can define custom API endpoints |
-| **Plugin Pages** | ✅ Done | Plugins can define React pages via JSON UI schema |
+| **Plugin Pages** | ✅ Done | Plugins define UI via JSON schemas (no React code needed) |
+| **Action System** | ✅ Done | 16 action types for interactive behaviors and state management |
 | **Plugin Registry** | ✅ Done | Hot-loading/unloading of plugins at runtime |
+
+### 🎨 UI System
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| **Component Library** | ✅ Done | 35+ built-in components (Button, Form, Table, Chart, etc.) |
+| **State Management** | ✅ Done | Zustand + Immer for reactive state with page-level stores |
+| **Expression System** | ✅ Done | Dynamic value interpolation with `{{state.field}}` syntax |
+| **Error Boundaries** | ✅ Done | Plugin and page-level error isolation |
+| **Lifecycle Hooks** | ✅ Done | `onMount` and `onUnmount` hooks for pages |
+| **Toast Notifications** | ✅ Done | Sonner integration for user feedback |
 
 ### 🔐 Security
 
@@ -46,6 +68,44 @@ Orbis is a modern, enterprise-grade asset management platform designed to provid
 | **Standalone** | Local database with embedded server (single user) |
 | **Client-Server** | Connect to remote Orbis server (multi-user) |
 
+
+## 🏗️ Architecture Overview
+
+Orbis uses a **schema-driven architecture** where plugins define UI through JSON instead of code:
+
+```mermaid
+flowchart LR
+    A["Plugin (WASM)"] --> B["JSON Schema"] --> C["SchemaRenderer (React)"] --> D["UI Components"]
+```
+
+**Key architectural decisions:**
+
+1. **No React in Plugins**: Plugins ship JSON schemas, not React code - the core `SchemaRenderer` interprets schemas and renders shadcn/ui components
+2. **WASM Sandboxing**: All plugins run in isolated wasmtime environments with configurable permissions
+3. **Action-Based Interactivity**: Instead of callbacks, plugins use action definitions (`updateState`, `callApi`, etc.) that the core executes
+4. **Page-Level State**: Each plugin page has its own Zustand store (no global state pollution)
+5. **Expression Interpolation**: Dynamic values use `{{state.field}}` syntax for reactive updates
+
+**Communication flow:**
+
+```mermaid
+flowchart TD
+    UI["User Interaction"]
+    EV["Event"]
+    AE["Action Executor"]
+    SU["State Update"]
+    RR["Re-render"]
+    TC["Tauri Commands"]
+    RB["Rust Backend"]
+    DB["Database"]
+    PR["Plugin Runtime (WASM)"]
+
+    UI --> EV --> AE --> SU --> RR
+    EV --> TC
+    TC <--> RB
+    RB --> DB
+    TC --> PR
+```
 
 ## 📦 Crate Structure
 
@@ -67,9 +127,34 @@ orbis/
 
 ### Prerequisites
 
-- Rust 1.91.0+ (nightly for Edition 2024)
-- Node.js 18+ (bun preferred)
-- PostgreSQL 15+ (or SQLite for standalone mode)
+- **Rust** 1.91.0+ (nightly for Edition 2024)
+- **Node.js** 18+ (bun recommended)
+- **PostgreSQL** 15+ (optional, for client-server mode)
+
+### Development Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/cyberpath-HQ/orbis
+cd orbis
+
+# Install frontend dependencies
+cd orbis && bun install
+
+# Run the Tauri desktop app in dev mode
+bun run tauri dev
+```
+
+The app will start with hot reload enabled for both frontend and backend changes.
+
+### Build for Production
+
+```bash
+cd orbis
+bun run tauri build
+```
+
+Outputs platform-specific installers in `src-tauri/target/release/bundle/`.
 
 ### Configuration
 
@@ -112,128 +197,6 @@ orbis db migrate
 orbis plugin list
 ```
 
-## 🔌 Plugin Development
-
-Orbis supports WASM plugins in three flavors:
-
-### Plugin Flavors
-
-1. **Packed** (`.zip` archive)
-   - Contains WASM file, `manifest.json`, and assets
-   - Manifest can be external or embedded in WASM
-   - Best for plugins with UI assets (images, styles, etc.)
-
-2. **Unpacked** (folder)
-   - Directory containing WASM file, `manifest.json`, and assets
-   - Manifest can be external or embedded in WASM
-   - Best for development and testing
-
-3. **Standalone** (single `.wasm` file)
-   - Manifest must be embedded in WASM custom section
-   - No external files, completely self-contained
-   - Best for simple plugins without assets
-
-### Plugin Manifest
-
-External `manifest.json`:
-
-```json
-{
-  "name": "my-plugin",
-  "version": "1.0.0",
-  "description": "My awesome plugin",
-  "author": "Your Name",
-  "wasm_entry": "plugin.wasm",
-  "permissions": ["network", "database_read"],
-  "routes": [
-    {
-      "path": "/my-endpoint",
-      "method": "GET",
-      "handler": "handle_my_endpoint",
-      "requires_auth": true
-    }
-  ],
-  "pages": [
-    {
-      "route": "/my-page",
-      "title": "My Page",
-      "show_in_menu": true,
-      "layout": {
-        "type": "Container",
-        "children": [
-          {
-            "type": "Heading",
-            "level": 1,
-            "text": "Welcome to My Plugin"
-          }
-        ]
-      }
-    }
-  ]
-}
-```
-
-### Embedding Manifest in WASM
-
-For standalone plugins or to eliminate external manifest files, you can embed the manifest in a WASM custom section:
-
-```rust
-// In your Rust WASM plugin project
-const MANIFEST: &str = r#"{
-  "name": "my-plugin",
-  "version": "1.0.0",
-  "description": "Standalone plugin with embedded manifest"
-}"#;
-
-// When building with wasm-pack or cargo, add this to your Cargo.toml:
-// [package.metadata.wasm-pack.profile.release]
-// wasm-opt = ['-O4', '--strip-debug']
-
-// Then use wasm-tools to add custom section:
-// wasm-tools custom plugin.wasm manifest manifest.json -o plugin.wasm
-```
-
-Or use a build script to embed the manifest automatically:
-
-```bash
-# After building your WASM module:
-wasm-tools custom plugin.wasm manifest manifest.json -o plugin.wasm
-```
-
-The manifest will be stored in a WASM custom section named `"manifest"` and automatically extracted by Orbis when loading the plugin.
-
-### Plugin Structure Examples
-
-**Unpacked Plugin:**
-
-```text
-plugins/
-  my-plugin/
-    manifest.json      # Plugin metadata
-    plugin.wasm        # WASM binary
-    icon.png          # Optional assets
-    styles.css
-```
-
-**Packed Plugin:**
-
-```text
-plugins/
-  my-plugin.zip
-    ├── manifest.json  # Or embedded in WASM
-    ├── plugin.wasm
-    └── assets/
-        ├── icon.png
-        └── styles.css
-```
-
-**Standalone Plugin:**
-
-```text
-plugins/
-  my-plugin.wasm     # Single file with embedded manifest
-```
-
 ## 📋 Environment Variables
 
 | Variable | Default | Description |
@@ -268,7 +231,16 @@ bun run tauri dev
 bun run tauri build
 ```
 
+## 📚 Documentation
+
+For comprehensive guides, API reference, and tutorials, visit the [full documentation](https://orbis.cyberpath-hq.com).
+
+## 🤝 Community
+
+- 🐛 [Report Issues](https://github.com/cyberpath-HQ/orbis/issues)
+- 📖 [Contributing Guide](https://github.com/cyberpath-HQ/orbis/blob/main/CONTRIBUTING.md)
+- ⭐ [Star us on GitHub](https://github.com/cyberpath-HQ/orbis)
+
 ## 📄 License
 
 MIT License - see [LICENSE](LICENSE) for details.
-

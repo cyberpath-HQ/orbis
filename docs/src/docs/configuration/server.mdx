@@ -1,0 +1,294 @@
+---
+sidebar_position: 2
+title: Server Configuration
+description: Configure Orbis server networking and HTTP options
+---
+
+import CodeBlock from '@/components/mdx/CodeBlock.astro';
+
+
+## Overview
+
+Server configuration controls how Orbis binds to network interfaces, handles HTTP requests, and manages server-side features.
+
+## Environment Variables
+
+### Basic Server Settings
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `ORBIS_MODE` | Operating mode | `standalone` |
+| `ORBIS_HOST` | Bind address | `127.0.0.1` |
+| `ORBIS_PORT` | Listen port | `8080` |
+
+### Mode Options
+
+<CodeBlock lang="bash">
+```bash
+# Standalone mode (default) - single user, SQLite
+ORBIS_MODE=standalone
+
+# Client-server mode - multi-user, PostgreSQL
+ORBIS_MODE=client-server
+```
+</CodeBlock>
+
+## Host Binding
+
+### Local Development
+
+<CodeBlock lang="bash">
+```bash
+# Only accessible from localhost
+ORBIS_HOST=127.0.0.1
+ORBIS_PORT=8080
+```
+</CodeBlock>
+
+### Network Access
+
+<CodeBlock lang="bash">
+```bash
+# Accessible from any interface
+ORBIS_HOST=0.0.0.0
+ORBIS_PORT=8080
+```
+</CodeBlock>
+
+### Specific Interface
+
+<CodeBlock lang="bash">
+```bash
+# Bind to specific IP
+ORBIS_HOST=192.168.1.100
+ORBIS_PORT=8080
+```
+</CodeBlock>
+
+## Port Configuration
+
+<CodeBlock lang="bash">
+```bash
+# Default HTTP port
+ORBIS_PORT=8080
+
+# Standard HTTP (requires root/admin)
+ORBIS_PORT=80
+
+# Custom port
+ORBIS_PORT=3000
+```
+</CodeBlock>
+
+## CORS Configuration
+
+Cross-Origin Resource Sharing settings for API access:
+
+<CodeBlock lang="bash">
+```bash
+# Allow specific origins
+ORBIS_CORS_ORIGINS=https://app.example.com,https://admin.example.com
+
+# Allow all origins (development only)
+ORBIS_CORS_ORIGINS=*
+
+# Allowed methods (default: GET,POST,PUT,DELETE,OPTIONS)
+ORBIS_CORS_METHODS=GET,POST,PUT,DELETE
+
+# Allowed headers
+ORBIS_CORS_HEADERS=Content-Type,Authorization
+```
+</CodeBlock>
+
+## Request Limits
+
+<CodeBlock lang="bash">
+```bash
+# Maximum request body size (default: 10MB)
+ORBIS_MAX_BODY_SIZE=10485760
+
+# Request timeout in seconds
+ORBIS_REQUEST_TIMEOUT=30
+
+# Maximum concurrent connections
+ORBIS_MAX_CONNECTIONS=1000
+```
+</CodeBlock>
+
+## Rate Limiting
+
+<CodeBlock lang="bash">
+```bash
+# Enable rate limiting
+ORBIS_RATE_LIMIT_ENABLED=true
+
+# Requests per window
+ORBIS_RATE_LIMIT_REQUESTS=100
+
+# Window duration in seconds
+ORBIS_RATE_LIMIT_WINDOW=60
+
+# Rate limit by IP or user
+ORBIS_RATE_LIMIT_BY=ip
+```
+</CodeBlock>
+
+## Configuration File
+
+You can also use a TOML configuration file:
+
+<CodeBlock lang="toml">
+```toml
+# orbis.toml
+[server]
+host = "0.0.0.0"
+port = 8080
+mode = "client-server"
+
+[server.cors]
+origins = ["https://app.example.com"]
+methods = ["GET", "POST", "PUT", "DELETE"]
+credentials = true
+
+[server.limits]
+max_body_size = 10485760
+request_timeout = 30
+max_connections = 1000
+
+[server.rate_limit]
+enabled = true
+requests = 100
+window = 60
+by = "ip"
+```
+</CodeBlock>
+
+## Production Recommendations
+
+### Security Hardening
+
+<CodeBlock lang="bash">
+```bash
+# Production server settings
+ORBIS_MODE=client-server
+ORBIS_HOST=0.0.0.0
+ORBIS_PORT=8080
+
+# Strict CORS
+ORBIS_CORS_ORIGINS=https://app.yourdomain.com
+
+# Rate limiting
+ORBIS_RATE_LIMIT_ENABLED=true
+ORBIS_RATE_LIMIT_REQUESTS=100
+ORBIS_RATE_LIMIT_WINDOW=60
+```
+</CodeBlock>
+
+### Behind Reverse Proxy
+
+When running behind nginx or similar:
+
+<CodeBlock lang="bash">
+```bash
+# Trust proxy headers
+ORBIS_TRUST_PROXY=true
+
+# Get real IP from header
+ORBIS_REAL_IP_HEADER=X-Forwarded-For
+
+# Bind to localhost only (proxy handles external)
+ORBIS_HOST=127.0.0.1
+```
+</CodeBlock>
+
+### nginx Configuration Example
+
+<CodeBlock lang="nginx">
+```nginx
+upstream orbis {
+    server 127.0.0.1:8080;
+    keepalive 32;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name app.example.com;
+
+    ssl_certificate /etc/ssl/certs/app.crt;
+    ssl_certificate_key /etc/ssl/private/app.key;
+
+    location / {
+        proxy_pass http://orbis;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Connection "";
+        
+        # WebSocket support
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+}
+```
+</CodeBlock>
+
+## Logging
+
+Server logging configuration:
+
+<CodeBlock lang="bash">
+```bash
+# General log level
+ORBIS_LOG_LEVEL=info
+
+# Rust-specific logging
+RUST_LOG=orbis=info,orbis_server=debug,tower_http=debug
+
+# Access log format
+ORBIS_ACCESS_LOG=true
+ORBIS_ACCESS_LOG_FORMAT=combined
+```
+</CodeBlock>
+
+## Health Checks
+
+Built-in health endpoints for monitoring:
+
+<CodeBlock lang="bash">
+```bash
+# Health check endpoint
+GET /health
+
+# Readiness check (includes database)
+GET /ready
+
+# Liveness check (basic)
+GET /live
+```
+</CodeBlock>
+
+### Response Example
+
+<CodeBlock lang="json">
+```json
+{
+  "status": "healthy",
+  "version": "1.0.0",
+  "uptime": 3600,
+  "database": "connected",
+  "plugins": {
+    "loaded": 5,
+    "active": 5
+  }
+}
+```
+</CodeBlock>
+
+## See Also
+
+- [Database Configuration](./database) - Database connection settings
+- [Authentication](./authentication) - JWT and user authentication
+- [TLS Security](./tls-security) - HTTPS and SSL configuration
+- [Deployment Overview](../deployment/overview) - Production deployment guide

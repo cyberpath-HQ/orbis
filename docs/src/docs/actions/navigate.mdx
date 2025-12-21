@@ -1,0 +1,249 @@
+---
+sidebar_position: 4
+title: navigate
+description: Navigate between routes
+---
+
+import CodeBlock from '@/components/mdx/CodeBlock.astro';
+
+
+## navigate
+
+Changes the current route/page.
+
+## Syntax
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "navigate",
+  "to": "/path/to/page"
+}
+```
+</CodeBlock>
+
+## Properties
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `to` | string | ✅ | Target route path |
+| `replace` | boolean | - | Replace history instead of push |
+| `state` | object | - | Navigation state |
+
+## Examples
+
+### Basic Navigation
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "navigate",
+  "to": "/dashboard"
+}
+```
+</CodeBlock>
+
+### With Dynamic Path
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "navigate",
+  "to": "/items/{{state.selectedId}}"
+}
+```
+</CodeBlock>
+
+### From Event Context
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Table",
+  "events": {
+    "onRowClick": [
+      { "type": "navigate", "to": "/users/{{$row.id}}" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+### Replace History
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "navigate",
+  "to": "/login",
+  "replace": true
+}
+```
+</CodeBlock>
+
+### With State
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "navigate",
+  "to": "/items/new",
+  "state": {
+    "prefill": "{{state.selectedTemplate}}"
+  }
+}
+```
+</CodeBlock>
+
+## Common Patterns
+
+### After Form Submit
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Form",
+  "events": {
+    "onSubmit": [
+      {
+        "type": "callApi",
+        "api": "createItem",
+        "onSuccess": [
+          { "type": "showToast", "message": "Created!", "level": "success" },
+          { "type": "navigate", "to": "/items" }
+        ]
+      }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+### After Delete
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "callApi",
+  "api": "deleteItem",
+  "onSuccess": [
+    { "type": "showToast", "message": "Deleted" },
+    { "type": "navigate", "to": "/items", "replace": true }
+  ]
+}
+```
+</CodeBlock>
+
+### Back Navigation
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Button",
+  "label": "Back",
+  "variant": "ghost",
+  "events": {
+    "onClick": [
+      { "type": "navigate", "to": "/items" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+### Conditional Navigation
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "conditional",
+  "condition": "{{state.isAuthenticated}}",
+  "then": [
+    { "type": "navigate", "to": "/dashboard" }
+  ],
+  "else": [
+    { "type": "navigate", "to": "/login" }
+  ]
+}
+```
+</CodeBlock>
+
+### Tab-Based Navigation
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Tabs",
+  "events": {
+    "onTabChange": [
+      { "type": "navigate", "to": "/settings/{{$value}}" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+### External URLs
+
+For external URLs, use [`openUrl`](./utility-actions#openurl) instead:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "openUrl",
+  "url": "https://github.com"
+}
+```
+</CodeBlock>
+
+## Route Parameters
+
+### Accessing Route Params
+
+In page definitions, access route params via `params`:
+
+<CodeBlock lang="json">
+```json
+{
+  "route": "/items/:id",
+  "onMount": [
+    {
+      "type": "callApi",
+      "api": "getItem",
+      "args": { "id": "{{params.id}}" }
+    }
+  ]
+}
+```
+</CodeBlock>
+
+### Building Dynamic Routes
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "navigate",
+  "to": "/items/{{state.item.id}}/edit"
+}
+```
+</CodeBlock>
+
+### Query Parameters
+
+Include query params in the path:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "navigate",
+  "to": "/items?category={{state.selectedCategory}}&sort={{state.sortField}}"
+}
+```
+</CodeBlock>
+
+## Best Practices
+
+1. **Use replace for redirects** - Prevents back-button loops
+2. **Navigate after success** - Wait for API completion
+3. **Preserve history** - Don't use replace unnecessarily
+4. **Use relative paths** - For plugin routes

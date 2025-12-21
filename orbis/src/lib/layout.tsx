@@ -211,12 +211,12 @@ export function AppLayout({
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         )
-: (
+: mode?.mode === 'client' || mode?.mode === 'server' ? (
                             <Button className="w-full" onClick={async() => navigate(`/login`)}>
                                 <LucideIcons.LogIn className="mr-2 h-4 w-4" />
                                 Sign In
                             </Button>
-                        )}
+                        ) : null}
                     </SidebarFooter>
                 </Sidebar>
 

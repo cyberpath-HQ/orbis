@@ -1,0 +1,19 @@
+{
+  "name": "test-plugin",
+  "version": "0.1.0",
+  "description": "Test plugin for runtime integration testing",
+  "author": "Orbis Team",
+  "permissions": ["database_read", "database_write"],
+  "routes": [
+    {
+      "method": "POST",
+      "path": "/test",
+      "handler": "test_handler",
+      "description": "Test handler for integration testing",
+      "requires_auth": false,
+      "permissions": []
+    }
+  ],
+  "pages": [],
+  "wasm_entry": "test_plugin.wasm"
+}

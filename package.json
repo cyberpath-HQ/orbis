@@ -1,0 +1,7 @@
+{
+    "scripts": {
+        "tauri": "cd orbis && bun run tauri",
+        "tauri:debug": "cd orbis && bun run tauri:debug",
+        "docs": "cd docs && bun run dev"
+    }
+}

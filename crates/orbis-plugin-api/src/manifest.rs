@@ -46,7 +46,7 @@ pub struct PluginManifest {
 
     /// UI pages defined by the plugin.
     #[serde(default)]
-    pub pages: Vec<super::PageDefinition>,
+    pub pages: Vec<crate::ui::PageDefinition>,
 
     /// Entry point for WASM plugins (relative path in unpacked/packed).
     #[serde(default)]
@@ -63,25 +63,25 @@ impl PluginManifest {
     /// # Errors
     ///
     /// Returns an error if the manifest is invalid.
-    pub fn validate(&self) -> orbis_core::Result<()> {
+    pub fn validate(&self) -> crate::Result<()> {
         // Validate name
         if self.name.is_empty() {
-            return Err(orbis_core::Error::plugin("Plugin name is required"));
+            return Err(crate::Error::manifest("Plugin name is required"));
         }
 
         if !self.name.chars().all(|c| c.is_alphanumeric() || c == '-' || c == '_') {
-            return Err(orbis_core::Error::plugin(
+            return Err(crate::Error::manifest(
                 "Plugin name must contain only alphanumeric characters, hyphens, and underscores",
             ));
         }
 
         // Validate version
         if self.version.is_empty() {
-            return Err(orbis_core::Error::plugin("Plugin version is required"));
+            return Err(crate::Error::manifest("Plugin version is required"));
         }
 
         Version::parse(&self.version).map_err(|e| {
-            orbis_core::Error::plugin(format!("Invalid plugin version '{}': {}", self.version, e))
+            crate::Error::manifest(format!("Invalid plugin version '{}': {}", self.version, e))
         })?;
 
         // Validate routes
@@ -102,9 +102,9 @@ impl PluginManifest {
     /// # Errors
     ///
     /// Returns an error if the version is invalid.
-    pub fn parsed_version(&self) -> orbis_core::Result<Version> {
+    pub fn parsed_version(&self) -> crate::Result<Version> {
         Version::parse(&self.version)
-            .map_err(|e| orbis_core::Error::plugin(format!("Invalid version: {}", e)))
+            .map_err(|e| crate::Error::manifest(format!("Invalid version: {}", e)))
     }
 }
 
@@ -193,11 +193,11 @@ impl PluginRoute {
     /// # Errors
     ///
     /// Returns an error if the route is invalid.
-    pub fn validate(&self) -> orbis_core::Result<()> {
+    pub fn validate(&self) -> crate::Result<()> {
         // Validate method
         let valid_methods = ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"];
         if !valid_methods.contains(&self.method.to_uppercase().as_str()) {
-            return Err(orbis_core::Error::plugin(format!(
+            return Err(crate::Error::manifest(format!(
                 "Invalid HTTP method: {}",
                 self.method
             )));
@@ -205,16 +205,16 @@ impl PluginRoute {
 
         // Validate path
         if self.path.is_empty() {
-            return Err(orbis_core::Error::plugin("Route path is required"));
+            return Err(crate::Error::manifest("Route path is required"));
         }
 
         if !self.path.starts_with('/') {
-            return Err(orbis_core::Error::plugin("Route path must start with '/'"));
+            return Err(crate::Error::manifest("Route path must start with '/'"));
         }
 
         // Validate handler
         if self.handler.is_empty() {
-            return Err(orbis_core::Error::plugin("Route handler is required"));
+            return Err(crate::Error::manifest("Route handler is required"));
         }
 
         Ok(())

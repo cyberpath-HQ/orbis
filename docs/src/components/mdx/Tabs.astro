@@ -1,0 +1,80 @@
+---
+export interface Props {
+    defaultValue?: string;
+}
+
+const { defaultValue } = Astro.props;
+const tabId = `tabs-${Math.random().toString(36).substr(2, 9)}`;
+
+// Get tab items from slot
+const slots = await Astro.slots.render('default');
+const tabItemsMatch = [...slots.matchAll(/<div[^>]*data-tab-value="([^"]*)"[^>]*data-tab-label="([^"]*)"/g)];
+const tabItems = tabItemsMatch.map((match) => ({
+    value: match[1],
+    label: match[2],
+}));
+---
+
+<div class="tabs-container my-6 rounded-lg border bg-card overflow-hidden" data-tab-id={tabId}>
+    <div class="flex border-b bg-muted/50" role="tablist">
+        {tabItems.map((item, index) => (
+            <button
+                type="button"
+                role="tab"
+                aria-selected={item.value === defaultValue || (!defaultValue && index === 0) ? `true` : `false`}
+                aria-controls={`${tabId}-${item.value}`}
+                class="tab-trigger relative px-4 py-2.5 text-sm font-medium transition-all hover:text-foreground data-[state=active]:text-foreground data-[state=active]:bg-background text-muted-foreground"
+                data-tab-value={item.value}
+                data-state={item.value === defaultValue || (!defaultValue && index === 0) ? `active` : `inactive`}
+            >
+                {item.label}
+                <span class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary transition-opacity data-[state=active]:opacity-100 opacity-0" data-indicator></span>
+            </button>
+        ))}
+    </div>
+    <div class="p-4">
+        <slot />
+    </div>
+</div>
+
+<script>
+    function setupTabs(): void {
+        document.querySelectorAll<HTMLElement>(`.tabs-container`).forEach((container) => {
+            const triggers = container.querySelectorAll<HTMLButtonElement>(`.tab-trigger`);
+            const panels = container.querySelectorAll<HTMLElement>(`[role="tabpanel"]`);
+            const indicators = container.querySelectorAll<HTMLElement>(`[data-indicator]`);
+
+            // Initialize - hide all panels except first
+            panels.forEach((panel, i) => {
+                panel.hidden = i !== 0;
+            });
+
+            triggers.forEach((trigger, index) => {
+                trigger.addEventListener(`click`, () => {
+                    const value = trigger.dataset.tabValue;
+
+                    // Update triggers
+                    triggers.forEach((t, i) => {
+                        const isActive = t === trigger;
+                        t.setAttribute(`aria-selected`, isActive ? `true` : `false`);
+                        t.dataset.state = isActive ? `active` : `inactive`;
+                        
+                        // Update indicator
+                        const indicator = indicators[i];
+                        if (indicator) {
+                            indicator.dataset.state = isActive ? `active` : `inactive`;
+                        }
+                    });
+
+                    // Update panels
+                    panels.forEach((panel) => {
+                        panel.hidden = panel.dataset.tabValue !== value;
+                    });
+                });
+            });
+        });
+    }
+
+    setupTabs();
+    document.addEventListener(`astro:after-swap`, setupTabs);
+</script>

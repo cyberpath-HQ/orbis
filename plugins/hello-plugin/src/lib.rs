@@ -1,48 +1,32 @@
 //! Sample Hello World plugin for Orbis
 
-use serde::{Deserialize, Serialize};
+use orbis_plugin_api::sdk::prelude::*;
+use serde_json::json;
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct PluginManifest {
-    pub name: String,
-    pub version: String,
-    pub description: String,
-    pub author: String,
-}
+// Zero-boilerplate plugin initialization
+orbis_plugin!();
 
-/// Get the plugin manifest.
-/// This function is called to retrieve the embedded manifest.
-#[no_mangle]
-pub extern "C" fn get_manifest() -> *const u8 {
-    let manifest = PluginManifest {
-        name: "Hello-Plugin".to_string(),
-        version: "0.1.0".to_string(),
-        description: "A simple hello world plugin demonstrating Orbis plugin system".to_string(),
-        author: "Orbis Team".to_string(),
-    };
+/// Get a personalized greeting
+fn get_greeting_impl(ctx: Context) -> Result<Response> {
+    let name = ctx.query_param("name").unwrap_or("World");
     
-    let json = serde_json::to_string(&manifest).unwrap();
-    let bytes = json.into_bytes();
-    let ptr = bytes.as_ptr();
-    std::mem::forget(bytes); // Prevent deallocation
-    ptr
+    log::info!("Greeting requested for: {}", name);
+    
+    Response::json(&json!({
+        "message": format!("Hello, {}!", name)
+    }))
 }
 
-/// Initialize the plugin.
-#[no_mangle]
-pub extern "C" fn init() -> i32 {
-    0 // Success
+/// Get plugin information
+fn get_info_impl(_ctx: Context) -> Result<Response> {
+    Response::json(&json!({
+        "name": "Hello Plugin",
+        "version": "0.1.0",
+        "description": "A simple hello world plugin demonstrating Orbis plugin system",
+        "author": "Orbis Team"
+    }))
 }
 
-/// Execute the plugin's main functionality.
-#[no_mangle]
-pub extern "C" fn execute() -> i32 {
-    // Plugin logic here
-    0 // Success
-}
-
-/// Clean up plugin resources.
-#[no_mangle]
-pub extern "C" fn cleanup() -> i32 {
-    0 // Success
-}
+// Export handlers with wrap_handler! macro
+wrap_handler!(get_greeting, get_greeting_impl);
+wrap_handler!(get_info, get_info_impl);

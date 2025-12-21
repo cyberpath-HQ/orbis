@@ -1,0 +1,197 @@
+---
+sidebar_position: 5
+title: showToast
+description: Display toast notifications
+---
+
+import CodeBlock from '@/components/mdx/CodeBlock.astro';
+
+
+## showToast
+
+Displays a toast notification to the user.
+
+### Syntax
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "showToast",
+  "message": "Operation completed!",
+  "level": "success"
+}
+```
+</CodeBlock>
+
+### Properties
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `message` | string | ✅ | Notification message |
+| `level` | string | - | Toast level (default: `info`) |
+| `title` | string | - | Toast title |
+| `duration` | number | - | Display duration (ms) |
+| `action` | object | - | Action button |
+
+### Levels
+
+| Level | Color | Use Case |
+|-------|-------|----------|
+| `info` | Blue | General information |
+| `success` | Green | Success confirmations |
+| `warning` | Yellow | Warnings |
+| `error` | Red | Error messages |
+
+### Examples
+
+**Basic toast:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "showToast",
+  "message": "Settings saved"
+}
+```
+</CodeBlock>
+
+**Success toast:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "showToast",
+  "message": "Item created successfully!",
+  "level": "success"
+}
+```
+</CodeBlock>
+
+**Error toast:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "showToast",
+  "message": "Failed to save changes",
+  "level": "error"
+}
+```
+</CodeBlock>
+
+**Warning toast:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "showToast",
+  "message": "Your session will expire in 5 minutes",
+  "level": "warning"
+}
+```
+</CodeBlock>
+
+**With title:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "showToast",
+  "title": "Success",
+  "message": "Your profile has been updated",
+  "level": "success"
+}
+```
+</CodeBlock>
+
+**With duration:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "showToast",
+  "message": "Copied to clipboard",
+  "level": "success",
+  "duration": 2000
+}
+```
+</CodeBlock>
+
+**With dynamic message:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "showToast",
+  "message": "Welcome back, {{state.user.name}}!",
+  "level": "success"
+}
+```
+</CodeBlock>
+
+**From error response:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "callApi",
+  "api": "saveData",
+  "onError": [
+    {
+      "type": "showToast",
+      "message": "Error: {{$error.message}}",
+      "level": "error"
+    }
+  ]
+}
+```
+</CodeBlock>
+
+### Common Patterns
+
+**CRUD Operations:**
+
+<CodeBlock lang="json">
+```json
+{ "type": "showToast", "message": "Item created", "level": "success" }
+{ "type": "showToast", "message": "Changes saved", "level": "success" }
+{ "type": "showToast", "message": "Item deleted", "level": "success" }
+{ "type": "showToast", "message": "Operation failed", "level": "error" }
+```
+</CodeBlock>
+
+**Copy to clipboard:**
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Button",
+  "icon": "Copy",
+  "events": {
+    "onClick": [
+      { "type": "copy", "text": "{{state.shareUrl}}" },
+      { "type": "showToast", "message": "Link copied!", "level": "success", "duration": 2000 }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+**After navigation:**
+
+<CodeBlock lang="json">
+```json
+{
+  "onMount": [
+    {
+      "type": "conditional",
+      "condition": "{{params.created}}",
+      "then": [
+        { "type": "showToast", "message": "Item created successfully!", "level": "success" }
+      ]
+    }
+  ]
+}
+```
+</CodeBlock>
+
+### Best Practices
+
+1. **Be concise** - Keep messages short and clear
+2. **Use appropriate levels** - Match level to message importance
+3. **Confirm actions** - Show success after operations
+4. **Include details in errors** - Help users understand what went wrong
+5. **Don't overuse** - Avoid toast fatigue
+

@@ -1,0 +1,470 @@
+---
+sidebar_position: 4
+title: Event Handlers
+description: Complete event handling reference
+---
+
+import CodeBlock from '@/components/mdx/CodeBlock.astro';
+
+
+## Event Handlers
+
+Events connect user interactions to actions. This reference covers all available events.
+
+## Event Syntax
+
+Events are defined in the `events` property:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Button",
+  "text": "Click me",
+  "events": {
+    "onClick": [
+      { "type": "showToast", "message": "Clicked!" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+## Mouse Events
+
+### onClick
+
+Triggered when element is clicked.
+
+<CodeBlock lang="json">
+```json
+{
+  "events": {
+    "onClick": [
+      { "type": "updateState", "path": "clicked", "value": true }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+**Context variables:**
+
+- `$event` - Mouse event object
+
+### onDoubleClick
+
+Triggered on double-click.
+
+<CodeBlock lang="json">
+```json
+{
+  "events": {
+    "onDoubleClick": [
+      { "type": "navigate", "route": "/edit/{{state.item.id}}" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+### onMouseEnter / onMouseLeave
+
+Triggered when mouse enters/leaves element.
+
+<CodeBlock lang="json">
+```json
+{
+  "events": {
+    "onMouseEnter": [
+      { "type": "updateState", "path": "hovering", "value": true }
+    ],
+    "onMouseLeave": [
+      { "type": "updateState", "path": "hovering", "value": false }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+## Form Events
+
+### onChange
+
+Triggered when input value changes.
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Field",
+  "fieldType": "text",
+  "name": "search",
+  "events": {
+    "onChange": [
+      { "type": "updateState", "path": "searchQuery", "value": "{{$value}}" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+**Context variables:**
+
+- `$value` - New input value
+- `$event` - Change event object
+
+### onBlur
+
+Triggered when input loses focus.
+
+<CodeBlock lang="json">
+```json
+{
+  "events": {
+    "onBlur": [
+      { "type": "validateForm", "formId": "myForm" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+### onFocus
+
+Triggered when input receives focus.
+
+<CodeBlock lang="json">
+```json
+{
+  "events": {
+    "onFocus": [
+      { "type": "updateState", "path": "inputFocused", "value": true }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+### onSubmit
+
+Triggered when form is submitted.
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Form",
+  "id": "contactForm",
+  "events": {
+    "onSubmit": [
+      { "type": "validateForm", "formId": "contactForm" },
+      { "type": "callApi", "api": "submitContact" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+**Context variables:**
+
+- `$event` - Submit event object
+- Form data available via `form.formId`
+
+## Keyboard Events
+
+### onKeyDown
+
+Triggered when key is pressed.
+
+<CodeBlock lang="json">
+```json
+{
+  "events": {
+    "onKeyDown": [
+      {
+        "type": "conditional",
+        "condition": "{{$event.key === 'Enter'}}",
+        "then": [
+          { "type": "callApi", "api": "submit" }
+        ]
+      }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+**Context variables:**
+
+- `$event.key` - Key pressed
+- `$event.ctrlKey` - Ctrl modifier
+- `$event.shiftKey` - Shift modifier
+- `$event.altKey` - Alt modifier
+- `$event.metaKey` - Meta modifier
+
+### onKeyUp
+
+Triggered when key is released.
+
+<CodeBlock lang="json">
+```json
+{
+  "events": {
+    "onKeyUp": [
+      { "type": "updateState", "path": "lastKey", "value": "{{$event.key}}" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+## Lifecycle Events
+
+### onMount
+
+Triggered when page/component mounts.
+
+<CodeBlock lang="json">
+```json
+{
+  "onMount": [
+    { "type": "callApi", "api": "fetchInitialData", "storeAs": "data" }
+  ]
+}
+```
+</CodeBlock>
+
+Common uses:
+
+- Fetch initial data
+- Initialize state
+- Set up subscriptions
+
+### onUnmount
+
+Triggered when page/component unmounts.
+
+<CodeBlock lang="json">
+```json
+{
+  "onUnmount": [
+    { "type": "updateState", "path": "cleanup", "value": true }
+  ]
+}
+```
+</CodeBlock>
+
+Common uses:
+
+- Clean up resources
+- Save state
+- Cancel pending operations
+
+## Selection Events
+
+### onSelect
+
+Triggered when selection changes.
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Table",
+  "events": {
+    "onSelect": [
+      { "type": "updateState", "path": "selectedRows", "value": "{{$value}}" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+**Context variables:**
+
+- `$value` - Selected items
+
+## Custom Events
+
+### onEvent:[name]
+
+Listen for custom events.
+
+<CodeBlock lang="json">
+```json
+{
+  "events": {
+    "onEvent:itemSelected": [
+      { "type": "updateState", "path": "selected", "value": "{{$event.data}}" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+Emit custom events:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "emit",
+  "event": "itemSelected",
+  "data": "{{state.currentItem}}"
+}
+```
+</CodeBlock>
+
+## Table/List Events
+
+### onRowClick
+
+Triggered when table row is clicked.
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Table",
+  "events": {
+    "onRowClick": [
+      { "type": "updateState", "path": "selectedItem", "value": "{{$item}}" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+**Context variables:**
+
+- `$item` - Row data
+- `$index` - Row index
+
+### onSort
+
+Triggered when table sort changes.
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Table",
+  "events": {
+    "onSort": [
+      { "type": "updateState", "path": "sortBy", "value": "{{$value.column}}" },
+      { "type": "updateState", "path": "sortOrder", "value": "{{$value.order}}" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+### onPageChange
+
+Triggered when pagination changes.
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Table",
+  "events": {
+    "onPageChange": [
+      { "type": "updateState", "path": "page", "value": "{{$value}}" },
+      { "type": "callApi", "api": "fetchPage" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+## Tab Events
+
+### onTabChange
+
+Triggered when active tab changes.
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Tabs",
+  "events": {
+    "onTabChange": [
+      { "type": "updateState", "path": "activeTab", "value": "{{$value}}" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+## Modal Events
+
+### onClose
+
+Triggered when modal is closed.
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Modal",
+  "events": {
+    "onClose": [
+      { "type": "resetForm", "formId": "editForm" },
+      { "type": "updateState", "path": "modalOpen", "value": false }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+## Event Context Summary
+
+| Variable | Type | Available In | Description |
+|----------|------|--------------|-------------|
+| `$value` | any | onChange, onSelect | Current value |
+| `$event` | object | All events | Event object |
+| `$item` | any | Loop, Table events | Current item |
+| `$index` | number | Loop, Table events | Current index |
+
+## Multiple Handlers
+
+Execute multiple actions:
+
+<CodeBlock lang="json">
+```json
+{
+  "events": {
+    "onClick": [
+      { "type": "setLoading", "key": "submit", "value": true },
+      { "type": "callApi", "api": "submit" },
+      { "type": "setLoading", "key": "submit", "value": false },
+      { "type": "showToast", "message": "Done!" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+## Conditional Event Handling
+
+<CodeBlock lang="json">
+```json
+{
+  "events": {
+    "onClick": [
+      {
+        "type": "conditional",
+        "condition": "{{state.canSubmit}}",
+        "then": [
+          { "type": "callApi", "api": "submit" }
+        ],
+        "else": [
+          { "type": "showToast", "message": "Cannot submit", "level": "warning" }
+        ]
+      }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+## Best Practices
+
+1. **Keep handlers focused** - One purpose per handler
+2. **Use loading states** - Show progress for async operations
+3. **Handle errors** - Provide user feedback
+4. **Debounce expensive operations** - Use `debouncedAction`
+5. **Clean up on unmount** - Prevent memory leaks

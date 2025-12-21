@@ -1,6 +1,6 @@
 //! Plugin loader for loading plugins from various sources.
 
-use super::PluginManifest;
+use orbis_plugin_api::PluginManifest;
 use std::path::PathBuf;
 
 /// Plugin source location and flavor.

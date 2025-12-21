@@ -5,16 +5,15 @@ members = [
     "crates/orbis-core",
     "crates/orbis-config",
     "crates/orbis-db",
+    "crates/orbis-plugin-api",
     "crates/orbis-plugin",
     "crates/orbis-server",
     "crates/orbis-auth",
     
     # Main application
     "orbis/src-tauri",
-]
-exclude = [
     # Sample plugins are independent packages
-    "sample-plugins/*",
+    "plugins/*",
 ]
 
 [workspace.package]
@@ -29,6 +28,7 @@ readme = "README.md"
 orbis-core = { path = "crates/orbis-core" }
 orbis-config = { path = "crates/orbis-config" }
 orbis-db = { path = "crates/orbis-db" }
+orbis-plugin-api = { path = "crates/orbis-plugin-api" }
 orbis-plugin = { path = "crates/orbis-plugin" }
 orbis-server = { path = "crates/orbis-server" }
 orbis-auth = { path = "crates/orbis-auth" }
@@ -73,9 +73,10 @@ anyhow = "1"
 
 # Security/Crypto
 argon2 = "0.5"
-jsonwebtoken = "10"
+jsonwebtoken = { version = "10", features = ["rust_crypto"] }
 rand = "0.9"
 uuid = { version = "1", features = ["v4", "v7", "serde"] }
+sha2 = "0.10"
 
 # Plugin system
 wasmtime = "39"
@@ -84,6 +85,9 @@ seccompiler = "0.4"
 zip = { version = "2", default-features = false, features = ["deflate"] }
 # notify 7.x is required for compatibility with notify-debouncer-mini
 notify = "7"
+
+# Networking
+url = "2"
 
 # Utilities
 chrono = { version = "0.4", features = ["serde"] }

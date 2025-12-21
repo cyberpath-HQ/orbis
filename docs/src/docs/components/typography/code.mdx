@@ -1,0 +1,44 @@
+---
+title: Code
+description: Inline and block code display
+sidebar_position: 3
+---
+
+import CodeBlock from '@/components/mdx/CodeBlock.astro';
+
+
+# Code
+
+Display code with syntax highlighting and formatting.
+
+## Basic Usage
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "code",
+  "language": "javascript",
+  "code": "const hello = 'world';"
+}
+```
+</CodeBlock>
+
+## Properties
+
+- `code` - Code content
+- `language` - Syntax highlighting language
+- `inline` - Display as inline code (boolean)
+
+## Examples
+
+### Code Block
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "code",
+  "language": "json",
+  "code": "{\n  \"type\": \"text\",\n  \"content\": \"Hello\"\n}"
+}
+```
+</CodeBlock>

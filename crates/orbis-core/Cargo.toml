@@ -9,7 +9,14 @@ description = "Core types, errors, and utilities for Orbis"
 [lints]
 workspace = true
 
+[features]
+default = []
+orbis-plugin-api = ["dep:orbis-plugin-api"]
+
 [dependencies]
+# Plugin API (for error conversion)
+orbis-plugin-api = { workspace = true, optional = true }
+
 # Serialization
 serde = { workspace = true }
 serde_json = { workspace = true }

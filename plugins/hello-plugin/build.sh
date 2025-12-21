@@ -1,13 +1,19 @@
 #!/bin/bash
-set -e
+set -euo pipefail
+
+ORIG_DIR=$PWD
+cd "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Ensure we go back on any exit
+trap 'cd "$ORIG_DIR"' EXIT
 
 echo "Building Hello Plugin..."
 
 # Build the WASM module
-cargo build --target wasm32-unknown-unknown --release
+cargo build --target wasm32-unknown-unknown --release -p hello-plugin
 
 # Copy WASM file
-cp target/wasm32-unknown-unknown/release/hello_plugin.wasm hello_plugin.wasm
+cp ../../target/wasm32-unknown-unknown/release/hello_plugin.wasm hello_plugin.wasm
 
 echo "Creating plugin variants..."
 
@@ -20,12 +26,11 @@ cp manifest.json unpacked-external/
 # 2. Unpacked with embedded manifest (no manifest.json)
 echo "  - unpacked-embedded/"
 mkdir -p unpacked-embedded
-cat manifest.json | python3 add_custom_section.py hello_plugin.wasm -s manifest -o unpacked-embedded/hello_plugin.wasm
+cat manifest.json | python3 ../add_custom_section.py hello_plugin.wasm -s manifest -o unpacked-embedded/hello_plugin.wasm
 
 # 3. Standalone WASM with embedded manifest
 echo "  - standalone.wasm"
-cat manifest.json | python3 add_custom_section.py hello_plugin.wasm -s manifest -o standalone.wasm
-
+cat manifest.json | python3 ../add_custom_section.py hello_plugin.wasm -s manifest -o standalone.wasm
 # 4. Packed ZIP with external manifest
 echo "  - packed-external.zip"
 cd unpacked-external

@@ -2,10 +2,11 @@
  * Main Orbis Application
  */
 
-import React, {
+import {
     useState,
     useEffect,
-    useMemo
+    useMemo,
+    useCallback
 } from 'react';
 import {
     Routes,
@@ -13,6 +14,7 @@ import {
     useNavigate
 } from 'react-router-dom';
 import { invoke } from '@tauri-apps/api/core';
+import { listen } from '@tauri-apps/api/event';
 import { Toaster } from 'sonner';
 
 import { AppLayout } from '@/lib/layout';
@@ -20,14 +22,15 @@ import { RouteGuard } from '@/lib/router';
 import { SchemaRenderer } from '@/lib/renderer';
 import { createPageStateStore } from '@/lib/state';
 import { executeActions } from '@/lib/actions';
-import { PluginErrorBoundary, PageErrorBoundary, LoadingIndicator } from '@/components';
+import {
+    PluginErrorBoundary, PageErrorBoundary, LoadingIndicator
+} from '@/components';
+import { usePluginWatcher } from '@/hooks/use-plugin-management';
 import type { ApiClient } from '@/lib/actions';
 import type {
     PluginInfo, PluginPage, AppModeInfo
 } from '@/types/plugin';
-import type {
-    NavigationConfig,
-} from '@/types/schema';
+import type { NavigationConfig } from '@/types/schema';
 
 // Core system pages
 import {
@@ -61,6 +64,20 @@ function App(): React.ReactElement {
         setError,
     ] = useState<string | null>(null);
 
+    // Refresh plugin pages
+    const refreshPluginPages = useCallback(async() => {
+        try {
+            const {
+                pages,
+            } = await invoke<{ pages: Array<PluginPage> }>(`get_plugin_pages`);
+            console.log(`Plugin pages received:`, pages.length, pages);
+            setPluginPages(pages);
+        }
+        catch (err) {
+            console.error(`Failed to refresh plugin pages:`, err);
+        }
+    }, []);
+
     // Initialize application
     useEffect(() => {
         async function init(): Promise<void> {
@@ -80,10 +97,7 @@ function App(): React.ReactElement {
                 setPlugins(loadedPlugins);
 
                 // Get plugin pages
-                const {
-                    pages,
-                } = await invoke<{ pages: Array<PluginPage> }>(`get_plugin_pages`);
-                setPluginPages(pages);
+                await refreshPluginPages();
             }
             catch (err) {
                 setStatus(`error`);
@@ -92,7 +106,37 @@ function App(): React.ReactElement {
         }
 
         void init();
-    }, []);
+    }, [ refreshPluginPages ]);
+
+    // Listen for plugin changes and refresh pages
+    usePluginWatcher(
+        useCallback(() => {
+            // Refresh plugin pages when plugins change
+            void refreshPluginPages();
+        }, [ refreshPluginPages ])
+    );
+
+    // Listen for plugin state changes (enable/disable) and refresh pages
+    useEffect(() => {
+        let unlisten: (() => void) | undefined;
+
+        const setupListener = async() => {
+            unlisten = await listen<{ plugin: string
+                state:                        string }>(`plugin-state-changed`, () => {
+                // Refresh plugin pages when any plugin state changes
+                console.log(`Plugin state changed, refreshing pages`);
+                void refreshPluginPages();
+            });
+        };
+
+        void setupListener();
+
+        return () => {
+            if (unlisten) {
+                unlisten();
+            }
+        };
+    }, [ refreshPluginPages ]);
 
     // Navigation configuration
     const navigation = useMemo<NavigationConfig>(() => ({
@@ -120,17 +164,42 @@ function App(): React.ReactElement {
         ],
     }), []);
 
-    // API client for plugin pages
-    const apiClient = useMemo<ApiClient>(() => ({
+    // Create a plugin-aware API client factory
+    const createPluginApiClient = useCallback((pluginName?: string): ApiClient => ({
         call: async(api: string, method: string, args?: Record<string, unknown>) => {
-            // Parse API path: "plugin.command_name" or "core.command_name"
-            const [
-                namespace,
-                command,
-            ] = api.split(`.`);
+            // Parse API path: "plugin.handler_name" or "core.command_name" or "plugin.plugin_name.handler_name"
+            const parts = api.split(`.`);
+            const [ namespace ] = parts;
+            console.log(`API call requested:`, {
+                api,
+                method,
+                args,
+                pluginName,
+            });
 
             if (namespace === `plugin`) {
-                // Call plugin API
+                // Determine the command format
+                let command: string;
+
+                if (parts.length === 2) {
+                    // Format: "plugin.handler_name" - use current plugin context
+                    if (!pluginName) {
+                        throw new Error(`Plugin context required for API call: ${ api }`);
+                    }
+                    command = `${ pluginName }.${ parts[1] }`;
+                }
+                else if (parts.length === 3) {
+                    // Format: "plugin.plugin_name.handler_name" - explicit plugin reference
+                    command = `${ parts[1] }.${ parts[2] }`;
+                }
+                else {
+                    throw new Error(
+                        `Invalid plugin API format: ${ api }. ` +
+                        `Expected "plugin.handler_name" or "plugin.plugin_name.handler_name"`
+                    );
+                }
+
+                // Call plugin API with properly formatted command
                 return invoke(`call_plugin_api`, {
                     command,
                     method,
@@ -138,7 +207,8 @@ function App(): React.ReactElement {
                 });
             }
 
-            // Call core API
+            // Call core API (format: "core.command_name")
+            const command = parts.slice(1).join(`.`);
             return invoke(command, args);
         },
     }), []);
@@ -174,8 +244,12 @@ function App(): React.ReactElement {
             mode={mode ?? undefined}
         >
             <Routes>
-                {/* Public routes */}
-                <Route path="/login" element={<LoginPage />} />
+                {/* Public routes - only show login in client-server mode */}
+                {mode?.mode === `client` || mode?.mode === `server`
+? (
+                    <Route path="/login" element={<LoginPage />} />
+                )
+: null}
                 <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
                 {/* Protected routes */}
@@ -194,7 +268,7 @@ function App(): React.ReactElement {
                         element={
                             <PluginPageRenderer
                                 page={page}
-                                apiClient={apiClient}
+                                apiClient={createPluginApiClient}
                             />
                         }
                     />
@@ -210,14 +284,23 @@ function App(): React.ReactElement {
 // Plugin page renderer component
 interface PluginPageRendererProps {
     page:      PluginPage
-    apiClient: ApiClient
+    apiClient: (pluginName?: string) => ApiClient
 }
 
 function PluginPageRenderer({
     page,
-    apiClient,
+    apiClient: createApiClient,
 }: PluginPageRendererProps): React.ReactElement {
     const navigate = useNavigate();
+
+    // Create plugin-specific API client that knows the plugin context
+    const apiClient = useMemo(
+        () => createApiClient(page.plugin),
+        [
+            createApiClient,
+            page.plugin,
+        ]
+    );
 
     // Create page state store
     const stateStore = useMemo(() => {
@@ -241,14 +324,14 @@ function PluginPageRenderer({
         return createPageStateStore();
     }, [ page ]);
 
-    // Get the actual store instance
-    const state = stateStore();
+    // Note: stateStore is a Zustand hook - we pass it directly, not call it
+    // Components will call it internally to subscribe to changes
 
     // Execute onMount hook when page mounts
     useEffect(() => {
         if (page.hooks?.onMount) {
             const actionContext = {
-                state,
+                state: stateStore,
                 apiClient,
                 navigate,
             };
@@ -256,14 +339,13 @@ function PluginPageRenderer({
                 console.error(`Error executing onMount hook:`, error);
             });
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [ page, stateStore, apiClient, navigate ]);
 
     // Execute onUnmount hook when page unmounts
     useEffect(() => () => {
         if (page.hooks?.onUnmount) {
             const actionContext = {
-                state,
+                state: stateStore,
                 apiClient,
                 navigate,
             };
@@ -290,7 +372,7 @@ function PluginPageRenderer({
                     <PageErrorBoundary key={index}>
                         <SchemaRenderer
                             schema={section}
-                            state={state}
+                            state={stateStore}
                             apiClient={apiClient}
                         />
                     </PageErrorBoundary>

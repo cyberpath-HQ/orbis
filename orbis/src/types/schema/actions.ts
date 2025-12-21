@@ -6,19 +6,19 @@ import type { Expression } from './base';
 
 // Action types that can be executed in response to events
 export type ActionType =
-    | `updateState`
-    | `callApi`
+    | `update_state`
+    | `call_api`
     | `navigate`
-    | `showToast`
-    | `showDialog`
-    | `closeDialog`
-    | `debouncedAction`
-    | `validateForm`
-    | `resetForm`
-    | `setLoading`
+    | `show_toast`
+    | `show_dialog`
+    | `close_dialog`
+    | `debounced_action`
+    | `validate_form`
+    | `reset_form`
+    | `set_loading`
     | `download`
     | `copy`
-    | `openUrl`
+    | `open_url`
     | `emit`
     | `conditional`
     | `sequence`;
@@ -30,7 +30,7 @@ export interface BaseAction {
 
 // Update state action - modifies page state
 export interface UpdateStateAction extends BaseAction {
-    type:   `updateState`
+    type:   `update_state`
     path:   string
     value?: unknown
     from?:  Expression
@@ -39,18 +39,18 @@ export interface UpdateStateAction extends BaseAction {
 
 // API call action - calls a backend API
 export interface CallApiAction extends BaseAction {
-    type:           `callApi`
-    name?:          string
-    api:            string
-    method?:        `GET` | `POST` | `PUT` | `PATCH` | `DELETE`
-    argsFromState?: Array<string>
-    mapArgs?:       Array<{ from: string
-        to:                       string }>
-    body?:      Expression | Record<string, unknown>
-    headers?:   Record<string, string>
-    onSuccess?: Array<Action>
-    onError?:   Array<Action>
-    onFinally?: Array<Action>
+    type:             `call_api`
+    name?:            string
+    api:              string
+    method?:          `GET` | `POST` | `PUT` | `PATCH` | `DELETE`
+    args_from_state?: Array<string>
+    map_args?:       Array<{ from: string
+        to:                        string }>
+    body?:       Expression | Record<string, unknown>
+    headers?:    Record<string, string>
+    on_success?: Array<Action>
+    on_error?:   Array<Action>
+    on_finally?: Array<Action>
 }
 
 // Navigate action - changes the current route
@@ -63,7 +63,7 @@ export interface NavigateAction extends BaseAction {
 
 // Toast notification action
 export interface ShowToastAction extends BaseAction {
-    type:      `showToast`
+    type:      `show_toast`
     level:     `info` | `success` | `warning` | `error`
     message:   Expression
     title?:    Expression
@@ -72,20 +72,20 @@ export interface ShowToastAction extends BaseAction {
 
 // Show dialog action
 export interface ShowDialogAction extends BaseAction {
-    type:     `showDialog`
+    type:     `show_dialog`
     dialogId: string
     data?:    Record<string, Expression>
 }
 
 // Close dialog action
 export interface CloseDialogAction extends BaseAction {
-    type:      `closeDialog`
+    type:      `close_dialog`
     dialogId?: string
 }
 
 // Debounced action - delays execution
 export interface DebouncedAction extends BaseAction {
-    type:    `debouncedAction`
+    type:    `debounced_action`
     delayMs: number
     action:  Action
     key?:    string
@@ -93,7 +93,7 @@ export interface DebouncedAction extends BaseAction {
 
 // Validate form action
 export interface ValidateFormAction extends BaseAction {
-    type:       `validateForm`
+    type:       `validate_form`
     formId:     string
     onValid?:   Array<Action>
     onInvalid?: Array<Action>
@@ -101,13 +101,13 @@ export interface ValidateFormAction extends BaseAction {
 
 // Reset form action
 export interface ResetFormAction extends BaseAction {
-    type:   `resetForm`
+    type:   `reset_form`
     formId: string
 }
 
 // Set loading action
 export interface SetLoadingAction extends BaseAction {
-    type:    `setLoading`
+    type:    `set_loading`
     loading: boolean
     target?: string
 }
@@ -128,7 +128,7 @@ export interface CopyAction extends BaseAction {
 
 // Open external URL action
 export interface OpenUrlAction extends BaseAction {
-    type:    `openUrl`
+    type:    `open_url`
     url:     Expression
     newTab?: boolean
 }
@@ -176,26 +176,26 @@ export type Action =
 
 // Event handler types
 export interface EventHandlers {
-    onClick?:          Array<Action>
-    onChange?:         Array<Action>
-    onSubmit?:         Array<Action>
-    onFocus?:          Array<Action>
-    onBlur?:           Array<Action>
-    onKeyDown?:        Array<Action>
-    onKeyUp?:          Array<Action>
-    onMouseEnter?:     Array<Action>
-    onMouseLeave?:     Array<Action>
-    onDoubleClick?:    Array<Action>
-    onRowClick?:       Array<Action>
-    onRowDoubleClick?: Array<Action>
-    onSelect?:         Array<Action>
-    onClear?:          Array<Action>
-    onSearch?:         Array<Action>
-    onPageChange?:     Array<Action>
-    onSortChange?:     Array<Action>
-    onFilterChange?:   Array<Action>
-    onLoad?:           Array<Action>
-    onError?:          Array<Action>
-    onClose?:          Array<Action>
-    onOpen?:           Array<Action>
+    on_click?:            Array<Action>
+    on_change?:           Array<Action>
+    on_submit?:           Array<Action>
+    on_focus?:            Array<Action>
+    on_blur?:             Array<Action>
+    on_key_down?:         Array<Action>
+    on_key_up?:           Array<Action>
+    on_mouse_enter?:      Array<Action>
+    on_mouse_leave?:      Array<Action>
+    on_double_click?:     Array<Action>
+    on_row_click?:        Array<Action>
+    on_row_double_click?: Array<Action>
+    on_select?:           Array<Action>
+    on_clear?:            Array<Action>
+    on_search?:           Array<Action>
+    on_page_change?:      Array<Action>
+    on_sort_change?:      Array<Action>
+    on_filter_change?:    Array<Action>
+    on_load?:             Array<Action>
+    on_error?:            Array<Action>
+    on_close?:            Array<Action>
+    on_open?:             Array<Action>
 }

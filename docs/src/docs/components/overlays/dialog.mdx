@@ -1,0 +1,39 @@
+---
+title: Dialog
+description: Modal dialog component
+sidebar_position: 1
+---
+
+import CodeBlock from '@/components/mdx/CodeBlock.astro';
+
+
+# Dialog
+
+Display content in a modal overlay dialog.
+
+## Basic Usage
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "dialog",
+  "title": "Confirm Action",
+  "open": "${state.dialogOpen}",
+  "children": [
+    { "type": "text", "content": "Are you sure?" }
+  ],
+  "actions": [
+    { "type": "button", "text": "Cancel", "onClick": [] },
+    { "type": "button", "text": "Confirm", "variant": "primary", "onClick": [] }
+  ]
+}
+```
+</CodeBlock>
+
+## Properties
+
+- `title` - Dialog title
+- `open` - Dialog visibility state
+- `children` - Dialog content
+- `actions` - Footer action buttons
+- `size` - Dialog size (sm, md, lg)

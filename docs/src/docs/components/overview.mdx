@@ -1,0 +1,329 @@
+---
+sidebar_position: 1
+title: Components Overview
+description: All available UI components
+---
+
+import CodeBlock from '@/components/mdx/CodeBlock.astro';
+
+
+# Components Overview
+
+Orbis provides 35+ UI components organized into categories. Each component is defined by a JSON schema and rendered by the SchemaRenderer.
+
+## Component Categories
+
+| Category | Components | Purpose |
+|----------|------------|---------|
+| [Layout](/docs/components/layout/container/) | 6 | Structure and spacing |
+| [Typography](/docs/components/typography/text/) | 2 | Text display |
+| [Forms](/docs/components/forms/form/) | 2 | User input |
+| [Data Display](/docs/components/data-display/table/) | 9 | Showing data |
+| [Feedback](/docs/components/feedback/alert/) | 5 | User notifications |
+| [Navigation](/docs/components/navigation/tabs/) | 6 | User interaction |
+| [Overlays](/docs/components/overlays/dialog/) | 2 | Dialogs and tooltips |
+| [Advanced](/docs/components/advanced/conditional/) | 7 | Dynamic rendering |
+
+## Common Properties
+
+All components share these base properties:
+
+<CodeBlock lang="typescript">
+```typescript
+interface BaseSchema {
+  type: string;           // Component type (required)
+  visible?: string;       // Visibility expression
+  className?: string;     // CSS classes (Tailwind)
+  style?: object;         // Inline styles
+  testId?: string;        // Test identifier
+  ariaLabel?: string;     // Accessibility label
+}
+```
+</CodeBlock>
+
+### type
+
+The component type identifier (required).
+
+<CodeBlock lang="json">
+```json
+{ "type": "Button" }
+```
+</CodeBlock>
+
+### visible
+
+Expression controlling visibility:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Card",
+  "visible": "{{state.showCard}}"
+}
+```
+</CodeBlock>
+
+Supports complex expressions:
+<CodeBlock lang="json">
+```json
+{ "visible": "{{state.count}} > 0 && {{state.isActive}}" }
+```
+</CodeBlock>
+
+### className
+
+Tailwind CSS classes:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Container",
+  "className": "p-6 bg-white rounded-lg shadow"
+}
+```
+</CodeBlock>
+
+### testId
+
+For testing:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Button",
+  "testId": "submit-btn"
+}
+```
+</CodeBlock>
+
+## Event Handling
+
+Components with interactivity have events:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Button",
+  "label": "Click Me",
+  "events": {
+    "onClick": [
+      { "type": "updateState", "path": "count", "value": "{{state.count}} + 1" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+Available events vary by component. See individual component docs.
+
+## Expressions in Properties
+
+Most string properties support expressions:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Text",
+  "content": "Hello, {{state.userName}}!"
+}
+```
+</CodeBlock>
+
+See [Expressions](../core-concepts/expressions) for full syntax.
+
+## Quick Reference
+
+### Layout Components
+
+| Component | Purpose |
+|-----------|---------|
+| `Container` | Block wrapper |
+| `Flex` | Flexbox layout |
+| `Grid` | Grid layout |
+| `Spacer` | Vertical space |
+| `Divider` | Visual separator |
+| `Section` | Semantic grouping |
+
+### Typography Components
+
+| Component | Purpose |
+|-----------|---------|
+| `Text` | Paragraph text |
+| `Heading` | Headings (h1-h6) |
+
+### Form Components
+
+| Component | Purpose |
+|-----------|---------|
+| `Form` | Form container |
+| `Field` | Form field |
+
+### Data Display Components
+
+| Component | Purpose |
+|-----------|---------|
+| `Table` | Data tables |
+| `List` | Lists and menus |
+| `Card` | Content cards |
+| `StatCard` | Statistics display |
+| `DataDisplay` | Key-value pairs |
+| `Badge` | Labels and tags |
+| `Avatar` | User images |
+| `Image` | Images |
+| `Chart` | Data visualization |
+
+### Feedback Components
+
+| Component | Purpose |
+|-----------|---------|
+| `Alert` | Notifications |
+| `Progress` | Progress bars |
+| `Skeleton` | Loading placeholders |
+| `LoadingOverlay` | Loading states |
+| `EmptyState` | Empty content |
+
+### Navigation Components
+
+| Component | Purpose |
+|-----------|---------|
+| `Button` | Clickable buttons |
+| `Link` | Navigation links |
+| `Tabs` | Tab navigation |
+| `Breadcrumb` | Path navigation |
+| `Dropdown` | Dropdown menus |
+| `PageHeader` | Page headers |
+
+### Overlay Components
+
+| Component | Purpose |
+|-----------|---------|
+| `Modal` | Dialog windows |
+| `Tooltip` | Hover tooltips |
+
+### Advanced Components
+
+| Component | Purpose |
+|-----------|---------|
+| `Conditional` | Conditional rendering |
+| `Loop` | List iteration |
+| `Accordion` | Collapsible sections |
+| `Icon` | Icon display |
+| `Fragment` | Invisible wrapper |
+| `Slot` | Plugin slots |
+| `Custom` | Custom components |
+
+## Usage Patterns
+
+### Container with Children
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Container",
+  "className": "p-6",
+  "children": [
+    { "type": "Heading", "text": "Title", "level": 1 },
+    { "type": "Text", "content": "Description text here." }
+  ]
+}
+```
+</CodeBlock>
+
+### Data-Bound Component
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Table",
+  "dataSource": "state:items",
+  "columns": [
+    { "key": "name", "label": "Name" },
+    { "key": "status", "label": "Status" }
+  ]
+}
+```
+</CodeBlock>
+
+### Interactive Component
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Button",
+  "label": "Save",
+  "variant": "default",
+  "events": {
+    "onClick": [
+      { "type": "callApi", "api": "saveData" },
+      { "type": "showToast", "message": "Saved!" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+### Conditional Rendering
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Conditional",
+  "condition": "{{state.isLoading}}",
+  "then": { "type": "Skeleton" },
+  "else": { "type": "Card", "content": { "..." } }
+}
+```
+</CodeBlock>
+
+## Styling
+
+### Tailwind Classes
+
+All components support `className` for Tailwind:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Card",
+  "className": "bg-gradient-to-r from-blue-500 to-purple-500 text-white"
+}
+```
+</CodeBlock>
+
+### Responsive Classes
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Grid",
+  "columns": { "sm": 1, "md": 2, "lg": 3 },
+  "className": "gap-4 md:gap-6"
+}
+```
+</CodeBlock>
+
+### Dark Mode
+
+Use dark: prefix:
+
+<CodeBlock lang="json">
+```json
+{
+  "className": "bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
+}
+```
+</CodeBlock>
+
+## Next Steps
+
+Explore each component category:
+
+- [Layout Components](./layout/container)
+- [Typography Components](./typography/text)
+- [Form Components](./forms/form)
+- [Data Display Components](./data-display/table)
+- [Feedback Components](./feedback/alert)
+- [Navigation Components](./navigation/button)
+- [Overlay Components](./overlays/modal)
+- [Advanced Components](./advanced/conditional)

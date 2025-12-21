@@ -1,0 +1,56 @@
+---
+title: Grid
+description: Responsive grid layout component
+sidebar_position: 2
+---
+
+import CodeBlock from '@/components/mdx/CodeBlock.astro';
+
+
+# Grid
+
+The Grid component provides a flexible grid layout system for organizing child components.
+
+## Basic Usage
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "grid",
+  "columns": 3,
+  "gap": "md",
+  "children": [
+    // Grid items
+  ]
+}
+```
+</CodeBlock>
+
+## Properties
+
+- `columns` - Number of columns (1-12)
+- `gap` - Spacing between items (xs, sm, md, lg, xl)
+- `children` - Array of child components
+
+## Examples
+
+### Three Column Grid
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "grid",
+  "columns": 3,
+  "gap": "lg",
+  "children": [
+    { "type": "card", "title": "Item 1" },
+    { "type": "card", "title": "Item 2" },
+    { "type": "card", "title": "Item 3" }
+  ]
+}
+```
+</CodeBlock>
+
+### Responsive Grid
+
+The grid automatically adjusts on smaller screens.

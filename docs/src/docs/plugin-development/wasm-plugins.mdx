@@ -1,0 +1,651 @@
+---
+sidebar_position: 3
+title: WASM Plugins
+description: Building backend plugins with Rust and WebAssembly using the Orbis SDK
+---
+
+import CodeBlock from '@/components/mdx/CodeBlock.astro';
+
+
+# WASM Plugins
+
+WASM (WebAssembly) plugins allow you to write backend logic in Rust that runs in a sandboxed environment. The Orbis SDK eliminates boilerplate and provides a powerful, ergonomic API.
+
+## Overview
+
+WASM plugins can:
+- Handle API route requests
+- Execute complex business logic
+- Process and transform data
+- Interact with the database (with permissions)
+- Make HTTP requests to external APIs
+- Store and retrieve plugin state
+- Emit events for other plugins
+
+## Prerequisites
+
+<CodeBlock lang="bash">
+```bash
+# Install Rust (if not already installed)
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+# Add WASM target
+rustup target add wasm32-unknown-unknown
+```
+</CodeBlock>
+
+## Quick Start
+
+### 1. Create a New Plugin
+
+<CodeBlock lang="bash">
+```bash
+mkdir my-plugin
+cd my-plugin
+cargo init --lib
+```
+</CodeBlock>
+
+### 2. Configure Cargo.toml
+
+<CodeBlock lang="toml">
+```toml
+[package]
+name = "my-plugin"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+orbis-plugin-api = "0.1"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+[profile.release]
+opt-level = "s"
+lto = true
+strip = true
+```
+</CodeBlock>
+
+### 3. Write Your Plugin
+
+<CodeBlock lang="rust">
+```rust
+// src/lib.rs
+use orbis_plugin_api::prelude::*;
+use serde::{Deserialize, Serialize};
+
+// Initialize the plugin with a single macro!
+orbis_plugin! {
+    name: "my-plugin",
+    version: "0.1.0"
+}
+
+// Define your types
+#[derive(Serialize)]
+struct Greeting {
+    message: String,
+    timestamp: i64,
+}
+
+// Export handlers with the wrap_handler! macro
+wrap_handler!(greet, greet_handler);
+
+fn greet_handler(ctx: Context) -> Result<Response> {
+    let name = ctx.query_param("name").unwrap_or("World".to_string());
+    
+    let greeting = Greeting {
+        message: format!("Hello, {}!", name),
+        timestamp: chrono::Utc::now().timestamp(),
+    };
+    
+    Ok(Response::json(&greeting))
+}
+```
+</CodeBlock>
+
+That's it! No memory management, no extern declarations, no raw pointers.
+
+## The Orbis SDK
+
+The SDK provides a complete toolkit for plugin development:
+
+### Context - Request Information
+
+<CodeBlock lang="rust">
+```rust
+fn handler(ctx: Context) -> Result<Response> {
+    // Path parameters (e.g., /users/:id)
+    let user_id = ctx.param("id")?;
+    
+    // Query parameters
+    let page: u32 = ctx.query_param_as("page").unwrap_or(1);
+    let limit = ctx.query_param_or("limit", "20".to_string());
+    
+    // Headers
+    if let Some(auth) = ctx.header("Authorization") {
+        // Handle auth
+    }
+    
+    // Parse JSON body
+    let request: MyRequest = ctx.body_as()?;
+    
+    // Pagination helper
+    let pagination = ctx.pagination(100); // max limit
+    // Returns: Pagination { page, limit, offset }
+    
+    // Check authentication
+    if ctx.require_auth().is_err() {
+        return Ok(Response::error(401, "Unauthorized"));
+    }
+    
+    // Check admin status
+    if ctx.require_admin().is_err() {
+        return Ok(Response::error(403, "Forbidden"));
+    }
+    
+    Ok(Response::ok())
+}
+```
+</CodeBlock>
+
+### Response - Building Responses
+
+<CodeBlock lang="rust">
+```rust
+use orbis_plugin_api::prelude::*;
+
+fn handler(ctx: Context) -> Result<Response> {
+    // JSON response (200 OK)
+    Ok(Response::json(&data))
+    
+    // Custom status
+    Ok(Response::json_with_status(&data, 201))
+    
+    // Convenience methods
+    Ok(Response::ok())           // 200 with {"success": true}
+    Ok(Response::created(&item)) // 201 with data
+    Ok(Response::no_content())   // 204
+    
+    // Error responses
+    Ok(Response::error(400, "Bad request"))
+    Ok(Response::not_found("User not found"))
+    
+    // With custom headers
+    Ok(Response::json(&data)
+        .with_header("X-Custom", "value")
+        .with_header("Cache-Control", "no-cache"))
+    
+    // Paginated response
+    Ok(Response::paginated(items, pagination, total_count))
+}
+```
+</CodeBlock>
+
+### State - Persistent Storage
+
+<CodeBlock lang="rust">
+```rust
+use orbis_plugin_api::sdk::state;
+
+fn handler(ctx: Context) -> Result<Response> {
+    // Set a value (automatically JSON serialized)
+    state::set("counter", &42)?;
+    state::set("user", &user_data)?;
+    
+    // Get a value (automatically deserialized)
+    let counter: Option<i32> = state::get("counter")?;
+    let user: Option<User> = state::get("user")?;
+    
+    // Get with default
+    let count = state::get("counter")?.unwrap_or(0);
+    
+    // Remove a value
+    state::remove("counter")?;
+    
+    // Update with a function
+    state::update("counter", 0, |old: i32| old + 1)?;
+    
+    // Convenience methods
+    state::increment("visits", 1)?;
+    state::decrement("remaining", 1)?;
+    state::push("history", &new_event)?;
+    
+    // Scoped state (namespaced keys)
+    let user_state = state::scoped("user:123");
+    user_state.set("preferences", &prefs)?;
+    let prefs: Preferences = user_state.get("preferences")?.unwrap();
+    
+    Ok(Response::ok())
+}
+```
+</CodeBlock>
+
+### Database - Query and Execute
+
+<CodeBlock lang="rust">
+```rust
+use orbis_plugin_api::sdk::db;
+
+fn handler(ctx: Context) -> Result<Response> {
+    // Query with automatic deserialization
+    let users: Vec<User> = db::query(
+        "SELECT * FROM users WHERE status = $1",
+        &["active"]
+    )?;
+    
+    // Query single row
+    let user: Option<User> = db::query_one(
+        "SELECT * FROM users WHERE id = $1",
+        &[&id]
+    )?;
+    
+    // Query scalar value
+    let count: i64 = db::query_scalar(
+        "SELECT COUNT(*) FROM users",
+        &[]
+    )?;
+    
+    // Execute statements
+    let rows_affected = db::execute(
+        "UPDATE users SET last_login = NOW() WHERE id = $1",
+        &[&user_id]
+    )?;
+    
+    // Transactions
+    let order = db::Transaction::new()
+        .execute(
+            "INSERT INTO orders (user_id, total) VALUES ($1, $2) RETURNING id",
+            &[&user_id, &total]
+        )
+        .execute(
+            "INSERT INTO order_items (order_id, product_id, qty) VALUES ($1, $2, $3)",
+            &[&order_id, &product_id, &qty]
+        )
+        .commit()?;
+    
+    Ok(Response::json(&user))
+}
+```
+</CodeBlock>
+
+### HTTP - External API Calls
+
+<CodeBlock lang="rust">
+```rust
+use orbis_plugin_api::sdk::http;
+
+fn handler(ctx: Context) -> Result<Response> {
+    // Simple GET
+    let response = http::get("https://api.example.com/data")?.send()?;
+    let data: ApiResponse = response.json()?;
+    
+    // POST with JSON body
+    let response = http::post("https://api.example.com/items")?
+        .json(&new_item)?
+        .send()?;
+    
+    // With headers and bearer token
+    let response = http::get("https://api.example.com/protected")?
+        .bearer_token("my-token")
+        .header("X-Custom", "value")
+        .send()?;
+    
+    // Check response status
+    if !response.is_success() {
+        let error: ErrorResponse = response.json()?;
+        return Ok(Response::error(response.status, &error.message));
+    }
+    
+    // Error on non-2xx status
+    let response = http::get("https://api.example.com/data")?
+        .send()?
+        .error_for_status()?;
+    
+    Ok(Response::json(&data))
+}
+```
+</CodeBlock>
+
+### Logging
+
+<CodeBlock lang="rust">
+```rust
+use orbis_plugin_api::prelude::*;
+
+fn handler(ctx: Context) -> Result<Response> {
+    log_info!("Processing request for user {}", user_id);
+    log_debug!("Request body: {:?}", body);
+    
+    if let Err(e) = process() {
+        log_error!("Processing failed: {}", e);
+        return Ok(Response::error(500, "Internal error"));
+    }
+    
+    log_trace!("Detailed trace info: {:#?}", details);
+    log_warn!("Deprecated endpoint used");
+    
+    Ok(Response::ok())
+}
+```
+</CodeBlock>
+
+### Error Handling
+
+<CodeBlock lang="rust">
+```rust
+use orbis_plugin_api::prelude::*;
+
+fn handler(ctx: Context) -> Result<Response> {
+    // The ? operator works with SDK errors
+    let user: User = ctx.body_as()?;
+    let existing = db::query_one("SELECT * FROM users WHERE id = $1", &[&user.id])?;
+    
+    // Create custom errors
+    if user.name.is_empty() {
+        return Err(Error::validation("Name is required"));
+    }
+    
+    // Permission errors
+    if !has_access(&user) {
+        return Err(Error::permission_denied("Cannot access this resource"));
+    }
+    
+    // Not found
+    let item = db::query_one("...", &[])?
+        .ok_or_else(|| Error::not_found("Item not found"))?;
+    
+    // Errors automatically convert to appropriate HTTP responses
+    // Error::validation -> 400
+    // Error::permission_denied -> 403
+    // Error::not_found -> 404
+    // Error::internal -> 500
+    
+    Ok(Response::json(&item))
+}
+```
+</CodeBlock>
+
+## Plugin Manifest
+
+Every plugin needs a `manifest.json`:
+
+<CodeBlock lang="json">
+```json
+{
+  "name": "my-plugin",
+  "version": "1.0.0",
+  "description": "My awesome plugin",
+  "author": "Your Name",
+  
+  "permissions": [
+    "database:read",
+    "database:write",
+    "network:http"
+  ],
+  
+  "routes": [
+    { "path": "/api/greet", "method": "GET", "handler": "greet" },
+    { "path": "/api/users", "method": "GET", "handler": "list_users" },
+    { "path": "/api/users", "method": "POST", "handler": "create_user" },
+    { "path": "/api/users/:id", "method": "GET", "handler": "get_user" }
+  ],
+  
+  "pages": [...],
+  
+  "config": {
+    "api_key": "default-key",
+    "max_items": 100
+  },
+  
+  "wasm_entry": "my_plugin.wasm"
+}
+```
+</CodeBlock>
+
+### Available Permissions
+
+| Permission | Description |
+|------------|-------------|
+| `database:read` | Read from database |
+| `database:write` | Write to database |
+| `network:http` | Make HTTP requests |
+| `events:emit` | Emit events |
+| `state:read` | Read plugin state |
+| `state:write` | Write plugin state |
+
+## Complete Example
+
+<CodeBlock lang="rust">
+```rust
+// src/lib.rs
+use orbis_plugin_api::prelude::*;
+use orbis_plugin_api::sdk::{db, state};
+use serde::{Deserialize, Serialize};
+
+// Initialize plugin
+orbis_plugin! {
+    name: "todo-plugin",
+    version: "1.0.0"
+}
+
+// Data types
+#[derive(Debug, Serialize, Deserialize)]
+struct Todo {
+    id: i64,
+    title: String,
+    completed: bool,
+    user_id: String,
+}
+
+#[derive(Deserialize)]
+struct CreateTodo {
+    title: String,
+}
+
+#[derive(Deserialize)]
+struct UpdateTodo {
+    title: Option<String>,
+    completed: Option<bool>,
+}
+
+// Handlers
+wrap_handler!(list_todos, list_todos_handler);
+wrap_handler!(create_todo, create_todo_handler);
+wrap_handler!(get_todo, get_todo_handler);
+wrap_handler!(update_todo, update_todo_handler);
+wrap_handler!(delete_todo, delete_todo_handler);
+
+fn list_todos_handler(ctx: Context) -> Result<Response> {
+    ctx.require_auth()?;
+    let user_id = ctx.user_id().unwrap();
+    
+    let pagination = ctx.pagination(100);
+    
+    let todos: Vec<Todo> = db::query(
+        "SELECT * FROM todos WHERE user_id = $1 ORDER BY id LIMIT $2 OFFSET $3",
+        &[&user_id, &pagination.limit, &pagination.offset]
+    )?;
+    
+    let total: i64 = db::query_scalar(
+        "SELECT COUNT(*) FROM todos WHERE user_id = $1",
+        &[&user_id]
+    )?;
+    
+    Ok(Response::paginated(todos, pagination, total as u64))
+}
+
+fn create_todo_handler(ctx: Context) -> Result<Response> {
+    ctx.require_auth()?;
+    let user_id = ctx.user_id().unwrap();
+    
+    let input: CreateTodo = ctx.body_as()?;
+    
+    if input.title.is_empty() {
+        return Err(Error::validation("Title is required"));
+    }
+    
+    let todo: Todo = db::query_one(
+        "INSERT INTO todos (title, completed, user_id) VALUES ($1, false, $2) RETURNING *",
+        &[&input.title, &user_id]
+    )?.unwrap();
+    
+    // Track creation count
+    state::increment("todos_created", 1)?;
+    
+    log_info!("Created todo {} for user {}", todo.id, user_id);
+    
+    Ok(Response::created(&todo))
+}
+
+fn get_todo_handler(ctx: Context) -> Result<Response> {
+    ctx.require_auth()?;
+    let user_id = ctx.user_id().unwrap();
+    let id: i64 = ctx.param_as("id")?;
+    
+    let todo: Option<Todo> = db::query_one(
+        "SELECT * FROM todos WHERE id = $1 AND user_id = $2",
+        &[&id, &user_id]
+    )?;
+    
+    match todo {
+        Some(t) => Ok(Response::json(&t)),
+        None => Ok(Response::not_found("Todo not found")),
+    }
+}
+
+fn update_todo_handler(ctx: Context) -> Result<Response> {
+    ctx.require_auth()?;
+    let user_id = ctx.user_id().unwrap();
+    let id: i64 = ctx.param_as("id")?;
+    
+    let input: UpdateTodo = ctx.body_as()?;
+    
+    // Check ownership
+    let existing: Option<Todo> = db::query_one(
+        "SELECT * FROM todos WHERE id = $1",
+        &[&id]
+    )?;
+    
+    let existing = existing.ok_or_else(|| Error::not_found("Todo not found"))?;
+    
+    if existing.user_id != user_id {
+        return Err(Error::permission_denied("Not your todo"));
+    }
+    
+    let title = input.title.unwrap_or(existing.title);
+    let completed = input.completed.unwrap_or(existing.completed);
+    
+    let todo: Todo = db::query_one(
+        "UPDATE todos SET title = $1, completed = $2 WHERE id = $3 RETURNING *",
+        &[&title, &completed, &id]
+    )?.unwrap();
+    
+    Ok(Response::json(&todo))
+}
+
+fn delete_todo_handler(ctx: Context) -> Result<Response> {
+    ctx.require_auth()?;
+    let user_id = ctx.user_id().unwrap();
+    let id: i64 = ctx.param_as("id")?;
+    
+    let rows = db::execute(
+        "DELETE FROM todos WHERE id = $1 AND user_id = $2",
+        &[&id, &user_id]
+    )?;
+    
+    if rows == 0 {
+        return Ok(Response::not_found("Todo not found"));
+    }
+    
+    log_info!("Deleted todo {} for user {}", id, user_id);
+    
+    Ok(Response::no_content())
+}
+```
+</CodeBlock>
+
+## Building
+
+<CodeBlock lang="bash">
+```bash
+# Development build
+cargo build --target wasm32-unknown-unknown
+
+# Release build (optimized)
+cargo build --target wasm32-unknown-unknown --release
+
+# Output location
+target/wasm32-unknown-unknown/release/my_plugin.wasm
+```
+</CodeBlock>
+
+### Build Script
+
+<CodeBlock lang="bash">
+```bash
+#!/bin/bash
+set -e
+
+echo "Building plugin..."
+cargo build --target wasm32-unknown-unknown --release
+
+# Copy WASM file
+cp target/wasm32-unknown-unknown/release/my_plugin.wasm ./
+
+# Optional: Embed manifest in WASM
+cat manifest.json | python3 add_custom_section.py \
+  my_plugin.wasm \
+  -s manifest \
+  -o my_plugin.wasm
+
+echo "Done! Output: my_plugin.wasm"
+```
+</CodeBlock>
+
+### Optimizing WASM Size
+
+<CodeBlock lang="bash">
+```bash
+# Install wasm-opt (from binaryen)
+brew install binaryen  # macOS
+apt install binaryen   # Linux
+
+# Optimize
+wasm-opt -Os -o optimized.wasm my_plugin.wasm
+```
+</CodeBlock>
+
+## Testing
+
+<CodeBlock lang="rust">
+```rust
+#[cfg(test)]
+mod tests {
+    use super::*;
+    
+    #[test]
+    fn test_validation() {
+        let input = CreateTodo { title: "".to_string() };
+        // Test validation logic
+        assert!(input.title.is_empty());
+    }
+}
+```
+</CodeBlock>
+
+Run with:
+<CodeBlock lang="bash">
+```bash
+cargo test
+```
+</CodeBlock>
+
+## Next Steps
+
+- **[Building Plugins](./building-plugins)** - Advanced build configurations
+- **[Testing Plugins](./testing-plugins)** - Integration testing strategies
+- **[Best Practices](./best-practices)** - Guidelines and patterns

@@ -1,7 +1,40 @@
 {
-  "name": "Hello-Plugin",
-  "version": "0.1.0",
-  "description": "A simple hello world plugin demonstrating Orbis plugin system",
-  "author": "Orbis Team",
-  "wasm_entry": "hello_plugin.wasm"
+  "name": "hello-plugin",
+  "version": "1.0.0",
+  "pages": [
+    {
+      "route": "/hello",
+      "title": "Hello Page",
+      "show_in_menu": true,
+      "state": {
+        "count": { "type": "number", "default": 0 }
+      },
+      "sections": [
+        {
+          "type": "Container",
+          "children": [
+            {
+              "type": "Heading",
+              "level": 1,
+              "text": "Counter: {{state.count}}"
+            },
+            {
+              "type": "Button",
+              "id": "increment-button",
+              "label": "Increment",
+              "events": {
+                "on_click": [
+                  {
+                    "type": "update_state",
+                    "from": "{{state.count + 1}}",
+                    "path": "count"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }

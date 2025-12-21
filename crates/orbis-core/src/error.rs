@@ -130,3 +130,10 @@ impl From<serde_json::Error> for Error {
         Self::Serialization(e.to_string())
     }
 }
+
+#[cfg(feature = "orbis-plugin-api")]
+impl From<orbis_plugin_api::Error> for Error {
+    fn from(e: orbis_plugin_api::Error) -> Self {
+        Self::Plugin(e.to_string())
+    }
+}
