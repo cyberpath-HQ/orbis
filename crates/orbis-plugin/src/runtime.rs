@@ -227,7 +227,7 @@ impl PluginRuntime {
     pub fn new() -> Self {
         let mut config = wasmtime::Config::new();
         config.consume_fuel(true); // Enable fuel consumption for execution limits
-        config.epoch_interruption(true); // Enable epoch-based interruption
+        // config.epoch_interruption(true); // Enable epoch-based interruption
         config.max_wasm_stack(512 * 1024); // 512KB max stack
 
         let engine = Engine::new(&config).expect("Failed to create WASM engine");
@@ -1159,25 +1159,6 @@ impl PluginRuntime {
         let alloc_typed: TypedFunc<i32, i32> = alloc_func.typed(&*store).map_err(|e| {
             orbis_core::Error::plugin(format!("allocate function has wrong signature: {}", e))
         })?;
-
-        // Debug: log allocation attempt details
-        let plugin_name = store.data().plugin_name.clone();
-        let pages_before = memory.size(&*store);
-        let heap_base = instance
-            .get_global(&mut *store, "__heap_base")
-            .and_then(|g: wasmtime::Global| g.get(&mut *store).i32())
-            .unwrap_or(-1);
-        let global0 = instance
-            .get_export(&mut *store, "__stack_pointer")
-            .is_some();
-        
-        let len_i32 = len as i32;
-        let is_negative = len_i32 < 0;
-            
-        eprintln!(
-            "[ALLOC DEBUG] plugin={}, len={}, len_i32={}, is_negative={}, pages={}, mem_bytes={}, heap_base={}",
-            plugin_name, len, len_i32, is_negative, pages_before, pages_before as usize * 65536, heap_base
-        );
 
         // Attempt allocation and capture any traps with additional diagnostics
         let ptr = match alloc_typed.call(&mut *store, len as i32) {
