@@ -43,9 +43,11 @@ docs/ROADMAP-MANAGEMENT.md             # Complete guide
 
 ## Workflow Schedule
 
-- **Daily**: 2 AM UTC (automatic)
+- **Daily**: 2 AM UTC (creates PR if changes detected)
 - **On Events**: Issue/PR open, close, label change
 - **Manual**: Run trigger script anytime
+
+**Note**: Changes are submitted as pull requests to respect branch protection rules. You must review and merge the PR.
 
 ## Common Issues
 
