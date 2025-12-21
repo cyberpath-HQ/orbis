@@ -100,8 +100,8 @@
                           "type": "update_state",
                           "path": "name",
                           "value": null,
-                          "from": "event.value",
-                          "merge": false
+                          "from": "$event.value",
+                          "merge": true
                         }
                       ]
                     },
@@ -137,20 +137,20 @@
                               "type": "update_state",
                               "path": "message",
                               "value": null,
-                              "from": "response.message",
+                              "from": "$response.body.message",
                               "merge": false
                             },
                             {
                               "type": "update_state",
                               "path": "name",
                               "value": null,
-                              "from": "response.name",
+                              "from": "$response.body.name",
                               "merge": false
                             },
                             {
                               "type": "show_toast",
                               "level": "success",
-                              "message": "{{response.message}}",
+                              "message": "{{$response.body.message}}",
                               "title": "Greeting Created",
                               "duration": 3000
                             }

@@ -35,10 +35,11 @@ fn get_greeting_impl(_ctx: Context) -> Result<Response> {
 
 /// Create a greeting for a name
 fn create_greeting_impl(ctx: Context) -> Result<Response> {
-    let request: GreetRequest = ctx.body_as()?;
+    let mut request: GreetRequest = ctx.body_as()?;
     
     let message = if request.name.is_empty() {
-        "Hello World!".to_string()
+        request.name = "World".to_string();
+        format!("Hello {}!", request.name)
     } else {
         format!("Hello {}!", request.name)
     };
