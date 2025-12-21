@@ -101,6 +101,46 @@ export function initializeState(definition: StateDefinition): Record<string, unk
 }
 
 /**
+ * Save state to localStorage
+ */
+export function saveStateToStorage(key: string, state: Record<string, unknown>): void {
+    try {
+        localStorage.setItem(`orbis_state_${ key }`, JSON.stringify(state));
+    }
+    catch (error) {
+        console.warn(`Failed to save state to localStorage:`, error);
+    }
+}
+
+/**
+ * Load state from localStorage
+ */
+export function loadStateFromStorage(key: string): Record<string, unknown> | null {
+    try {
+        const stored = localStorage.getItem(`orbis_state_${ key }`);
+        if (stored) {
+            return JSON.parse(stored) as Record<string, unknown>;
+        }
+    }
+    catch (error) {
+        console.warn(`Failed to load state from localStorage:`, error);
+    }
+    return null;
+}
+
+/**
+ * Clear state from localStorage
+ */
+export function clearStateFromStorage(key: string): void {
+    try {
+        localStorage.removeItem(`orbis_state_${ key }`);
+    }
+    catch (error) {
+        console.warn(`Failed to clear state from localStorage:`, error);
+    }
+}
+
+/**
  * Page state store interface
  */
 export interface PageStateStore {
@@ -144,11 +184,22 @@ export interface PageStateStoreHook {
 
 /**
  * Create a page state store
+ * @param initialDefinition - State definition with default values
+ * @param persistenceKey - Optional key for localStorage persistence (e.g., "plugin_name:page_route")
  */
-export function createPageStateStore(initialDefinition?: StateDefinition): PageStateStoreHook {
+export function createPageStateStore(initialDefinition?: StateDefinition, persistenceKey?: string): PageStateStoreHook {
+    // Try to load persisted state if key provided
+    const persistedState = persistenceKey ? loadStateFromStorage(persistenceKey) : null;
+    
+    // Initialize state - merge persisted state with defaults
+    const initialState = initialDefinition ? initializeState(initialDefinition) : {};
+    const mergedInitialState = persistedState 
+        ? { ...initialState, ...persistedState }
+        : initialState;
+
     const store = create<PageStateStore>()(
         immer((set, get) => ({
-            state:   initialDefinition ? initializeState(initialDefinition) : {},
+            state:   mergedInitialState,
             loading: {},
             errors:  {},
 
@@ -167,6 +218,11 @@ export function createPageStateStore(initialDefinition?: StateDefinition): PageS
 
                 current[parts[parts.length - 1]] = value;
                 console.log(`[State] New state:`, draft.state);
+                
+                // Persist state if key provided
+                if (persistenceKey) {
+                    saveStateToStorage(persistenceKey, draft.state);
+                }
             }),
 
             mergeState: (path, value) => set((draft) => {
@@ -191,11 +247,21 @@ export function createPageStateStore(initialDefinition?: StateDefinition): PageS
                 }
 
                 current[parts[parts.length - 1]] = merged;
+                
+                // Persist state if key provided
+                if (persistenceKey) {
+                    saveStateToStorage(persistenceKey, draft.state);
+                }
             }),
 
             resetState: (definition) => set((draft) => {
                 draft.state = initializeState(definition);
                 draft.errors = {};
+                
+                // Clear persisted state when resetting
+                if (persistenceKey) {
+                    clearStateFromStorage(persistenceKey);
+                }
             }),
 
             setLoading: (key, loading) => set((draft) => {

@@ -302,8 +302,11 @@ function PluginPageRenderer({
         ]
     );
 
-    // Create page state store
+    // Create page state store with persistence
     const stateStore = useMemo(() => {
+        // Create persistence key from plugin name and page route
+        const persistenceKey = `${ page.plugin }:${ page.route }`;
+        
         // Use page state definition if present
         if (page.state) {
             return createPageStateStore(
@@ -318,10 +321,11 @@ function PluginPageRenderer({
                             default: def.default,
                         },
                     ])
-                )
+                ),
+                persistenceKey // Enable persistence with plugin:route key
             );
         }
-        return createPageStateStore();
+        return createPageStateStore(undefined, persistenceKey);
     }, [ page ]);
 
     // Note: stateStore is a Zustand hook - we pass it directly, not call it
