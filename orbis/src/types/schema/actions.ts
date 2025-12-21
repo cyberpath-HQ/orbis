@@ -6,19 +6,19 @@ import type { Expression } from './base';
 
 // Action types that can be executed in response to events
 export type ActionType =
-    | `updateState`
-    | `callApi`
+    | `update_state`
+    | `call_api`
     | `navigate`
-    | `showToast`
-    | `showDialog`
-    | `closeDialog`
-    | `debouncedAction`
-    | `validateForm`
-    | `resetForm`
-    | `setLoading`
+    | `show_toast`
+    | `show_dialog`
+    | `close_dialog`
+    | `debounced_action`
+    | `validate_form`
+    | `reset_form`
+    | `set_loading`
     | `download`
     | `copy`
-    | `openUrl`
+    | `open_url`
     | `emit`
     | `conditional`
     | `sequence`;
@@ -39,18 +39,18 @@ export interface UpdateStateAction extends BaseAction {
 
 // API call action - calls a backend API
 export interface CallApiAction extends BaseAction {
-    type:           `call_api`
-    name?:          string
-    api:            string
-    method?:        `GET` | `POST` | `PUT` | `PATCH` | `DELETE`
-    argsFromState?: Array<string>
-    mapArgs?:       Array<{ from: string
-        to:                       string }>
-    body?:      Expression | Record<string, unknown>
-    headers?:   Record<string, string>
-    onSuccess?: Array<Action>
-    onError?:   Array<Action>
-    onFinally?: Array<Action>
+    type:             `call_api`
+    name?:            string
+    api:              string
+    method?:          `GET` | `POST` | `PUT` | `PATCH` | `DELETE`
+    args_from_state?: Array<string>
+    map_args?:       Array<{ from: string
+        to:                        string }>
+    body?:       Expression | Record<string, unknown>
+    headers?:    Record<string, string>
+    on_success?: Array<Action>
+    on_error?:   Array<Action>
+    on_finally?: Array<Action>
 }
 
 // Navigate action - changes the current route

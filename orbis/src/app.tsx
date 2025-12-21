@@ -324,14 +324,14 @@ function PluginPageRenderer({
         return createPageStateStore();
     }, [ page ]);
 
-    // Get the actual store instance
-    const state = stateStore();
+    // Note: stateStore is a Zustand hook - we pass it directly, not call it
+    // Components will call it internally to subscribe to changes
 
     // Execute onMount hook when page mounts
     useEffect(() => {
         if (page.hooks?.onMount) {
             const actionContext = {
-                state,
+                state: stateStore,
                 apiClient,
                 navigate,
             };
@@ -346,7 +346,7 @@ function PluginPageRenderer({
     useEffect(() => () => {
         if (page.hooks?.onUnmount) {
             const actionContext = {
-                state,
+                state: stateStore,
                 apiClient,
                 navigate,
             };
@@ -373,7 +373,7 @@ function PluginPageRenderer({
                     <PageErrorBoundary key={index}>
                         <SchemaRenderer
                             schema={section}
-                            state={state}
+                            state={stateStore}
                             apiClient={apiClient}
                         />
                     </PageErrorBoundary>
