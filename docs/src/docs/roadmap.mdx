@@ -1,0 +1,373 @@
+---
+sidebar_position: 99
+title: Roadmap & Future Improvements
+description: Planned features and development roadmap for Orbis
+---
+
+# Roadmap & Future Improvements
+
+This page outlines the planned features, improvements, and development priorities for Orbis. Items are organized by priority and category.
+
+## Summary of Pending Features
+
+The table below provides a concise, live-linked overview of high-priority items and where related GitHub issues or PRs can be found. Use the "Find issues/PRs" link to search issues and pull requests for up-to-date status.
+
+| Feature | Status | Issues / PRs |
+| --- | --- | --- |
+| Publish `orbis-plugin-api` to crates.io | Open | [Find issues/PRs](https://github.com/cyberpath-HQ/orbis/issues?q=orbis-plugin-api+crates)
+| Deploy docs to GitHub Pages | Open | [Find issues/PRs](https://github.com/cyberpath-HQ/orbis/issues?q=docs+github+pages)
+| Build & Release Tauri Binaries (auto-updates) | Open | [Find issues/PRs](https://github.com/cyberpath-HQ/orbis/issues?q=tauri+release+auto-update)
+| Plugin packages (collections of plugins) | Open | [Find issues/PRs](https://github.com/cyberpath-HQ/orbis/issues?q=plugin+packages)
+| Pre-install / Pre-enable plugins | Open | [Find issues/PRs](https://github.com/cyberpath-HQ/orbis/issues?q=pre-install+plugins)
+| Plugin permissions & graphical modal | Open | [Find issues/PRs](https://github.com/cyberpath-HQ/orbis/issues?q=plugin+permissions)
+| Plugin-to-plugin IPC / shared state | Open | [Find issues/PRs](https://github.com/cyberpath-HQ/orbis/issues?q=inter-plugin+ipc)
+| Filesystem access for plugins | Open | [Find issues/PRs](https://github.com/cyberpath-HQ/orbis/issues?q=plugin+filesystem)
+| Full GUI override capability | Open | [Find issues/PRs](https://github.com/cyberpath-HQ/orbis/issues?q=gui+override)
+| Pest-based DSL for page definitions | Open | [Find issues/PRs](https://github.com/cyberpath-HQ/orbis/issues?q=pest+dsl)
+
+---
+
+## High Priority
+
+### CI/CD & Automation
+
+#### GitHub Actions: Publish orbis-plugin-api to crates.io
+- Trigger on changes to `crates/orbis-plugin-api/**`
+- Automated version bump detection
+- Publish on tag creation
+- Add crates.io badge to README
+
+#### GitHub Actions: Deploy docs to GitHub Pages
+- Trigger on changes to `docs/**`
+- Build Astro site
+- Deploy to `gh-pages` branch
+- Set up custom domain (optional)
+
+#### GitHub Actions: Build & Release Tauri Binaries
+- Trigger on version tags or release branches
+- Multi-platform builds (Linux, macOS, Windows)
+- Sign binaries for macOS/Windows
+- Upload to GitHub Releases
+- Generate auto-update manifests (Tauri updater format)
+- Test auto-update flow in staging
+
+#### GitHub Actions: Automated Testing
+- Run Rust tests on PR
+- Run TypeScript/Playwright tests
+- Code coverage reporting
+- Clippy lints
+- cargo deny for dependency audits
+
+### Plugin System Enhancements
+
+#### Plugin Packages System
+- Define package manifest format (collection of plugins)
+- Implement package installation/removal
+- Support dependencies between plugins in packages
+- Package registry/marketplace structure
+
+#### Pre-installed & Pre-enabled Plugins
+- Configuration mechanism for default plugins
+- Bundle specific plugins with distribution
+- Mark plugins as "system plugins" (non-removable)
+
+#### Plugin Permissions & Security
+- Add graphical modal for permission requests
+- Permission types: filesystem, network, database, IPC, etc.
+- Skip permission prompts for pre-installed plugins
+- Store permission grants persistently
+- Revoke permissions UI in settings
+
+#### Plugin Lockdown Mode
+- Configuration to block loading additional plugins
+- Configuration to block installing new plugins
+- Environment variable + CLI flag support
+- UI indication when locked down
+
+#### Non-removable & Non-disablable Plugins
+- Add `system: true` flag to plugin metadata
+- Enforce restrictions in plugin manager
+- UI: hide remove/disable buttons for system plugins
+- Documentation for enterprise deployments
+
+### Inter-Plugin Communication
+
+#### Plugin-to-Plugin IPC
+- Define message passing API
+- Event bus for plugin communication
+- Permission model for cross-plugin access
+- Examples in documentation
+
+#### Shared State Between Plugins
+- Optional shared Zustand store mechanism
+- Namespace isolation
+- Conflict resolution strategies
+
+### Filesystem Access
+
+#### Plugin Filesystem API
+- WASI filesystem access for plugins
+- Sandboxed directory access (scoped to plugin data)
+- Permission model for broader filesystem access
+- Read/write/list operations
+- File upload/download actions in UI schemas
+
+### GUI Override System
+
+#### Full GUI Override Capability
+- Allow plugins to replace entire layout
+- Override navigation/sidebar
+- Custom authentication screens
+- Hook into app lifecycle (startup, shutdown)
+- Example "kiosk mode" plugin
+
+### Meta-Language for Schemas
+
+#### Pest-based DSL for Page Definitions
+- Design cleaner syntax than JSON
+- Parser implementation with pest
+- Transpiler to JSON schema
+- VSCode extension for syntax highlighting
+- Migration guide from JSON
+
+#### Plugin Metadata DSL
+- Cleaner format for manifest.json
+- Support comments and documentation inline
+- Validation at compile time
+
+---
+
+## Core Improvements
+
+### Data Persistence & Security
+
+#### Remove Dead Plugin State Persistence Code
+- Audit `orbis/src/lib/state.ts` for unused disk persistence
+- Remove non-functional localStorage/file writes
+- Clean up stale imports and utilities
+
+#### Encrypted Data at Rest
+- Default encryption for SQLite database
+- Default encryption for plugin data directories
+- Configurable via `ORBIS_ENCRYPTION_KEY` env var
+- CLI flag: `--encryption-key` or `--encryption-key-file`
+- Key derivation from user password (optional)
+- Documentation for key management
+
+#### Encrypted Configuration Files
+- Encrypt sensitive config values
+- Support for encrypted env files
+- Secure credential storage
+
+### Configuration & Defaults
+
+#### Hardcoded Default CLI Variables
+- Config file format (TOML/JSON) for defaults
+- Precedence: CLI args > env vars > config file > hardcoded
+- Location: `~/.config/orbis/defaults.toml` or in-app config
+- Include in distribution for enterprise deployments
+
+#### Configuration Validation
+- Schema validation for config files
+- Clear error messages for invalid configs
+- Config validation CLI command
+
+### UI/UX Improvements
+
+#### Wire Up All Features in Default GUI
+- Plugin permissions management screen
+- Package installation UI
+- Filesystem access controls
+- Plugin lockdown toggle
+- Encryption settings
+
+#### Fix Plugin Refresh Button
+- Re-scan plugins directory
+- Reload plugin manifests
+- Update plugin list UI
+- Handle new/removed/updated plugins
+- Show diff of changes
+
+#### Improved Plugin Loading Screen
+- Better error messages
+- Plugin load progress indicators
+- Retry failed plugins
+- Logs viewer for debugging
+
+---
+
+## Documentation
+
+### Correctness & Completeness
+
+#### Audit All Documentation
+- Verify code examples compile and run
+- Check all API signatures match current implementation
+- Update screenshots/demos
+- Fix broken internal links
+
+#### Missing Documentation
+- Complete plugin API reference
+- Action system comprehensive guide
+- State management deep dive
+- Security & permissions guide
+- Deployment guide (Docker, systemd, etc.)
+- Troubleshooting section
+
+#### Documentation for New Features
+- Plugin packages guide
+- Inter-plugin communication examples
+- Filesystem access tutorial
+- GUI override examples
+- Encryption setup guide
+
+---
+
+## Code Quality & Maintenance
+
+### Dead Code Removal
+
+#### Audit for Unused Code
+- Run `cargo-udeps` for unused dependencies
+- Remove commented-out code blocks
+- Remove unused imports (cargo clippy)
+- Remove stale TODO comments that are done or obsolete
+
+#### Consolidate Duplicate Code
+- Refactor duplicate error handling
+- Extract common patterns to utilities
+- Reduce renderer.tsx complexity (2100+ lines)
+
+### Technical Debt
+
+#### Implement Missing Runtime Functions
+- `db::query` in `runtime.rs:932`
+- `db::execute` in `runtime.rs:970`
+- `http::request` in `runtime.rs:1026`
+- `events::emit` in `runtime.rs:1077`
+
+#### Add Comprehensive Tests
+- Unit tests for all Rust crates
+- Integration tests for plugin loading
+- E2E tests with Playwright
+- Security tests (fuzzing, permission bypass attempts)
+- Auth flow tests
+- Database migration tests
+
+#### Error Handling Improvements
+- Consistent error types across crates
+- Better error messages for users
+- Error recovery strategies
+- Logging improvements (structured logging)
+
+### Performance
+
+#### Renderer Performance Optimization
+- Memoize `SchemaRenderer` for static schemas
+- Optimize expression evaluation (cache results)
+- Virtual scrolling for large tables/lists
+- Lazy load plugin pages
+
+#### Database Performance
+- Add indexes for common queries
+- Query optimization audit
+- Connection pooling tuning
+- Caching layer for plugin data
+
+---
+
+## Security
+
+### Security Audit
+- Formal review of WASM sandbox configuration
+- Review JWT implementation
+- SQL injection prevention audit
+- XSS prevention in schema renderer
+- CSRF protection
+
+### Dependency Security
+- Set up Dependabot
+- Regular `cargo audit` runs
+- Pin dependency versions in production
+
+### Secrets Management
+- Never log sensitive data
+- Secure plugin credential storage
+- API key rotation mechanism
+
+---
+
+## Future Enhancements
+
+### Plugin Marketplace
+
+#### Plugin Discovery
+- Centralized plugin registry
+- Search and browse plugins
+- Ratings and reviews
+- Verified publisher badges
+
+#### Plugin Updates
+- Auto-update mechanism for plugins
+- Version compatibility checking
+- Rollback capability
+
+### Advanced Features
+
+#### Plugin Development Tools
+- VSCode extension for plugin development
+- Plugin scaffolding CLI
+- Live reload during development
+- Debug mode with better error messages
+
+#### Analytics & Telemetry
+- Optional usage analytics
+- Plugin performance metrics
+- Crash reporting
+- Privacy-respecting implementation
+
+### Internationalization
+
+#### i18n Support
+- Plugin UI localization
+- Core UI translations
+- RTL layout support
+- Locale detection
+
+---
+
+## 🐛 Known Issues
+
+- Plugin state persistence to disk is not wired up
+- Search modal in docs is not implemented
+- Core-to-plugin calling not implemented (action executor)
+- Some stub implementations in plugin runtime
+- TanStack Form integration pending
+- Expression syntax inconsistency (`{{}}` vs `${}`)
+
+---
+
+## 📋 Backlog
+
+- Plugin versioning strategy
+- Plugin migration system (schema changes)
+- Backup and restore functionality
+- Export/import plugin data
+- Theming system for plugins
+- Web version (without Tauri)
+- Plugin templates/examples repository
+- Community plugins showcase
+- Performance benchmarking suite
+
+---
+
+## Contributing
+
+We welcome contributions! If you'd like to work on any of these items:
+
+1. Check if an issue already exists on GitHub
+2. Comment on the issue to claim it
+3. Fork the repository and create a feature branch
+4. Submit a pull request when ready
+
+For questions or discussions about the roadmap, please open a [GitHub Discussion](https://github.com/cyberpath-HQ/orbis/discussions).

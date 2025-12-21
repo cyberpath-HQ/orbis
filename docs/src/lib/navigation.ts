@@ -155,6 +155,7 @@ export const docsNav: NavSection[] = [
     {
         title: `Resources`,
         items: [
+            { title: `Roadmap`, href: `/docs/roadmap/` },
             { title: `Changelog`, href: `/docs/changelog/` },
         ],
     },
