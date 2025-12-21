@@ -95,7 +95,7 @@
                     "visible": null,
                     "children": [],
                     "events": {
-                      "onChange": [
+                      "on_change": [
                         {
                           "type": "update_state",
                           "path": "name",
@@ -121,7 +121,7 @@
                     "visible": null,
                     "children": [],
                     "events": {
-                      "onClick": [
+                      "on_click": [
                         {
                           "type": "call_api",
                           "name": "createGreeting",
@@ -229,14 +229,14 @@
                 "type": "update_state",
                 "path": "name",
                 "value": null,
-                "from": "response.name",
+                "from": "$response.body.name",
                 "merge": false
               },
               {
                 "type": "update_state",
                 "path": "message",
                 "value": null,
-                "from": "response.message",
+                "from": "$response.body.message",
                 "merge": false
               }
             ],
