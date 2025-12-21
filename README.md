@@ -244,17 +244,15 @@ For comprehensive guides, API reference, and tutorials, visit the [full document
 View our development roadmap and planned features at [docs/src/docs/roadmap.mdx](docs/src/docs/roadmap.mdx).
 
 The roadmap includes:
-- **Auto-updated status tracking** - Synced with GitHub issues and PRs
 - **Priority levels** - High, Medium, and Low priority features
 - **Live links** - Direct links to related issues and pull requests
 - **Comprehensive coverage** - All planned features across all categories
-
-See [docs/ROADMAP-QUICKREF.md](docs/ROADMAP-QUICKREF.md) for quick reference on managing the roadmap.
 
 ## Community
 
 - Report Issues: [GitHub Issues](https://github.com/cyberpath-HQ/orbis/issues)
 - Contributing Guide: [CONTRIBUTING.md](https://github.com/cyberpath-HQ/orbis/blob/main/CONTRIBUTING.md)
+- Discord community: [DISCORD](https://discord.gg/WmPc56hYut)
 - Star us: [GitHub Repository](https://github.com/cyberpath-HQ/orbis)
 
 ## 📄 License
