@@ -1,10 +1,18 @@
 # 🚀 Orbis
 
-**NextGen Extensible Asset Management Platform**
+**Plugin-Driven Desktop Application Platform**
 
-Orbis is a modern, enterprise-grade asset management platform designed to provide comprehensive visibility and control over your IT infrastructure. Built with performance, security, and extensibility in mind.
+Orbis is a modern, extensible desktop application platform built with Rust and React. It enables developers to create powerful applications using a declarative JSON-based UI schema system, with WASM-sandboxed plugins for secure extensibility.
 
-> ⚠️ **IMPORTANT**: This project is **NOT production ready** and is under **active development**. Breaking changes may be applied at any time until production stability is reached. Use at your own risk.
+### 🎯 Key Highlights
+
+- **🔌 No React Required**: Build UI with JSON schemas - plugins don't ship React code
+- **🦀 Tauri Desktop App**: Native performance with Rust backend, React frontend
+- **🔒 WASM Sandboxing**: Secure plugin isolation with configurable permissions
+- **📊 35+ Components**: Rich component library including forms, tables, charts, and more
+- **⚡ Reactive State**: Zustand-powered state management with expression interpolation
+- **🎨 shadcn/ui**: Beautiful, accessible components out of the box
+- **🔄 Two Modes**: Standalone (SQLite) or Client-Server (PostgreSQL)
 
 ---
 
@@ -15,7 +23,7 @@ Orbis is a modern, enterprise-grade asset management platform designed to provid
 | Feature | Status | Description |
 |---------|--------|-------------|
 | **Cross-Platform Server** | ✅ Done | High-performance Rust/Axum backend that runs on Windows, Linux, and macOS |
-| **React GUI** | ✅ Done | Modern, intuitive web interface with plugin UI rendering |
+| **Schema-Driven UI** | ✅ Done | 35+ UI components rendered from JSON schemas with shadcn/ui |
 | **CLI Configuration** | ✅ Done | Full configuration via command line arguments and environment variables |
 | **Multi-Database Support** | ✅ Done | PostgreSQL and SQLite backends with automatic migrations |
 | **HTTPS/TLS Support** | ✅ Done | Optional TLS encryption with rustls |
@@ -27,8 +35,20 @@ Orbis is a modern, enterprise-grade asset management platform designed to provid
 |---------|--------|-------------|
 | **WASM Plugins** | ✅ Done | Secure, sandboxed WebAssembly plugins with wasmtime |
 | **Plugin Routes** | ✅ Done | Plugins can define custom API endpoints |
-| **Plugin Pages** | ✅ Done | Plugins can define React pages via JSON UI schema |
+| **Plugin Pages** | ✅ Done | Plugins define UI via JSON schemas (no React code needed) |
+| **Action System** | ✅ Done | 16 action types for interactive behaviors and state management |
 | **Plugin Registry** | ✅ Done | Hot-loading/unloading of plugins at runtime |
+
+### 🎨 UI System
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| **Component Library** | ✅ Done | 35+ built-in components (Button, Form, Table, Chart, etc.) |
+| **State Management** | ✅ Done | Zustand + Immer for reactive state with page-level stores |
+| **Expression System** | ✅ Done | Dynamic value interpolation with `{{state.field}}` syntax |
+| **Error Boundaries** | ✅ Done | Plugin and page-level error isolation |
+| **Lifecycle Hooks** | ✅ Done | `onMount` and `onUnmount` hooks for pages |
+| **Toast Notifications** | ✅ Done | Sonner integration for user feedback |
 
 ### 🔐 Security
 
@@ -46,6 +66,44 @@ Orbis is a modern, enterprise-grade asset management platform designed to provid
 | **Standalone** | Local database with embedded server (single user) |
 | **Client-Server** | Connect to remote Orbis server (multi-user) |
 
+
+## 🏗️ Architecture Overview
+
+Orbis uses a **schema-driven architecture** where plugins define UI through JSON instead of code:
+
+```mermaid
+flowchart LR
+    A["Plugin (WASM)"] --> B["JSON Schema"] --> C["SchemaRenderer (React)"] --> D["UI Components"]
+```
+
+**Key architectural decisions:**
+
+1. **No React in Plugins**: Plugins ship JSON schemas, not React code - the core `SchemaRenderer` interprets schemas and renders shadcn/ui components
+2. **WASM Sandboxing**: All plugins run in isolated wasmtime environments with configurable permissions
+3. **Action-Based Interactivity**: Instead of callbacks, plugins use action definitions (`updateState`, `callApi`, etc.) that the core executes
+4. **Page-Level State**: Each plugin page has its own Zustand store (no global state pollution)
+5. **Expression Interpolation**: Dynamic values use `{{state.field}}` syntax for reactive updates
+
+**Communication flow:**
+
+```mermaid
+flowchart TD
+    UI["User Interaction"]
+    EV["Event"]
+    AE["Action Executor"]
+    SU["State Update"]
+    RR["Re-render"]
+    TC["Tauri Commands"]
+    RB["Rust Backend"]
+    DB["Database"]
+    PR["Plugin Runtime (WASM)"]
+
+    UI --> EV --> AE --> SU --> RR
+    EV --> TC
+    TC <--> RB
+    RB --> DB
+    TC --> PR
+```
 
 ## 📦 Crate Structure
 
@@ -67,9 +125,34 @@ orbis/
 
 ### Prerequisites
 
-- Rust 1.91.0+ (nightly for Edition 2024)
-- Node.js 18+ (bun preferred)
-- PostgreSQL 15+ (or SQLite for standalone mode)
+- **Rust** 1.91.0+ (nightly for Edition 2024)
+- **Node.js** 18+ (bun recommended)
+- **PostgreSQL** 15+ (optional, for client-server mode)
+
+### Development Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/cyberpath-HQ/orbis
+cd orbis
+
+# Install frontend dependencies
+cd orbis && bun install
+
+# Run the Tauri desktop app in dev mode
+bun run tauri dev
+```
+
+The app will start with hot reload enabled for both frontend and backend changes.
+
+### Build for Production
+
+```bash
+cd orbis
+bun run tauri build
+```
+
+Outputs platform-specific installers in `src-tauri/target/release/bundle/`.
 
 ### Configuration
 
@@ -114,7 +197,65 @@ orbis plugin list
 
 ## 🔌 Plugin Development
 
-Orbis supports WASM plugins in three flavors:
+Plugins in Orbis are WASM modules that define their UI through **JSON schemas** instead of shipping React code. This enables secure sandboxing while providing a rich component library.
+
+### Quick Example
+
+A simple plugin page definition:
+
+```json
+{
+  "name": "hello-plugin",
+  "version": "1.0.0",
+  "pages": [
+    {
+      "route": "/hello",
+      "title": "Hello Page",
+      "show_in_menu": true,
+      "state": {
+        "count": { "type": "number", "default": 0 }
+      },
+      "sections": [
+        {
+          "type": "Container",
+          "children": [
+            {
+              "type": "Heading",
+              "level": 1,
+              "text": "Counter: {{state.count}}"
+            },
+            {
+              "type": "Button",
+              "label": "Increment",
+              "events": {
+                "on_click": [
+                  {
+                    "type": "update_state",
+                    "path": "count",
+                    "value": "{{state.count + 1}}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+### Building Plugins
+
+```bash
+# Navigate to your plugin directory
+cd plugins/my-plugin
+
+# Build the WASM module
+./build.sh
+
+# Plugin is ready to load in Orbis
+```
 
 ### Plugin Flavors
 
@@ -132,6 +273,28 @@ Orbis supports WASM plugins in three flavors:
    - Manifest must be embedded in WASM custom section
    - No external files, completely self-contained
    - Best for simple plugins without assets
+
+### Available Components
+
+Plugins have access to 35+ built-in components:
+
+- **Layout**: Container, Flex, Grid, Tabs, Accordion
+- **Forms**: Input, Select, Checkbox, Radio, DatePicker, FileUpload
+- **Data**: Table, DataGrid, Tree, Timeline
+- **Charts**: LineChart, BarChart, PieChart, AreaChart
+- **Display**: Text, Heading, Badge, Avatar, Separator
+- **Interactive**: Button, Link, Modal, Drawer, Tooltip
+- **Feedback**: Alert, Toast, Progress, Skeleton
+- **And more...**
+
+### Action Types
+
+16 action types enable rich interactivity:
+
+- `updateState`, `navigate`, `callApi`, `showToast`
+- `openModal`, `closeModal`, `submitForm`, `resetForm`
+- `emit`, `log`, `conditional`, `sequence`
+- `parallel`, `debounce`, `throttle`, `custom`
 
 ### Plugin Manifest
 
@@ -268,7 +431,24 @@ bun run tauri dev
 bun run tauri build
 ```
 
-## 📄 License
+## � Documentation
+
+For comprehensive guides, API reference, and tutorials, visit the [full documentation](./docs).
+
+**Key sections:**
+- [Getting Started](./docs/src/docs/getting-started/) - Installation and quickstart guides
+- [Core Concepts](./docs/src/docs/core-concepts/) - Architecture and plugin system
+- [Components](./docs/src/docs/components/) - Complete component library reference
+- [Actions](./docs/src/docs/actions/) - Action types and event handling
+- [API Reference](./docs/src/docs/api-reference/) - Complete API documentation
+
+## 🤝 Community
+
+- 🐛 [Report Issues](https://github.com/cyberpath-HQ/orbis/issues)
+- 📖 [Contributing Guide](https://github.com/cyberpath-HQ/orbis/blob/main/CONTRIBUTING.md)
+- ⭐ [Star us on GitHub](https://github.com/cyberpath-HQ/orbis)
+
+## �📄 License
 
 MIT License - see [LICENSE](LICENSE) for details.
 
