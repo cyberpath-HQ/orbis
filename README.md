@@ -1,5 +1,9 @@
 <p align="center">
-  <img src="./docs/public/logo.svg" alt="Orbis Logo" width="350"/>
+  <picture>
+    <source srcset="./docs/public/logo-white.svg" media="(prefers-color-scheme: dark)" />
+    <source srcset="./docs/public/logo.svg" media="(prefers-color-scheme: light)" />
+    <img src="./docs/public/logo.svg" alt="Orbis Logo" height="64"/>
+  </picture>
 </p>
 <h2 align="center">A Plugin-Driven Desktop Application Platform</h2>
 
