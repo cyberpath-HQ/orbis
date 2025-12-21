@@ -10,20 +10,58 @@ This page outlines the planned features, improvements, and development prioritie
 
 ## Summary of Pending Features
 
-The table below provides a concise, live-linked overview of high-priority items and where related GitHub issues or PRs can be found. Use the "Find issues/PRs" link to search issues and pull requests for up-to-date status.
+The table below provides a comprehensive overview of all planned features across all priority levels. This table is automatically updated by GitHub Actions to sync with real issue and PR data.
 
-| Feature | Status | Issues / PRs |
-| --- | --- | --- |
-| Publish `orbis-plugin-api` to crates.io | Open | [Find issues/PRs](https://github.com/cyberpath-HQ/orbis/issues?q=orbis-plugin-api+crates)
-| Deploy docs to GitHub Pages | Open | [Find issues/PRs](https://github.com/cyberpath-HQ/orbis/issues?q=docs+github+pages)
-| Build & Release Tauri Binaries (auto-updates) | Open | [Find issues/PRs](https://github.com/cyberpath-HQ/orbis/issues?q=tauri+release+auto-update)
-| Plugin packages (collections of plugins) | Open | [Find issues/PRs](https://github.com/cyberpath-HQ/orbis/issues?q=plugin+packages)
-| Pre-install / Pre-enable plugins | Open | [Find issues/PRs](https://github.com/cyberpath-HQ/orbis/issues?q=pre-install+plugins)
-| Plugin permissions & graphical modal | Open | [Find issues/PRs](https://github.com/cyberpath-HQ/orbis/issues?q=plugin+permissions)
-| Plugin-to-plugin IPC / shared state | Open | [Find issues/PRs](https://github.com/cyberpath-HQ/orbis/issues?q=inter-plugin+ipc)
-| Filesystem access for plugins | Open | [Find issues/PRs](https://github.com/cyberpath-HQ/orbis/issues?q=plugin+filesystem)
-| Full GUI override capability | Open | [Find issues/PRs](https://github.com/cyberpath-HQ/orbis/issues?q=gui+override)
-| Pest-based DSL for page definitions | Open | [Find issues/PRs](https://github.com/cyberpath-HQ/orbis/issues?q=pest+dsl)
+> **Last Auto-Update**: This table is refreshed daily via GitHub Actions. Manual updates may be more recent.
+
+| Priority | Feature | Status | Issues / PRs |
+| --- | --- | --- | --- |
+| **High** | Publish `orbis-plugin-api` to crates.io | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=crates.io+plugin-api) |
+| **High** | Deploy docs to GitHub Pages | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=docs+github+pages) |
+| **High** | Build & Release Tauri Binaries with auto-updates | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=tauri+release+auto-update) |
+| **High** | Automated Testing CI/CD | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=ci+automated+testing) |
+| **High** | Plugin Packages System | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=plugin+packages) |
+| **High** | Pre-installed & Pre-enabled Plugins | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=pre-install+plugins) |
+| **High** | Plugin Permissions & Graphical Modal | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=plugin+permissions+modal) |
+| **High** | Plugin Lockdown Mode | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=plugin+lockdown) |
+| **High** | Non-removable & Non-disablable Plugins | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=system+plugins) |
+| **High** | Plugin-to-Plugin IPC | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=inter-plugin+ipc) |
+| **High** | Shared State Between Plugins | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=plugin+shared+state) |
+| **High** | Plugin Filesystem API | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=plugin+filesystem) |
+| **High** | Full GUI Override Capability | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=gui+override) |
+| **High** | Pest-based DSL for Page Definitions | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=pest+dsl+schema) |
+| **High** | Plugin Metadata DSL | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=metadata+dsl) |
+| **Medium** | Remove Dead Plugin State Persistence Code | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=dead+code+state) |
+| **Medium** | Encrypted Data at Rest | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=encryption+data) |
+| **Medium** | Encrypted Configuration Files | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=encrypted+config) |
+| **Medium** | Hardcoded Default CLI Variables | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=cli+defaults) |
+| **Medium** | Configuration Validation | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=config+validation) |
+| **Medium** | Wire Up All Features in Default GUI | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=gui+features) |
+| **Medium** | Fix Plugin Refresh Button | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=plugin+refresh) |
+| **Medium** | Improved Plugin Loading Screen | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=plugin+loading) |
+| **Medium** | Audit All Documentation | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=docs+audit) |
+| **Medium** | Complete Missing Documentation | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=docs+missing) |
+| **Medium** | Documentation for New Features | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=docs+new+features) |
+| **Medium** | Audit for Unused Code | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=unused+code) |
+| **Medium** | Consolidate Duplicate Code | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=duplicate+code) |
+| **Medium** | Implement Missing Runtime Functions | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=runtime+functions) |
+| **Medium** | Add Comprehensive Tests | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=tests+comprehensive) |
+| **Medium** | Error Handling Improvements | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=error+handling) |
+| **Medium** | Renderer Performance Optimization | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=renderer+performance) |
+| **Medium** | Database Performance | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=database+performance) |
+| **Medium** | Security Audit | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=security+audit) |
+| **Medium** | Dependency Security | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=dependency+security) |
+| **Medium** | Secrets Management | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=secrets+management) |
+| **Low** | Plugin Discovery & Marketplace | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=plugin+marketplace) |
+| **Low** | Plugin Auto-updates | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=plugin+updates) |
+| **Low** | Plugin Development Tools | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=plugin+dev+tools) |
+| **Low** | Analytics & Telemetry | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=analytics+telemetry) |
+| **Low** | Internationalization (i18n) | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=i18n+localization) |
+
+{/* AUTO-GENERATED-TABLE-START */}
+{/* This section is automatically updated by .github/workflows/update-roadmap.yml */}
+{/* Do not manually edit between these comments */}
+{/* AUTO-GENERATED-TABLE-END */}
 
 ---
 
@@ -336,7 +374,7 @@ The table below provides a concise, live-linked overview of high-priority items 
 
 ---
 
-## 🐛 Known Issues
+## Known Issues
 
 - Plugin state persistence to disk is not wired up
 - Search modal in docs is not implemented
@@ -347,7 +385,7 @@ The table below provides a concise, live-linked overview of high-priority items 
 
 ---
 
-## 📋 Backlog
+## Backlog
 
 - Plugin versioning strategy
 - Plugin migration system (schema changes)

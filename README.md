@@ -239,11 +239,23 @@ bun run tauri build
 
 For comprehensive guides, API reference, and tutorials, visit the [full documentation](https://orbis.cyberpath-hq.com).
 
-## 🤝 Community
+### Roadmap
 
-- 🐛 [Report Issues](https://github.com/cyberpath-HQ/orbis/issues)
-- 📖 [Contributing Guide](https://github.com/cyberpath-HQ/orbis/blob/main/CONTRIBUTING.md)
-- ⭐ [Star us on GitHub](https://github.com/cyberpath-HQ/orbis)
+View our development roadmap and planned features at [docs/src/docs/roadmap.mdx](docs/src/docs/roadmap.mdx).
+
+The roadmap includes:
+- **Auto-updated status tracking** - Synced with GitHub issues and PRs
+- **Priority levels** - High, Medium, and Low priority features
+- **Live links** - Direct links to related issues and pull requests
+- **Comprehensive coverage** - All planned features across all categories
+
+See [docs/ROADMAP-QUICKREF.md](docs/ROADMAP-QUICKREF.md) for quick reference on managing the roadmap.
+
+## Community
+
+- Report Issues: [GitHub Issues](https://github.com/cyberpath-HQ/orbis/issues)
+- Contributing Guide: [CONTRIBUTING.md](https://github.com/cyberpath-HQ/orbis/blob/main/CONTRIBUTING.md)
+- Star us: [GitHub Repository](https://github.com/cyberpath-HQ/orbis)
 
 ## 📄 License
 
