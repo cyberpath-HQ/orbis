@@ -10,7 +10,7 @@
 
 Orbis is a modern, extensible desktop application platform built with Rust and React. It enables developers to create powerful applications using a declarative JSON-based UI schema system, with WASM-sandboxed plugins for secure extensibility.
 
-### 🎯 Key Highlights
+### Key Highlights
 
 - **🔌 No React Required**: Build UI with JSON schemas - plugins don't ship React code
 - **🦀 Tauri Desktop App**: Native performance with Rust backend, React frontend
@@ -22,9 +22,9 @@ Orbis is a modern, extensible desktop application platform built with Rust and R
 
 ---
 
-## ✨ Features
+## Features
 
-### 🔧 Core Platform Features
+### Core Platform Features
 
 | Feature | Description |
 |---------|-------------|
@@ -35,7 +35,7 @@ Orbis is a modern, extensible desktop application platform built with Rust and R
 | **HTTPS/TLS Support** | Optional TLS encryption with rustls |
 | **JSON API** | RESTful API for communication and integration with existing tools |
 
-### 🔌 Plugin System
+### Plugin System
 
 | Feature | Description |
 |---------|-------------|
@@ -45,7 +45,7 @@ Orbis is a modern, extensible desktop application platform built with Rust and R
 | **Action System** | 16 action types for interactive behaviors and state management |
 | **Plugin Registry** | Hot-loading/unloading of plugins at runtime |
 
-### 🎨 UI System
+### UI System
 
 | Feature | Description |
 |---------|-------------|
@@ -56,7 +56,7 @@ Orbis is a modern, extensible desktop application platform built with Rust and R
 | **Lifecycle Hooks** | `onMount` and `onUnmount` hooks for pages |
 | **Toast Notifications** | Sonner integration for user feedback |
 
-### 🔐 Security
+### Security
 
 | Feature | Description |
 |---------|-------------|
@@ -64,7 +64,8 @@ Orbis is a modern, extensible desktop application platform built with Rust and R
 | **Argon2 Password Hashing** | Industry-standard password security |
 | **Session Management** | Secure session handling with refresh tokens |
 | **WASM Sandboxing** | Plugins run in secure sandboxed environment |
-### 🔄 Modes
+
+### Modes
 
 | Mode | Description |
 |------|-------------|
@@ -72,7 +73,7 @@ Orbis is a modern, extensible desktop application platform built with Rust and R
 | **Client-Server** | Connect to remote Orbis server (multi-user) |
 
 
-## 🏗️ Architecture Overview
+## Architecture Overview
 
 Orbis uses a **schema-driven architecture** where plugins define UI through JSON instead of code:
 
@@ -110,7 +111,7 @@ flowchart TD
     TC --> PR
 ```
 
-## 📦 Crate Structure
+## Crate Structure
 
 ```
 crates/
@@ -126,7 +127,7 @@ orbis/
 └── src-tauri/         # Tauri desktop application
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -234,7 +235,7 @@ bun run tauri dev
 bun run tauri build
 ```
 
-## 📚 Documentation
+## Documentation
 
 For comprehensive guides, API reference, and tutorials, visit the [full documentation](https://orbis.cyberpath-hq.com).
 
