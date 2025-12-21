@@ -120,18 +120,18 @@ impl Request {
 
         let result_ptr = unsafe {
             super::ffi::http_request(
-                method_str.as_ptr(),
+                method_str.as_ptr() as i32,
                 method_str.len() as i32,
-                self.url.as_ptr(),
+                self.url.as_ptr() as i32,
                 self.url.len() as i32,
-                headers_json.as_ptr(),
+                headers_json.as_ptr() as i32,
                 headers_json.len() as i32,
-                body.as_ptr(),
+                body.as_ptr() as i32,
                 body.len() as i32,
             )
         };
 
-        if result_ptr.is_null() {
+        if result_ptr == 0 {
             return Err(Error::http("HTTP request failed"));
         }
 

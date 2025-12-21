@@ -93,10 +93,10 @@ pub enum LogLevel {
 ///
 /// ```rust,no_run
 /// unsafe extern "C" {
-///     fn log(level: i32, ptr: *const u8, len: i32);
-///     fn state_get(key_ptr: *const u8, key_len: i32) -> *const u8;
-///     fn state_set(key_ptr: *const u8, key_len: i32, value_ptr: *const u8, value_len: i32) -> i32;
-///     fn state_remove(key_ptr: *const u8, key_len: i32) -> i32;
+///     fn log(level: i32, ptr: i32, len: i32);
+///     fn state_get(key_ptr: i32, key_len: i32) -> i32;
+///     fn state_set(key_ptr: i32, key_len: i32, value_ptr: i32, value_len: i32) -> i32;
+///     fn state_remove(key_ptr: i32, key_len: i32) -> i32;
 /// }
 /// ```
 #[allow(dead_code)]
@@ -107,18 +107,18 @@ impl HostFunctions {
     ///
     /// # Parameters
     /// - `level`: Log level (0=ERROR, 1=WARN, 2=INFO, 3=DEBUG, 4=TRACE)
-    /// - `ptr`: Pointer to UTF-8 message bytes
+    /// - `ptr`: Pointer to UTF-8 message bytes (as i32 in WASM)
     /// - `len`: Length of message in bytes
     ///
     /// # Example
     /// ```rust,no_run
     /// unsafe extern "C" {
-    ///     fn log(level: i32, ptr: *const u8, len: i32);
+    ///     fn log(level: i32, ptr: i32, len: i32);
     /// }
     ///
     /// fn log_info(msg: &str) {
     ///     unsafe {
-    ///         log(2, msg.as_ptr(), msg.len() as i32);
+    ///         log(2, msg.as_ptr() as i32, msg.len() as i32);
     ///     }
     /// }
     /// ```
@@ -127,25 +127,25 @@ impl HostFunctions {
     /// Get a value from plugin state.
     ///
     /// # Parameters
-    /// - `key_ptr`: Pointer to UTF-8 key bytes
+    /// - `key_ptr`: Pointer to UTF-8 key bytes (as i32 in WASM)
     /// - `key_len`: Length of key in bytes
     ///
     /// # Returns
-    /// Pointer to JSON-serialized value (with 4-byte length prefix), or NULL if key not found.
+    /// Pointer to JSON-serialized value (with 4-byte length prefix), or 0 if key not found.
     ///
     /// # Example
     /// ```rust,no_run
     /// unsafe extern "C" {
-    ///     fn state_get(key_ptr: *const u8, key_len: i32) -> *const u8;
+    ///     fn state_get(key_ptr: i32, key_len: i32) -> i32;
     /// }
     ///
     /// fn get_counter() -> Option<i64> {
     ///     let key = "counter";
     ///     let ptr = unsafe {
-    ///         state_get(key.as_ptr(), key.len() as i32)
+    ///         state_get(key.as_ptr() as i32, key.len() as i32)
     ///     };
     ///     
-    ///     if ptr.is_null() {
+    ///     if ptr == 0 {
     ///         return None;
     ///     }
     ///     
@@ -159,9 +159,9 @@ impl HostFunctions {
     /// Set a value in plugin state.
     ///
     /// # Parameters
-    /// - `key_ptr`: Pointer to UTF-8 key bytes
+    /// - `key_ptr`: Pointer to UTF-8 key bytes (as i32 in WASM)
     /// - `key_len`: Length of key in bytes
-    /// - `value_ptr`: Pointer to JSON-serialized value bytes
+    /// - `value_ptr`: Pointer to JSON-serialized value bytes (as i32 in WASM)
     /// - `value_len`: Length of value in bytes
     ///
     /// # Returns
@@ -170,7 +170,7 @@ impl HostFunctions {
     /// # Example
     /// ```rust,no_run
     /// unsafe extern "C" {
-    ///     fn state_set(key_ptr: *const u8, key_len: i32, value_ptr: *const u8, value_len: i32) -> i32;
+    ///     fn state_set(key_ptr: i32, key_len: i32, value_ptr: i32, value_len: i32) -> i32;
     /// }
     ///
     /// fn set_counter(value: i64) -> bool {
@@ -179,9 +179,9 @@ impl HostFunctions {
     ///     
     ///     let result = unsafe {
     ///         state_set(
-    ///             key.as_ptr(),
+    ///             key.as_ptr() as i32,
     ///             key.len() as i32,
-    ///             value_json.as_ptr(),
+    ///             value_json.as_ptr() as i32,
     ///             value_json.len() as i32,
     ///         )
     ///     };
@@ -203,13 +203,13 @@ impl HostFunctions {
     /// # Example
     /// ```rust,no_run
     /// unsafe extern "C" {
-    ///     fn state_remove(key_ptr: *const u8, key_len: i32) -> i32;
+    ///     fn state_remove(key_ptr: i32, key_len: i32) -> i32;
     /// }
     ///
     /// fn clear_counter() -> bool {
     ///     let key = "counter";
     ///     let result = unsafe {
-    ///         state_remove(key.as_ptr(), key.len() as i32)
+    ///         state_remove(key.as_ptr() as i32, key.len() as i32)
     ///     };
     ///     
     ///     result == 1

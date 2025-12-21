@@ -218,14 +218,14 @@ pub fn query<T: DeserializeOwned>(sql: &str, params: impl ToDbParams) -> Result<
 
     let result_ptr = unsafe {
         super::ffi::db_query(
-            sql.as_ptr(),
+            sql.as_ptr() as i32,
             sql.len() as i32,
-            request_json.as_ptr(),
+            request_json.as_ptr() as i32,
             request_json.len() as i32,
         )
     };
 
-    if result_ptr.is_null() {
+    if result_ptr == 0 {
         return Err(Error::database("Database query failed"));
     }
 
@@ -261,14 +261,14 @@ pub fn query_raw(sql: &str, params: impl ToDbParams) -> Result<Vec<DbRow>> {
 
     let result_ptr = unsafe {
         super::ffi::db_query(
-            sql.as_ptr(),
+            sql.as_ptr() as i32,
             sql.len() as i32,
-            request_json.as_ptr(),
+            request_json.as_ptr() as i32,
             request_json.len() as i32,
         )
     };
 
-    if result_ptr.is_null() {
+    if result_ptr == 0 {
         return Err(Error::database("Database query failed"));
     }
 
@@ -328,9 +328,9 @@ pub fn execute(sql: &str, params: impl ToDbParams) -> Result<i64> {
 
     let result = unsafe {
         super::ffi::db_execute(
-            sql.as_ptr(),
+            sql.as_ptr() as i32,
             sql.len() as i32,
-            params_json.as_ptr(),
+            params_json.as_ptr() as i32,
             params_json.len() as i32,
         )
     };

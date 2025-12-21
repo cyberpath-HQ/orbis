@@ -31,10 +31,10 @@ use serde::{de::DeserializeOwned, Serialize};
 #[cfg(target_arch = "wasm32")]
 pub fn get<T: DeserializeOwned>(key: &str) -> Result<Option<T>> {
     let ptr = unsafe {
-        super::ffi::state_get(key.as_ptr(), key.len() as i32)
+        super::ffi::state_get(key.as_ptr() as i32, key.len() as i32)
     };
 
-    if ptr.is_null() {
+    if ptr == 0 {
         return Ok(None);
     }
 
@@ -78,9 +78,9 @@ pub fn set<T: Serialize>(key: &str, value: &T) -> Result<()> {
 
     let result = unsafe {
         super::ffi::state_set(
-            key.as_ptr(),
+            key.as_ptr() as i32,
             key.len() as i32,
-            value_json.as_ptr(),
+            value_json.as_ptr() as i32,
             value_json.len() as i32,
         )
     };
@@ -106,7 +106,7 @@ pub fn set<T: Serialize>(_key: &str, _value: &T) -> Result<()> {
 #[cfg(target_arch = "wasm32")]
 pub fn remove(key: &str) -> Result<()> {
     let result = unsafe {
-        super::ffi::state_remove(key.as_ptr(), key.len() as i32)
+        super::ffi::state_remove(key.as_ptr() as i32, key.len() as i32)
     };
 
     if result == 1 {
@@ -187,9 +187,9 @@ pub fn len(key: &str) -> Result<usize> {
 #[cfg(target_arch = "wasm32")]
 pub fn exists(key: &str) -> bool {
     let ptr = unsafe {
-        super::ffi::state_get(key.as_ptr(), key.len() as i32)
+        super::ffi::state_get(key.as_ptr() as i32, key.len() as i32)
     };
-    !ptr.is_null()
+    ptr != 0
 }
 
 /// Check if a key exists in state (non-WASM stub)

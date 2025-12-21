@@ -26,7 +26,7 @@ pub mod level {
 #[inline]
 pub fn log_at_level(level: i32, message: &str) {
     unsafe {
-        super::ffi::log(level, message.as_ptr(), message.len() as i32);
+        super::ffi::log(level, message.as_ptr() as i32, message.len() as i32);
     }
 }
 
