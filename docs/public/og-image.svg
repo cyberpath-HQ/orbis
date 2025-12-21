@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="-351.829 -244.267 1195.715 626.037" xmlns:bx="https://boxy-svg.com">
   <defs>
     <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0" style="stop-color:#0f172a;stop-opacity:1"></stop>
-      <stop offset="1" style="stop-color:#1e293b;stop-opacity:1"></stop>
+      <stop offset="0" style="stop-color:#0a0a0a;stop-opacity:1"></stop>
+      <stop offset="1" style="stop-color:#262222;stop-opacity:1"></stop>
     </linearGradient>
     <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
       <stop offset="0" style="stop-color:#6366f1;stop-opacity:1"></stop>
