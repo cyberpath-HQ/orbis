@@ -1,5 +1,6 @@
 ---
 import { docsNav, mainNav } from '@/lib/navigation';
+import SearchButton from '@/components/SearchButton.astro';
 
 const currentPath = Astro.url.pathname;
 ---
@@ -51,6 +52,9 @@ const currentPath = Astro.url.pathname;
     <div class="container px-4 pt-6 pb-28">
         <!-- Main Nav -->
         <nav class="mb-6 space-y-1">
+            <div class="mb-4">
+                <SearchButton />
+            </div>
             {mainNav.map((item) => (
                 <a
                     href={item.href}
