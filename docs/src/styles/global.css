@@ -477,3 +477,16 @@ html.dark pre.astro-code {
   border-width: 0;
 }
 
+/* Add a small margin / padding around edge (arrow) labels.
+Mermaid typically renders an <rect> behind edge labels; we expand
+that rect slightly and nudge the text so it appears padded. This
+keeps the change purely visual and resilient across mermaid versions. */
+.mermaid .edgeLabel foreignObject {
+  overflow: visible;
+}
+.mermaid .edgeLabel foreignObject .edgeLabel {
+  padding: 2px 4px;
+  border-radius: 4px;
+  display: block;
+  font-size: 0.875em;
+}
