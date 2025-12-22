@@ -226,6 +226,38 @@ macro_rules! wrap_handler {
         }
     };
 }
+/// Define memory allocation functions for the plugin
+/// 
+/// # Usage
+/// ```rust,ignore
+/// orbis_allocators!();
+/// ```
+#[macro_export]
+macro_rules! orbis_allocators {
+    () => {
+        // Memory management functions - defined directly to avoid optimization issues
+        #[unsafe(no_mangle)]
+        #[inline(never)]
+        pub extern "C" fn allocate(size: i32) -> *mut u8 {
+            use core::alloc::Layout;
+            let layout = Layout::from_size_align(size as usize, 1).unwrap();
+            // SAFETY: We're using the global allocator which is valid in WASM
+            unsafe { std::alloc::alloc(layout) }
+        }
+        
+        #[unsafe(no_mangle)]
+        #[inline(never)]
+        pub extern "C" fn deallocate(ptr: *mut u8, size: i32) {
+            if ptr.is_null() {
+                return;
+            }
+            use core::alloc::Layout;
+            let layout = Layout::from_size_align(size as usize, 1).unwrap();
+            // SAFETY: ptr was allocated by allocate() with the same layout
+            unsafe { std::alloc::dealloc(ptr, layout) }
+        }
+    };
+}
 
 /// Define a complete plugin with minimal boilerplate
 ///
@@ -278,6 +310,8 @@ macro_rules! orbis_plugin {
                 }
             }
         }
+
+        $crate::sdk::ffi::orbis_allocators!();
     };
 
     // With only init
@@ -299,6 +333,8 @@ macro_rules! orbis_plugin {
         pub extern "C" fn cleanup() -> i32 {
             1 // No-op cleanup
         }
+
+        $crate::sdk::ffi::orbis_allocators!();
     };
 
     // No init or cleanup (just lifecycle stubs)
@@ -313,29 +349,10 @@ macro_rules! orbis_plugin {
             1
         }
         
-        // Memory management functions - defined directly to avoid optimization issues
-        #[unsafe(no_mangle)]
-        #[inline(never)]
-        pub extern "C" fn allocate(size: i32) -> *mut u8 {
-            use core::alloc::Layout;
-            let layout = Layout::from_size_align(size as usize, 1).unwrap();
-            // SAFETY: We're using the global allocator which is valid in WASM
-            unsafe { std::alloc::alloc(layout) }
-        }
-        
-        #[unsafe(no_mangle)]
-        #[inline(never)]
-        pub extern "C" fn deallocate(ptr: *mut u8, size: i32) {
-            if ptr.is_null() {
-                return;
-            }
-            use core::alloc::Layout;
-            let layout = Layout::from_size_align(size as usize, 1).unwrap();
-            // SAFETY: ptr was allocated by allocate() with the same layout
-            unsafe { std::alloc::dealloc(ptr, layout) }
-        }
+        $crate::sdk::ffi::orbis_allocators!();
     };
 }
 
 pub use orbis_plugin;
 pub use wrap_handler;
+pub use orbis_allocators;
