@@ -34,7 +34,13 @@ export interface UpdateStateAction extends BaseAction {
     path:   string
     value?: unknown
     from?:  Expression
+
+    /**
+     * If true, merges the value with existing state at the path
+     * @deprecated Use `mode: 'merge'` instead
+     */
     merge?: boolean
+    mode?:  `set` | `merge` | `append` | `prepend` | `remove`
 }
 
 // API call action - calls a backend API
