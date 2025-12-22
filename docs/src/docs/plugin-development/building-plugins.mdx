@@ -15,11 +15,13 @@ Learn how to build, package, and distribute your Orbis plugins.
 ## Build Process Overview
 
 <Mermaid>
+```mermaid
 flowchart LR
     A[Rust Source] --> B[cargo build]
     B --> C[WASM Binary]
     C --> D[Add Manifest]
     D --> E[Final Plugin]
+```
 </Mermaid>
 
 ## Project Structure
