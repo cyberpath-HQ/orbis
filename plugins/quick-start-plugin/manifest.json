@@ -1,0 +1,111 @@
+{
+  "name": "quick-start-plugin",
+  "version": "1.0.0",
+  "description": "A simple greeting plugin with click counter",
+  "author": "You",
+  "license": "MIT",
+  "min_orbis_version": "1.0.0",
+
+  "wasm_entry": "quick_start_plugin.wasm",
+
+  "routes": [
+    {
+      "path": "/greeting",
+      "method": "GET",
+      "handler": "get_greeting"
+    },
+    {
+      "path": "/increment",
+      "method": "POST",
+      "handler": "increment_count"
+    }
+  ],
+
+  "pages": [
+    {
+      "id": "greeting-page",
+      "title": "Quick Start",
+      "icon": "waves",
+      "route": "/hello",
+
+      "state": {
+        "name": {
+          "type": "string",
+          "default": "World"
+        },
+        "count": {
+          "type": "number",
+          "default": 0
+        },
+        "message": {
+          "type": "string",
+          "default": ""
+        }
+      },
+
+      "sections": [
+        {
+          "type": "Container",
+          "className": "flex items-center justify-center bg-gradient-to-br from-purple-500 to-pink-500",
+          "children": [
+            {
+              "type": "Card",
+              "className": "p-8 shadow-2xl max-w-md w-full",
+              "content": {
+                "type": "Container",
+                "className": "flex flex-col space-y-4",
+                "children": [
+                  {
+                    "type": "Text",
+                    "content": "Hello, {{state.name}}!",
+                    "className": "text-4xl font-bold text-center mb-2"
+                  },
+                  {
+                    "type": "Text",
+                    "content": "Clicks: {{state.count}}",
+                    "className": "text-center text-gray-600 mb-6"
+                  },
+                  {
+                    "type": "Field",
+                    "fieldType": "text",
+                    "placeholder": "Enter your name",
+                    "defaultValue": "{{state.name}}",
+                    "bindTo": "name"
+                  },
+                  {
+                    "type": "Button",
+                    "label": "Click Me!",
+                    "className": "w-full",
+                    "events": {
+                      "on_click": [
+                        {
+                          "type": "call_api",
+                          "api": "plugin.increment_count",
+                          "method": "POST",
+                          "on_success": [
+                            {
+                              "type": "update_state",
+                              "path": "count",
+                              "from": "$response.body.count"
+                            },
+                            {
+                              "type": "show_toast",
+                              "message": "{{$response.body.message}}",
+                              "level": "success",
+                              "title": "Counter Updated",
+                              "duration": 3000
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
