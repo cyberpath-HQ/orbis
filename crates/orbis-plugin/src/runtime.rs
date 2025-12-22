@@ -1342,7 +1342,7 @@ impl PluginRuntime {
         caller: &mut Caller<'_, StoreData>,
         data: &[u8],
     ) -> orbis_core::Result<(u32, u32)> {
-        let len = data.len() as u32;
+        let data_len = data.len() as u32;
 
         if data.len() > MAX_ALLOCATION_SIZE {
             return Err(orbis_core::Error::plugin(format!(
@@ -1361,9 +1361,11 @@ impl PluginRuntime {
                 orbis_core::Error::plugin("allocate function not found in WASM module")
             })?;
 
+        // Allocate space for length prefix (4 bytes) + data
+        let total_size = 4 + data_len;
         let mut results = vec![Val::I32(0)];
         alloc_func
-            .call(caller.as_context_mut(), &[Val::I32(len as i32)], &mut results)
+            .call(caller.as_context_mut(), &[Val::I32(total_size as i32)], &mut results)
             .map_err(|e| {
                 orbis_core::Error::plugin(format!("Failed to call allocate: {}", e))
             })?;
@@ -1377,12 +1379,18 @@ impl PluginRuntime {
             }
         };
 
-        // Write data
+        // Write length prefix (little-endian u32)
+        let len_bytes = data_len.to_le_bytes();
         memory
-            .write(caller, ptr as usize, data)
-            .map_err(|e| orbis_core::Error::plugin(format!("Failed to write to memory: {}", e)))?;
+            .write( caller.as_context_mut(), ptr as usize, &len_bytes)
+            .map_err(|e| orbis_core::Error::plugin(format!("Failed to write length prefix: {}", e)))?;
 
-        Ok((ptr, len))
+        // Write data after the length prefix
+        memory
+            .write(caller.as_context_mut(), (ptr + 4) as usize, data)
+            .map_err(|e| orbis_core::Error::plugin(format!("Failed to write data: {}", e)))?;
+
+        Ok((ptr, total_size))
     }
 
     /// Deallocate memory in WASM
