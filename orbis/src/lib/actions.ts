@@ -244,7 +244,7 @@ export async function executeActions(
 
 function executeUpdateState(action: UpdateStateAction, context: ActionContext): void {
     const {
-        from, value: actionValue, merge: should_merge, path,
+        from, value: actionValue, merge, path, mode,
     } = action;
     let value: unknown;
 
@@ -255,10 +255,45 @@ function executeUpdateState(action: UpdateStateAction, context: ActionContext): 
         value = actionValue;
     }
 
+    const should_merge = merge === true || mode === `merge`;
     if (should_merge && typeof value === `object` && value !== null) {
         context.state.mergeState(path, value as Record<string, unknown>);
     }
+    else if (mode === `append`) {
+        const existing = context.state.getValue(path);
+        if (Array.isArray(existing)) {
+            context.state.setState(path, [
+                ...existing,
+                value,
+            ]);
+        }
+        else {
+            context.state.setState(path, [ value ]);
+        }
+    }
+    else if (mode === `prepend`) {
+        const existing = context.state.getValue(path);
+        if (Array.isArray(existing)) {
+            context.state.setState(path, [
+                value,
+                ...existing,
+            ]);
+        }
+        else {
+            context.state.setState(path, [ value ]);
+        }
+    }
+    else if (mode === `remove`) {
+        const existing = context.state.getValue(path);
+        if (Array.isArray(existing)) {
+            context.state.setState(
+                path,
+                existing.filter((item) => item !== value)
+            );
+        }
+    }
     else {
+        // Default to set
         context.state.setState(path, value);
     }
 }
@@ -465,7 +500,7 @@ function resolveObjectValues(
  * Download a file from URL or blob
  */
 async function executeDownload(action: { url: string
-    filename?:                                 string }, context: ActionContext): Promise<void> {
+    filename?:                                string }, context: ActionContext): Promise<void> {
     const url = resolveValue(action.url, context) as string;
     const filename = action.filename
         ? resolveValue(action.filename, context) as string
@@ -511,7 +546,7 @@ const FORM_STATES = new Map<string, {
     fields:     Map<string, { value: unknown
         errors:                      Array<string>
         touched:                     boolean }>
-    isValid:    boolean
+    isValid:     boolean
     isSubmitted: boolean
 }>();
 
@@ -599,8 +634,10 @@ async function executeValidateForm(
     },
     context: ActionContext
 ): Promise<void> {
-    const formId = action.formId;
-    let formState = FORM_STATES.get(formId);
+    const {
+        formId,
+    } = action;
+    const formState = FORM_STATES.get(formId);
 
     if (!formState) {
         // No form state, try to validate from DOM
@@ -639,7 +676,7 @@ async function executeValidateForm(
         // Get validation rules from state if defined
         const validationPath = `__validation.${ formId }.${ fieldName }`;
         const rules = stateData[validationPath] as {
-            required?: boolean
+            required?:  boolean
             minLength?: number
             maxLength?: number
             pattern?:   string
@@ -649,7 +686,9 @@ async function executeValidateForm(
         } | undefined;
 
         if (rules) {
-            const value = field.value;
+            const {
+                value,
+            } = field;
 
             if (rules.required && (value === null || value === undefined || value === ``)) {
                 errors.push(`This field is required`);
@@ -693,10 +732,8 @@ async function executeValidateForm(
             await executeActions(action.onValid, context);
         }
     }
-    else {
-        if (action.onInvalid) {
-            await executeActions(action.onInvalid, context);
-        }
+    else if (action.onInvalid) {
+        await executeActions(action.onInvalid, context);
     }
 }
 
@@ -707,7 +744,9 @@ function executeResetForm(
     action: { formId: string },
     context: ActionContext
 ): void {
-    const formId = action.formId;
+    const {
+        formId,
+    } = action;
 
     // Clear form state tracking
     FORM_STATES.delete(formId);
