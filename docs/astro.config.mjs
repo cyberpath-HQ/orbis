@@ -12,9 +12,7 @@ import rehypeSlug from "rehype-slug";
 export default defineConfig({
     integrations: [
         react(),
-        sitemap({
-            filter: (page) => !page.includes(`/api/`),
-        }),
+        sitemap(),
         mdx({
             extendMarkdownConfig: true,
             gfm:                  true,
