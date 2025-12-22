@@ -96,7 +96,7 @@ Conditional rendering based on expressions.
   "then": {
     "type": "Button",
     "label": "Admin Settings",
-    "events": { "onClick": [{ "type": "navigate", "to": "/admin" }] }
+    "events": { "on_click": [{ "type": "navigate", "to": "/admin" }] }
   }
 }
 ```
@@ -645,7 +645,7 @@ If the host app registers a `MapView` component:
           "type": "Button",
           "label": "Start",
           "events": {
-            "onClick": [{ "type": "update_state", "path": "status", "value": "loading" }]
+            "on_click": [{ "type": "update_state", "path": "status", "value": "loading" }]
           }
         }
       },

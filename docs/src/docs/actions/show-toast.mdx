@@ -1,13 +1,13 @@
 ---
 sidebar_position: 5
-title: showToast
+title: show_toast
 description: Display toast notifications
 ---
 
 import CodeBlock from '@/components/mdx/CodeBlock.astro';
 
 
-## showToast
+## show_toast
 
 Displays a toast notification to the user.
 
@@ -16,7 +16,7 @@ Displays a toast notification to the user.
 <CodeBlock lang="json">
 ```json
 {
-  "type": "showToast",
+  "type": "show_toast",
   "message": "Operation completed!",
   "level": "success"
 }
@@ -48,7 +48,7 @@ Displays a toast notification to the user.
 <CodeBlock lang="json">
 ```json
 {
-  "type": "showToast",
+  "type": "show_toast",
   "message": "Settings saved"
 }
 ```
@@ -58,7 +58,7 @@ Displays a toast notification to the user.
 <CodeBlock lang="json">
 ```json
 {
-  "type": "showToast",
+  "type": "show_toast",
   "message": "Item created successfully!",
   "level": "success"
 }
@@ -69,7 +69,7 @@ Displays a toast notification to the user.
 <CodeBlock lang="json">
 ```json
 {
-  "type": "showToast",
+  "type": "show_toast",
   "message": "Failed to save changes",
   "level": "error"
 }
@@ -80,7 +80,7 @@ Displays a toast notification to the user.
 <CodeBlock lang="json">
 ```json
 {
-  "type": "showToast",
+  "type": "show_toast",
   "message": "Your session will expire in 5 minutes",
   "level": "warning"
 }
@@ -91,7 +91,7 @@ Displays a toast notification to the user.
 <CodeBlock lang="json">
 ```json
 {
-  "type": "showToast",
+  "type": "show_toast",
   "title": "Success",
   "message": "Your profile has been updated",
   "level": "success"
@@ -103,7 +103,7 @@ Displays a toast notification to the user.
 <CodeBlock lang="json">
 ```json
 {
-  "type": "showToast",
+  "type": "show_toast",
   "message": "Copied to clipboard",
   "level": "success",
   "duration": 2000
@@ -115,7 +115,7 @@ Displays a toast notification to the user.
 <CodeBlock lang="json">
 ```json
 {
-  "type": "showToast",
+  "type": "show_toast",
   "message": "Welcome back, {{state.user.name}}!",
   "level": "success"
 }
@@ -130,7 +130,7 @@ Displays a toast notification to the user.
   "api": "saveData",
   "onError": [
     {
-      "type": "showToast",
+      "type": "show_toast",
       "message": "Error: {{$error.message}}",
       "level": "error"
     }
@@ -145,10 +145,10 @@ Displays a toast notification to the user.
 
 <CodeBlock lang="json">
 ```json
-{ "type": "showToast", "message": "Item created", "level": "success" }
-{ "type": "showToast", "message": "Changes saved", "level": "success" }
-{ "type": "showToast", "message": "Item deleted", "level": "success" }
-{ "type": "showToast", "message": "Operation failed", "level": "error" }
+{ "type": "show_toast", "message": "Item created", "level": "success" }
+{ "type": "show_toast", "message": "Changes saved", "level": "success" }
+{ "type": "show_toast", "message": "Item deleted", "level": "success" }
+{ "type": "show_toast", "message": "Operation failed", "level": "error" }
 ```
 </CodeBlock>
 
@@ -160,9 +160,9 @@ Displays a toast notification to the user.
   "type": "Button",
   "icon": "Copy",
   "events": {
-    "onClick": [
+    "on_click": [
       { "type": "copy", "text": "{{state.shareUrl}}" },
-      { "type": "showToast", "message": "Link copied!", "level": "success", "duration": 2000 }
+      { "type": "show_toast", "message": "Link copied!", "level": "success", "duration": 2000 }
     ]
   }
 }
@@ -179,7 +179,7 @@ Displays a toast notification to the user.
       "type": "conditional",
       "condition": "{{params.created}}",
       "then": [
-        { "type": "showToast", "message": "Item created successfully!", "level": "success" }
+        { "type": "show_toast", "message": "Item created successfully!", "level": "success" }
       ]
     }
   ]

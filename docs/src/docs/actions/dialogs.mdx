@@ -131,7 +131,7 @@ Displays a modal dialog to the user.
           "api": "deleteItem",
           "params": { "id": "{{state.selectedItem.id}}" },
           "onSuccess": [
-            { "type": "showToast", "message": "Item deleted", "level": "success" },
+            { "type": "show_toast", "message": "Item deleted", "level": "success" },
             { "type": "closeDialog", "id": "deleteConfirm" },
             { "type": "call_api", "api": "refreshList" }
           ]
@@ -188,7 +188,7 @@ Displays a modal dialog to the user.
           "api": "updateItem",
           "params": { "id": "{{state.selectedItem.id}}", "data": "{{form.editForm}}" },
           "onSuccess": [
-            { "type": "showToast", "message": "Changes saved", "level": "success" },
+            { "type": "show_toast", "message": "Changes saved", "level": "success" },
             { "type": "closeDialog", "id": "editItem" }
           ]
         }
@@ -261,7 +261,7 @@ Closes an open dialog.
   "type": "call_api",
   "api": "saveChanges",
   "onSuccess": [
-    { "type": "showToast", "message": "Saved!", "level": "success" },
+    { "type": "show_toast", "message": "Saved!", "level": "success" },
     { "type": "closeDialog", "id": "editDialog" }
   ]
 }
@@ -281,7 +281,7 @@ Closes an open dialog.
   "text": "Delete",
   "variant": "destructive",
   "events": {
-    "onClick": [
+    "on_click": [
       {
         "type": "showDialog",
         "id": "confirmDelete",
@@ -317,7 +317,7 @@ Closes an open dialog.
   "type": "Button",
   "text": "Add New",
   "events": {
-    "onClick": [
+    "on_click": [
       { "type": "update_state", "path": "formData", "value": {} },
       {
         "type": "showDialog",

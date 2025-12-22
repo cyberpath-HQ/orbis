@@ -309,7 +309,7 @@ Actions respond to user events:
 ```json
 {
   "events": {
-    "onClick": [
+    "on_click": [
       { "type": "update_state", "path": "count", "value": "{{state.count + 1}}" }
     ]
   }
@@ -367,7 +367,7 @@ Actions respond to user events:
                 "label": "-",
                 "variant": "outline",
                 "events": {
-                  "onClick": [
+                  "on_click": [
                     { "type": "update_state", "path": "count", "value": "{{state.count - 1}}" }
                   ]
                 }
@@ -376,7 +376,7 @@ Actions respond to user events:
                 "type": "Button",
                 "label": "+",
                 "events": {
-                  "onClick": [
+                  "on_click": [
                     { "type": "update_state", "path": "count", "value": "{{state.count + 1}}" }
                   ]
                 }
@@ -388,7 +388,7 @@ Actions respond to user events:
             "label": "Reset",
             "variant": "ghost",
             "events": {
-              "onClick": [
+              "on_click": [
                 { "type": "update_state", "path": "count", "value": 0 }
               ]
             }

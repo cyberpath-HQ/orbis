@@ -216,7 +216,7 @@ sequenceDiagram
     participant Backend
     
     User->>Component: Click button
-    Component->>Action: Execute onClick actions
+    Component->>Action: Execute on_click actions
     Action->>State: update_state action
     State-->>Component: State updated
     Component-->>User: UI re-renders

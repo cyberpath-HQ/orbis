@@ -36,9 +36,9 @@ Events are defined in the `events` property of components:
   "type": "Button",
   "label": "Click Me",
   "events": {
-    "onClick": [
+    "on_click": [
       { "type": "update_state", "path": "clicked", "value": true },
-      { "type": "showToast", "message": "Button clicked!" }
+      { "type": "show_toast", "message": "Button clicked!" }
     ]
   }
 }
@@ -53,7 +53,7 @@ Each event handler is an array of actions that execute in sequence.
 
 | Event | Triggered When | Components |
 |-------|----------------|------------|
-| `onClick` | Element is clicked | Most components |
+| `on_click` | Element is clicked | Most components |
 | `onDoubleClick` | Element is double-clicked | Container, Card, etc. |
 | `onMouseEnter` | Mouse enters element | Container, Card |
 | `onMouseLeave` | Mouse leaves element | Container, Card |
@@ -108,7 +108,7 @@ The raw event object:
 ```json
 {
   "events": {
-    "onClick": [
+    "on_click": [
       {
         "type": "update_state",
         "path": "lastClick",
@@ -204,7 +204,7 @@ Current loop/list item:
     "type": "Button",
     "label": "Delete {{$item.name}}",
     "events": {
-      "onClick": [
+      "on_click": [
         {
           "type": "update_state",
           "path": "items",
@@ -230,7 +230,7 @@ Current iteration index:
     "type": "Button",
     "label": "Item {{$index + 1}}",
     "events": {
-      "onClick": [
+      "on_click": [
         {
           "type": "update_state",
           "path": "selectedIndex",
@@ -254,10 +254,10 @@ Run in order, each completing before the next:
 <CodeBlock lang="json">
 ```json
 {
-  "onClick": [
+  "on_click": [
     { "type": "update_state", "path": "step", "value": 1 },
     { "type": "update_state", "path": "step", "value": 2 },
-    { "type": "showToast", "message": "Step is now 2" }
+    { "type": "show_toast", "message": "Step is now 2" }
   ]
 }
 ```
@@ -270,7 +270,7 @@ Branch based on conditions:
 <CodeBlock lang="json">
 ```json
 {
-  "onClick": [
+  "on_click": [
     {
       "type": "conditional",
       "condition": "{{state.isValid}}",
@@ -278,7 +278,7 @@ Branch based on conditions:
         { "type": "call_api", "api": "submit" }
       ],
       "else": [
-        { "type": "showToast", "message": "Please fix errors", "level": "error" }
+        { "type": "show_toast", "message": "Please fix errors", "level": "error" }
       ]
     }
   ]
@@ -293,16 +293,16 @@ API calls with callbacks:
 <CodeBlock lang="json">
 ```json
 {
-  "onClick": [
+  "on_click": [
     { "type": "set_loading", "loading": true },
     {
       "type": "call_api",
       "api": "my-plugin.saveData",
       "onSuccess": [
-        { "type": "showToast", "message": "Saved!", "level": "success" }
+        { "type": "show_toast", "message": "Saved!", "level": "success" }
       ],
       "onError": [
-        { "type": "showToast", "message": "Failed: {{$error.message}}", "level": "error" }
+        { "type": "show_toast", "message": "Failed: {{$error.message}}", "level": "error" }
       ]
     },
     { "type": "set_loading", "loading": false }
@@ -325,7 +325,7 @@ The `set_loading` after `call_api` runs immediately, not after the API completes
   "type": "Button",
   "label": "Submit",
   "events": {
-    "onClick": [{ "type": "call_api", "api": "submit" }]
+    "on_click": [{ "type": "call_api", "api": "submit" }]
   }
 }
 ```
@@ -464,16 +464,16 @@ To handle parent clicks while ignoring child clicks:
 {
   "type": "Container",
   "events": {
-    "onClick": [{ "type": "update_state", "path": "containerClicked", "value": true }]
+    "on_click": [{ "type": "update_state", "path": "containerClicked", "value": true }]
   },
   "children": [
     {
       "type": "Button",
       "label": "Inner Button",
       "events": {
-        "onClick": [
-          // This runs, container's onClick does NOT run
-          { "type": "update_state", "path": "buttonClicked", "value": true }
+        "on_click": [
+          // This runs, container's on_click does NOT run
+          { "type": "update_state", "path": "button_clicked", "value": true }
         ]
       }
     }
@@ -490,18 +490,18 @@ To handle parent clicks while ignoring child clicks:
 ```json
 // Good - clear purpose
 {
-  "onClick": [
+  "on_click": [
     { "type": "update_state", "path": "isOpen", "value": true }
   ]
 }
 
 // ❌ Avoid - too many concerns
 {
-  "onClick": [
+  "on_click": [
     { "type": "update_state", "path": "isOpen", "value": true },
     { "type": "update_state", "path": "lastOpened", "value": "now" },
     { "type": "call_api", "api": "logEvent" },
-    { "type": "showToast", "message": "Opened" }
+    { "type": "show_toast", "message": "Opened" }
   ]
 }
 ```
@@ -526,18 +526,18 @@ Always handle async operation states:
 <CodeBlock lang="json">
 ```json
 {
-  "onClick": [
+  "on_click": [
     { "type": "set_loading", "target": "submit", "loading": true },
     {
       "type": "call_api",
       "api": "submit",
       "onSuccess": [
         { "type": "set_loading", "target": "submit", "loading": false },
-        { "type": "showToast", "message": "Success!" }
+        { "type": "show_toast", "message": "Success!" }
       ],
       "onError": [
         { "type": "set_loading", "target": "submit", "loading": false },
-        { "type": "showToast", "message": "Failed!", "level": "error" }
+        { "type": "show_toast", "message": "Failed!", "level": "error" }
       ]
     }
   ]
@@ -554,7 +554,7 @@ Use temporary state to debug:
 <CodeBlock lang="json">
 ```json
 {
-  "onClick": [
+  "on_click": [
     { "type": "update_state", "path": "debug.lastEvent", "value": "button clicked" },
     { "type": "update_state", "path": "debug.timestamp", "value": "{{Date.now()}}" }
   ]

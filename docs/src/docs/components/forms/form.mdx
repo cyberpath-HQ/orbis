@@ -492,7 +492,7 @@ Individual form field with various input types.
             { "type": "navigate", "to": "/dashboard" }
           ],
           "onError": [
-            { "type": "showToast", "message": "Invalid credentials", "level": "error" }
+            { "type": "show_toast", "message": "Invalid credentials", "level": "error" }
           ]
         },
         { "type": "set_loading", "loading": false }
@@ -564,7 +564,7 @@ Individual form field with various input types.
         "api": "user.updateSettings",
         "args": "{{state.settings}}",
         "onSuccess": [
-          { "type": "showToast", "message": "Settings saved!", "level": "success" }
+          { "type": "show_toast", "message": "Settings saved!", "level": "success" }
         ]
       }
     ]
@@ -697,14 +697,14 @@ Reset form to defaults:
       "label": "Reset",
       "variant": "outline",
       "events": {
-        "onClick": [{ "type": "resetForm", "form": "myForm" }]
+        "on_click": [{ "type": "resetForm", "form": "myForm" }]
       }
     },
     {
       "type": "Button",
       "label": "Submit",
       "events": {
-        "onClick": [
+        "on_click": [
           { "type": "validateForm", "form": "myForm" },
           { "type": "call_api", "api": "submit" }
         ]

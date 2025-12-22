@@ -90,11 +90,11 @@ Examples:
   },
   "onSuccess": [
     { "type": "update_state", "path": "items", "value": "[...state.items, $response.data]" },
-    { "type": "showToast", "message": "Item created!", "level": "success" },
+    { "type": "show_toast", "message": "Item created!", "level": "success" },
     { "type": "navigate", "to": "/items" }
   ],
   "onError": [
-    { "type": "showToast", "message": "Failed: {{$error.message}}", "level": "error" }
+    { "type": "show_toast", "message": "Failed: {{$error.message}}", "level": "error" }
   ],
   "finally": [
     { "type": "set_loading", "loading": false }
@@ -156,7 +156,7 @@ In `onError` handlers:
         { "type": "navigate", "to": "/login" }
       ],
       "else": [
-        { "type": "showToast", "message": "{{$error.message}}", "level": "error" }
+        { "type": "show_toast", "message": "{{$error.message}}", "level": "error" }
       ]
     }
   ]
@@ -211,7 +211,7 @@ In `onError` handlers:
   "api": "my-plugin.createItem",
   "args": "{{state.formData}}",
   "onSuccess": [
-    { "type": "showToast", "message": "Created!", "level": "success" },
+    { "type": "show_toast", "message": "Created!", "level": "success" },
     { "type": "navigate", "to": "/items" }
   ]
 }
@@ -229,7 +229,7 @@ In `onError` handlers:
     "data": "{{state.formData}}"
   },
   "onSuccess": [
-    { "type": "showToast", "message": "Updated!", "level": "success" }
+    { "type": "show_toast", "message": "Updated!", "level": "success" }
   ]
 }
 ```
@@ -244,7 +244,7 @@ In `onError` handlers:
   "args": { "id": "{{state.selectedId}}" },
   "onSuccess": [
     { "type": "update_state", "path": "items", "value": "{{state.items.filter(i => i.id !== state.selectedId)}}" },
-    { "type": "showToast", "message": "Deleted", "level": "success" }
+    { "type": "show_toast", "message": "Deleted", "level": "success" }
   ]
 }
 ```
@@ -315,7 +315,7 @@ In `onError` handlers:
         { "type": "call_api", "api": "my-plugin.unreliableApi" }
       ],
       "else": [
-        { "type": "showToast", "message": "Failed after 3 retries", "level": "error" }
+        { "type": "show_toast", "message": "Failed after 3 retries", "level": "error" }
       ]
     }
   ]

@@ -35,7 +35,7 @@ Expression syntax and evaluation:
 
 All available event types:
 
-- Component events (onClick, onChange, etc.)
+- Component events (on_click, onChange, etc.)
 - Form events
 - Lifecycle events
 - Custom events
@@ -190,7 +190,7 @@ TypeScript type definitions:
   { "type": "validateForm", "formId": "myForm" },
   { "type": "call_api", "api": "submit", "params": { "data": "{{form.myForm}}" } },
   { "type": "resetForm", "formId": "myForm" },
-  { "type": "showToast", "message": "Submitted!", "level": "success" }
+  { "type": "show_toast", "message": "Submitted!", "level": "success" }
 ]
 ```
 </CodeBlock>

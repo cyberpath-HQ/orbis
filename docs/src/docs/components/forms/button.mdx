@@ -18,7 +18,7 @@ Trigger actions and events with interactive buttons.
 {
   "type": "button",
   "text": "Click Me",
-  "onClick": [
+  "on_click": [
     { "type": "update_state", "path": "clicked", "value": true }
   ]
 }
@@ -28,7 +28,7 @@ Trigger actions and events with interactive buttons.
 ## Properties
 
 - `text` - Button label (supports expressions like `${state.label}`)
-- `onClick` - Array of actions to execute on click
+- `on_click` - Array of actions to execute on click
 - `variant` - Visual style (default, primary, secondary, outline, destructive, ghost)
 - `size` - Button size (default, sm, lg, icon)
 - `disabled` - Disable button interaction (supports expressions)
@@ -45,7 +45,7 @@ Trigger actions and events with interactive buttons.
   "type": "button",
   "text": "Save Changes",
   "variant": "primary",
-  "onClick": [
+  "on_click": [
     { "type": "call_api", "api": "save_data", "payload": "${state.formData}" }
   ]
 }
@@ -60,7 +60,7 @@ Trigger actions and events with interactive buttons.
   "type": "button",
   "text": "Submit",
   "disabled": "${!state.isValid}",
-  "onClick": []
+  "on_click": []
 }
 ```
 </CodeBlock>
@@ -74,7 +74,7 @@ Trigger actions and events with interactive buttons.
   "text": "Delete",
   "variant": "destructive",
   "icon": "trash",
-  "onClick": [
+  "on_click": [
     { "type": "show_toast", "message": "Item deleted" }
   ]
 }
@@ -90,7 +90,7 @@ Trigger actions and events with interactive buttons.
   "text": "Processing...",
   "loading": "${state.isProcessing}",
   "disabled": "${state.isProcessing}",
-  "onClick": []
+  "on_click": []
 }
 ```
 </CodeBlock>

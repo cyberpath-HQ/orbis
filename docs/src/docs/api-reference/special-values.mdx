@@ -40,7 +40,7 @@ The full event object.
 ```json
 {
   "events": {
-    "onClick": [
+    "on_click": [
       { "type": "update_state", "path": "clickX", "value": "{{$event.clientX}}" }
     ],
     "onKeyDown": [
@@ -165,7 +165,7 @@ Error object from failed operations.
   "type": "call_api",
   "api": "saveData",
   "onError": [
-    { "type": "showToast", "message": "Error: {{$error.message}}", "level": "error" },
+    { "type": "show_toast", "message": "Error: {{$error.message}}", "level": "error" },
     { "type": "update_state", "path": "error", "value": "{{$error}}" }
   ]
 }
@@ -365,17 +365,17 @@ Environment configuration.
   "loading": "{{loading.submit}}",
   "disabled": "{{!form.userForm.$valid || loading.submit}}",
   "events": {
-    "onClick": [
+    "on_click": [
       { "type": "set_loading", "key": "submit", "value": true },
       {
         "type": "call_api",
         "api": "saveUser",
         "params": { "data": "{{form.userForm}}" },
         "onSuccess": [
-          { "type": "showToast", "message": "Saved {{$response.name}}!", "level": "success" }
+          { "type": "show_toast", "message": "Saved {{$response.name}}!", "level": "success" }
         ],
         "onError": [
-          { "type": "showToast", "message": "{{$error.message}}", "level": "error" }
+          { "type": "show_toast", "message": "{{$error.message}}", "level": "error" }
         ],
         "onComplete": [
           { "type": "set_loading", "key": "submit", "value": false }
@@ -405,7 +405,7 @@ Environment configuration.
         "type": "Button",
         "text": "View",
         "events": {
-          "onClick": [
+          "on_click": [
             { "type": "navigate", "route": "/users/{{user.id}}" }
           ]
         }

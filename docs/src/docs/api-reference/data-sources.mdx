@@ -116,7 +116,7 @@ Access: `{{state.data}}`
   "type": "call_api",
   "api": "getData",
   "onError": [
-    { "type": "showToast", "message": "Failed to load data", "level": "error" }
+    { "type": "show_toast", "message": "Failed to load data", "level": "error" }
   ]
 }
 ```
@@ -131,7 +131,7 @@ Access: `{{state.data}}`
   "api": "getData",
   "onError": [
     { "type": "update_state", "path": "error", "value": "{{$error}}" },
-    { "type": "showToast", "message": "{{$error.message}}", "level": "error" }
+    { "type": "show_toast", "message": "{{$error.message}}", "level": "error" }
   ]
 }
 ```
@@ -153,7 +153,7 @@ Access: `{{state.data}}`
         { "type": "call_api", "api": "getData" }
       ],
       "else": [
-        { "type": "showToast", "message": "Failed after 3 attempts", "level": "error" }
+        { "type": "show_toast", "message": "Failed after 3 attempts", "level": "error" }
       ]
     }
   ]
@@ -252,7 +252,7 @@ Access: `{{state.data}}`
   "visible": "{{state.hasMore}}",
   "loading": "{{loading.loadMore}}",
   "events": {
-    "onClick": [
+    "on_click": [
       { "type": "set_loading", "key": "loadMore", "value": true },
       {
         "type": "call_api",
@@ -316,7 +316,7 @@ Data persists in state until page unmount.
   "text": "Refresh",
   "icon": "RefreshCw",
   "events": {
-    "onClick": [
+    "on_click": [
       { "type": "set_loading", "key": "refresh", "value": true },
       {
         "type": "call_api",

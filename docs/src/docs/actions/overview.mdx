@@ -32,7 +32,7 @@ Every action has a `type` and type-specific properties:
 | [`update_state`](./update-state) | Modify page state |
 | [`call_api`](./call-api) | Make API requests |
 | [`navigate`](./navigate) | Change routes |
-| [`showToast`](./show-toast) | Display notifications |
+| [`show_toast`](./show-toast) | Display notifications |
 | [`showDialog`](./dialogs) | Show confirmation dialogs |
 | [`closeDialog`](./dialogs) | Close dialogs |
 | [`debouncedAction`](./flow-control) | Debounce actions |
@@ -56,9 +56,9 @@ Every action has a `type` and type-specific properties:
   "type": "Button",
   "label": "Click Me",
   "events": {
-    "onClick": [
+    "on_click": [
       { "type": "update_state", "path": "clicked", "value": true },
-      { "type": "showToast", "message": "Button clicked!" }
+      { "type": "show_toast", "message": "Button clicked!" }
     ]
   }
 }
@@ -88,10 +88,10 @@ Actions execute in sequence:
 ```json
 {
   "events": {
-    "onClick": [
+    "on_click": [
       { "type": "set_loading", "loading": true },
       { "type": "call_api", "api": "save" },
-      { "type": "showToast", "message": "Saved!" },
+      { "type": "show_toast", "message": "Saved!" },
       { "type": "set_loading", "loading": false }
     ]
   }
@@ -141,10 +141,10 @@ Actions have access to event context via special variables:
   "type": "call_api",
   "api": "saveData",
   "onSuccess": [
-    { "type": "showToast", "message": "Saved!", "level": "success" }
+    { "type": "show_toast", "message": "Saved!", "level": "success" }
   ],
   "onError": [
-    { "type": "showToast", "message": "Error: {{$error.message}}", "level": "error" }
+    { "type": "show_toast", "message": "Error: {{$error.message}}", "level": "error" }
   ]
 }
 ```
@@ -162,7 +162,7 @@ Actions have access to event context via special variables:
       "type": "call_api",
       "api": "fallbackApi",
       "onError": [
-        { "type": "showToast", "message": "All APIs failed", "level": "error" }
+        { "type": "show_toast", "message": "All APIs failed", "level": "error" }
       ]
     }
   ]
@@ -183,7 +183,7 @@ Execute actions based on conditions:
     { "type": "call_api", "api": "submit" }
   ],
   "else": [
-    { "type": "showToast", "message": "Please fix errors", "level": "warning" }
+    { "type": "show_toast", "message": "Please fix errors", "level": "warning" }
   ]
 }
 ```
@@ -222,7 +222,7 @@ Execute actions based on conditions:
     "api": "deleteItem",
     "onError": [
       { "type": "call_api", "api": "getItems" },
-      { "type": "showToast", "message": "Failed to delete", "level": "error" }
+      { "type": "show_toast", "message": "Failed to delete", "level": "error" }
     ]
   }
 ]
@@ -245,7 +245,7 @@ Execute actions based on conditions:
         "api": "submitForm",
         "args": "{{state.formData}}",
         "onSuccess": [
-          { "type": "showToast", "message": "Submitted!", "level": "success" },
+          { "type": "show_toast", "message": "Submitted!", "level": "success" },
           { "type": "resetForm", "form": "myForm" },
           { "type": "navigate", "to": "/success" }
         ]

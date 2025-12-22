@@ -80,7 +80,7 @@ Debounces action execution to prevent rapid repeated calls.
         "delay": 1000,
         "action": [
           { "type": "call_api", "api": "saveDraft", "params": { "content": "{{form.editor}}" } },
-          { "type": "showToast", "message": "Draft saved", "level": "success", "duration": 1500 }
+          { "type": "show_toast", "message": "Draft saved", "level": "success", "duration": 1500 }
         ]
       }
     ]
@@ -124,10 +124,10 @@ Executes actions based on conditions.
   "type": "conditional",
   "condition": "{{state.count > 10}}",
   "then": [
-    { "type": "showToast", "message": "Count exceeded!" }
+    { "type": "show_toast", "message": "Count exceeded!" }
   ],
   "else": [
-    { "type": "showToast", "message": "Count is within limits" }
+    { "type": "show_toast", "message": "Count is within limits" }
   ]
 }
 ```
@@ -168,7 +168,7 @@ Executes actions based on conditions.
   "type": "Button",
   "text": "Submit",
   "events": {
-    "onClick": [
+    "on_click": [
       {
         "type": "conditional",
         "condition": "{{form.myForm.$valid}}",
@@ -176,7 +176,7 @@ Executes actions based on conditions.
           { "type": "call_api", "api": "submit" }
         ],
         "else": [
-          { "type": "showToast", "message": "Please fix validation errors", "level": "warning" }
+          { "type": "show_toast", "message": "Please fix validation errors", "level": "warning" }
         ]
       }
     ]
@@ -193,17 +193,17 @@ Executes actions based on conditions.
   "type": "conditional",
   "condition": "{{state.status === 'pending'}}",
   "then": [
-    { "type": "showToast", "message": "Please wait...", "level": "info" }
+    { "type": "show_toast", "message": "Please wait...", "level": "info" }
   ],
   "else": [
     {
       "type": "conditional",
       "condition": "{{state.status === 'success'}}",
       "then": [
-        { "type": "showToast", "message": "Success!", "level": "success" }
+        { "type": "show_toast", "message": "Success!", "level": "success" }
       ],
       "else": [
-        { "type": "showToast", "message": "Operation failed", "level": "error" }
+        { "type": "show_toast", "message": "Operation failed", "level": "error" }
       ]
     }
   ]
@@ -281,7 +281,7 @@ Executes actions in sequence, waiting for each to complete.
     { "type": "update_state", "path": "importStatus", "value": "Importing..." },
     { "type": "call_api", "api": "importData" },
     { "type": "update_state", "path": "importStatus", "value": "Complete!" },
-    { "type": "showToast", "message": "Import successful!", "level": "success" },
+    { "type": "show_toast", "message": "Import successful!", "level": "success" },
     { "type": "set_loading", "key": "import", "value": false }
   ]
 }
@@ -299,7 +299,7 @@ Executes actions in sequence, waiting for each to complete.
     { "type": "call_api", "api": "syncService1" },
     { "type": "call_api", "api": "syncService2" },
     { "type": "call_api", "api": "syncService3" },
-    { "type": "showToast", "message": "Sync completed", "level": "success" }
+    { "type": "show_toast", "message": "Sync completed", "level": "success" }
   ]
 }
 ```
@@ -312,9 +312,9 @@ Executes actions in sequence, waiting for each to complete.
 {
   "type": "sequence",
   "actions": [
-    { "type": "showToast", "message": "Starting...", "level": "info" },
+    { "type": "show_toast", "message": "Starting...", "level": "info" },
     { "type": "call_api", "api": "longOperation" },
-    { "type": "showToast", "message": "Processing complete!", "level": "success" }
+    { "type": "show_toast", "message": "Processing complete!", "level": "success" }
   ]
 }
 ```
@@ -366,7 +366,7 @@ Executes actions in sequence, waiting for each to complete.
   "type": "Button",
   "text": "Delete",
   "events": {
-    "onClick": [
+    "on_click": [
       {
         "type": "conditional",
         "condition": "{{state.user.permissions.includes('delete')}}",
@@ -383,7 +383,7 @@ Executes actions in sequence, waiting for each to complete.
           }
         ],
         "else": [
-          { "type": "showToast", "message": "You don't have permission to delete", "level": "error" }
+          { "type": "show_toast", "message": "You don't have permission to delete", "level": "error" }
         ]
       }
     ]
@@ -412,7 +412,7 @@ Executes actions in sequence, waiting for each to complete.
         "step3": "{{form.step3Form}}"
       }
     },
-    { "type": "showToast", "message": "Wizard completed!", "level": "success" },
+    { "type": "show_toast", "message": "Wizard completed!", "level": "success" },
     { "type": "navigate", "route": "/success" },
     { "type": "set_loading", "key": "wizard", "value": false }
   ]
