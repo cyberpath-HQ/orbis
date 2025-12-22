@@ -23,7 +23,7 @@ Every UI in Orbis is defined by a **component schema** - a JSON object that desc
   "variant": "default",
   "events": {
     "onClick": [
-      { "type": "showToast", "message": "Hello!" }
+      { "type": "show_toast", "message": "Hello!" }
     ]
   }
 }
@@ -214,13 +214,13 @@ Events connect user interactions to actions:
   "type": "Button",
   "label": "Submit",
   "events": {
-    "onClick": [
+    "on_click": [
       {
         "type": "validateForm",
         "formId": "my-form"
       },
       {
-        "type": "callApi",
+        "type": "call_api",
         "api": "my-plugin.submit",
         "args": {
           "data": "{{state.formData}}"
@@ -236,17 +236,17 @@ Events connect user interactions to actions:
 
 | Event | Triggered When |
 |-------|----------------|
-| `onClick` | Component is clicked |
-| `onChange` | Input value changes |
-| `onSubmit` | Form is submitted |
-| `onFocus` | Component gains focus |
-| `onBlur` | Component loses focus |
-| `onRowClick` | Table row is clicked |
-| `onSelect` | Item is selected |
-| `onPageChange` | Table page changes |
-| `onSortChange` | Table sort changes |
-| `onClose` | Modal/dialog closes |
-| `onOpen` | Modal/dialog opens |
+| `on_click` | Component is clicked |
+| `on_change` | Input value changes |
+| `on_submit` | Form is submitted |
+| `on_focus` | Component gains focus |
+| `on_blur` | Component loses focus |
+| `on_row_click` | Table row is clicked |
+| `on_select` | Item is selected |
+| `on_page_change` | Table page changes |
+| `on_sort_change` | Table sort changes |
+| `on_close` | Modal/dialog closes |
+| `on_open` | Modal/dialog opens |
 
 ## Data Sources
 
