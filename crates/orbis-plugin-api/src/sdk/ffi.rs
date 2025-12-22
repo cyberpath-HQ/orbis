@@ -111,11 +111,32 @@ pub unsafe fn read_length_prefixed(ptr: i32) -> Vec<u8> {
     if ptr == 0 {
         return Vec::new();
     }
+    
     let ptr = ptr as *const u8;
+    
     unsafe {
-        let len = *(ptr as *const u32);
+        // Read the length prefix
+        let len_bytes = slice::from_raw_parts(ptr, 4);
+        let len = u32::from_le_bytes([len_bytes[0], len_bytes[1], len_bytes[2], len_bytes[3]]);
+        
+        // Validate length (prevent reading huge invalid values)
+        // Max 10MB for safety
+        const MAX_LENGTH: u32 = 10 * 1024 * 1024;
+        if len > MAX_LENGTH {
+            log(0, "Invalid length in read_length_prefixed".as_ptr() as i32, "Invalid length in read_length_prefixed".len() as i32);
+            return Vec::new();
+        }
+        
+        // Read the actual data
+        if len == 0 {
+            return Vec::new();
+        }
+        
         let data_ptr = ptr.add(4);
-        slice::from_raw_parts(data_ptr, len as usize).to_vec()
+        let data_slice = slice::from_raw_parts(data_ptr, len as usize);
+        
+        // Use Vec::from to safely copy the data
+        Vec::from(data_slice)
     }
 }
 
