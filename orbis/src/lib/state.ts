@@ -204,7 +204,6 @@ export function createPageStateStore(initialDefinition?: StateDefinition, persis
             errors:  {},
 
             setState: (path, value) => set((draft) => {
-                console.log(`[State] Setting "${ path }" to:`, value);
                 const parts = path.split(`.`);
                 let current: Record<string, unknown> = draft.state;
 
@@ -217,7 +216,6 @@ export function createPageStateStore(initialDefinition?: StateDefinition, persis
                 }
 
                 current[parts[parts.length - 1]] = value;
-                console.log(`[State] New state:`, draft.state);
                 
                 // Persist state if key provided
                 if (persistenceKey) {
@@ -226,7 +224,6 @@ export function createPageStateStore(initialDefinition?: StateDefinition, persis
             }),
 
             mergeState: (path, value) => set((draft) => {
-                console.log(`[State] Merging at "${ path }":`, value);
                 const existing = getNestedValue(draft.state, path);
                 const merged = typeof existing === `object` && existing !== null
                     ? {
@@ -324,7 +321,6 @@ export function interpolateExpression(
         ...context,
     };
 
-    console.log(`Interpolating expression:`, expression, `with state:`, combined);
     const result = expression.replace(/\{\{([^}]+)\}\}/g, (_, path: string) => {
         const trimmedPath = path.trim();
 
@@ -347,8 +343,6 @@ export function interpolateExpression(
                 return ref;
             });
 
-            console.log(`Evaluating arithmetic in template: "${ trimmedPath }" -> "${ interpolated_path }"`);
-
             // Now evaluate the arithmetic expression
             try {
                 const math_result = evaluateMathExpressionInternal(interpolated_path);
@@ -364,8 +358,6 @@ export function interpolateExpression(
         const value = getNestedValue(combined, trimmedPath);
 
         if (value !== undefined) {
-            console.log(`Resolved "{{${ trimmedPath }}}" to:`, value, typeof value);
-
             if (typeof value === `number` || typeof value === `boolean`) {
                 return value;
             }
@@ -376,7 +368,6 @@ export function interpolateExpression(
         }
         return ``;
     });
-    console.log(`Interpolated result:`, result);
 
     // Cache the result
     setCachedExpression(cacheKey, {}, result);

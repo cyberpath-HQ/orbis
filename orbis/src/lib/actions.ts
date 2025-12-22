@@ -126,7 +126,7 @@ function resolveValue(
             // evaluateMathExpression will interpolate {{...}} first, then evaluate
             try {
                 const mathResult = evaluateMathExpression(value, stateData, contextData);
-                console.log(`[resolveValue] Evaluated math expression "${ value }" to`, mathResult);
+                (`[resolveValue] Evaluated math expression "${ value }" to`, mathResult);
                 return mathResult;
             }
             catch (error) {
@@ -141,7 +141,6 @@ function resolveValue(
 
         // Regular string interpolation
         const interpolated = interpolateExpression(value, stateData, contextData);
-        console.log(`[resolveValue] Interpolated "${ value }" to "${ interpolated }"`);
         return interpolated;
     }
 
@@ -249,16 +248,12 @@ function executeUpdateState(action: UpdateStateAction, context: ActionContext): 
     } = action;
     let value: unknown;
 
-    console.log(`Executing updateState action for path "${ path }"`);
-
     if (from !== undefined) {
         value = resolveValue(from, context);
     }
     else {
         value = actionValue;
     }
-
-    console.log(`Updating state at "${ path }" with value:`, value);
 
     if (should_merge && typeof value === `object` && value !== null) {
         context.state.mergeState(path, value as Record<string, unknown>);
@@ -299,8 +294,6 @@ async function executeCallApi(action: CallApiAction, context: ActionContext): Pr
 
     try {
         const response = await context.apiClient.call(action.api, method, args);
-
-        console.log(`API call successful: ${ action.api }`, response);
 
         if (action.on_success) {
             await executeActions(action.on_success, {
