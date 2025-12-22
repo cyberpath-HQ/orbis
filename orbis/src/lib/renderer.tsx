@@ -214,46 +214,9 @@ const ComponentRenderer = memo(function ComponentRenderer({
 
     // Render based on type
     switch (schema.type) {
+        // Layout components
         case `Container`:
             return <ContainerRenderer schema={schema} />;
-        case `Text`:
-            return <TextRenderer schema={schema} />;
-        case `Heading`:
-            return <HeadingRenderer schema={schema} />;
-        case `Button`:
-            return <ButtonRenderer schema={schema} />;
-        case `Field`:
-            return <FieldRenderer schema={schema} />;
-        case `Form`:
-            return <FormRenderer schema={schema} />;
-        case `Table`:
-            return <TableRenderer schema={schema} />;
-        case `Card`:
-            return <CardRenderer schema={schema} />;
-        case `List`:
-            return <ListRenderer schema={schema} />;
-        case `Image`:
-            return <ImageRenderer schema={schema} />;
-        case `Icon`:
-            return <IconRenderer schema={schema} />;
-        case `Link`:
-            return <LinkRenderer schema={schema} />;
-        case `Badge`:
-            return <BadgeRenderer schema={schema} />;
-        case `Alert`:
-            return <AlertRenderer schema={schema} />;
-        case `Progress`:
-            return <ProgressRenderer schema={schema} />;
-        case `Tabs`:
-            return <TabsRenderer schema={schema} />;
-        case `Accordion`:
-            return <AccordionRenderer schema={schema} />;
-        case `Modal`:
-            return <ModalRenderer schema={schema} />;
-        case `Dropdown`:
-            return <DropdownRenderer schema={schema} />;
-        case `Tooltip`:
-            return <TooltipRenderer schema={schema} />;
         case `Grid`:
             return <GridRenderer schema={schema} />;
         case `Flex`:
@@ -262,26 +225,78 @@ const ComponentRenderer = memo(function ComponentRenderer({
             return <SpacerRenderer schema={schema} />;
         case `Divider`:
             return <DividerRenderer schema={schema} />;
-        case `Skeleton`:
-            return <SkeletonRenderer schema={schema} />;
+        case `Section`:
+            return <SectionRenderer schema={schema} />;
+
+        // Typography components
+        case `Text`:
+            return <TextRenderer schema={schema} />;
+        case `Heading`:
+            return <HeadingRenderer schema={schema} />;
+
+        // Form components
+        case `Field`:
+            return <FieldRenderer schema={schema} />;
+        case `Form`:
+            return <FormRenderer schema={schema} />;
+
+        // Data display components
+        case `Table`:
+            return <TableRenderer schema={schema} />;
+        case `Card`:
+            return <CardRenderer schema={schema} />;
+        case `List`:
+            return <ListRenderer schema={schema} />;
+        case `Badge`:
+            return <BadgeRenderer schema={schema} />;
+        case `Image`:
+            return <ImageRenderer schema={schema} />;
         case `Avatar`:
             return <AvatarRenderer schema={schema} />;
-        case `Breadcrumb`:
-            return <BreadcrumbRenderer schema={schema} />;
         case `StatCard`:
             return <StatCardRenderer schema={schema} />;
+
+        // Feedback components
+        case `Alert`:
+            return <AlertRenderer schema={schema} />;
+        case `Progress`:
+            return <ProgressRenderer schema={schema} />;
+        case `Skeleton`:
+            return <SkeletonRenderer schema={schema} />;
         case `EmptyState`:
             return <EmptyStateRenderer schema={schema} />;
         case `LoadingOverlay`:
             return <LoadingOverlayRenderer schema={schema} />;
+        
+        // Navigation components
+        case `Button`:
+            return <ButtonRenderer schema={schema} />;
+        case `Link`:
+            return <LinkRenderer schema={schema} />;
+        case `Tabs`:
+            return <TabsRenderer schema={schema} />;
+        case `Dropdown`:
+            return <DropdownRenderer schema={schema} />;
+        case `Breadcrumb`:
+            return <BreadcrumbRenderer schema={schema} />;
+        case `PageHeader`:
+            return <PageHeaderRenderer schema={schema} />;
+
+        // Overlays components
+        case `Modal`:
+            return <ModalRenderer schema={schema} />;
+        case `Tooltip`:
+            return <TooltipRenderer schema={schema} />;
+
+        // Misc components
+        case `Icon`:
+            return <IconRenderer schema={schema} />;
+        case `Accordion`:
+            return <AccordionRenderer schema={schema} />;
         case `Conditional`:
             return <ConditionalRenderer schema={schema} />;
         case `Loop`:
             return <LoopRenderer schema={schema} />;
-        case `Section`:
-            return <SectionRenderer schema={schema} />;
-        case `PageHeader`:
-            return <PageHeaderRenderer schema={schema} />;
         case `DataDisplay`:
             return <DataDisplayRenderer schema={schema} />;
         case `Fragment`:
