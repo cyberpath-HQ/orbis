@@ -6,6 +6,7 @@ description: Responding to user interactions in Orbis
 
 import CodeBlock from '@/components/mdx/CodeBlock.astro';
 import Mermaid from '@/components/mdx/Mermaid.astro';
+import Callout from '@/components/mdx/Callout.astro';
 
 
 # Event Handling
@@ -311,9 +312,9 @@ API calls with callbacks:
 ```
 </CodeBlock>
 
-:::warning
+<Callout type="warning">
 The `set_loading` after `call_api` runs immediately, not after the API completes. Use the `on_success`/`on_error` callbacks for post-API actions.
-:::
+</Callout>
 
 ## Component-Specific Events
 
@@ -423,35 +424,6 @@ The `set_loading` after `call_api` runs immediately, not after the API completes
 }
 ```
 </CodeBlock>
-
-## Debouncing
-
-For events that fire rapidly (like typing), use debounced actions:
-
-<CodeBlock lang="json">
-```json
-{
-  "type": "Field",
-  "name": "search",
-  "events": {
-    "on_change": [
-      {
-        "type": "debouncedAction",
-        "delay": 300,
-        "key": "search",
-        "action": {
-          "type": "call_api",
-          "api": "search",
-          "args": { "query": "$event.value" }
-        }
-      }
-    ]
-  }
-}
-```
-</CodeBlock>
-
-This waits 300ms after the last keystroke before executing.
 
 ## Event Bubbling
 
