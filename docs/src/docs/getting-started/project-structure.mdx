@@ -5,7 +5,7 @@ description: Understanding the Orbis codebase layout
 ---
 
 import CodeBlock from '@/components/mdx/CodeBlock.astro';
-
+import Callout from '@/components/mdx/Callout.astro';
 
 # Project Structure
 
@@ -90,41 +90,42 @@ Authentication and authorization:
 
 ### orbis-plugin
 
-The plugin system - **most important for plugin developers**:
+The backend of the plugin system:
 
 | File | Purpose |
 |------|---------|
 | `lib.rs` | Public API exports |
-| `manifest.rs` | Plugin manifest parsing and validation |
-| `ui.rs` | **UI schema type definitions (Rust)** |
 | `loader.rs` | Plugin loading logic |
 | `registry.rs` | Plugin registration and lookup |
 | `runtime.rs` | WASM execution runtime |
 | `sandbox.rs` | Security sandboxing |
 | `watcher.rs` | Hot reload file watching |
 
-:::tip Key File for UI Development
-`crates/orbis-plugin/src/ui.rs` is the **source of truth** for all UI component types. When adding new components, start here.
-:::
+### orbis-plugin-api
+
+The plugin system public API - **most important for plugin developers**:
+
+| File | Purpose |
+|------|---------|
+| `lib.rs` | Public API exports |
+| `manifest.rs` | Plugin manifest parsing and validation |
+| `ui.rs` | **UI schema type definitions (Rust)** |
+| `runtime.rs` | WASM execution runtime |
+| `sdk/*` | Plugin SDK functions (DB, HTTP, logging, etc.) |
 
 ### orbis-server
 
 HTTP server for client-server deployment:
 
-<CodeBlock lang="text">
-```text
-crates/orbis-server/
-├── src/
-│   ├── app.rs              # Application builder
-│   ├── state.rs            # Shared server state
-│   ├── middleware.rs       # Request middleware
-│   ├── extractors.rs       # Request extractors
-│   ├── error.rs            # Error handling
-│   ├── tls.rs              # TLS configuration
-│   └── routes/             # HTTP route handlers
-└── Cargo.toml
-```
-</CodeBlock>
+| File | Purpose |
+|------|---------|
+| `app.rs` | Application builder |
+| `state.rs` | Shared server state |
+| `middleware.rs` | Request middleware |
+| `extractors.rs` | Request extractors |
+| `error.rs` | Error handling |
+| `tls.rs` | TLS configuration |
+| `routes/*` | HTTP route handlers |
 
 ## Frontend (Tauri App)
 
@@ -153,7 +154,7 @@ src/
 ├── app.css                # Global styles (Tailwind + shadcn)
 │
 ├── lib/                   # Core functionality
-│   ├── renderer.tsx       # **Schema Renderer (1600+ lines)**
+│   ├── renderer.tsx       # **Schema Renderer**
 │   ├── actions.ts         # **Action executor (16 action types)**
 │   ├── state.ts           # **State management (Zustand factory)**
 │   ├── router.tsx         # Routing configuration
@@ -197,12 +198,12 @@ src/
 ```
 </CodeBlock>
 
-:::tip Key Files for Frontend Development
+<Callout type="tip" title="Key Files for Frontend Development">
 - **`lib/renderer.tsx`** - Renders JSON schemas to React components
 - **`lib/actions.ts`** - Executes action schemas
 - **`lib/state.ts`** - Creates page state stores
 - **`types/schema/`** - TypeScript type definitions
-:::
+</Callout>
 
 ### Tauri Shell (`orbis/src-tauri/`)
 
@@ -228,12 +229,18 @@ Example plugins for reference:
 ```text
 plugins/
 ├── README.md              # Plugin development guide
-└── hello-plugin/          # Sample plugin
-    ├── manifest.json      # Plugin manifest
-    ├── src/lib.rs         # WASM plugin code
-    ├── Cargo.toml         # Rust dependencies
-    ├── build.sh           # Build script
-    └── add_custom_section.py  # Manifest embedding tool
+├── add_custom_section.py  # Manifest embedding tool
+├── hello-plugin/          # Sample plugin
+|   ├── manifest.json      # Plugin manifest
+|   ├── src/lib.rs         # WASM plugin code
+|   ├── Cargo.toml         # Rust dependencies
+|   └── build.sh           # Build script
+├── my-first-plugin/       # Another sample plugin
+|   └── ...
+├── quick-start-plugin/    # Quick start example
+|   └── ...
+└── test-plugin/           # Plugin used in testing
+    └── ...
 ```
 </CodeBlock>
 
