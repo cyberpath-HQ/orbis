@@ -21,14 +21,14 @@ graph TB
         Components[UI Components]
     end
     
-    subgraph Frontend["Frontend Layer (React + TypeScript)"]
+    subgraph Frontend["Frontend Layer"]
         Renderer[Schema Renderer]
         StateStore[Zustand State Store]
         ActionExecutor[Action Executor]
         Router[React Router]
     end
     
-    subgraph Backend["Backend Layer (Rust + Tauri)"]
+    subgraph Backend["Backend Layer"]
         Commands[Tauri Commands]
         PluginRT[Plugin Runtime]
         AuthService[Auth Service]
@@ -44,6 +44,7 @@ graph TB
     subgraph Storage["Storage Layer"]
         SQLite[(SQLite)]
         PostgreSQL[(PostgreSQL)]
+        Filesystem[(Filesystem)]
     end
     
     Pages --> Components
@@ -59,6 +60,7 @@ graph TB
     AuthService --> DBLayer
     DBLayer --> SQLite
     DBLayer --> PostgreSQL
+    DBLayer --> Filesystem
     
     Manifest --> Schemas
     Schemas --> Renderer
@@ -88,15 +90,6 @@ React application that interprets schemas and manages state.
 | **Action Executor** | Processes action schemas (clicks, form submits) |
 | **Router** | Handles navigation between plugin pages |
 
-<CodeBlock lang="tsx">
-```tsx
-// Simplified flow
-const schema = pluginPage.layout;
-const state = createPageStateStore(pluginPage.state);
-const rendered = <SchemaRenderer schema={schema} state={state} />;
-```
-</CodeBlock>
-
 ### 3. Backend Layer
 
 Rust-powered backend running in Tauri.
@@ -114,7 +107,7 @@ Sandboxed plugin execution environment.
 
 | Component | Purpose |
 |-----------|---------|
-| **WASM Sandbox** | Secure plugin execution (wasmtime) |
+| **WASM Sandbox** | Secure plugin execution |
 | **Plugin Manifest** | Declarative plugin configuration |
 | **UI Schemas** | JSON-based UI definitions |
 
@@ -124,6 +117,7 @@ Pluggable database backend supporting two modes:
 
 - **SQLite**: Embedded database for standalone mode
 - **PostgreSQL**: External database for client-server mode
+- **Filesystem**: For storing plugin assets and user data
 
 ## Deployment Modes
 
@@ -192,7 +186,6 @@ sequenceDiagram
     participant Router
     participant Renderer
     participant State
-    participant Action
     
     User->>Router: Navigate to /plugin/page
     Router->>Renderer: Load PageDefinition
@@ -269,32 +262,6 @@ sequenceDiagram
     Frontend->>Frontend: Store in state
     Frontend-->>User: Redirect to app
 </Mermaid>
-
-## Technology Stack
-
-### Frontend
-
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| React | 18.3 | UI framework |
-| TypeScript | 5.7 | Type safety |
-| Zustand | 5.0 | State management |
-| React Router | 7.10 | Navigation |
-| TanStack Form | 1.27 | Form handling |
-| shadcn/ui | Latest | UI components |
-| Tailwind CSS | 4.x | Styling |
-
-### Backend
-
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| Rust | 1.75+ | Core language |
-| Tauri | 2.x | Desktop framework |
-| wasmtime | 39.0 | WASM runtime |
-| SQLx | 0.8 | Database access |
-| Axum | 0.8 | HTTP server |
-| jsonwebtoken | 9.3 | JWT handling |
-| Argon2 | 0.5 | Password hashing |
 
 ## Performance Considerations
 
