@@ -19,9 +19,9 @@ State in Orbis flows unidirectionally:
 <Mermaid>
 ```mermaid
 graph LR
-    Definition[State Definition] --> Store[Zustand Store]
-    Store --> UI[UI Components]
-    UI --> Actions[User Actions]
+    Definition[State Definition ] --> Store[Zustand Store ]
+    Store --> UI[UI Components ]
+    UI --> Actions[User Actions ]
     Actions --> Store
 ```
 </Mermaid>
@@ -132,7 +132,7 @@ Access array elements by index or use loops:
 
 ## Updating State
 
-State is updated through the `updateState` action:
+State is updated through the `update_state` action:
 
 <CodeBlock lang="json">
 ```json
@@ -140,9 +140,9 @@ State is updated through the `updateState` action:
   "type": "Button",
   "label": "Increment",
   "events": {
-    "onClick": [
+    "on_click": [
       {
-        "type": "updateState",
+        "type": "update_state",
         "path": "count",
         "value": "{{state.count + 1}}"
       }
@@ -154,7 +154,7 @@ State is updated through the `updateState` action:
 
 ### Update Modes
 
-The `updateState` action supports different modes:
+The `update_state` action supports different modes:
 
 #### Set (Default)
 
@@ -163,7 +163,7 @@ Replace the value completely:
 <CodeBlock lang="json">
 ```json
 {
-  "type": "updateState",
+  "type": "update_state",
   "path": "username",
   "value": "John"
 }
@@ -177,7 +177,7 @@ Merge objects (shallow):
 <CodeBlock lang="json">
 ```json
 {
-  "type": "updateState",
+  "type": "update_state",
   "path": "settings",
   "mode": "merge",
   "value": {
@@ -196,7 +196,7 @@ Add to arrays:
 <CodeBlock lang="json">
 ```json
 {
-  "type": "updateState",
+  "type": "update_state",
   "path": "items",
   "mode": "append",
   "value": { "id": 1, "name": "New Item" }
@@ -211,7 +211,7 @@ Remove from arrays:
 <CodeBlock lang="json">
 ```json
 {
-  "type": "updateState",
+  "type": "update_state",
   "path": "items",
   "mode": "remove",
   "value": "{{$item.id === 1}}"
@@ -226,34 +226,9 @@ Update nested properties directly:
 <CodeBlock lang="json">
 ```json
 {
-  "type": "updateState",
+  "type": "update_state",
   "path": "settings.theme",
   "value": "dark"
-}
-```
-</CodeBlock>
-
-## State Store API
-
-Under the hood, Orbis creates a Zustand store for each page:
-
-<CodeBlock lang="typescript">
-```typescript
-interface PageStateStore {
-  // Core state
-  state: Record<string, unknown>;
-  loading: Record<string, boolean>;
-  errors: Record<string, string>;
-
-  // Actions
-  setState(path: string, value: unknown): void;
-  mergeState(path: string, value: Record<string, unknown>): void;
-  resetState(definition: StateDefinition): void;
-  setLoading(key: string, loading: boolean): void;
-  setError(key: string, error: string | null): void;
-  clearErrors(): void;
-  getState(): Record<string, unknown>;
-  getValue(path: string): unknown;
 }
 ```
 </CodeBlock>
@@ -271,19 +246,19 @@ Track loading status for async operations:
   "events": {
     "onClick": [
       {
-        "type": "setLoading",
+        "type": "set_loading",
         "target": "fetchData",
         "loading": true
       },
       {
-        "type": "callApi",
+        "type": "call_api",
         "api": "my-plugin.getData",
         "onSuccess": [
-          { "type": "updateState", "path": "data", "value": "$response.data" },
-          { "type": "setLoading", "target": "fetchData", "loading": false }
+          { "type": "update_state", "path": "data", "value": "$response.data" },
+          { "type": "set_loading", "target": "fetchData", "loading": false }
         ],
         "onError": [
-          { "type": "setLoading", "target": "fetchData", "loading": false }
+          { "type": "set_loading", "target": "fetchData", "loading": false }
         ]
       }
     ]
@@ -299,11 +274,11 @@ Store error messages in state:
 <CodeBlock lang="json">
 ```json
 {
-  "type": "callApi",
+  "type": "call_api",
   "api": "my-plugin.submit",
   "onError": [
     {
-      "type": "updateState",
+      "type": "update_state",
       "path": "errors.submit",
       "value": "$error.message"
     }
@@ -389,10 +364,10 @@ Use `onMount` to initialize state when a page loads:
       },
       "onMount": [
         {
-          "type": "callApi",
+          "type": "call_api",
           "api": "my-plugin.getData",
           "onSuccess": [
-            { "type": "updateState", "path": "data", "value": "$response.data" }
+            { "type": "update_state", "path": "data", "value": "$response.data" }
           ]
         }
       ],
@@ -413,7 +388,7 @@ Use `onMount` to initialize state when a page loads:
       "type": "conditional",
       "condition": "{{state.data.length === 0}}",
       "then": [
-        { "type": "callApi", "api": "my-plugin.getData", ... }
+        { "type": "call_api", "api": "my-plugin.getData", ... }
       ]
     }
   ]
@@ -430,7 +405,7 @@ Use `onUnmount` to clean up when leaving a page:
 {
   "onUnmount": [
     {
-      "type": "updateState",
+      "type": "update_state",
       "path": "selectedItem",
       "value": null
     }
@@ -469,7 +444,7 @@ sequenceDiagram
     participant UI
 
     User->>Button: Click
-    Button->>Action: Execute updateState
+    Button->>Action: Execute update_state
     Action->>Store: setState(path, value)
     Store->>UI: Notify subscribers
     UI->>UI: Re-render affected components
@@ -533,9 +508,9 @@ Multiple state changes in one action sequence are batched:
 {
   "events": {
     "onClick": [
-      { "type": "updateState", "path": "a", "value": 1 },
-      { "type": "updateState", "path": "b", "value": 2 },
-      { "type": "updateState", "path": "c", "value": 3 }
+      { "type": "update_state", "path": "a", "value": 1 },
+      { "type": "update_state", "path": "b", "value": 2 },
+      { "type": "update_state", "path": "c", "value": 3 }
     ]
   }
 }

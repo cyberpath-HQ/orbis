@@ -521,10 +521,10 @@ Configuration is accessible in WASM handlers and can be used in expressions:
       },
       "onMount": [
         {
-          "type": "callApi",
+          "type": "call_api",
           "api": "task-manager.get_tasks",
           "onSuccess": [
-            { "type": "updateState", "path": "tasks", "value": "$response.data" }
+            { "type": "update_state", "path": "tasks", "value": "$response.data" }
           ]
         }
       ]

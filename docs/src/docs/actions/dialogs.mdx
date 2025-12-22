@@ -64,7 +64,7 @@ Displays a modal dialog to the user.
     {
       "label": "Confirm",
       "variant": "default",
-      "action": [{ "type": "callApi", "api": "deleteItem" }]
+      "action": [{ "type": "call_api", "api": "deleteItem" }]
     }
   ]
 }
@@ -98,7 +98,7 @@ Displays a modal dialog to the user.
       "label": "Confirm",
       "variant": "default",
       "action": [
-        { "type": "callApi", "api": "performAction" },
+        { "type": "call_api", "api": "performAction" },
         { "type": "closeDialog", "id": "confirm" }
       ]
     }
@@ -127,13 +127,13 @@ Displays a modal dialog to the user.
       "variant": "destructive",
       "action": [
         {
-          "type": "callApi",
+          "type": "call_api",
           "api": "deleteItem",
           "params": { "id": "{{state.selectedItem.id}}" },
           "onSuccess": [
             { "type": "showToast", "message": "Item deleted", "level": "success" },
             { "type": "closeDialog", "id": "deleteConfirm" },
-            { "type": "callApi", "api": "refreshList" }
+            { "type": "call_api", "api": "refreshList" }
           ]
         }
       ]
@@ -184,7 +184,7 @@ Displays a modal dialog to the user.
       "action": [
         { "type": "validateForm", "formId": "editForm" },
         {
-          "type": "callApi",
+          "type": "call_api",
           "api": "updateItem",
           "params": { "id": "{{state.selectedItem.id}}", "data": "{{form.editForm}}" },
           "onSuccess": [
@@ -258,7 +258,7 @@ Closes an open dialog.
 <CodeBlock lang="json">
 ```json
 {
-  "type": "callApi",
+  "type": "call_api",
   "api": "saveChanges",
   "onSuccess": [
     { "type": "showToast", "message": "Saved!", "level": "success" },
@@ -297,7 +297,7 @@ Closes an open dialog.
             "label": "Delete",
             "variant": "destructive",
             "action": [
-              { "type": "callApi", "api": "delete" },
+              { "type": "call_api", "api": "delete" },
               { "type": "closeDialog", "id": "confirmDelete" }
             ]
           }
@@ -318,7 +318,7 @@ Closes an open dialog.
   "text": "Add New",
   "events": {
     "onClick": [
-      { "type": "updateState", "path": "formData", "value": {} },
+      { "type": "update_state", "path": "formData", "value": {} },
       {
         "type": "showDialog",
         "id": "addNew",
@@ -338,7 +338,7 @@ Closes an open dialog.
             "variant": "default",
             "action": [
               { "type": "validateForm", "formId": "addForm" },
-              { "type": "callApi", "api": "createItem" },
+              { "type": "call_api", "api": "createItem" },
               { "type": "closeDialog", "id": "addNew" }
             ]
           }
@@ -381,7 +381,7 @@ Closes an open dialog.
       "label": "Back",
       "variant": "ghost",
       "visible": "{{state.wizardStep > 1}}",
-      "action": [{ "type": "updateState", "path": "wizardStep", "value": "{{state.wizardStep - 1}}" }]
+      "action": [{ "type": "update_state", "path": "wizardStep", "value": "{{state.wizardStep - 1}}" }]
     },
     {
       "label": "{{state.wizardStep === 3 ? 'Finish' : 'Next'}}",
@@ -390,9 +390,9 @@ Closes an open dialog.
         {
           "type": "conditional",
           "condition": "{{state.wizardStep < 3}}",
-          "then": [{ "type": "updateState", "path": "wizardStep", "value": "{{state.wizardStep + 1}}" }],
+          "then": [{ "type": "update_state", "path": "wizardStep", "value": "{{state.wizardStep + 1}}" }],
           "else": [
-            { "type": "callApi", "api": "completeSetup" },
+            { "type": "call_api", "api": "completeSetup" },
             { "type": "closeDialog", "id": "wizard" }
           ]
         }

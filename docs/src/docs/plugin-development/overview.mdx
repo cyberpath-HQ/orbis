@@ -310,7 +310,7 @@ Actions respond to user events:
 {
   "events": {
     "onClick": [
-      { "type": "updateState", "path": "count", "value": "{{state.count + 1}}" }
+      { "type": "update_state", "path": "count", "value": "{{state.count + 1}}" }
     ]
   }
 }
@@ -368,7 +368,7 @@ Actions respond to user events:
                 "variant": "outline",
                 "events": {
                   "onClick": [
-                    { "type": "updateState", "path": "count", "value": "{{state.count - 1}}" }
+                    { "type": "update_state", "path": "count", "value": "{{state.count - 1}}" }
                   ]
                 }
               },
@@ -377,7 +377,7 @@ Actions respond to user events:
                 "label": "+",
                 "events": {
                   "onClick": [
-                    { "type": "updateState", "path": "count", "value": "{{state.count + 1}}" }
+                    { "type": "update_state", "path": "count", "value": "{{state.count + 1}}" }
                   ]
                 }
               }
@@ -389,7 +389,7 @@ Actions respond to user events:
             "variant": "ghost",
             "events": {
               "onClick": [
-                { "type": "updateState", "path": "count", "value": 0 }
+                { "type": "update_state", "path": "count", "value": 0 }
               ]
             }
           }

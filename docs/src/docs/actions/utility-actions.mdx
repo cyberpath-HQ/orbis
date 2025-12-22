@@ -11,7 +11,7 @@ import CodeBlock from '@/components/mdx/CodeBlock.astro';
 
 General-purpose actions for common operations.
 
-## setLoading
+## set_loading
 
 Sets a loading state flag.
 
@@ -20,7 +20,7 @@ Sets a loading state flag.
 <CodeBlock lang="json">
 ```json
 {
-  "type": "setLoading",
+  "type": "set_loading",
   "key": "saving",
   "value": true
 }
@@ -46,12 +46,12 @@ Sets a loading state flag.
   "loading": "{{loading.saving}}",
   "events": {
     "onClick": [
-      { "type": "setLoading", "key": "saving", "value": true },
+      { "type": "set_loading", "key": "saving", "value": true },
       {
-        "type": "callApi",
+        "type": "call_api",
         "api": "saveData",
         "onComplete": [
-          { "type": "setLoading", "key": "saving", "value": false }
+          { "type": "set_loading", "key": "saving", "value": false }
         ]
       }
     ]
@@ -94,9 +94,9 @@ Sets a loading state flag.
       "disabled": "{{loading.publishing}}",
       "events": {
         "onClick": [
-          { "type": "setLoading", "key": "savingDraft", "value": true },
-          { "type": "callApi", "api": "saveDraft" },
-          { "type": "setLoading", "key": "savingDraft", "value": false }
+          { "type": "set_loading", "key": "savingDraft", "value": true },
+          { "type": "call_api", "api": "saveDraft" },
+          { "type": "set_loading", "key": "savingDraft", "value": false }
         ]
       }
     },
@@ -107,9 +107,9 @@ Sets a loading state flag.
       "disabled": "{{loading.savingDraft}}",
       "events": {
         "onClick": [
-          { "type": "setLoading", "key": "publishing", "value": true },
-          { "type": "callApi", "api": "publish" },
-          { "type": "setLoading", "key": "publishing", "value": false }
+          { "type": "set_loading", "key": "publishing", "value": true },
+          { "type": "call_api", "api": "publish" },
+          { "type": "set_loading", "key": "publishing", "value": false }
         ]
       }
     }
@@ -187,7 +187,7 @@ Downloads a file.
 <CodeBlock lang="json">
 ```json
 {
-  "type": "callApi",
+  "type": "call_api",
   "api": "generateExport",
   "onSuccess": [
     { "type": "download", "url": "{{$response.downloadUrl}}", "filename": "{{$response.filename}}" }
@@ -389,7 +389,7 @@ Emits a custom event for inter-component communication.
 {
   "events": {
     "onEvent:itemSelected": [
-      { "type": "updateState", "path": "selectedItem", "value": "{{$event.data}}" }
+      { "type": "update_state", "path": "selectedItem", "value": "{{$event.data}}" }
     ]
   }
 }
@@ -425,9 +425,9 @@ Emits a custom event for inter-component communication.
   "loading": "{{loading.submit}}",
   "events": {
     "onClick": [
-      { "type": "setLoading", "key": "submit", "value": true },
+      { "type": "set_loading", "key": "submit", "value": true },
       {
-        "type": "callApi",
+        "type": "call_api",
         "api": "submit",
         "onSuccess": [
           { "type": "showToast", "message": "Success!", "level": "success" }
@@ -436,7 +436,7 @@ Emits a custom event for inter-component communication.
           { "type": "showToast", "message": "{{$error.message}}", "level": "error" }
         ],
         "onComplete": [
-          { "type": "setLoading", "key": "submit", "value": false }
+          { "type": "set_loading", "key": "submit", "value": false }
         ]
       }
     ]
@@ -467,7 +467,7 @@ Emits a custom event for inter-component communication.
       "events": {
         "onClick": [
           { "type": "copy", "text": "{{state.code}}" },
-          { "type": "updateState", "path": "copied", "value": true },
+          { "type": "update_state", "path": "copied", "value": true },
           { "type": "showToast", "message": "Copied!", "level": "success", "duration": 1500 }
         ]
       }

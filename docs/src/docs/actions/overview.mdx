@@ -18,7 +18,7 @@ Every action has a `type` and type-specific properties:
 <CodeBlock lang="json">
 ```json
 {
-  "type": "updateState",
+  "type": "update_state",
   "path": "count",
   "value": "{{state.count}} + 1"
 }
@@ -29,8 +29,8 @@ Every action has a `type` and type-specific properties:
 
 | Type | Purpose |
 |------|---------|
-| [`updateState`](./update-state) | Modify page state |
-| [`callApi`](./call-api) | Make API requests |
+| [`update_state`](./update-state) | Modify page state |
+| [`call_api`](./call-api) | Make API requests |
 | [`navigate`](./navigate) | Change routes |
 | [`showToast`](./show-toast) | Display notifications |
 | [`showDialog`](./dialogs) | Show confirmation dialogs |
@@ -38,7 +38,7 @@ Every action has a `type` and type-specific properties:
 | [`debouncedAction`](./flow-control) | Debounce actions |
 | [`validateForm`](./form-actions) | Validate forms |
 | [`resetForm`](./form-actions) | Reset form values |
-| [`setLoading`](./utility-actions) | Set loading state |
+| [`set_loading`](./utility-actions) | Set loading state |
 | [`download`](./utility-actions) | Download files |
 | [`copy`](./utility-actions) | Copy to clipboard |
 | [`openUrl`](./utility-actions) | Open external URLs |
@@ -57,7 +57,7 @@ Every action has a `type` and type-specific properties:
   "label": "Click Me",
   "events": {
     "onClick": [
-      { "type": "updateState", "path": "clicked", "value": true },
+      { "type": "update_state", "path": "clicked", "value": true },
       { "type": "showToast", "message": "Button clicked!" }
     ]
   }
@@ -71,10 +71,10 @@ Every action has a `type` and type-specific properties:
 ```json
 {
   "onMount": [
-    { "type": "callApi", "api": "getData" }
+    { "type": "call_api", "api": "getData" }
   ],
   "onUnmount": [
-    { "type": "updateState", "path": "selectedItem", "value": null }
+    { "type": "update_state", "path": "selectedItem", "value": null }
   ]
 }
 ```
@@ -89,10 +89,10 @@ Actions execute in sequence:
 {
   "events": {
     "onClick": [
-      { "type": "setLoading", "loading": true },
-      { "type": "callApi", "api": "save" },
+      { "type": "set_loading", "loading": true },
+      { "type": "call_api", "api": "save" },
       { "type": "showToast", "message": "Saved!" },
-      { "type": "setLoading", "loading": false }
+      { "type": "set_loading", "loading": false }
     ]
   }
 }
@@ -110,8 +110,8 @@ Actions have access to event context via special variables:
 | `$row` | Table onRowClick | Row data |
 | `$index` | List item events | Item index |
 | `$item` | List item events | Item data |
-| `$response` | callApi onSuccess | API response |
-| `$error` | callApi onError | Error object |
+| `$response` | call_api onSuccess | API response |
+| `$error` | call_api onError | Error object |
 | `$page` | onPageChange | Page number |
 
 ### Example
@@ -123,7 +123,7 @@ Actions have access to event context via special variables:
   "dataSource": "state:items",
   "events": {
     "onRowClick": [
-      { "type": "updateState", "path": "selectedId", "value": "{{$row.id}}" },
+      { "type": "update_state", "path": "selectedId", "value": "{{$row.id}}" },
       { "type": "navigate", "to": "/items/{{$row.id}}" }
     ]
   }
@@ -133,12 +133,12 @@ Actions have access to event context via special variables:
 
 ## Error Handling
 
-### With callApi
+### With call_api
 
 <CodeBlock lang="json">
 ```json
 {
-  "type": "callApi",
+  "type": "call_api",
   "api": "saveData",
   "onSuccess": [
     { "type": "showToast", "message": "Saved!", "level": "success" }
@@ -155,11 +155,11 @@ Actions have access to event context via special variables:
 <CodeBlock lang="json">
 ```json
 {
-  "type": "callApi",
+  "type": "call_api",
   "api": "primaryApi",
   "onError": [
     {
-      "type": "callApi",
+      "type": "call_api",
       "api": "fallbackApi",
       "onError": [
         { "type": "showToast", "message": "All APIs failed", "level": "error" }
@@ -180,7 +180,7 @@ Execute actions based on conditions:
   "type": "conditional",
   "condition": "{{state.isValid}}",
   "then": [
-    { "type": "callApi", "api": "submit" }
+    { "type": "call_api", "api": "submit" }
   ],
   "else": [
     { "type": "showToast", "message": "Please fix errors", "level": "warning" }
@@ -196,15 +196,15 @@ Execute actions based on conditions:
 <CodeBlock lang="json">
 ```json
 [
-  { "type": "setLoading", "loading": true },
+  { "type": "set_loading", "loading": true },
   {
-    "type": "callApi",
+    "type": "call_api",
     "api": "fetchData",
     "onSuccess": [
-      { "type": "updateState", "path": "data", "value": "$response.data" }
+      { "type": "update_state", "path": "data", "value": "$response.data" }
     ],
     "finally": [
-      { "type": "setLoading", "loading": false }
+      { "type": "set_loading", "loading": false }
     ]
   }
 ]
@@ -216,12 +216,12 @@ Execute actions based on conditions:
 <CodeBlock lang="json">
 ```json
 [
-  { "type": "updateState", "path": "items", "value": "{{state.items.filter(i => i.id !== $itemId)}}" },
+  { "type": "update_state", "path": "items", "value": "{{state.items.filter(i => i.id !== $itemId)}}" },
   {
-    "type": "callApi",
+    "type": "call_api",
     "api": "deleteItem",
     "onError": [
-      { "type": "callApi", "api": "getItems" },
+      { "type": "call_api", "api": "getItems" },
       { "type": "showToast", "message": "Failed to delete", "level": "error" }
     ]
   }
@@ -239,9 +239,9 @@ Execute actions based on conditions:
     "type": "conditional",
     "condition": "{{state.$formValid}}",
     "then": [
-      { "type": "setLoading", "loading": true },
+      { "type": "set_loading", "loading": true },
       {
-        "type": "callApi",
+        "type": "call_api",
         "api": "submitForm",
         "args": "{{state.formData}}",
         "onSuccess": [
@@ -250,7 +250,7 @@ Execute actions based on conditions:
           { "type": "navigate", "to": "/success" }
         ]
       },
-      { "type": "setLoading", "loading": false }
+      { "type": "set_loading", "loading": false }
     ]
   }
 ]

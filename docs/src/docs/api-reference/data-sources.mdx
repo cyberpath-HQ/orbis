@@ -20,7 +20,7 @@ Reference for loading and managing data in Orbis plugins.
 {
   "onMount": [
     {
-      "type": "callApi",
+      "type": "call_api",
       "api": "getItems",
       "storeAs": "items"
     }
@@ -34,7 +34,7 @@ Reference for loading and managing data in Orbis plugins.
 <CodeBlock lang="json">
 ```json
 {
-  "type": "callApi",
+  "type": "call_api",
   "api": "getItems",
   "params": {
     "page": "{{state.currentPage}}",
@@ -50,10 +50,10 @@ Reference for loading and managing data in Orbis plugins.
 
 <CodeBlock lang="json">
 ```json
-{ "type": "callApi", "api": "getItems", "method": "GET" }
-{ "type": "callApi", "api": "createItem", "method": "POST", "params": { "data": "{{form.newItem}}" } }
-{ "type": "callApi", "api": "updateItem", "method": "PUT", "params": { "id": "{{state.id}}", "data": "{{form.editItem}}" } }
-{ "type": "callApi", "api": "deleteItem", "method": "DELETE", "params": { "id": "{{state.id}}" } }
+{ "type": "call_api", "api": "getItems", "method": "GET" }
+{ "type": "call_api", "api": "createItem", "method": "POST", "params": { "data": "{{form.newItem}}" } }
+{ "type": "call_api", "api": "updateItem", "method": "PUT", "params": { "id": "{{state.id}}", "data": "{{form.editItem}}" } }
+{ "type": "call_api", "api": "deleteItem", "method": "DELETE", "params": { "id": "{{state.id}}" } }
 ```
 </CodeBlock>
 
@@ -64,7 +64,7 @@ Reference for loading and managing data in Orbis plugins.
 <CodeBlock lang="json">
 ```json
 {
-  "type": "callApi",
+  "type": "call_api",
   "api": "getItems",
   "storeAs": "data"
 }
@@ -78,11 +78,11 @@ Access: `{{state.data}}`
 <CodeBlock lang="json">
 ```json
 {
-  "type": "callApi",
+  "type": "call_api",
   "api": "getItems",
   "onSuccess": [
-    { "type": "updateState", "path": "items", "value": "{{$response.data}}" },
-    { "type": "updateState", "path": "total", "value": "{{$response.total}}" }
+    { "type": "update_state", "path": "items", "value": "{{$response.data}}" },
+    { "type": "update_state", "path": "total", "value": "{{$response.total}}" }
   ]
 }
 ```
@@ -93,11 +93,11 @@ Access: `{{state.data}}`
 <CodeBlock lang="json">
 ```json
 {
-  "type": "callApi",
+  "type": "call_api",
   "api": "getUsers",
   "onSuccess": [
     {
-      "type": "updateState",
+      "type": "update_state",
       "path": "users",
       "value": "{{$response.map(u => ({ ...u, displayName: `${u.firstName} ${u.lastName}` }))}}"
     }
@@ -113,7 +113,7 @@ Access: `{{state.data}}`
 <CodeBlock lang="json">
 ```json
 {
-  "type": "callApi",
+  "type": "call_api",
   "api": "getData",
   "onError": [
     { "type": "showToast", "message": "Failed to load data", "level": "error" }
@@ -127,10 +127,10 @@ Access: `{{state.data}}`
 <CodeBlock lang="json">
 ```json
 {
-  "type": "callApi",
+  "type": "call_api",
   "api": "getData",
   "onError": [
-    { "type": "updateState", "path": "error", "value": "{{$error}}" },
+    { "type": "update_state", "path": "error", "value": "{{$error}}" },
     { "type": "showToast", "message": "{{$error.message}}", "level": "error" }
   ]
 }
@@ -142,15 +142,15 @@ Access: `{{state.data}}`
 <CodeBlock lang="json">
 ```json
 {
-  "type": "callApi",
+  "type": "call_api",
   "api": "getData",
   "onError": [
     {
       "type": "conditional",
       "condition": "{{state.retryCount < 3}}",
       "then": [
-        { "type": "updateState", "path": "retryCount", "value": "{{state.retryCount + 1}}" },
-        { "type": "callApi", "api": "getData" }
+        { "type": "update_state", "path": "retryCount", "value": "{{state.retryCount + 1}}" },
+        { "type": "call_api", "api": "getData" }
       ],
       "else": [
         { "type": "showToast", "message": "Failed after 3 attempts", "level": "error" }
@@ -168,13 +168,13 @@ Access: `{{state.data}}`
 <CodeBlock lang="json">
 ```json
 {
-  "type": "callApi",
+  "type": "call_api",
   "api": "getData",
   "onStart": [
-    { "type": "setLoading", "key": "data", "value": true }
+    { "type": "set_loading", "key": "data", "value": true }
   ],
   "onComplete": [
-    { "type": "setLoading", "key": "data", "value": false }
+    { "type": "set_loading", "key": "data", "value": false }
   ]
 }
 ```
@@ -208,15 +208,15 @@ Access: `{{state.data}}`
 <CodeBlock lang="json">
 ```json
 {
-  "type": "callApi",
+  "type": "call_api",
   "api": "getItems",
   "params": {
     "page": "{{state.page}}",
     "limit": "{{state.pageSize}}"
   },
   "onSuccess": [
-    { "type": "updateState", "path": "items", "value": "{{$response.data}}" },
-    { "type": "updateState", "path": "totalPages", "value": "{{$response.pages}}" }
+    { "type": "update_state", "path": "items", "value": "{{$response.data}}" },
+    { "type": "update_state", "path": "totalPages", "value": "{{$response.pages}}" }
   ]
 }
 ```
@@ -227,16 +227,16 @@ Access: `{{state.data}}`
 <CodeBlock lang="json">
 ```json
 {
-  "type": "callApi",
+  "type": "call_api",
   "api": "getItems",
   "params": {
     "cursor": "{{state.cursor}}",
     "limit": 20
   },
   "onSuccess": [
-    { "type": "updateState", "path": "items", "value": "{{[...state.items, ...$response.data]}}" },
-    { "type": "updateState", "path": "cursor", "value": "{{$response.nextCursor}}" },
-    { "type": "updateState", "path": "hasMore", "value": "{{!!$response.nextCursor}}" }
+    { "type": "update_state", "path": "items", "value": "{{[...state.items, ...$response.data]}}" },
+    { "type": "update_state", "path": "cursor", "value": "{{$response.nextCursor}}" },
+    { "type": "update_state", "path": "hasMore", "value": "{{!!$response.nextCursor}}" }
   ]
 }
 ```
@@ -253,17 +253,17 @@ Access: `{{state.data}}`
   "loading": "{{loading.loadMore}}",
   "events": {
     "onClick": [
-      { "type": "setLoading", "key": "loadMore", "value": true },
+      { "type": "set_loading", "key": "loadMore", "value": true },
       {
-        "type": "callApi",
+        "type": "call_api",
         "api": "getItems",
         "params": { "cursor": "{{state.cursor}}" },
         "onSuccess": [
-          { "type": "updateState", "path": "items", "value": "{{[...state.items, ...$response.data]}}" },
-          { "type": "updateState", "path": "cursor", "value": "{{$response.nextCursor}}" }
+          { "type": "update_state", "path": "items", "value": "{{[...state.items, ...$response.data]}}" },
+          { "type": "update_state", "path": "cursor", "value": "{{$response.nextCursor}}" }
         ],
         "onComplete": [
-          { "type": "setLoading", "key": "loadMore", "value": false }
+          { "type": "set_loading", "key": "loadMore", "value": false }
         ]
       }
     ]
@@ -279,7 +279,7 @@ Access: `{{state.data}}`
 <CodeBlock lang="json">
 ```json
 {
-  "type": "callApi",
+  "type": "call_api",
   "api": "getConfig",
   "storeAs": "config"
 }
@@ -298,8 +298,8 @@ Data persists in state until page unmount.
       "type": "conditional",
       "condition": "{{!state.dataLoaded}}",
       "then": [
-        { "type": "callApi", "api": "getData", "storeAs": "data" },
-        { "type": "updateState", "path": "dataLoaded", "value": true }
+        { "type": "call_api", "api": "getData", "storeAs": "data" },
+        { "type": "update_state", "path": "dataLoaded", "value": true }
       ]
     }
   ]
@@ -317,13 +317,13 @@ Data persists in state until page unmount.
   "icon": "RefreshCw",
   "events": {
     "onClick": [
-      { "type": "setLoading", "key": "refresh", "value": true },
+      { "type": "set_loading", "key": "refresh", "value": true },
       {
-        "type": "callApi",
+        "type": "call_api",
         "api": "getData",
         "storeAs": "data",
         "onComplete": [
-          { "type": "setLoading", "key": "refresh", "value": false }
+          { "type": "set_loading", "key": "refresh", "value": false }
         ]
       }
     ]
@@ -424,8 +424,8 @@ Data persists in state until page unmount.
       "items": "{{state.categories}}",
       "events": {
         "onSelect": [
-          { "type": "updateState", "path": "selectedCategory", "value": "{{$value}}" },
-          { "type": "callApi", "api": "getItems", "params": { "category": "{{$value.id}}" } }
+          { "type": "update_state", "path": "selectedCategory", "value": "{{$value}}" },
+          { "type": "call_api", "api": "getItems", "params": { "category": "{{$value.id}}" } }
         ]
       }
     },
@@ -451,8 +451,8 @@ Data persists in state until page unmount.
     "options": "{{state.countries}}",
     "events": {
       "onChange": [
-        { "type": "callApi", "api": "getStates", "params": { "country": "{{$value}}" }, "storeAs": "states" },
-        { "type": "updateState", "path": "selectedState", "value": null }
+        { "type": "call_api", "api": "getStates", "params": { "country": "{{$value}}" }, "storeAs": "states" },
+        { "type": "update_state", "path": "selectedState", "value": null }
       ]
     }
   },

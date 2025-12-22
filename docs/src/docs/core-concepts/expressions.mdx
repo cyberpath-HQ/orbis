@@ -71,9 +71,9 @@ Event and iteration context:
 | `$item` | Current item | Loop, List, Table |
 | `$index` | Current index | Loop, List, Table |
 | `$row` | Current row | Table components |
-| `$response` | API response | callApi onSuccess |
-| `$response.data` | Response body | callApi onSuccess |
-| `$error` | Error object | callApi onError |
+| `$response` | API response | call_api onSuccess |
+| `$response.data` | Response body | call_api onSuccess |
+| `$error` | Error object | call_api onError |
 
 ## Data Access
 
@@ -254,7 +254,7 @@ Mix static and dynamic content:
   "events": {
     "onChange": [
       {
-        "type": "updateState",
+        "type": "update_state",
         "path": "searchQuery",
         "value": "$event.value"
       }
@@ -269,11 +269,11 @@ Mix static and dynamic content:
 <CodeBlock lang="json">
 ```json
 {
-  "type": "callApi",
+  "type": "call_api",
   "api": "my-plugin.getData",
   "onSuccess": [
     {
-      "type": "updateState",
+      "type": "update_state",
       "path": "data",
       "value": "$response.data"
     }
@@ -376,7 +376,7 @@ Expressions are read-only:
 ```
 </CodeBlock>
 
-Use the `updateState` action to modify state.
+Use the `update_state` action to modify state.
 
 ### No Multi-Statement
 
@@ -423,7 +423,7 @@ For complex logic, compute in actions:
 ```json
 // Action that computes value
 {
-  "type": "updateState",
+  "type": "update_state",
   "path": "canSubmit",
   "value": "{{state.isValid && !state.isLoading && state.hasChanges}}"
 }

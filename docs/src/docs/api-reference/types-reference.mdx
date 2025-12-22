@@ -379,7 +379,7 @@ type ActionSchema =
 <CodeBlock lang="typescript">
 ```typescript
 interface UpdateStateAction {
-  type: 'updateState';
+  type: 'update_state';
   path: string;
   value: any;
 }
@@ -391,7 +391,7 @@ interface UpdateStateAction {
 <CodeBlock lang="typescript">
 ```typescript
 interface CallApiAction {
-  type: 'callApi';
+  type: 'call_api';
   api: string;
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   params?: Record<string, any>;
@@ -558,7 +558,7 @@ const page: PageDefinition = {
     loading: false
   },
   onMount: [
-    { type: 'callApi', api: 'getUsers', storeAs: 'users' }
+    { type: 'call_api', api: 'getUsers', storeAs: 'users' }
   ],
   children: [
     {

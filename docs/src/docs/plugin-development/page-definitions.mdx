@@ -183,19 +183,19 @@ Actions to execute when page loads.
 ```json
 "onMount": [
   {
-    "type": "setLoading",
+    "type": "set_loading",
     "loading": true
   },
   {
-    "type": "callApi",
+    "type": "call_api",
     "api": "my-plugin.getData",
     "onSuccess": [
-      { "type": "updateState", "path": "items", "value": "$response.data" },
-      { "type": "setLoading", "loading": false }
+      { "type": "update_state", "path": "items", "value": "$response.data" },
+      { "type": "set_loading", "loading": false }
     ],
     "onError": [
       { "type": "showToast", "message": "Failed to load data", "level": "error" },
-      { "type": "setLoading", "loading": false }
+      { "type": "set_loading", "loading": false }
     ]
   }
 ]
@@ -215,7 +215,7 @@ Actions to execute when leaving the page.
 ```json
 "onUnmount": [
   {
-    "type": "updateState",
+    "type": "update_state",
     "path": "selectedItem",
     "value": null
   }
@@ -363,11 +363,11 @@ Common patterns:
   },
   "onMount": [
     {
-      "type": "callApi",
+      "type": "call_api",
       "api": "my-plugin.getItem",
       "args": { "id": "{{params.id}}" },
       "onSuccess": [
-        { "type": "updateState", "path": "item", "value": "$response.data" }
+        { "type": "update_state", "path": "item", "value": "$response.data" }
       ]
     }
   ],
@@ -468,9 +468,9 @@ Common patterns:
           ],
           "events": {
             "onSubmit": [
-              { "type": "setLoading", "target": "submit", "loading": true },
+              { "type": "set_loading", "target": "submit", "loading": true },
               {
-                "type": "callApi",
+                "type": "call_api",
                 "api": "my-plugin.createItem",
                 "args": { "data": "{{state.formData}}" },
                 "onSuccess": [
@@ -481,7 +481,7 @@ Common patterns:
                   { "type": "showToast", "message": "Failed to create item", "level": "error" }
                 ]
               },
-              { "type": "setLoading", "target": "submit", "loading": false }
+              { "type": "set_loading", "target": "submit", "loading": false }
             ]
           }
         }
@@ -588,10 +588,10 @@ Handle load failures:
 ```json
 "onMount": [
   {
-    "type": "callApi",
+    "type": "call_api",
     "api": "getData",
     "onError": [
-      { "type": "updateState", "path": "error", "value": "$error.message" }
+      { "type": "update_state", "path": "error", "value": "$error.message" }
     ]
   }
 ]

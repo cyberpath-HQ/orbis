@@ -22,7 +22,7 @@ Interactive button with multiple variants and states.
   "label": "Click Me",
   "events": {
     "onClick": [
-      { "type": "updateState", "path": "clicked", "value": true }
+      { "type": "update_state", "path": "clicked", "value": true }
     ]
   }
 }
@@ -124,9 +124,9 @@ Interactive button with multiple variants and states.
   "loading": "{{state.isSaving}}",
   "events": {
     "onClick": [
-      { "type": "updateState", "path": "isSaving", "value": true },
-      { "type": "callApi", "api": "save" },
-      { "type": "updateState", "path": "isSaving", "value": false }
+      { "type": "update_state", "path": "isSaving", "value": true },
+      { "type": "call_api", "api": "save" },
+      { "type": "update_state", "path": "isSaving", "value": false }
     ]
   }
 }
@@ -140,7 +140,7 @@ Interactive button with multiple variants and states.
   "type": "Button",
   "label": "Submit",
   "disabled": "{{!state.formValid}}",
-  "events": { "onClick": [{ "type": "callApi", "api": "submit" }] }
+  "events": { "onClick": [{ "type": "call_api", "api": "submit" }] }
 }
 ```
 </CodeBlock>
@@ -315,7 +315,7 @@ interface Tab {
   "events": {
     "onTabChange": [
       {
-        "type": "callApi",
+        "type": "call_api",
         "api": "getItems",
         "args": { "status": "{{$value}}" }
       }
@@ -464,7 +464,7 @@ interface DropdownItem {
     { "label": "Profile", "icon": "User", "action": [{ "type": "navigate", "to": "/profile" }] },
     { "label": "Settings", "icon": "Settings", "action": [{ "type": "navigate", "to": "/settings" }] },
     { "separator": true },
-    { "label": "Sign Out", "icon": "LogOut", "action": [{ "type": "callApi", "api": "auth.logout" }] }
+    { "label": "Sign Out", "icon": "LogOut", "action": [{ "type": "call_api", "api": "auth.logout" }] }
   ]
 }
 ```

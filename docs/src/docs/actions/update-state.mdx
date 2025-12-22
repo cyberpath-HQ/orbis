@@ -1,13 +1,13 @@
 ---
 sidebar_position: 2
-title: updateState
+title: update_state
 description: Modify page state values
 ---
 
 import CodeBlock from '@/components/mdx/CodeBlock.astro';
 
 
-# updateState
+# update_state
 
 Modifies a value in the page state.
 
@@ -16,7 +16,7 @@ Modifies a value in the page state.
 <CodeBlock lang="json">
 ```json
 {
-  "type": "updateState",
+  "type": "update_state",
   "path": "fieldName",
   "value": "newValue"
 }
@@ -37,7 +37,7 @@ Modifies a value in the page state.
 <CodeBlock lang="json">
 ```json
 {
-  "type": "updateState",
+  "type": "update_state",
   "path": "count",
   "value": 5
 }
@@ -49,7 +49,7 @@ Modifies a value in the page state.
 <CodeBlock lang="json">
 ```json
 {
-  "type": "updateState",
+  "type": "update_state",
   "path": "count",
   "value": "{{state.count}} + 1"
 }
@@ -61,7 +61,7 @@ Modifies a value in the page state.
 <CodeBlock lang="json">
 ```json
 {
-  "type": "updateState",
+  "type": "update_state",
   "path": "user.profile.name",
   "value": "John Doe"
 }
@@ -74,7 +74,7 @@ Modifies a value in the page state.
 <CodeBlock lang="json">
 ```json
 {
-  "type": "updateState",
+  "type": "update_state",
   "path": "items",
   "value": "[...state.items, { id: Date.now(), name: 'New Item' }]"
 }
@@ -85,7 +85,7 @@ Modifies a value in the page state.
 <CodeBlock lang="json">
 ```json
 {
-  "type": "updateState",
+  "type": "update_state",
   "path": "items",
   "value": "{{state.items.filter(item => item.id !== state.selectedId)}}"
 }
@@ -96,7 +96,7 @@ Modifies a value in the page state.
 <CodeBlock lang="json">
 ```json
 {
-  "type": "updateState",
+  "type": "update_state",
   "path": "items",
   "value": "{{state.items.map(item => item.id === state.editId ? { ...item, name: state.newName } : item)}}"
 }
@@ -109,7 +109,7 @@ Modifies a value in the page state.
 <CodeBlock lang="json">
 ```json
 {
-  "type": "updateState",
+  "type": "update_state",
   "path": "settings",
   "value": "{{ ...state.settings, theme: 'dark' }}"
 }
@@ -120,7 +120,7 @@ Modifies a value in the page state.
 <CodeBlock lang="json">
 ```json
 {
-  "type": "updateState",
+  "type": "update_state",
   "path": "formData",
   "value": {}
 }
@@ -132,7 +132,7 @@ Modifies a value in the page state.
 <CodeBlock lang="json">
 ```json
 {
-  "type": "updateState",
+  "type": "update_state",
   "path": "isVisible",
   "value": "{{!state.isVisible}}"
 }
@@ -149,7 +149,7 @@ Modifies a value in the page state.
   "name": "search",
   "events": {
     "onChange": [
-      { "type": "updateState", "path": "searchQuery", "value": "{{$value}}" }
+      { "type": "update_state", "path": "searchQuery", "value": "{{$value}}" }
     ]
   }
 }
@@ -163,7 +163,7 @@ Modifies a value in the page state.
   "type": "Table",
   "events": {
     "onRowClick": [
-      { "type": "updateState", "path": "selectedItem", "value": "{{$row}}" }
+      { "type": "update_state", "path": "selectedItem", "value": "{{$row}}" }
     ]
   }
 }
@@ -174,11 +174,11 @@ Modifies a value in the page state.
 <CodeBlock lang="json">
 ```json
 {
-  "type": "callApi",
+  "type": "call_api",
   "api": "getData",
   "onSuccess": [
-    { "type": "updateState", "path": "data", "value": "$response.data" },
-    { "type": "updateState", "path": "total", "value": "$response.meta.total" }
+    { "type": "update_state", "path": "data", "value": "$response.data" },
+    { "type": "update_state", "path": "total", "value": "$response.meta.total" }
   ]
 }
 ```
@@ -200,7 +200,7 @@ Modifies a value in the page state.
       "label": "-",
       "events": {
         "onClick": [
-          { "type": "updateState", "path": "count", "value": "{{state.count}} - 1" }
+          { "type": "update_state", "path": "count", "value": "{{state.count}} - 1" }
         ]
       }
     },
@@ -210,7 +210,7 @@ Modifies a value in the page state.
       "label": "+",
       "events": {
         "onClick": [
-          { "type": "updateState", "path": "count", "value": "{{state.count}} + 1" }
+          { "type": "update_state", "path": "count", "value": "{{state.count}} + 1" }
         ]
       }
     }
@@ -234,7 +234,7 @@ Modifies a value in the page state.
     ],
     "events": {
       "onClick": [
-        { "type": "updateState", "path": "selectedId", "value": "{{$item.id}}" }
+        { "type": "update_state", "path": "selectedId", "value": "{{$item.id}}" }
       ]
     }
   }
@@ -252,7 +252,7 @@ Modifies a value in the page state.
   "events": {
     "onClick": [
       {
-        "type": "updateState",
+        "type": "update_state",
         "path": "formData",
         "value": {
           "name": "",
@@ -276,8 +276,8 @@ Modifies a value in the page state.
   "disabled": "{{state.currentPage >= state.totalPages}}",
   "events": {
     "onClick": [
-      { "type": "updateState", "path": "currentPage", "value": "{{state.currentPage}} + 1" },
-      { "type": "callApi", "api": "getItems", "args": { "page": "{{state.currentPage}} + 1" } }
+      { "type": "update_state", "path": "currentPage", "value": "{{state.currentPage}} + 1" },
+      { "type": "call_api", "api": "getItems", "args": { "page": "{{state.currentPage}} + 1" } }
     ]
   }
 }

@@ -217,12 +217,12 @@ sequenceDiagram
     
     User->>Component: Click button
     Component->>Action: Execute onClick actions
-    Action->>State: updateState action
+    Action->>State: update_state action
     State-->>Component: State updated
     Component-->>User: UI re-renders
     
     alt API call needed
-        Action->>Backend: callApi action
+        Action->>Backend: call_api action
         Backend-->>Action: Response
         Action->>State: Update with response
         State-->>Component: State updated

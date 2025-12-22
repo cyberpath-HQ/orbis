@@ -49,7 +49,7 @@ Validates a form and returns validation results.
         "type": "validateForm",
         "formId": "contactForm",
         "onValid": [
-          { "type": "callApi", "api": "submitContact" }
+          { "type": "call_api", "api": "submitContact" }
         ],
         "onInvalid": [
           { "type": "showToast", "message": "Please fix the errors", "level": "warning" }
@@ -98,7 +98,7 @@ Validates a form and returns validation results.
             "type": "validateForm",
             "formId": "userForm",
             "onValid": [
-              { "type": "callApi", "api": "register", "params": { "data": "{{form.userForm}}" } }
+              { "type": "call_api", "api": "register", "params": { "data": "{{form.userForm}}" } }
             ]
           }
         ]
@@ -117,7 +117,7 @@ Validates a form and returns validation results.
   "type": "validateForm",
   "formId": "settingsForm",
   "onValid": [
-    { "type": "callApi", "api": "saveSettings" },
+    { "type": "call_api", "api": "saveSettings" },
     { "type": "navigate", "route": "/dashboard" }
   ],
   "onInvalid": [
@@ -191,7 +191,7 @@ Resets a form to its initial state.
 <CodeBlock lang="json">
 ```json
 {
-  "type": "callApi",
+  "type": "call_api",
   "api": "createItem",
   "params": { "data": "{{form.newItemForm}}" },
   "onSuccess": [
@@ -228,7 +228,7 @@ Form data is accessible via the `form` namespace:
 <CodeBlock lang="json">
 ```json
 {
-  "type": "callApi",
+  "type": "call_api",
   "api": "submitForm",
   "params": {
     "formData": "{{form.myForm}}",
@@ -261,7 +261,7 @@ Form data is accessible via the `form` namespace:
   "disabled": "{{!form.myForm.$valid}}",
   "events": {
     "onClick": [
-      { "type": "callApi", "api": "submit" }
+      { "type": "call_api", "api": "submit" }
     ]
   }
 }
@@ -340,9 +340,9 @@ Form data is accessible via the `form` namespace:
             "type": "validateForm",
             "formId": "myForm",
             "onValid": [
-              { "type": "setLoading", "key": "submitting", "value": true },
+              { "type": "set_loading", "key": "submitting", "value": true },
               {
-                "type": "callApi",
+                "type": "call_api",
                 "api": "submit",
                 "params": { "data": "{{form.myForm}}" },
                 "onSuccess": [
@@ -350,7 +350,7 @@ Form data is accessible via the `form` namespace:
                   { "type": "resetForm", "formId": "myForm" }
                 ],
                 "onComplete": [
-                  { "type": "setLoading", "key": "submitting", "value": false }
+                  { "type": "set_loading", "key": "submitting", "value": false }
                 ]
               }
             ]
@@ -376,7 +376,7 @@ Form data is accessible via the `form` namespace:
         "type": "validateForm",
         "formId": "step{{state.currentStep}}Form",
         "onValid": [
-          { "type": "updateState", "path": "currentStep", "value": "{{state.currentStep + 1}}" }
+          { "type": "update_state", "path": "currentStep", "value": "{{state.currentStep + 1}}" }
         ],
         "onInvalid": [
           { "type": "showToast", "message": "Please complete this step", "level": "warning" }

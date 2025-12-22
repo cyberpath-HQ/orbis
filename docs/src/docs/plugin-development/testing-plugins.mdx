@@ -463,7 +463,7 @@ test.describe('My Plugin', () => {
 
 <CodeBlock lang="typescript">
 ```typescript
-test('updateState action works', async ({ page }) => {
+test('update_state action works', async ({ page }) => {
   await page.goto('/my-plugin');
   
   // Initial state
@@ -476,7 +476,7 @@ test('updateState action works', async ({ page }) => {
   await expect(page.getByTestId('counter')).toHaveText('1');
 });
 
-test('callApi action fetches data', async ({ page }) => {
+test('call_api action fetches data', async ({ page }) => {
   await page.goto('/my-plugin/items');
   
   // Loading state
@@ -605,7 +605,7 @@ debug!("Processing item: {:?}", item);
 {
   "events": {
     "onClick": [
-      { "type": "updateState", "path": "debug.lastClick", "value": "{{$now}}" }
+      { "type": "update_state", "path": "debug.lastClick", "value": "{{$now}}" }
     ]
   }
 }
