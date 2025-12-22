@@ -47,5 +47,5 @@ export default defineConfig({
     },
     site:          `https://orbis.cyberpath-hq.com`,
     base:          `/`,
-    trailingSlash: `always`,
+    trailingSlash: `ignore`,
 });
