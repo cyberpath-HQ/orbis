@@ -66,14 +66,14 @@ Event and iteration context:
 | Variable | Description | Available In |
 |----------|-------------|--------------|
 | `$event` | Event object | Event handlers |
-| `$event.value` | Input value | onChange handlers |
+| `$event.value` | Input value | on_change handlers |
 | `$event.target` | Event target | All event handlers |
 | `$item` | Current item | Loop, List, Table |
 | `$index` | Current index | Loop, List, Table |
 | `$row` | Current row | Table components |
-| `$response` | API response | call_api onSuccess |
-| `$response.data` | Response body | call_api onSuccess |
-| `$error` | Error object | call_api onError |
+| `$response` | API response | call_api on_success |
+| `$response.data` | Response body | call_api on_success |
+| `$error` | Error object | call_api on_error |
 
 ## Data Access
 
@@ -252,7 +252,7 @@ Mix static and dynamic content:
 {
   "type": "Field",
   "events": {
-    "onChange": [
+    "on_change": [
       {
         "type": "update_state",
         "path": "searchQuery",
@@ -271,14 +271,14 @@ Mix static and dynamic content:
 {
   "type": "call_api",
   "api": "my-plugin.getData",
-  "onSuccess": [
+  "on_success": [
     {
       "type": "update_state",
       "path": "data",
       "value": "$response.data"
     }
   ],
-  "onError": [
+  "on_error": [
     {
       "type": "show_toast",
       "message": "Error: {{$error.message}}",

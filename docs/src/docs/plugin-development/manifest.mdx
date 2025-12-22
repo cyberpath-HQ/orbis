@@ -523,7 +523,7 @@ Configuration is accessible in WASM handlers and can be used in expressions:
         {
           "type": "call_api",
           "api": "task-manager.get_tasks",
-          "onSuccess": [
+          "on_success": [
             { "type": "update_state", "path": "tasks", "value": "$response.data" }
           ]
         }

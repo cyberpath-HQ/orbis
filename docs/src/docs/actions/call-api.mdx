@@ -19,8 +19,8 @@ Makes an API request to a plugin route.
   "type": "call_api",
   "api": "pluginName.routeName",
   "args": { "key": "value" },
-  "onSuccess": [...],
-  "onError": [...],
+  "on_success": [...],
+  "on_error": [...],
   "finally": [...]
 }
 ```
@@ -33,8 +33,8 @@ Makes an API request to a plugin route.
 | `api` | string | Yes | API route identifier |
 | `args` | object | - | Arguments to pass |
 | `method` | string | - | HTTP method (default: inferred) |
-| `onSuccess` | Action[] | - | Actions on success |
-| `onError` | Action[] | - | Actions on error |
+| `on_success` | Action[] | - | Actions on success |
+| `on_error` | Action[] | - | Actions on error |
 | `finally` | Action[] | - | Actions always executed |
 
 ## API Route Format
@@ -88,12 +88,12 @@ Examples:
     "name": "{{state.formData.name}}",
     "category": "{{state.formData.category}}"
   },
-  "onSuccess": [
+  "on_success": [
     { "type": "update_state", "path": "items", "value": "[...state.items, $response.data]" },
     { "type": "show_toast", "message": "Item created!", "level": "success" },
     { "type": "navigate", "to": "/items" }
   ],
-  "onError": [
+  "on_error": [
     { "type": "show_toast", "message": "Failed: {{$error.message}}", "level": "error" }
   ],
   "finally": [
@@ -105,7 +105,7 @@ Examples:
 
 ## Response Variables
 
-In `onSuccess` handlers, you have access to:
+In `on_success` handlers, you have access to:
 
 | Variable | Description |
 |----------|-------------|
@@ -121,7 +121,7 @@ In `onSuccess` handlers, you have access to:
 {
   "type": "call_api",
   "api": "my-plugin.getItems",
-  "onSuccess": [
+  "on_success": [
     { "type": "update_state", "path": "items", "value": "$response.data" },
     { "type": "update_state", "path": "totalCount", "value": "$response.meta.total" },
     { "type": "update_state", "path": "hasMore", "value": "$response.meta.hasNextPage" }
@@ -132,7 +132,7 @@ In `onSuccess` handlers, you have access to:
 
 ## Error Variables
 
-In `onError` handlers:
+In `on_error` handlers:
 
 | Variable | Description |
 |----------|-------------|
@@ -148,7 +148,7 @@ In `onError` handlers:
 {
   "type": "call_api",
   "api": "my-plugin.sensitiveAction",
-  "onError": [
+  "on_error": [
     {
       "type": "conditional",
       "condition": "{{$error.status}} === 401",
@@ -177,7 +177,7 @@ In `onError` handlers:
     {
       "type": "call_api",
       "api": "my-plugin.getItems",
-      "onSuccess": [
+      "on_success": [
         { "type": "update_state", "path": "items", "value": "$response.data" }
       ],
       "finally": [
@@ -196,7 +196,7 @@ In `onError` handlers:
   "type": "call_api",
   "api": "my-plugin.getItem",
   "args": { "id": "{{params.id}}" },
-  "onSuccess": [
+  "on_success": [
     { "type": "update_state", "path": "item", "value": "$response.data" }
   ]
 }
@@ -210,7 +210,7 @@ In `onError` handlers:
   "type": "call_api",
   "api": "my-plugin.createItem",
   "args": "{{state.formData}}",
-  "onSuccess": [
+  "on_success": [
     { "type": "show_toast", "message": "Created!", "level": "success" },
     { "type": "navigate", "to": "/items" }
   ]
@@ -228,7 +228,7 @@ In `onError` handlers:
     "id": "{{state.item.id}}",
     "data": "{{state.formData}}"
   },
-  "onSuccess": [
+  "on_success": [
     { "type": "show_toast", "message": "Updated!", "level": "success" }
   ]
 }
@@ -242,7 +242,7 @@ In `onError` handlers:
   "type": "call_api",
   "api": "my-plugin.deleteItem",
   "args": { "id": "{{state.selectedId}}" },
-  "onSuccess": [
+  "on_success": [
     { "type": "update_state", "path": "items", "value": "{{state.items.filter(i => i.id !== state.selectedId)}}" },
     { "type": "show_toast", "message": "Deleted", "level": "success" }
   ]
@@ -258,7 +258,7 @@ In `onError` handlers:
   "type": "Field",
   "name": "search",
   "events": {
-    "onChange": [
+    "on_change": [
       { "type": "update_state", "path": "searchQuery", "value": "{{$value}}" },
       {
         "type": "debouncedAction",
@@ -267,7 +267,7 @@ In `onError` handlers:
           "type": "call_api",
           "api": "my-plugin.search",
           "args": { "query": "{{$value}}" },
-          "onSuccess": [
+          "on_success": [
             { "type": "update_state", "path": "searchResults", "value": "$response.data" }
           ]
         }
@@ -291,7 +291,7 @@ In `onError` handlers:
     "sortBy": "{{state.sortField}}",
     "sortOrder": "{{state.sortOrder}}"
   },
-  "onSuccess": [
+  "on_success": [
     { "type": "update_state", "path": "items", "value": "$response.data" },
     { "type": "update_state", "path": "totalPages", "value": "$response.meta.totalPages" }
   ]
@@ -306,7 +306,7 @@ In `onError` handlers:
 {
   "type": "call_api",
   "api": "my-plugin.unreliableApi",
-  "onError": [
+  "on_error": [
     {
       "type": "conditional",
       "condition": "{{state.retryCount}} < 3",
@@ -335,12 +335,12 @@ Use multiple call_api in the same event (they run in sequence):
     {
       "type": "call_api",
       "api": "my-plugin.getUser",
-      "onSuccess": [{ "type": "update_state", "path": "user", "value": "$response.data" }]
+      "on_success": [{ "type": "update_state", "path": "user", "value": "$response.data" }]
     },
     {
       "type": "call_api",
       "api": "my-plugin.getSettings",
-      "onSuccess": [{ "type": "update_state", "path": "settings", "value": "$response.data" }]
+      "on_success": [{ "type": "update_state", "path": "settings", "value": "$response.data" }]
     },
     { "type": "set_loading", "loading": false }
   ]
@@ -355,13 +355,13 @@ Use multiple call_api in the same event (they run in sequence):
 {
   "type": "call_api",
   "api": "my-plugin.getUser",
-  "onSuccess": [
+  "on_success": [
     { "type": "update_state", "path": "user", "value": "$response.data" },
     {
       "type": "call_api",
       "api": "my-plugin.getUserProjects",
       "args": { "userId": "$response.data.id" },
-      "onSuccess": [
+      "on_success": [
         { "type": "update_state", "path": "projects", "value": "$response.data" }
       ]
     }

@@ -52,7 +52,7 @@ Dialog window for focused content or actions.
     ]
   },
   "events": {
-    "onClose": [{ "type": "update_state", "path": "isModalOpen", "value": false }]
+    "on_close": [{ "type": "update_state", "path": "isModalOpen", "value": false }]
   }
 }
 ```
@@ -78,8 +78,8 @@ Dialog window for focused content or actions.
 
 | Event | Trigger |
 |-------|---------|
-| `onClose` | Modal close requested |
-| `onOpen` | Modal opened |
+| `on_close` | Modal close requested |
+| `on_open` | Modal opened |
 
 ### Sizes
 
@@ -147,7 +147,7 @@ Dialog window for focused content or actions.
     ]
   },
   "events": {
-    "onClose": [{ "type": "update_state", "path": "deleteModalOpen", "value": false }]
+    "on_close": [{ "type": "update_state", "path": "deleteModalOpen", "value": false }]
   }
 }
 ```
@@ -214,7 +214,7 @@ Dialog window for focused content or actions.
     ]
   },
   "events": {
-    "onClose": [{ "type": "update_state", "path": "showEditModal", "value": false }]
+    "on_close": [{ "type": "update_state", "path": "showEditModal", "value": false }]
   }
 }
 ```
@@ -236,7 +236,7 @@ Dialog window for focused content or actions.
     ]
   },
   "events": {
-    "onClose": [{ "type": "update_state", "path": "previewOpen", "value": false }]
+    "on_close": [{ "type": "update_state", "path": "previewOpen", "value": false }]
   }
 }
 ```
@@ -487,7 +487,7 @@ Informational popup on hover.
   "title": "Create Item",
   "content": { "type": "Form", "..." },
   "events": {
-    "onClose": [{ "type": "update_state", "path": "level2Open", "value": false }]
+    "on_close": [{ "type": "update_state", "path": "level2Open", "value": false }]
   }
 }
 ```

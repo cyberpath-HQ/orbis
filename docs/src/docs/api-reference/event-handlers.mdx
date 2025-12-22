@@ -51,7 +51,7 @@ Triggered when element is clicked.
 
 - `$event` - Mouse event object
 
-### onDoubleClick
+### on_double_click
 
 Triggered on double-click.
 
@@ -59,7 +59,7 @@ Triggered on double-click.
 ```json
 {
   "events": {
-    "onDoubleClick": [
+    "on_double_click": [
       { "type": "navigate", "route": "/edit/{{state.item.id}}" }
     ]
   }
@@ -67,7 +67,7 @@ Triggered on double-click.
 ```
 </CodeBlock>
 
-### onMouseEnter / onMouseLeave
+### on_mouse_enter / on_mouse_leave
 
 Triggered when mouse enters/leaves element.
 
@@ -75,10 +75,10 @@ Triggered when mouse enters/leaves element.
 ```json
 {
   "events": {
-    "onMouseEnter": [
+    "on_mouse_enter": [
       { "type": "update_state", "path": "hovering", "value": true }
     ],
-    "onMouseLeave": [
+    "on_mouse_leave": [
       { "type": "update_state", "path": "hovering", "value": false }
     ]
   }
@@ -88,7 +88,7 @@ Triggered when mouse enters/leaves element.
 
 ## Form Events
 
-### onChange
+### on_change
 
 Triggered when input value changes.
 
@@ -99,7 +99,7 @@ Triggered when input value changes.
   "fieldType": "text",
   "name": "search",
   "events": {
-    "onChange": [
+    "on_change": [
       { "type": "update_state", "path": "searchQuery", "value": "{{$value}}" }
     ]
   }
@@ -112,7 +112,7 @@ Triggered when input value changes.
 - `$value` - New input value
 - `$event` - Change event object
 
-### onBlur
+### on_blur
 
 Triggered when input loses focus.
 
@@ -120,7 +120,7 @@ Triggered when input loses focus.
 ```json
 {
   "events": {
-    "onBlur": [
+    "on_blur": [
       { "type": "validateForm", "formId": "myForm" }
     ]
   }
@@ -128,7 +128,7 @@ Triggered when input loses focus.
 ```
 </CodeBlock>
 
-### onFocus
+### on_focus
 
 Triggered when input receives focus.
 
@@ -136,7 +136,7 @@ Triggered when input receives focus.
 ```json
 {
   "events": {
-    "onFocus": [
+    "on_focus": [
       { "type": "update_state", "path": "inputFocused", "value": true }
     ]
   }
@@ -144,7 +144,7 @@ Triggered when input receives focus.
 ```
 </CodeBlock>
 
-### onSubmit
+### on_submit
 
 Triggered when form is submitted.
 
@@ -154,7 +154,7 @@ Triggered when form is submitted.
   "type": "Form",
   "id": "contactForm",
   "events": {
-    "onSubmit": [
+    "on_submit": [
       { "type": "validateForm", "formId": "contactForm" },
       { "type": "call_api", "api": "submitContact" }
     ]
@@ -170,7 +170,7 @@ Triggered when form is submitted.
 
 ## Keyboard Events
 
-### onKeyDown
+### on_key_down
 
 Triggered when key is pressed.
 
@@ -178,7 +178,7 @@ Triggered when key is pressed.
 ```json
 {
   "events": {
-    "onKeyDown": [
+    "on_key_down": [
       {
         "type": "conditional",
         "condition": "{{$event.key === 'Enter'}}",
@@ -200,7 +200,7 @@ Triggered when key is pressed.
 - `$event.altKey` - Alt modifier
 - `$event.metaKey` - Meta modifier
 
-### onKeyUp
+### on_key_up
 
 Triggered when key is released.
 
@@ -208,7 +208,7 @@ Triggered when key is released.
 ```json
 {
   "events": {
-    "onKeyUp": [
+    "on_key_up": [
       { "type": "update_state", "path": "lastKey", "value": "{{$event.key}}" }
     ]
   }
@@ -260,7 +260,7 @@ Common uses:
 
 ## Selection Events
 
-### onSelect
+### on_select
 
 Triggered when selection changes.
 
@@ -269,7 +269,7 @@ Triggered when selection changes.
 {
   "type": "Table",
   "events": {
-    "onSelect": [
+    "on_select": [
       { "type": "update_state", "path": "selectedRows", "value": "{{$value}}" }
     ]
   }
@@ -313,7 +313,7 @@ Emit custom events:
 
 ## Table/List Events
 
-### onRowClick
+### on_row_click
 
 Triggered when table row is clicked.
 
@@ -322,7 +322,7 @@ Triggered when table row is clicked.
 {
   "type": "Table",
   "events": {
-    "onRowClick": [
+    "on_row_click": [
       { "type": "update_state", "path": "selectedItem", "value": "{{$item}}" }
     ]
   }
@@ -353,7 +353,7 @@ Triggered when table sort changes.
 ```
 </CodeBlock>
 
-### onPageChange
+### on_page_change
 
 Triggered when pagination changes.
 
@@ -362,7 +362,7 @@ Triggered when pagination changes.
 {
   "type": "Table",
   "events": {
-    "onPageChange": [
+    "on_page_change": [
       { "type": "update_state", "path": "page", "value": "{{$value}}" },
       { "type": "call_api", "api": "fetchPage" }
     ]
@@ -392,7 +392,7 @@ Triggered when active tab changes.
 
 ## Modal Events
 
-### onClose
+### on_close
 
 Triggered when modal is closed.
 
@@ -401,7 +401,7 @@ Triggered when modal is closed.
 {
   "type": "Modal",
   "events": {
-    "onClose": [
+    "on_close": [
       { "type": "resetForm", "formId": "editForm" },
       { "type": "update_state", "path": "modalOpen", "value": false }
     ]
@@ -414,7 +414,7 @@ Triggered when modal is closed.
 
 | Variable | Type | Available In | Description |
 |----------|------|--------------|-------------|
-| `$value` | any | onChange, onSelect | Current value |
+| `$value` | any | on_change, on_select | Current value |
 | `$event` | object | All events | Event object |
 | `$item` | any | Loop, Table events | Current item |
 | `$index` | number | Loop, Table events | Current index |

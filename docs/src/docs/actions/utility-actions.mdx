@@ -189,7 +189,7 @@ Downloads a file.
 {
   "type": "call_api",
   "api": "generateExport",
-  "onSuccess": [
+  "on_success": [
     { "type": "download", "url": "{{$response.downloadUrl}}", "filename": "{{$response.filename}}" }
   ]
 }
@@ -429,10 +429,10 @@ Emits a custom event for inter-component communication.
       {
         "type": "call_api",
         "api": "submit",
-        "onSuccess": [
+        "on_success": [
           { "type": "show_toast", "message": "Success!", "level": "success" }
         ],
-        "onError": [
+        "on_error": [
           { "type": "show_toast", "message": "{{$error.message}}", "level": "error" }
         ],
         "onComplete": [

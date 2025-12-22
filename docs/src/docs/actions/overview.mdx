@@ -106,13 +106,13 @@ Actions have access to event context via special variables:
 | Variable | Context | Description |
 |----------|---------|-------------|
 | `$event` | All events | Raw event object |
-| `$value` | onChange | New field value |
-| `$row` | Table onRowClick | Row data |
+| `$value` | on_change | New field value |
+| `$row` | Table on_row_click | Row data |
 | `$index` | List item events | Item index |
 | `$item` | List item events | Item data |
-| `$response` | call_api onSuccess | API response |
-| `$error` | call_api onError | Error object |
-| `$page` | onPageChange | Page number |
+| `$response` | call_api on_success | API response |
+| `$error` | call_api on_error | Error object |
+| `$page` | on_page_change | Page number |
 
 ### Example
 
@@ -122,7 +122,7 @@ Actions have access to event context via special variables:
   "type": "Table",
   "dataSource": "state:items",
   "events": {
-    "onRowClick": [
+    "on_row_click": [
       { "type": "update_state", "path": "selectedId", "value": "{{$row.id}}" },
       { "type": "navigate", "to": "/items/{{$row.id}}" }
     ]
@@ -140,10 +140,10 @@ Actions have access to event context via special variables:
 {
   "type": "call_api",
   "api": "saveData",
-  "onSuccess": [
+  "on_success": [
     { "type": "show_toast", "message": "Saved!", "level": "success" }
   ],
-  "onError": [
+  "on_error": [
     { "type": "show_toast", "message": "Error: {{$error.message}}", "level": "error" }
   ]
 }
@@ -157,11 +157,11 @@ Actions have access to event context via special variables:
 {
   "type": "call_api",
   "api": "primaryApi",
-  "onError": [
+  "on_error": [
     {
       "type": "call_api",
       "api": "fallbackApi",
-      "onError": [
+      "on_error": [
         { "type": "show_toast", "message": "All APIs failed", "level": "error" }
       ]
     }
@@ -200,7 +200,7 @@ Execute actions based on conditions:
   {
     "type": "call_api",
     "api": "fetchData",
-    "onSuccess": [
+    "on_success": [
       { "type": "update_state", "path": "data", "value": "$response.data" }
     ],
     "finally": [
@@ -220,7 +220,7 @@ Execute actions based on conditions:
   {
     "type": "call_api",
     "api": "deleteItem",
-    "onError": [
+    "on_error": [
       { "type": "call_api", "api": "getItems" },
       { "type": "show_toast", "message": "Failed to delete", "level": "error" }
     ]
@@ -244,7 +244,7 @@ Execute actions based on conditions:
         "type": "call_api",
         "api": "submitForm",
         "args": "{{state.formData}}",
-        "onSuccess": [
+        "on_success": [
           { "type": "show_toast", "message": "Submitted!", "level": "success" },
           { "type": "resetForm", "form": "myForm" },
           { "type": "navigate", "to": "/success" }

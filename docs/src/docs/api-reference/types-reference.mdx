@@ -228,8 +228,8 @@ interface FormSchema extends BaseComponentSchema {
   id: string;
   children?: ComponentSchema[];
   events?: {
-    onSubmit?: ActionSchema[];
-    onChange?: ActionSchema[];
+    on_submit?: ActionSchema[];
+    on_change?: ActionSchema[];
   };
 }
 ```
@@ -255,9 +255,9 @@ interface FieldSchema extends BaseComponentSchema {
   validateOn?: 'change' | 'blur' | 'submit';
   options?: SelectOption[];
   events?: {
-    onChange?: ActionSchema[];
-    onBlur?: ActionSchema[];
-    onFocus?: ActionSchema[];
+    on_change?: ActionSchema[];
+    on_blur?: ActionSchema[];
+    on_focus?: ActionSchema[];
   };
 }
 
@@ -342,7 +342,7 @@ interface ModalSchema extends BaseComponentSchema {
   children?: ComponentSchema[];
   footer?: ComponentSchema[];
   events?: {
-    onClose?: ActionSchema[];
+    on_close?: ActionSchema[];
   };
 }
 ```
@@ -397,8 +397,8 @@ interface CallApiAction {
   params?: Record<string, any>;
   storeAs?: string;
   onStart?: ActionSchema[];
-  onSuccess?: ActionSchema[];
-  onError?: ActionSchema[];
+  on_success?: ActionSchema[];
+  on_error?: ActionSchema[];
   onComplete?: ActionSchema[];
 }
 ```

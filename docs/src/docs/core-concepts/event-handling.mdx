@@ -54,47 +54,47 @@ Each event handler is an array of actions that execute in sequence.
 | Event | Triggered When | Components |
 |-------|----------------|------------|
 | `on_click` | Element is clicked | Most components |
-| `onDoubleClick` | Element is double-clicked | Container, Card, etc. |
-| `onMouseEnter` | Mouse enters element | Container, Card |
-| `onMouseLeave` | Mouse leaves element | Container, Card |
+| `on_double_click` | Element is double-clicked | Container, Card, etc. |
+| `on_mouse_enter` | Mouse enters element | Container, Card |
+| `on_mouse_leave` | Mouse leaves element | Container, Card |
 
 ### Form Events
 
 | Event | Triggered When | Components |
 |-------|----------------|------------|
-| `onChange` | Input value changes | Field, Form inputs |
-| `onSubmit` | Form is submitted | Form |
-| `onFocus` | Input gains focus | Field |
-| `onBlur` | Input loses focus | Field |
+| `on_change` | Input value changes | Field, Form inputs |
+| `on_submit` | Form is submitted | Form |
+| `on_focus` | Input gains focus | Field |
+| `on_blur` | Input loses focus | Field |
 
 ### Keyboard Events
 
 | Event | Triggered When | Components |
 |-------|----------------|------------|
-| `onKeyDown` | Key is pressed | Input fields |
-| `onKeyUp` | Key is released | Input fields |
+| `on_key_down` | Key is pressed | Input fields |
+| `on_key_up` | Key is released | Input fields |
 
 ### Data Events
 
 | Event | Triggered When | Components |
 |-------|----------------|------------|
-| `onRowClick` | Table row is clicked | Table, List |
-| `onRowDoubleClick` | Table row is double-clicked | Table |
-| `onSelect` | Item is selected | Table, Select |
-| `onClear` | Selection is cleared | Select |
-| `onSearch` | Search query changes | Searchable components |
-| `onPageChange` | Table page changes | Table |
-| `onSortChange` | Table sort changes | Table |
-| `onFilterChange` | Filter is applied | Table |
+| `on_row_click` | Table row is clicked | Table, List |
+| `on_row_double_click` | Table row is double-clicked | Table |
+| `on_select` | Item is selected | Table, Select |
+| `on_clear` | Selection is cleared | Select |
+| `on_search` | Search query changes | Searchable components |
+| `on_page_change` | Table page changes | Table |
+| `on_sort_change` | Table sort changes | Table |
+| `on_filter_change` | Filter is applied | Table |
 
 ### Lifecycle Events
 
 | Event | Triggered When | Components |
 |-------|----------------|------------|
-| `onLoad` | Component/data loads | Image, async components |
-| `onError` | Error occurs | Image, async components |
-| `onOpen` | Overlay opens | Modal, Dropdown |
-| `onClose` | Overlay closes | Modal, Dropdown, Alert |
+| `on_load` | Component/data loads | Image, async components |
+| `on_error` | Error occurs | Image, async components |
+| `on_open` | Overlay opens | Modal, Dropdown |
+| `on_close` | Overlay closes | Modal, Dropdown, Alert |
 
 ## Event Object
 
@@ -130,7 +130,7 @@ For input events, the current value:
   "type": "Field",
   "name": "search",
   "events": {
-    "onChange": [
+    "on_change": [
       {
         "type": "update_state",
         "path": "searchQuery",
@@ -150,7 +150,7 @@ The element that triggered the event:
 ```json
 {
   "events": {
-    "onFocus": [
+    "on_focus": [
       {
         "type": "update_state",
         "path": "focusedField",
@@ -175,7 +175,7 @@ Current table row data:
 {
   "type": "Table",
   "events": {
-    "onRowClick": [
+    "on_row_click": [
       {
         "type": "update_state",
         "path": "selectedUser",
@@ -298,10 +298,10 @@ API calls with callbacks:
     {
       "type": "call_api",
       "api": "my-plugin.saveData",
-      "onSuccess": [
+      "on_success": [
         { "type": "show_toast", "message": "Saved!", "level": "success" }
       ],
-      "onError": [
+      "on_error": [
         { "type": "show_toast", "message": "Failed: {{$error.message}}", "level": "error" }
       ]
     },
@@ -312,7 +312,7 @@ API calls with callbacks:
 </CodeBlock>
 
 :::warning
-The `set_loading` after `call_api` runs immediately, not after the API completes. Use the `onSuccess`/`onError` callbacks for post-API actions.
+The `set_loading` after `call_api` runs immediately, not after the API completes. Use the `on_success`/`on_error` callbacks for post-API actions.
 :::
 
 ## Component-Specific Events
@@ -340,9 +340,9 @@ The `set_loading` after `call_api` runs immediately, not after the API completes
   "name": "email",
   "fieldType": "email",
   "events": {
-    "onChange": [{ "type": "update_state", "path": "email", "value": "$event.value" }],
-    "onFocus": [{ "type": "update_state", "path": "focused", "value": "email" }],
-    "onBlur": [{ "type": "validateForm", "formId": "my-form" }]
+    "on_change": [{ "type": "update_state", "path": "email", "value": "$event.value" }],
+    "on_focus": [{ "type": "update_state", "path": "focused", "value": "email" }],
+    "on_blur": [{ "type": "validateForm", "formId": "my-form" }]
   }
 }
 ```
@@ -356,7 +356,7 @@ The `set_loading` after `call_api` runs immediately, not after the API completes
   "type": "Form",
   "id": "contact-form",
   "events": {
-    "onSubmit": [
+    "on_submit": [
       { "type": "validateForm", "formId": "contact-form" },
       {
         "type": "conditional",
@@ -380,16 +380,16 @@ The `set_loading` after `call_api` runs immediately, not after the API completes
   "columns": [...],
   "dataSource": "state:users",
   "events": {
-    "onRowClick": [
+    "on_row_click": [
       { "type": "update_state", "path": "selectedUser", "value": "$row" }
     ],
-    "onSelect": [
+    "on_select": [
       { "type": "update_state", "path": "selectedUsers", "value": "$event.value" }
     ],
-    "onPageChange": [
+    "on_page_change": [
       { "type": "update_state", "path": "currentPage", "value": "$event.value" }
     ],
-    "onSortChange": [
+    "on_sort_change": [
       {
         "type": "update_state",
         "path": "sort",
@@ -412,10 +412,10 @@ The `set_loading` after `call_api` runs immediately, not after the API completes
   "type": "Modal",
   "id": "confirm-dialog",
   "events": {
-    "onOpen": [
+    "on_open": [
       { "type": "update_state", "path": "modalOpen", "value": true }
     ],
-    "onClose": [
+    "on_close": [
       { "type": "update_state", "path": "modalOpen", "value": false },
       { "type": "update_state", "path": "selectedItem", "value": null }
     ]
@@ -434,7 +434,7 @@ For events that fire rapidly (like typing), use debounced actions:
   "type": "Field",
   "name": "search",
   "events": {
-    "onChange": [
+    "on_change": [
       {
         "type": "debouncedAction",
         "delay": 300,
@@ -531,11 +531,11 @@ Always handle async operation states:
     {
       "type": "call_api",
       "api": "submit",
-      "onSuccess": [
+      "on_success": [
         { "type": "set_loading", "target": "submit", "loading": false },
         { "type": "show_toast", "message": "Success!" }
       ],
-      "onError": [
+      "on_error": [
         { "type": "set_loading", "target": "submit", "loading": false },
         { "type": "show_toast", "message": "Failed!", "level": "error" }
       ]

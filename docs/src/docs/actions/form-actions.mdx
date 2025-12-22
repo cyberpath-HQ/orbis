@@ -194,7 +194,7 @@ Resets a form to its initial state.
   "type": "call_api",
   "api": "createItem",
   "params": { "data": "{{form.newItemForm}}" },
-  "onSuccess": [
+  "on_success": [
     { "type": "show_toast", "message": "Item created!", "level": "success" },
     { "type": "resetForm", "formId": "newItemForm" }
   ]
@@ -345,7 +345,7 @@ Form data is accessible via the `form` namespace:
                 "type": "call_api",
                 "api": "submit",
                 "params": { "data": "{{form.myForm}}" },
-                "onSuccess": [
+                "on_success": [
                   { "type": "show_toast", "message": "Submitted!", "level": "success" },
                   { "type": "resetForm", "formId": "myForm" }
                 ],

@@ -347,7 +347,7 @@ Define common patterns:
 {
   "fieldType": "text",
   "events": {
-    "onChange": [
+    "on_change": [
       {
         "type": "debouncedAction",
         "delay": 300,
@@ -403,7 +403,7 @@ For large lists, use pagination:
   "pageSize": 25,
   "serverPagination": true,
   "events": {
-    "onPageChange": [
+    "on_page_change": [
       {
         "type": "call_api",
         "api": "getItems",
@@ -429,11 +429,11 @@ For large lists, use pagination:
     {
       "type": "call_api",
       "api": "getData",
-      "onSuccess": [
+      "on_success": [
         { "type": "update_state", "path": "data", "value": "$response.data" },
         { "type": "update_state", "path": "ui.loadError", "value": null }
       ],
-      "onError": [
+      "on_error": [
         { "type": "update_state", "path": "ui.loadError", "value": "$error.message" }
       ]
     }
@@ -570,7 +570,7 @@ Always show loading feedback:
     {
       "type": "call_api",
       "api": "getData",
-      "onSuccess": [
+      "on_success": [
         { "type": "update_state", "path": "data", "value": "$response.data" }
       ],
       "finally": [
@@ -629,10 +629,10 @@ Confirm user actions:
       {
         "type": "call_api",
         "api": "saveItem",
-        "onSuccess": [
+        "on_success": [
           { "type": "show_toast", "message": "Saved successfully!", "level": "success" }
         ],
-        "onError": [
+        "on_error": [
           { "type": "show_toast", "message": "Failed to save: {{$error.message}}", "level": "error" }
         ]
       }
@@ -712,7 +712,7 @@ Always provide labels:
   "autoFocus": true,
   "returnFocus": true,
   "events": {
-    "onClose": [{ "type": "update_state", "path": "modalOpen", "value": false }]
+    "on_close": [{ "type": "update_state", "path": "modalOpen", "value": false }]
   }
 }
 ```
@@ -839,7 +839,7 @@ Navigate to `/my-plugin` to access the dashboard.
 
 ❌ **Hardcoded strings** - Use state or config
 
-❌ **Missing error handling** - Always handle onError
+❌ **Missing error handling** - Always handle on_error
 
 ### Prefer
 

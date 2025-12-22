@@ -80,7 +80,7 @@ Access: `{{state.data}}`
 {
   "type": "call_api",
   "api": "getItems",
-  "onSuccess": [
+  "on_success": [
     { "type": "update_state", "path": "items", "value": "{{$response.data}}" },
     { "type": "update_state", "path": "total", "value": "{{$response.total}}" }
   ]
@@ -95,7 +95,7 @@ Access: `{{state.data}}`
 {
   "type": "call_api",
   "api": "getUsers",
-  "onSuccess": [
+  "on_success": [
     {
       "type": "update_state",
       "path": "users",
@@ -115,7 +115,7 @@ Access: `{{state.data}}`
 {
   "type": "call_api",
   "api": "getData",
-  "onError": [
+  "on_error": [
     { "type": "show_toast", "message": "Failed to load data", "level": "error" }
   ]
 }
@@ -129,7 +129,7 @@ Access: `{{state.data}}`
 {
   "type": "call_api",
   "api": "getData",
-  "onError": [
+  "on_error": [
     { "type": "update_state", "path": "error", "value": "{{$error}}" },
     { "type": "show_toast", "message": "{{$error.message}}", "level": "error" }
   ]
@@ -144,7 +144,7 @@ Access: `{{state.data}}`
 {
   "type": "call_api",
   "api": "getData",
-  "onError": [
+  "on_error": [
     {
       "type": "conditional",
       "condition": "{{state.retryCount < 3}}",
@@ -214,7 +214,7 @@ Access: `{{state.data}}`
     "page": "{{state.page}}",
     "limit": "{{state.pageSize}}"
   },
-  "onSuccess": [
+  "on_success": [
     { "type": "update_state", "path": "items", "value": "{{$response.data}}" },
     { "type": "update_state", "path": "totalPages", "value": "{{$response.pages}}" }
   ]
@@ -233,7 +233,7 @@ Access: `{{state.data}}`
     "cursor": "{{state.cursor}}",
     "limit": 20
   },
-  "onSuccess": [
+  "on_success": [
     { "type": "update_state", "path": "items", "value": "{{[...state.items, ...$response.data]}}" },
     { "type": "update_state", "path": "cursor", "value": "{{$response.nextCursor}}" },
     { "type": "update_state", "path": "hasMore", "value": "{{!!$response.nextCursor}}" }
@@ -258,7 +258,7 @@ Access: `{{state.data}}`
         "type": "call_api",
         "api": "getItems",
         "params": { "cursor": "{{state.cursor}}" },
-        "onSuccess": [
+        "on_success": [
           { "type": "update_state", "path": "items", "value": "{{[...state.items, ...$response.data]}}" },
           { "type": "update_state", "path": "cursor", "value": "{{$response.nextCursor}}" }
         ],
@@ -423,7 +423,7 @@ Data persists in state until page unmount.
       "type": "List",
       "items": "{{state.categories}}",
       "events": {
-        "onSelect": [
+        "on_select": [
           { "type": "update_state", "path": "selectedCategory", "value": "{{$value}}" },
           { "type": "call_api", "api": "getItems", "params": { "category": "{{$value.id}}" } }
         ]
@@ -450,7 +450,7 @@ Data persists in state until page unmount.
     "name": "country",
     "options": "{{state.countries}}",
     "events": {
-      "onChange": [
+      "on_change": [
         { "type": "call_api", "api": "getStates", "params": { "country": "{{$value}}" }, "storeAs": "states" },
         { "type": "update_state", "path": "selectedState", "value": null }
       ]
@@ -472,6 +472,6 @@ Data persists in state until page unmount.
 1. **Show loading states** - Always indicate data fetching
 2. **Handle errors gracefully** - Display user-friendly messages
 3. **Minimize requests** - Cache when appropriate
-4. **Transform at source** - Process data in onSuccess
+4. **Transform at source** - Process data in on_success
 5. **Use pagination** - Avoid loading large datasets
 6. **Clean state on unmount** - Prevent stale data
