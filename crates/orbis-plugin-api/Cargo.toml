@@ -9,7 +9,7 @@ repository = "https://github.com/cyberpath-HQ/orbis"
 documentation = "https://docs.rs/orbis-plugin-api"
 keywords = ["orbis", "plugin", "api", "wasm"]
 categories = ["gui", "wasm"]
-license = "MIT OR Apache-2.0"
+license = "Apache-2.0"
 readme = "README.md"
 
 [lints]
