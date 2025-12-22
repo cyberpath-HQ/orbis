@@ -119,10 +119,21 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family:
+      "Inter",
+      system-ui,
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      Roboto,
+      sans-serif;
   }
-  code, pre, kbd {
-    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+  code,
+  pre,
+  kbd {
+    font-family:
+      "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo,
+      Consolas, monospace;
   }
 }
 
@@ -331,7 +342,6 @@ html.dark pre.astro-code {
   /* background-color: var(--shiki-dark-bg) !important; */
 }
 
-
 .prose pre code {
   background-color: transparent;
   padding: 0;
@@ -380,7 +390,7 @@ html.dark pre.astro-code {
   font-style: italic;
   color: var(--foreground);
   border-left: 4px solid var(--border);
-  quotes: "\201C""\201D""\2018""\2019";
+  quotes: "\201C" "\201D" "\2018" "\2019";
   margin-top: 1.6em;
   margin-bottom: 1.6em;
   padding-left: 1em;
@@ -492,21 +502,39 @@ keeps the change purely visual and resilient across mermaid versions. */
   font-size: 0.875em;
 }
 
-code {
-  counter-reset: step;
-  counter-increment: step 0;
+.code-block-wrapper {
+  code {
+    counter-reset: step;
+    counter-increment: step 0;
+    line-height: 1.5;
+    font-size: 0.875em;
+    display: flex;
+    flex-direction: column;
+  }
+
+  code .line::before {
+    content: counter(step);
+    counter-increment: step;
+    width: auto;
+    margin-right: 1rem;
+    display: inline-block;
+    text-align: right;
+    width: 1.5rem;
+    color: rgba(115, 138, 148, 0.7);
+  }
+
+  code .line.highlighted {
+    background-color: #e5e5e5;
+    width: fit-content;
+    padding-right: 0.25rem;
+  }
 }
 
-code .line::before {
-  content: counter(step);
-  counter-increment: step;
-  width: auto;
-  margin-right: 1.5rem;
-  display: inline-block;
-  text-align: right;
-  color: rgba(115,138,148,.7)
-}
-
-.dark code .line::before {
-  color: rgba(115,138,148,.5)
+.dark .code-block-wrapper {
+  code .line::before {
+    color: rgba(115, 138, 148, 0.5);
+  }
+  code .line.highlighted {
+    background-color: #232323;
+  }
 }
