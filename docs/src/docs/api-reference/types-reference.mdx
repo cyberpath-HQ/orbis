@@ -26,7 +26,7 @@ interface PageDefinition {
   icon?: string;
   initialState?: Record<string, any>;
   stateConfig?: StateConfig;
-  onMount?: ActionSchema[];
+  on_mount?: ActionSchema[];
   onUnmount?: ActionSchema[];
   layout?: LayoutConfig;
   children: ComponentSchema[];
@@ -557,7 +557,7 @@ const page: PageDefinition = {
     users: [],
     loading: false
   },
-  onMount: [
+  on_mount: [
     { type: 'call_api', api: 'getUsers', storeAs: 'users' }
   ],
   children: [

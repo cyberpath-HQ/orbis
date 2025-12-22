@@ -351,10 +351,10 @@ The field automatically:
 
 ### On Page Mount
 
-Use `onMount` to initialize state when a page loads:
+Use `on_mount` to initialize state when a page loads:
 
-<CodeBlock lang="json">
-```json
+<CodeBlock lang="json" >
+```json lines
 {
   "pages": [
     {
@@ -362,16 +362,18 @@ Use `onMount` to initialize state when a page loads:
       "state": {
         "data": { "type": "array", "default": [] }
       },
-      "onMount": [
-        {
-          "type": "call_api",
-          "api": "my-plugin.getData",
-          "onSuccess": [
-            { "type": "update_state", "path": "data", "value": "$response.data" }
-          ]
-        }
-      ],
-      "layout": { ... }
+      "hooks": {
+        "on_mount": [
+          {
+            "type": "call_api",
+            "api": "my-plugin.getData",
+            "onSuccess": [
+              { "type": "update_state", "path": "data", "value": "$response.data" }
+            ]
+          }
+        ],
+      }
+      "sections": { ... }
     }
   ]
 }
@@ -383,7 +385,7 @@ Use `onMount` to initialize state when a page loads:
 <CodeBlock lang="json">
 ```json
 {
-  "onMount": [
+  "on_mount": [
     {
       "type": "conditional",
       "condition": "{{state.data.length === 0}}",

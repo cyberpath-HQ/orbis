@@ -292,7 +292,7 @@ UI pages exposed by the plugin.
     "icon": "LayoutDashboard",
     "state": {},
     "layout": {},
-    "onMount": [],
+    "on_mount": [],
     "onUnmount": []
   }
 ]
@@ -309,7 +309,7 @@ UI pages exposed by the plugin.
 | `icon` | string | ❌ | lucide-react icon name |
 | `state` | object | ❌ | State definition |
 | `layout` | object | Yes | Root component schema |
-| `onMount` | array | ❌ | Actions on page load |
+| `on_mount` | array | ❌ | Actions on page load |
 | `onUnmount` | array | ❌ | Actions on page leave |
 
 See [Page Definitions](./page-definitions) for full details.
@@ -519,7 +519,7 @@ Configuration is accessible in WASM handlers and can be used in expressions:
           }
         ]
       },
-      "onMount": [
+      "on_mount": [
         {
           "type": "call_api",
           "api": "task-manager.get_tasks",
