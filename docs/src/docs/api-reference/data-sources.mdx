@@ -18,7 +18,7 @@ Reference for loading and managing data in Orbis plugins.
 <CodeBlock lang="json">
 ```json
 {
-  "onMount": [
+  "on_mount": [
     {
       "type": "call_api",
       "api": "getItems",
@@ -293,7 +293,7 @@ Data persists in state until page unmount.
 <CodeBlock lang="json">
 ```json
 {
-  "onMount": [
+  "on_mount": [
     {
       "type": "conditional",
       "condition": "{{!state.dataLoaded}}",

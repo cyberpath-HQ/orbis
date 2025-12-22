@@ -191,7 +191,7 @@ Route parameters from dynamic routes.
 ```json
 // Route: /users/:id
 {
-  "onMount": [
+  "on_mount": [
     { "type": "call_api", "api": "getUser", "params": { "id": "{{params.id}}" } }
   ]
 }
@@ -206,7 +206,7 @@ Query string parameters.
 ```json
 // URL: /search?q=test&page=2
 {
-  "onMount": [
+  "on_mount": [
     { "type": "update_state", "path": "searchQuery", "value": "{{query.q}}" },
     { "type": "update_state", "path": "page", "value": "{{query.page || 1}}" }
   ]

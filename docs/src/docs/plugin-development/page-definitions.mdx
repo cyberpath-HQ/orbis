@@ -24,7 +24,7 @@ Pages are the primary way plugins provide user interfaces. Each page has its own
       "icon": "FileText",
       "state": { ... },
       "layout": { ... },
-      "onMount": [ ... ],
+      "on_mount": [ ... ],
       "onUnmount": [ ... ]
     }
   ]
@@ -175,13 +175,13 @@ Page state definition.
 | `object` | Key-value map | `{}` |
 | `array` | List of items | `[]` |
 
-### onMount
+### on_mount
 
 Actions to execute when page loads.
 
 <CodeBlock lang="json">
 ```json
-"onMount": [
+"on_mount": [
   {
     "type": "set_loading",
     "loading": true
@@ -361,7 +361,7 @@ Common patterns:
   "state": {
     "item": { "type": "object", "default": null }
   },
-  "onMount": [
+  "on_mount": [
     {
       "type": "call_api",
       "api": "my-plugin.getItem",
@@ -586,7 +586,7 @@ Handle load failures:
 
 <CodeBlock lang="json">
 ```json
-"onMount": [
+"on_mount": [
   {
     "type": "call_api",
     "api": "getData",
