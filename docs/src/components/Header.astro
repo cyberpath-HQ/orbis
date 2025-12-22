@@ -46,7 +46,9 @@ const currentPath = Astro.url.pathname;
 
         <!-- Right Side Actions -->
         <div class="flex flex-1 items-center justify-end space-x-2">
-            <SearchButton />
+            <div class="hidden md:block">
+                <SearchButton />
+            </div>
             <ThemeToggle />
             <MobileNav />
         </div>
