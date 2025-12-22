@@ -197,6 +197,7 @@ const ComponentRenderer = memo(function ComponentRenderer({
     schema,
 }: ComponentRendererProps): React.ReactElement | null {
     const ctx = useRendererContext();
+
     // Use the state hook to subscribe to changes (reactive)
     const stateData = ctx.state((s) => s.state);
 
@@ -267,7 +268,7 @@ const ComponentRenderer = memo(function ComponentRenderer({
             return <EmptyStateRenderer schema={schema} />;
         case `LoadingOverlay`:
             return <LoadingOverlayRenderer schema={schema} />;
-        
+
         // Navigation components
         case `Button`:
             return <ButtonRenderer schema={schema} />;
@@ -392,6 +393,7 @@ function ContainerRenderer({
     schema,
 }: { schema: ContainerSchema }): React.ReactElement {
     const ctx = useRendererContext();
+
     // Use the state hook to subscribe to changes (reactive)
     const stateData = ctx.state((s) => s.state);
     const handleClick = useEventHandler(schema.events?.onClick);
@@ -544,6 +546,7 @@ function FieldRenderer({
 }: { schema: FieldSchema }): React.ReactElement {
     const ctx = useRendererContext();
     const formCtx = useFormContext();
+
     // Use the state hook to subscribe to changes (reactive)
     const stateData = ctx.state((s) => s.state);
     const handleChange = useEventHandler(schema.events?.onChange);
@@ -568,9 +571,11 @@ function FieldRenderer({
     let value: unknown;
     if (formCtx.isInForm && formValue !== undefined) {
         value = formValue;
-    } else if (schema.bindTo) {
+    }
+    else if (schema.bindTo) {
         value = getNestedValue(stateData, schema.bindTo);
-    } else {
+    }
+    else {
         value = schema.defaultValue;
     }
 
@@ -769,7 +774,7 @@ function FormRenderer({
     // Note: we get state once during initialization, not reactively
     const initialValues = useMemo(
         () => getInitialFormValues(schema.fields, ctx.state.getState().state),
-        [schema.fields]
+        [ schema.fields ]
     );
 
     // Create TanStack Form instance with zod standard schema validation
