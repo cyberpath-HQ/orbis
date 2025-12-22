@@ -283,7 +283,7 @@ fn delete_item_impl(ctx: Context) -> Result<Response> {
 | Page IDs | `kebab-case` | `item-list` |
 | State paths | `camelCase` | `selectedItem` |
 | Route paths | `kebab-case` | `/my-plugin/items` |
-| Action types | `camelCase` | `updateState` |
+| Action types | `camelCase` | `update_state` |
 | Component types | `PascalCase` | `StatCard` |
 
 ### Reusable Layouts
@@ -319,7 +319,7 @@ Define common patterns:
   "events": {
     "onClick": [
       {
-        "type": "updateState",
+        "type": "update_state",
         "path": "ui.selectedId",
         "value": "{{$row.id}}"
       }
@@ -333,7 +333,7 @@ Define common patterns:
 <CodeBlock lang="json">
 ```json
 {
-  "type": "updateState",
+  "type": "update_state",
   "path": "data",
   "value": { "...all data plus changes..." }
 }
@@ -352,7 +352,7 @@ Define common patterns:
         "type": "debouncedAction",
         "delay": 300,
         "action": {
-          "type": "callApi",
+          "type": "call_api",
           "api": "search",
           "args": { "query": "{{state.searchQuery}}" }
         }
@@ -381,8 +381,8 @@ Load data only when needed:
         "type": "conditional",
         "condition": "{{$value}} === 'details' && !state.detailsLoaded",
         "then": [
-          { "type": "callApi", "api": "getDetails" },
-          { "type": "updateState", "path": "detailsLoaded", "value": true }
+          { "type": "call_api", "api": "getDetails" },
+          { "type": "update_state", "path": "detailsLoaded", "value": true }
         ]
       }
     ]
@@ -405,7 +405,7 @@ For large lists, use pagination:
   "events": {
     "onPageChange": [
       {
-        "type": "callApi",
+        "type": "call_api",
         "api": "getItems",
         "args": { 
           "page": "{{$page}}",
@@ -427,14 +427,14 @@ For large lists, use pagination:
 {
   "onMount": [
     {
-      "type": "callApi",
+      "type": "call_api",
       "api": "getData",
       "onSuccess": [
-        { "type": "updateState", "path": "data", "value": "$response.data" },
-        { "type": "updateState", "path": "ui.loadError", "value": null }
+        { "type": "update_state", "path": "data", "value": "$response.data" },
+        { "type": "update_state", "path": "ui.loadError", "value": null }
       ],
       "onError": [
-        { "type": "updateState", "path": "ui.loadError", "value": "$error.message" }
+        { "type": "update_state", "path": "ui.loadError", "value": "$error.message" }
       ]
     }
   ]
@@ -455,7 +455,7 @@ For large lists, use pagination:
     "action": {
       "type": "Button",
       "label": "Retry",
-      "events": { "onClick": [{ "type": "callApi", "api": "getData" }] }
+      "events": { "onClick": [{ "type": "call_api", "api": "getData" }] }
     }
   },
   "else": { "...normal content..." }
@@ -545,7 +545,7 @@ Request minimal permissions:
 <CodeBlock lang="json">
 ```json
 {
-  "type": "callApi",
+  "type": "call_api",
   "api": "my-plugin.sensitiveAction",
   "args": {
     "id": "{{state.selectedId}}"
@@ -566,15 +566,15 @@ Always show loading feedback:
 ```json
 {
   "onMount": [
-    { "type": "setLoading", "loading": true },
+    { "type": "set_loading", "loading": true },
     {
-      "type": "callApi",
+      "type": "call_api",
       "api": "getData",
       "onSuccess": [
-        { "type": "updateState", "path": "data", "value": "$response.data" }
+        { "type": "update_state", "path": "data", "value": "$response.data" }
       ],
       "finally": [
-        { "type": "setLoading", "loading": false }
+        { "type": "set_loading", "loading": false }
       ]
     }
   ]
@@ -627,7 +627,7 @@ Confirm user actions:
   "events": {
     "onClick": [
       {
-        "type": "callApi",
+        "type": "call_api",
         "api": "saveItem",
         "onSuccess": [
           { "type": "showToast", "message": "Saved successfully!", "level": "success" }
@@ -659,7 +659,7 @@ Confirm user actions:
         "variant": "destructive",
         "confirmText": "Delete",
         "onConfirm": [
-          { "type": "callApi", "api": "deleteItem" },
+          { "type": "call_api", "api": "deleteItem" },
           { "type": "showToast", "message": "Item deleted", "level": "success" },
           { "type": "navigate", "to": "/items" }
         ]
@@ -712,7 +712,7 @@ Always provide labels:
   "autoFocus": true,
   "returnFocus": true,
   "events": {
-    "onClose": [{ "type": "updateState", "path": "modalOpen", "value": false }]
+    "onClose": [{ "type": "update_state", "path": "modalOpen", "value": false }]
   }
 }
 ```

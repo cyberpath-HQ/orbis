@@ -36,7 +36,7 @@ Dialog window for focused content or actions.
         "label": "Cancel",
         "variant": "outline",
         "events": {
-          "onClick": [{ "type": "updateState", "path": "isModalOpen", "value": false }]
+          "onClick": [{ "type": "update_state", "path": "isModalOpen", "value": false }]
         }
       },
       {
@@ -44,15 +44,15 @@ Dialog window for focused content or actions.
         "label": "Confirm",
         "events": {
           "onClick": [
-            { "type": "callApi", "api": "confirmAction" },
-            { "type": "updateState", "path": "isModalOpen", "value": false }
+            { "type": "call_api", "api": "confirmAction" },
+            { "type": "update_state", "path": "isModalOpen", "value": false }
           ]
         }
       }
     ]
   },
   "events": {
-    "onClose": [{ "type": "updateState", "path": "isModalOpen", "value": false }]
+    "onClose": [{ "type": "update_state", "path": "isModalOpen", "value": false }]
   }
 }
 ```
@@ -101,7 +101,7 @@ Dialog window for focused content or actions.
   "label": "Delete Item",
   "variant": "destructive",
   "events": {
-    "onClick": [{ "type": "updateState", "path": "deleteModalOpen", "value": true }]
+    "onClick": [{ "type": "update_state", "path": "deleteModalOpen", "value": true }]
   }
 }
 ```
@@ -129,7 +129,7 @@ Dialog window for focused content or actions.
         "label": "Cancel",
         "variant": "outline",
         "events": {
-          "onClick": [{ "type": "updateState", "path": "deleteModalOpen", "value": false }]
+          "onClick": [{ "type": "update_state", "path": "deleteModalOpen", "value": false }]
         }
       },
       {
@@ -138,8 +138,8 @@ Dialog window for focused content or actions.
         "variant": "destructive",
         "events": {
           "onClick": [
-            { "type": "callApi", "api": "deleteItem", "args": { "id": "{{state.itemToDelete.id}}" } },
-            { "type": "updateState", "path": "deleteModalOpen", "value": false },
+            { "type": "call_api", "api": "deleteItem", "args": { "id": "{{state.itemToDelete.id}}" } },
+            { "type": "update_state", "path": "deleteModalOpen", "value": false },
             { "type": "showToast", "message": "Item deleted", "level": "success" }
           ]
         }
@@ -147,7 +147,7 @@ Dialog window for focused content or actions.
     ]
   },
   "events": {
-    "onClose": [{ "type": "updateState", "path": "deleteModalOpen", "value": false }]
+    "onClose": [{ "type": "update_state", "path": "deleteModalOpen", "value": false }]
   }
 }
 ```
@@ -197,7 +197,7 @@ Dialog window for focused content or actions.
         "label": "Cancel",
         "variant": "ghost",
         "events": {
-          "onClick": [{ "type": "updateState", "path": "showEditModal", "value": false }]
+          "onClick": [{ "type": "update_state", "path": "showEditModal", "value": false }]
         }
       },
       {
@@ -206,15 +206,15 @@ Dialog window for focused content or actions.
         "events": {
           "onClick": [
             { "type": "validateForm", "form": "edit-profile" },
-            { "type": "callApi", "api": "updateProfile", "args": "{{state.editForm}}" },
-            { "type": "updateState", "path": "showEditModal", "value": false }
+            { "type": "call_api", "api": "updateProfile", "args": "{{state.editForm}}" },
+            { "type": "update_state", "path": "showEditModal", "value": false }
           ]
         }
       }
     ]
   },
   "events": {
-    "onClose": [{ "type": "updateState", "path": "showEditModal", "value": false }]
+    "onClose": [{ "type": "update_state", "path": "showEditModal", "value": false }]
   }
 }
 ```
@@ -236,7 +236,7 @@ Dialog window for focused content or actions.
     ]
   },
   "events": {
-    "onClose": [{ "type": "updateState", "path": "previewOpen", "value": false }]
+    "onClose": [{ "type": "update_state", "path": "previewOpen", "value": false }]
   }
 }
 ```
@@ -259,7 +259,7 @@ Dialog window for focused content or actions.
         "confirmText": "Delete",
         "cancelText": "Keep",
         "onConfirm": [
-          { "type": "callApi", "api": "deleteItem" },
+          { "type": "call_api", "api": "deleteItem" },
           { "type": "showToast", "message": "Deleted" }
         ]
       }
@@ -470,7 +470,7 @@ Informational popup on hover.
         "type": "Button",
         "label": "Create New",
         "events": {
-          "onClick": [{ "type": "updateState", "path": "level2Open", "value": true }]
+          "onClick": [{ "type": "update_state", "path": "level2Open", "value": true }]
         }
       }
     ]
@@ -487,7 +487,7 @@ Informational popup on hover.
   "title": "Create Item",
   "content": { "type": "Form", "..." },
   "events": {
-    "onClose": [{ "type": "updateState", "path": "level2Open", "value": false }]
+    "onClose": [{ "type": "update_state", "path": "level2Open", "value": false }]
   }
 }
 ```

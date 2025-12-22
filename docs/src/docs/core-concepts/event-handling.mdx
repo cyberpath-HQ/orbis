@@ -37,7 +37,7 @@ Events are defined in the `events` property of components:
   "label": "Click Me",
   "events": {
     "onClick": [
-      { "type": "updateState", "path": "clicked", "value": true },
+      { "type": "update_state", "path": "clicked", "value": true },
       { "type": "showToast", "message": "Button clicked!" }
     ]
   }
@@ -110,7 +110,7 @@ The raw event object:
   "events": {
     "onClick": [
       {
-        "type": "updateState",
+        "type": "update_state",
         "path": "lastClick",
         "value": "$event"
       }
@@ -132,7 +132,7 @@ For input events, the current value:
   "events": {
     "onChange": [
       {
-        "type": "updateState",
+        "type": "update_state",
         "path": "searchQuery",
         "value": "$event.value"
       }
@@ -152,7 +152,7 @@ The element that triggered the event:
   "events": {
     "onFocus": [
       {
-        "type": "updateState",
+        "type": "update_state",
         "path": "focusedField",
         "value": "$event.target.name"
       }
@@ -177,7 +177,7 @@ Current table row data:
   "events": {
     "onRowClick": [
       {
-        "type": "updateState",
+        "type": "update_state",
         "path": "selectedUser",
         "value": "$row"
       },
@@ -206,7 +206,7 @@ Current loop/list item:
     "events": {
       "onClick": [
         {
-          "type": "updateState",
+          "type": "update_state",
           "path": "items",
           "mode": "remove",
           "value": "{{$item.id}}"
@@ -232,7 +232,7 @@ Current iteration index:
     "events": {
       "onClick": [
         {
-          "type": "updateState",
+          "type": "update_state",
           "path": "selectedIndex",
           "value": "$index"
         }
@@ -255,8 +255,8 @@ Run in order, each completing before the next:
 ```json
 {
   "onClick": [
-    { "type": "updateState", "path": "step", "value": 1 },
-    { "type": "updateState", "path": "step", "value": 2 },
+    { "type": "update_state", "path": "step", "value": 1 },
+    { "type": "update_state", "path": "step", "value": 2 },
     { "type": "showToast", "message": "Step is now 2" }
   ]
 }
@@ -275,7 +275,7 @@ Branch based on conditions:
       "type": "conditional",
       "condition": "{{state.isValid}}",
       "then": [
-        { "type": "callApi", "api": "submit" }
+        { "type": "call_api", "api": "submit" }
       ],
       "else": [
         { "type": "showToast", "message": "Please fix errors", "level": "error" }
@@ -294,9 +294,9 @@ API calls with callbacks:
 ```json
 {
   "onClick": [
-    { "type": "setLoading", "loading": true },
+    { "type": "set_loading", "loading": true },
     {
-      "type": "callApi",
+      "type": "call_api",
       "api": "my-plugin.saveData",
       "onSuccess": [
         { "type": "showToast", "message": "Saved!", "level": "success" }
@@ -305,14 +305,14 @@ API calls with callbacks:
         { "type": "showToast", "message": "Failed: {{$error.message}}", "level": "error" }
       ]
     },
-    { "type": "setLoading", "loading": false }
+    { "type": "set_loading", "loading": false }
   ]
 }
 ```
 </CodeBlock>
 
 :::warning
-The `setLoading` after `callApi` runs immediately, not after the API completes. Use the `onSuccess`/`onError` callbacks for post-API actions.
+The `set_loading` after `call_api` runs immediately, not after the API completes. Use the `onSuccess`/`onError` callbacks for post-API actions.
 :::
 
 ## Component-Specific Events
@@ -325,7 +325,7 @@ The `setLoading` after `callApi` runs immediately, not after the API completes. 
   "type": "Button",
   "label": "Submit",
   "events": {
-    "onClick": [{ "type": "callApi", "api": "submit" }]
+    "onClick": [{ "type": "call_api", "api": "submit" }]
   }
 }
 ```
@@ -340,8 +340,8 @@ The `setLoading` after `callApi` runs immediately, not after the API completes. 
   "name": "email",
   "fieldType": "email",
   "events": {
-    "onChange": [{ "type": "updateState", "path": "email", "value": "$event.value" }],
-    "onFocus": [{ "type": "updateState", "path": "focused", "value": "email" }],
+    "onChange": [{ "type": "update_state", "path": "email", "value": "$event.value" }],
+    "onFocus": [{ "type": "update_state", "path": "focused", "value": "email" }],
     "onBlur": [{ "type": "validateForm", "formId": "my-form" }]
   }
 }
@@ -362,7 +362,7 @@ The `setLoading` after `callApi` runs immediately, not after the API completes. 
         "type": "conditional",
         "condition": "{{state.formValid}}",
         "then": [
-          { "type": "callApi", "api": "submitContact" }
+          { "type": "call_api", "api": "submitContact" }
         ]
       }
     ]
@@ -381,17 +381,17 @@ The `setLoading` after `callApi` runs immediately, not after the API completes. 
   "dataSource": "state:users",
   "events": {
     "onRowClick": [
-      { "type": "updateState", "path": "selectedUser", "value": "$row" }
+      { "type": "update_state", "path": "selectedUser", "value": "$row" }
     ],
     "onSelect": [
-      { "type": "updateState", "path": "selectedUsers", "value": "$event.value" }
+      { "type": "update_state", "path": "selectedUsers", "value": "$event.value" }
     ],
     "onPageChange": [
-      { "type": "updateState", "path": "currentPage", "value": "$event.value" }
+      { "type": "update_state", "path": "currentPage", "value": "$event.value" }
     ],
     "onSortChange": [
       {
-        "type": "updateState",
+        "type": "update_state",
         "path": "sort",
         "value": {
           "column": "$event.column",
@@ -413,11 +413,11 @@ The `setLoading` after `callApi` runs immediately, not after the API completes. 
   "id": "confirm-dialog",
   "events": {
     "onOpen": [
-      { "type": "updateState", "path": "modalOpen", "value": true }
+      { "type": "update_state", "path": "modalOpen", "value": true }
     ],
     "onClose": [
-      { "type": "updateState", "path": "modalOpen", "value": false },
-      { "type": "updateState", "path": "selectedItem", "value": null }
+      { "type": "update_state", "path": "modalOpen", "value": false },
+      { "type": "update_state", "path": "selectedItem", "value": null }
     ]
   }
 }
@@ -440,7 +440,7 @@ For events that fire rapidly (like typing), use debounced actions:
         "delay": 300,
         "key": "search",
         "action": {
-          "type": "callApi",
+          "type": "call_api",
           "api": "search",
           "args": { "query": "$event.value" }
         }
@@ -464,7 +464,7 @@ To handle parent clicks while ignoring child clicks:
 {
   "type": "Container",
   "events": {
-    "onClick": [{ "type": "updateState", "path": "containerClicked", "value": true }]
+    "onClick": [{ "type": "update_state", "path": "containerClicked", "value": true }]
   },
   "children": [
     {
@@ -473,7 +473,7 @@ To handle parent clicks while ignoring child clicks:
       "events": {
         "onClick": [
           // This runs, container's onClick does NOT run
-          { "type": "updateState", "path": "buttonClicked", "value": true }
+          { "type": "update_state", "path": "buttonClicked", "value": true }
         ]
       }
     }
@@ -491,16 +491,16 @@ To handle parent clicks while ignoring child clicks:
 // Good - clear purpose
 {
   "onClick": [
-    { "type": "updateState", "path": "isOpen", "value": true }
+    { "type": "update_state", "path": "isOpen", "value": true }
   ]
 }
 
 // ❌ Avoid - too many concerns
 {
   "onClick": [
-    { "type": "updateState", "path": "isOpen", "value": true },
-    { "type": "updateState", "path": "lastOpened", "value": "now" },
-    { "type": "callApi", "api": "logEvent" },
+    { "type": "update_state", "path": "isOpen", "value": true },
+    { "type": "update_state", "path": "lastOpened", "value": "now" },
+    { "type": "call_api", "api": "logEvent" },
     { "type": "showToast", "message": "Opened" }
   ]
 }
@@ -512,10 +512,10 @@ To handle parent clicks while ignoring child clicks:
 <CodeBlock lang="json">
 ```json
 // Good
-{ "type": "updateState", "path": "form.isSubmitting", "value": true }
+{ "type": "update_state", "path": "form.isSubmitting", "value": true }
 
 // ❌ Avoid
-{ "type": "updateState", "path": "s", "value": true }
+{ "type": "update_state", "path": "s", "value": true }
 ```
 </CodeBlock>
 
@@ -527,16 +527,16 @@ Always handle async operation states:
 ```json
 {
   "onClick": [
-    { "type": "setLoading", "target": "submit", "loading": true },
+    { "type": "set_loading", "target": "submit", "loading": true },
     {
-      "type": "callApi",
+      "type": "call_api",
       "api": "submit",
       "onSuccess": [
-        { "type": "setLoading", "target": "submit", "loading": false },
+        { "type": "set_loading", "target": "submit", "loading": false },
         { "type": "showToast", "message": "Success!" }
       ],
       "onError": [
-        { "type": "setLoading", "target": "submit", "loading": false },
+        { "type": "set_loading", "target": "submit", "loading": false },
         { "type": "showToast", "message": "Failed!", "level": "error" }
       ]
     }
@@ -555,8 +555,8 @@ Use temporary state to debug:
 ```json
 {
   "onClick": [
-    { "type": "updateState", "path": "debug.lastEvent", "value": "button clicked" },
-    { "type": "updateState", "path": "debug.timestamp", "value": "{{Date.now()}}" }
+    { "type": "update_state", "path": "debug.lastEvent", "value": "button clicked" },
+    { "type": "update_state", "path": "debug.timestamp", "value": "{{Date.now()}}" }
   ]
 }
 ```

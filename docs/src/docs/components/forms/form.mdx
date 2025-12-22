@@ -45,7 +45,7 @@ A container for form fields with validation and submission handling.
   ],
   "events": {
     "onSubmit": [
-      { "type": "callApi", "api": "auth.login", "args": "{{state.formData}}" }
+      { "type": "call_api", "api": "auth.login", "args": "{{state.formData}}" }
     ]
   }
 }
@@ -427,7 +427,7 @@ Individual form field with various input types.
         "type": "debouncedAction",
         "delay": 300,
         "action": {
-          "type": "callApi",
+          "type": "call_api",
           "api": "search",
           "args": { "query": "{{state.filters.search}}" }
         }
@@ -483,9 +483,9 @@ Individual form field with various input types.
     ],
     "events": {
       "onSubmit": [
-        { "type": "setLoading", "loading": true },
+        { "type": "set_loading", "loading": true },
         {
-          "type": "callApi",
+          "type": "call_api",
           "api": "auth.login",
           "args": "{{state.login}}",
           "onSuccess": [
@@ -495,7 +495,7 @@ Individual form field with various input types.
             { "type": "showToast", "message": "Invalid credentials", "level": "error" }
           ]
         },
-        { "type": "setLoading", "loading": false }
+        { "type": "set_loading", "loading": false }
       ]
     }
   },
@@ -560,7 +560,7 @@ Individual form field with various input types.
   "events": {
     "onSubmit": [
       {
-        "type": "callApi",
+        "type": "call_api",
         "api": "user.updateSettings",
         "args": "{{state.settings}}",
         "onSuccess": [
@@ -602,7 +602,7 @@ Individual form field with various input types.
   ],
   "events": {
     "onSubmit": [
-      { "type": "callApi", "api": "search", "args": "{{state.search}}" }
+      { "type": "call_api", "api": "search", "args": "{{state.search}}" }
     ]
   }
 }
@@ -628,7 +628,7 @@ Individual form field with various input types.
         "events": {
           "onSubmit": [
             { "type": "validateForm", "form": "step1" },
-            { "type": "updateState", "path": "step", "value": 2 }
+            { "type": "update_state", "path": "step", "value": 2 }
           ]
         }
       }
@@ -644,7 +644,7 @@ Individual form field with various input types.
         ],
         "events": {
           "onSubmit": [
-            { "type": "callApi", "api": "submit", "args": "{{state.wizard}}" }
+            { "type": "call_api", "api": "submit", "args": "{{state.wizard}}" }
           ]
         }
       }
@@ -706,7 +706,7 @@ Reset form to defaults:
       "events": {
         "onClick": [
           { "type": "validateForm", "form": "myForm" },
-          { "type": "callApi", "api": "submit" }
+          { "type": "call_api", "api": "submit" }
         ]
       }
     }

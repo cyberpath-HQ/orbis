@@ -175,10 +175,10 @@ TypeScript type definitions:
 
 <CodeBlock lang="json">
 ```json
-{ "type": "callApi", "api": "createItem", "params": { "data": "{{form.addForm}}" } }
-{ "type": "callApi", "api": "getItems", "storeAs": "items" }
-{ "type": "callApi", "api": "updateItem", "params": { "id": "{{state.id}}", "data": "{{form.editForm}}" } }
-{ "type": "callApi", "api": "deleteItem", "params": { "id": "{{state.id}}" } }
+{ "type": "call_api", "api": "createItem", "params": { "data": "{{form.addForm}}" } }
+{ "type": "call_api", "api": "getItems", "storeAs": "items" }
+{ "type": "call_api", "api": "updateItem", "params": { "id": "{{state.id}}", "data": "{{form.editForm}}" } }
+{ "type": "call_api", "api": "deleteItem", "params": { "id": "{{state.id}}" } }
 ```
 </CodeBlock>
 
@@ -188,7 +188,7 @@ TypeScript type definitions:
 ```json
 [
   { "type": "validateForm", "formId": "myForm" },
-  { "type": "callApi", "api": "submit", "params": { "data": "{{form.myForm}}" } },
+  { "type": "call_api", "api": "submit", "params": { "data": "{{form.myForm}}" } },
   { "type": "resetForm", "formId": "myForm" },
   { "type": "showToast", "message": "Submitted!", "level": "success" }
 ]
@@ -200,9 +200,9 @@ TypeScript type definitions:
 <CodeBlock lang="json">
 ```json
 [
-  { "type": "setLoading", "key": "submit", "value": true },
-  { "type": "callApi", "api": "submit", "onComplete": [
-    { "type": "setLoading", "key": "submit", "value": false }
+  { "type": "set_loading", "key": "submit", "value": true },
+  { "type": "call_api", "api": "submit", "onComplete": [
+    { "type": "set_loading", "key": "submit", "value": false }
   ]}
 ]
 ```

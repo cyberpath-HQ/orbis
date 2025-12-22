@@ -40,7 +40,7 @@ Triggered when element is clicked.
 {
   "events": {
     "onClick": [
-      { "type": "updateState", "path": "clicked", "value": true }
+      { "type": "update_state", "path": "clicked", "value": true }
     ]
   }
 }
@@ -76,10 +76,10 @@ Triggered when mouse enters/leaves element.
 {
   "events": {
     "onMouseEnter": [
-      { "type": "updateState", "path": "hovering", "value": true }
+      { "type": "update_state", "path": "hovering", "value": true }
     ],
     "onMouseLeave": [
-      { "type": "updateState", "path": "hovering", "value": false }
+      { "type": "update_state", "path": "hovering", "value": false }
     ]
   }
 }
@@ -100,7 +100,7 @@ Triggered when input value changes.
   "name": "search",
   "events": {
     "onChange": [
-      { "type": "updateState", "path": "searchQuery", "value": "{{$value}}" }
+      { "type": "update_state", "path": "searchQuery", "value": "{{$value}}" }
     ]
   }
 }
@@ -137,7 +137,7 @@ Triggered when input receives focus.
 {
   "events": {
     "onFocus": [
-      { "type": "updateState", "path": "inputFocused", "value": true }
+      { "type": "update_state", "path": "inputFocused", "value": true }
     ]
   }
 }
@@ -156,7 +156,7 @@ Triggered when form is submitted.
   "events": {
     "onSubmit": [
       { "type": "validateForm", "formId": "contactForm" },
-      { "type": "callApi", "api": "submitContact" }
+      { "type": "call_api", "api": "submitContact" }
     ]
   }
 }
@@ -183,7 +183,7 @@ Triggered when key is pressed.
         "type": "conditional",
         "condition": "{{$event.key === 'Enter'}}",
         "then": [
-          { "type": "callApi", "api": "submit" }
+          { "type": "call_api", "api": "submit" }
         ]
       }
     ]
@@ -209,7 +209,7 @@ Triggered when key is released.
 {
   "events": {
     "onKeyUp": [
-      { "type": "updateState", "path": "lastKey", "value": "{{$event.key}}" }
+      { "type": "update_state", "path": "lastKey", "value": "{{$event.key}}" }
     ]
   }
 }
@@ -226,7 +226,7 @@ Triggered when page/component mounts.
 ```json
 {
   "onMount": [
-    { "type": "callApi", "api": "fetchInitialData", "storeAs": "data" }
+    { "type": "call_api", "api": "fetchInitialData", "storeAs": "data" }
   ]
 }
 ```
@@ -246,7 +246,7 @@ Triggered when page/component unmounts.
 ```json
 {
   "onUnmount": [
-    { "type": "updateState", "path": "cleanup", "value": true }
+    { "type": "update_state", "path": "cleanup", "value": true }
   ]
 }
 ```
@@ -270,7 +270,7 @@ Triggered when selection changes.
   "type": "Table",
   "events": {
     "onSelect": [
-      { "type": "updateState", "path": "selectedRows", "value": "{{$value}}" }
+      { "type": "update_state", "path": "selectedRows", "value": "{{$value}}" }
     ]
   }
 }
@@ -292,7 +292,7 @@ Listen for custom events.
 {
   "events": {
     "onEvent:itemSelected": [
-      { "type": "updateState", "path": "selected", "value": "{{$event.data}}" }
+      { "type": "update_state", "path": "selected", "value": "{{$event.data}}" }
     ]
   }
 }
@@ -323,7 +323,7 @@ Triggered when table row is clicked.
   "type": "Table",
   "events": {
     "onRowClick": [
-      { "type": "updateState", "path": "selectedItem", "value": "{{$item}}" }
+      { "type": "update_state", "path": "selectedItem", "value": "{{$item}}" }
     ]
   }
 }
@@ -345,8 +345,8 @@ Triggered when table sort changes.
   "type": "Table",
   "events": {
     "onSort": [
-      { "type": "updateState", "path": "sortBy", "value": "{{$value.column}}" },
-      { "type": "updateState", "path": "sortOrder", "value": "{{$value.order}}" }
+      { "type": "update_state", "path": "sortBy", "value": "{{$value.column}}" },
+      { "type": "update_state", "path": "sortOrder", "value": "{{$value.order}}" }
     ]
   }
 }
@@ -363,8 +363,8 @@ Triggered when pagination changes.
   "type": "Table",
   "events": {
     "onPageChange": [
-      { "type": "updateState", "path": "page", "value": "{{$value}}" },
-      { "type": "callApi", "api": "fetchPage" }
+      { "type": "update_state", "path": "page", "value": "{{$value}}" },
+      { "type": "call_api", "api": "fetchPage" }
     ]
   }
 }
@@ -383,7 +383,7 @@ Triggered when active tab changes.
   "type": "Tabs",
   "events": {
     "onTabChange": [
-      { "type": "updateState", "path": "activeTab", "value": "{{$value}}" }
+      { "type": "update_state", "path": "activeTab", "value": "{{$value}}" }
     ]
   }
 }
@@ -403,7 +403,7 @@ Triggered when modal is closed.
   "events": {
     "onClose": [
       { "type": "resetForm", "formId": "editForm" },
-      { "type": "updateState", "path": "modalOpen", "value": false }
+      { "type": "update_state", "path": "modalOpen", "value": false }
     ]
   }
 }
@@ -428,9 +428,9 @@ Execute multiple actions:
 {
   "events": {
     "onClick": [
-      { "type": "setLoading", "key": "submit", "value": true },
-      { "type": "callApi", "api": "submit" },
-      { "type": "setLoading", "key": "submit", "value": false },
+      { "type": "set_loading", "key": "submit", "value": true },
+      { "type": "call_api", "api": "submit" },
+      { "type": "set_loading", "key": "submit", "value": false },
       { "type": "showToast", "message": "Done!" }
     ]
   }
@@ -449,7 +449,7 @@ Execute multiple actions:
         "type": "conditional",
         "condition": "{{state.canSubmit}}",
         "then": [
-          { "type": "callApi", "api": "submit" }
+          { "type": "call_api", "api": "submit" }
         ],
         "else": [
           { "type": "showToast", "message": "Cannot submit", "level": "warning" }

@@ -98,7 +98,7 @@ Notification banner for important messages.
     "dismissible": true,
     "events": {
       "onClose": [
-        { "type": "updateState", "path": "showAlert", "value": false }
+        { "type": "update_state", "path": "showAlert", "value": false }
       ]
     }
   }
@@ -474,8 +474,8 @@ Display when content is empty or unavailable.
       "variant": "outline",
       "events": {
         "onClick": [
-          { "type": "updateState", "path": "searchQuery", "value": "" },
-          { "type": "callApi", "api": "search", "args": { "query": "" } }
+          { "type": "update_state", "path": "searchQuery", "value": "" },
+          { "type": "call_api", "api": "search", "args": { "query": "" } }
         ]
       }
     }
@@ -526,7 +526,7 @@ Display when content is empty or unavailable.
     "type": "Button",
     "label": "Try Again",
     "events": {
-      "onClick": [{ "type": "callApi", "api": "getData" }]
+      "onClick": [{ "type": "call_api", "api": "getData" }]
     }
   }
 }
@@ -548,11 +548,11 @@ Display when content is empty or unavailable.
   },
   "onMount": [
     {
-      "type": "callApi",
+      "type": "call_api",
       "api": "getData",
       "onSuccess": [
-        { "type": "updateState", "path": "data", "value": "$response.data" },
-        { "type": "updateState", "path": "isLoading", "value": false }
+        { "type": "update_state", "path": "data", "value": "$response.data" },
+        { "type": "update_state", "path": "isLoading", "value": false }
       ]
     }
   ],
@@ -583,7 +583,7 @@ Toasts are triggered via actions, not components:
   "events": {
     "onClick": [
       {
-        "type": "callApi",
+        "type": "call_api",
         "api": "save",
         "onSuccess": [
           { "type": "showToast", "message": "Saved successfully!", "level": "success" }

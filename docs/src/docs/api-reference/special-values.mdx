@@ -23,7 +23,7 @@ The current value in change events.
   "type": "Field",
   "events": {
     "onChange": [
-      { "type": "updateState", "path": "inputValue", "value": "{{$value}}" }
+      { "type": "update_state", "path": "inputValue", "value": "{{$value}}" }
     ]
   }
 }
@@ -41,13 +41,13 @@ The full event object.
 {
   "events": {
     "onClick": [
-      { "type": "updateState", "path": "clickX", "value": "{{$event.clientX}}" }
+      { "type": "update_state", "path": "clickX", "value": "{{$event.clientX}}" }
     ],
     "onKeyDown": [
       {
         "type": "conditional",
         "condition": "{{$event.key === 'Enter' && $event.ctrlKey}}",
-        "then": [{ "type": "callApi", "api": "submit" }]
+        "then": [{ "type": "call_api", "api": "submit" }]
       }
     ]
   }
@@ -134,11 +134,11 @@ Full response from API calls.
 <CodeBlock lang="json">
 ```json
 {
-  "type": "callApi",
+  "type": "call_api",
   "api": "getUsers",
   "onSuccess": [
-    { "type": "updateState", "path": "users", "value": "{{$response.data}}" },
-    { "type": "updateState", "path": "total", "value": "{{$response.total}}" }
+    { "type": "update_state", "path": "users", "value": "{{$response.data}}" },
+    { "type": "update_state", "path": "total", "value": "{{$response.total}}" }
   ]
 }
 ```
@@ -162,11 +162,11 @@ Error object from failed operations.
 <CodeBlock lang="json">
 ```json
 {
-  "type": "callApi",
+  "type": "call_api",
   "api": "saveData",
   "onError": [
     { "type": "showToast", "message": "Error: {{$error.message}}", "level": "error" },
-    { "type": "updateState", "path": "error", "value": "{{$error}}" }
+    { "type": "update_state", "path": "error", "value": "{{$error}}" }
   ]
 }
 ```
@@ -192,7 +192,7 @@ Route parameters from dynamic routes.
 // Route: /users/:id
 {
   "onMount": [
-    { "type": "callApi", "api": "getUser", "params": { "id": "{{params.id}}" } }
+    { "type": "call_api", "api": "getUser", "params": { "id": "{{params.id}}" } }
   ]
 }
 ```
@@ -207,8 +207,8 @@ Query string parameters.
 // URL: /search?q=test&page=2
 {
   "onMount": [
-    { "type": "updateState", "path": "searchQuery", "value": "{{query.q}}" },
-    { "type": "updateState", "path": "page", "value": "{{query.page || 1}}" }
+    { "type": "update_state", "path": "searchQuery", "value": "{{query.q}}" },
+    { "type": "update_state", "path": "page", "value": "{{query.page || 1}}" }
   ]
 }
 ```
@@ -366,9 +366,9 @@ Environment configuration.
   "disabled": "{{!form.userForm.$valid || loading.submit}}",
   "events": {
     "onClick": [
-      { "type": "setLoading", "key": "submit", "value": true },
+      { "type": "set_loading", "key": "submit", "value": true },
       {
-        "type": "callApi",
+        "type": "call_api",
         "api": "saveUser",
         "params": { "data": "{{form.userForm}}" },
         "onSuccess": [
@@ -378,7 +378,7 @@ Environment configuration.
           { "type": "showToast", "message": "{{$error.message}}", "level": "error" }
         ],
         "onComplete": [
-          { "type": "setLoading", "key": "submit", "value": false }
+          { "type": "set_loading", "key": "submit", "value": false }
         ]
       }
     ]

@@ -106,7 +106,7 @@ Changes the current route/page.
   "events": {
     "onSubmit": [
       {
-        "type": "callApi",
+        "type": "call_api",
         "api": "createItem",
         "onSuccess": [
           { "type": "showToast", "message": "Created!", "level": "success" },
@@ -124,7 +124,7 @@ Changes the current route/page.
 <CodeBlock lang="json">
 ```json
 {
-  "type": "callApi",
+  "type": "call_api",
   "api": "deleteItem",
   "onSuccess": [
     { "type": "showToast", "message": "Deleted" },
@@ -208,7 +208,7 @@ In page definitions, access route params via `params`:
   "route": "/items/:id",
   "onMount": [
     {
-      "type": "callApi",
+      "type": "call_api",
       "api": "getItem",
       "args": { "id": "{{params.id}}" }
     }

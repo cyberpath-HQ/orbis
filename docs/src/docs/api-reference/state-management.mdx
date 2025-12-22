@@ -94,12 +94,12 @@ Use optional chaining for potentially undefined values:
 
 ## State Mutations
 
-### updateState Action
+### update_state Action
 
 <CodeBlock lang="json">
 ```json
 {
-  "type": "updateState",
+  "type": "update_state",
   "path": "fieldName",
   "value": "newValue"
 }
@@ -122,9 +122,9 @@ Use optional chaining for potentially undefined values:
 
 <CodeBlock lang="json">
 ```json
-{ "type": "updateState", "path": "count", "value": 10 }
-{ "type": "updateState", "path": "name", "value": "John" }
-{ "type": "updateState", "path": "active", "value": true }
+{ "type": "update_state", "path": "count", "value": 10 }
+{ "type": "update_state", "path": "name", "value": "John" }
+{ "type": "update_state", "path": "active", "value": true }
 ```
 </CodeBlock>
 
@@ -132,8 +132,8 @@ Use optional chaining for potentially undefined values:
 
 <CodeBlock lang="json">
 ```json
-{ "type": "updateState", "path": "count", "value": "{{state.count + 1}}" }
-{ "type": "updateState", "path": "fullName", "value": "{{state.firstName}} {{state.lastName}}" }
+{ "type": "update_state", "path": "count", "value": "{{state.count + 1}}" }
+{ "type": "update_state", "path": "fullName", "value": "{{state.firstName}} {{state.lastName}}" }
 ```
 </CodeBlock>
 
@@ -142,7 +142,7 @@ Use optional chaining for potentially undefined values:
 <CodeBlock lang="json">
 ```json
 {
-  "type": "updateState",
+  "type": "update_state",
   "path": "user",
   "value": {
     "name": "{{$response.name}}",
@@ -156,8 +156,8 @@ Use optional chaining for potentially undefined values:
 
 <CodeBlock lang="json">
 ```json
-{ "type": "updateState", "path": "items", "value": "{{$response.data}}" }
-{ "type": "updateState", "path": "selectedIds", "value": [] }
+{ "type": "update_state", "path": "items", "value": "{{$response.data}}" }
+{ "type": "update_state", "path": "selectedIds", "value": [] }
 ```
 </CodeBlock>
 
@@ -167,7 +167,7 @@ Use optional chaining for potentially undefined values:
 
 <CodeBlock lang="json">
 ```json
-{ "type": "updateState", "path": "items[]", "value": "{{newItem}}" }
+{ "type": "update_state", "path": "items[]", "value": "{{newItem}}" }
 ```
 </CodeBlock>
 
@@ -175,7 +175,7 @@ Use optional chaining for potentially undefined values:
 
 <CodeBlock lang="json">
 ```json
-{ "type": "updateState", "path": "items[{{state.selectedIndex}}]", "value": "{{updatedItem}}" }
+{ "type": "update_state", "path": "items[{{state.selectedIndex}}]", "value": "{{updatedItem}}" }
 ```
 </CodeBlock>
 
@@ -184,7 +184,7 @@ Use optional chaining for potentially undefined values:
 <CodeBlock lang="json">
 ```json
 {
-  "type": "updateState",
+  "type": "update_state",
   "path": "items",
   "value": "{{state.items.filter((_, i) => i !== state.selectedIndex)}}"
 }
@@ -195,7 +195,7 @@ Use optional chaining for potentially undefined values:
 
 <CodeBlock lang="json">
 ```json
-{ "type": "updateState", "path": "items", "value": [] }
+{ "type": "update_state", "path": "items", "value": [] }
 ```
 </CodeBlock>
 
@@ -204,7 +204,7 @@ Use optional chaining for potentially undefined values:
 <CodeBlock lang="json">
 ```json
 {
-  "type": "updateState",
+  "type": "update_state",
   "path": "items",
   "value": "{{state.items.map(item => ({ ...item, selected: false }))}}"
 }
@@ -217,7 +217,7 @@ Use optional chaining for potentially undefined values:
 
 <CodeBlock lang="json">
 ```json
-{ "type": "updateState", "path": "user.name", "value": "Jane" }
+{ "type": "update_state", "path": "user.name", "value": "Jane" }
 ```
 </CodeBlock>
 
@@ -226,7 +226,7 @@ Use optional chaining for potentially undefined values:
 <CodeBlock lang="json">
 ```json
 {
-  "type": "updateState",
+  "type": "update_state",
   "path": "settings",
   "value": "{{ { ...state.settings, theme: 'dark' } }}"
 }
@@ -237,7 +237,7 @@ Use optional chaining for potentially undefined values:
 
 <CodeBlock lang="json">
 ```json
-{ "type": "updateState", "path": "user", "value": null }
+{ "type": "update_state", "path": "user", "value": null }
 ```
 </CodeBlock>
 
@@ -335,7 +335,7 @@ Reset state to initial values:
 <CodeBlock lang="json">
 ```json
 {
-  "type": "updateState",
+  "type": "update_state",
   "path": "user",
   "value": null
 }
@@ -349,9 +349,9 @@ Reset multiple fields:
 {
   "type": "sequence",
   "actions": [
-    { "type": "updateState", "path": "user", "value": null },
-    { "type": "updateState", "path": "items", "value": [] },
-    { "type": "updateState", "path": "loading", "value": false }
+    { "type": "update_state", "path": "user", "value": null },
+    { "type": "update_state", "path": "items", "value": [] },
+    { "type": "update_state", "path": "loading", "value": false }
   ]
 }
 ```
