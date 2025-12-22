@@ -70,7 +70,6 @@ function App(): React.ReactElement {
             const {
                 pages,
             } = await invoke<{ pages: Array<PluginPage> }>(`get_plugin_pages`);
-            console.log(`Plugin pages received:`, pages.length, pages);
             setPluginPages(pages);
         }
         catch (err) {
@@ -124,7 +123,6 @@ function App(): React.ReactElement {
             unlisten = await listen<{ plugin: string
                 state:                        string }>(`plugin-state-changed`, () => {
                 // Refresh plugin pages when any plugin state changes
-                console.log(`Plugin state changed, refreshing pages`);
                 void refreshPluginPages();
             });
         };
@@ -170,12 +168,6 @@ function App(): React.ReactElement {
             // Parse API path: "plugin.handler_name" or "core.command_name" or "plugin.plugin_name.handler_name"
             const parts = api.split(`.`);
             const [ namespace ] = parts;
-            console.log(`API call requested:`, {
-                api,
-                method,
-                args,
-                pluginName,
-            });
 
             if (namespace === `plugin`) {
                 // Determine the command format

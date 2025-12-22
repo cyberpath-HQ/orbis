@@ -212,8 +212,6 @@ const ComponentRenderer = memo(function ComponentRenderer({
         }
     }
 
-    console.log(`Rendering component:`, schema.type, `ID:`, schema.id);
-
     // Render based on type
     switch (schema.type) {
         case `Container`:
@@ -327,8 +325,6 @@ function useEventHandler(actions?: Array<Action>): (event?: unknown) => Promise<
     const ctx = useRendererContext();
 
     return useCallback(async(event?: unknown): Promise<void> => {
-        console.log(`useEventHandler triggered for event:`, event);
-        console.log(`With actions:`, actions);
         if (!actions || actions.length === 0) {
             return;
         }
@@ -342,8 +338,6 @@ function useEventHandler(actions?: Array<Action>): (event?: unknown) => Promise<
             item:      ctx.item,
             index:     ctx.index,
         };
-
-        console.log(`Executing actions:`, event, `with context:`, actionContext);
 
         await executeActions(actions, actionContext);
     }, [
@@ -469,12 +463,10 @@ function ButtonRenderer({
     const ctx = useRendererContext();
 
     const stateData = ctx.state((s) => s.state);
-    console.log(`[ButtonRenderer] Rendering button with schema:`, schema);
     const handleClick = useEventHandler(schema.events?.on_click);
     const label = useResolvedValue(schema.label);
 
     const handleOnClick = (): void => {
-        console.log(`[ButtonRenderer] Button clicked:`, schema.id);
         void handleClick(`click`);
     };
 
@@ -567,8 +559,6 @@ function FieldRenderer({
         value = schema.defaultValue;
     }
 
-    console.log(`[FieldRenderer] Rendering field "${ schema.name }", bindTo: "${ schema.bindTo }", value:`, value, `stateData:`, stateData);
-
     // Get validation error from form if inside form context
     const fieldError = formFieldMeta?.errors?.[0]
         ? String(formFieldMeta.errors[0])
@@ -577,9 +567,6 @@ function FieldRenderer({
     const showError = isTouched && fieldError;
 
     const onValueChange = (newValue: unknown): void => {
-        console.log(`[FieldRenderer] onValueChange called for "${ schema.name }" with value:`, newValue);
-        console.log(`[FieldRenderer] bindTo: "${ schema.bindTo }", isInForm: ${ formCtx.isInForm }`);
-
         // Update form state if inside form
         if (formCtx.isInForm && formCtx.form) {
             formCtx.form.setFieldValue(schema.name, newValue);
@@ -587,7 +574,6 @@ function FieldRenderer({
 
         // Also update page state if bindTo is set
         if (schema.bindTo) {
-            console.log(`[FieldRenderer] Calling setState for "${ schema.bindTo }"`);
             ctx.state.setState(schema.bindTo, newValue);
         }
 

@@ -254,13 +254,11 @@ export function usePluginWatcher(
         const startListening = async(): Promise<void> => {
             try {
                 unlisten = await listen<PluginChangeEvent>(`plugin-changed`, (event) => {
-                    console.log(`Plugin changed:`, event.payload);
-                    
                     // Debounce to prevent rapid-fire updates
                     if (debounceTimer) {
                         clearTimeout(debounceTimer);
                     }
-                    
+
                     debounceTimer = setTimeout(() => {
                         onPluginChange?.(event.payload);
                         debounceTimer = null;
