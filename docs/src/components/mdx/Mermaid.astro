@@ -44,10 +44,9 @@ let code = tempDiv
   import mermaid from "mermaid";
   import Panzoom from "@panzoom/panzoom";
 
+  // Enable pan and zoom for Mermaid diagrams
   function panzoomMermaid(id: string): void {
-    console.log("Initializing panzoom for Mermaid diagram:", id);
     const container = document.getElementById(id)?.parentElement;
-    console.log("Container element:", container);
     if (!container) return;
     const svgElement = container.querySelector("svg");
     if (!svgElement) return;
