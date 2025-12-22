@@ -17,6 +17,7 @@ export default defineConfig([
         "./**/*.gen.ts",
         "./eslint.config.mts",
         "./src/components/ui/**",
+        "./src/components/SearchModal.tsx",
         "./src/lib/navigation.ts",
     ]),
 
