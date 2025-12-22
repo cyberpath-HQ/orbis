@@ -22,43 +22,6 @@ Plugins in Orbis are self-contained modules that can:
 - Store and retrieve data
 - Communicate with other plugins
 
-## Plugin Types
-
-### Manifest-Only Plugins
-
-Simple plugins that define UI without backend logic:
-
-<CodeBlock lang="text">
-```text
-my-plugin/
-└── manifest.json
-```
-</CodeBlock>
-
-Perfect for:
-- Dashboard pages
-- Static content
-- UI-only features
-
-### WASM Plugins
-
-Full-featured plugins with backend execution:
-
-<CodeBlock lang="text">
-```text
-my-plugin/
-├── manifest.json
-├── src/lib.rs
-├── Cargo.toml
-└── plugin.wasm
-```
-</CodeBlock>
-
-Perfect for:
-- Business logic
-- Data processing
-- External integrations
-
 ## Plugin Manifest
 
 The manifest is the heart of every plugin. It defines metadata, pages, routes, and permissions.
@@ -92,17 +55,17 @@ The manifest is the heart of every plugin. It defines metadata, pages, routes, a
 |-------|----------|-------------|
 | `name` | Yes | Unique plugin identifier (alphanumeric, hyphens, underscores) |
 | `version` | Yes | Semantic version (e.g., "1.0.0") |
-| `description` | ❌ | Human-readable description |
-| `author` | ❌ | Plugin author |
-| `homepage` | ❌ | Plugin homepage URL |
-| `license` | ❌ | License identifier |
-| `min_orbis_version` | ❌ | Minimum required Orbis version |
-| `dependencies` | ❌ | Other required plugins |
-| `permissions` | ❌ | Requested capabilities |
-| `routes` | ❌ | API route definitions |
-| `pages` | ❌ | UI page definitions |
-| `wasm_entry` | ❌ | Path to WASM binary |
-| `config` | ❌ | Custom configuration |
+| `description` | No | Human-readable description |
+| `author` | No | Plugin author |
+| `homepage` | No | Plugin homepage URL |
+| `license` | No | License identifier |
+| `min_orbis_version` | No | Minimum required Orbis version |
+| `dependencies` | No | Other required plugins |
+| `permissions` | No | Requested capabilities |
+| `routes` | No | API route definitions |
+| `pages` | No | UI page definitions |
+| `wasm_entry` | No | Path to WASM binary |
+| `config` | No | Custom configuration |
 
 ## Page Definitions
 
@@ -123,7 +86,7 @@ Pages are the primary way plugins provide UI.
           "default": []
         }
       },
-      "layout": {
+      "sections": {
         "type": "Container",
         "children": [
           {
@@ -132,8 +95,10 @@ Pages are the primary way plugins provide UI.
           }
         ]
       },
-      "onMount": [],
-      "onUnmount": []
+      "hooks": {
+        "on_mount": [],
+        "on_unmount": []
+      }
     }
   ]
 }
@@ -149,9 +114,8 @@ Pages are the primary way plugins provide UI.
 | `route` | URL path for the page |
 | `icon` | Icon name from lucide-react |
 | `state` | State definition for the page |
-| `layout` | Root component schema |
-| `onMount` | Actions to run when page loads |
-| `onUnmount` | Actions to run when page unloads |
+| `sections` | Root component schema |
+| `hooks` | Lifecycle hooks for the page |
 
 ## Plugin Routes
 
@@ -181,18 +145,18 @@ Plugins can define HTTP-like routes for API functionality:
 ```
 </CodeBlock>
 
-Routes are called from UI via the `callApi` action:
+Routes are called from UI via the `call_api` action:
 
 <CodeBlock lang="json">
 ```json
 {
-  "type": "callApi",
+  "type": "call_api",
   "api": "my-plugin.get_items",
   "onSuccess": [
     {
-      "type": "updateState",
+      "type": "update_state",
       "path": "items",
-      "value": "$response.data"
+      "value": "$response.body.data"
     }
   ]
 }
@@ -291,7 +255,7 @@ Orbis supports multiple plugin formats:
 
 ### Hot Reload
 
-In development mode, Orbis watches for plugin changes:
+In development mode, Orbis can hot reload changed plugins:
 
 <CodeBlock lang="bash">
 ```bash
@@ -301,8 +265,8 @@ ORBIS_PLUGINS_DIR=./plugins
 </CodeBlock>
 
 When a plugin file changes:
-1. Unload affected plugin
-2. Reload manifest
+1. Navigate to the plugin management page
+2. Click "Reload" next to the plugin
 3. Re-initialize if WASM changed
 4. Re-render affected pages
 
@@ -337,30 +301,25 @@ serde_json = "1.0"
 
 ### Plugin Entry Points
 
-WASM plugins must export these functions:
+WASM plugins must be initialized using the `orbis_plugin!` macro, this optionally takes `init` and `cleanup` functions:
 
 <CodeBlock lang="rust">
 ```rust
-/// Initialize the plugin (called once at load)
-#[no_mangle]
-pub extern "C" fn init() -> i32 {
-    // Return 0 for success, non-zero for error
-    0
-}
-
-/// Execute plugin logic
-#[no_mangle]
-pub extern "C" fn execute() -> i32 {
-    // Main plugin execution
-    0
-}
-
-/// Clean up resources (called at unload)
-#[no_mangle]
-pub extern "C" fn cleanup() -> i32 {
-    // Release resources
-    0
-}
+orbis_plugin!({
+  init: || {
+    /// Initialize the plugin (called once at load)
+    
+    log::info!("Plugin starting!");
+    state::set("initialized", &true)?;
+    Ok(())
+  },
+  cleanup: || {
+    /// Clean up resources (called at unload)
+    /// 
+    log::info!("Plugin stopping!");
+    Ok(())
+  }
+})
 ```
 </CodeBlock>
 
@@ -384,43 +343,18 @@ You can embed the manifest in the WASM binary:
 
 <CodeBlock lang="bash">
 ```bash
-# Using the provided Python script
-cat manifest.json | python3 add_custom_section.py \
+# Using the provided Python script (running from project root)
+cat manifest.json | python3 ./plugins/add_custom_section.py \
   my_plugin.wasm \
   -s manifest \
   -o my_plugin_with_manifest.wasm
 ```
 </CodeBlock>
 
-## Plugin Registry
-
-The plugin registry tracks all loaded plugins:
-
-<CodeBlock lang="rust">
-```rust
-// Internal API
-registry.register(plugin)?;
-registry.get("my-plugin")?;
-registry.list_plugins()?;
-registry.unload("my-plugin")?;
-```
-</CodeBlock>
-
-From the frontend, plugins are accessed via:
-
-<CodeBlock lang="typescript">
-```typescript
-// Get all plugins
-const plugins = await invoke('list_plugins');
-
-// Get plugin pages
-const pages = await invoke('get_plugin_pages', { pluginId: 'my-plugin' });
-```
-</CodeBlock>
-
 ## Plugin Lifecycle
 
 <Mermaid>
+```mermaid
 stateDiagram-v2
     [*] --> Discovered: Scan directory
     Discovered --> Validated: Parse manifest
@@ -433,31 +367,12 @@ stateDiagram-v2
     Validated --> Error: Invalid manifest
     Loading --> Error: Dependency missing
     Initializing --> Error: init() fails
+```
 </Mermaid>
-
-## Best Practices
-
-### Do's
-
-- Use semantic versioning for plugins  
-- Declare all required permissions  
-- Handle errors gracefully  
-- Validate input in WASM handlers  
-- Clean up resources in `cleanup()`  
-
-### Don'ts
-
-❌ Don't request unnecessary permissions  
-❌ Don't store secrets in manifest  
-❌ Don't block the main thread in handlers  
-❌ Don't assume network availability  
 
 ## Examples
 
-Check these example plugins:
-
-- **[hello-plugin](https://github.com/cyberpath-HQ/orbis/tree/main/plugins/hello-plugin)** - Simple hello world
-- More examples coming soon
+Check the example plugins in the `plugins/` directory, [here](https://github.com/cyberpath-HQ/orbis/tree/main/plugins/).
 
 ## Next Steps
 
