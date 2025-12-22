@@ -199,7 +199,7 @@ Modifies a value in the page state.
       "type": "Button",
       "label": "-",
       "events": {
-        "onClick": [
+        "on_click": [
           { "type": "update_state", "path": "count", "value": "{{state.count}} - 1" }
         ]
       }
@@ -209,7 +209,7 @@ Modifies a value in the page state.
       "type": "Button",
       "label": "+",
       "events": {
-        "onClick": [
+        "on_click": [
           { "type": "update_state", "path": "count", "value": "{{state.count}} + 1" }
         ]
       }
@@ -233,7 +233,7 @@ Modifies a value in the page state.
       { "type": "Text", "content": "{{$item.name}}" }
     ],
     "events": {
-      "onClick": [
+      "on_click": [
         { "type": "update_state", "path": "selectedId", "value": "{{$item.id}}" }
       ]
     }
@@ -250,7 +250,7 @@ Modifies a value in the page state.
   "type": "Button",
   "label": "Reset",
   "events": {
-    "onClick": [
+    "on_click": [
       {
         "type": "update_state",
         "path": "formData",
@@ -275,7 +275,7 @@ Modifies a value in the page state.
   "label": "Next Page",
   "disabled": "{{state.currentPage >= state.totalPages}}",
   "events": {
-    "onClick": [
+    "on_click": [
       { "type": "update_state", "path": "currentPage", "value": "{{state.currentPage}} + 1" },
       { "type": "call_api", "api": "getItems", "args": { "page": "{{state.currentPage}} + 1" } }
     ]

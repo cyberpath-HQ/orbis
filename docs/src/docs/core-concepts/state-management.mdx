@@ -244,7 +244,7 @@ Track loading status for async operations:
   "label": "Load Data",
   "loading": "{{state.loading.fetchData}}",
   "events": {
-    "onClick": [
+    "on_click": [
       {
         "type": "set_loading",
         "target": "fetchData",
@@ -491,7 +491,7 @@ Multiple state changes in one action sequence are batched:
 ```json
 {
   "events": {
-    "onClick": [
+    "on_click": [
       { "type": "update_state", "path": "a", "value": 1 },
       { "type": "update_state", "path": "b", "value": 2 },
       { "type": "update_state", "path": "c", "value": 3 }

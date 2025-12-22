@@ -194,7 +194,7 @@ Actions to execute when page loads.
       { "type": "set_loading", "loading": false }
     ],
     "onError": [
-      { "type": "showToast", "message": "Failed to load data", "level": "error" },
+      { "type": "show_toast", "message": "Failed to load data", "level": "error" },
       { "type": "set_loading", "loading": false }
     ]
   }
@@ -327,7 +327,7 @@ Common patterns:
             "type": "Button",
             "label": "New Item",
             "events": {
-              "onClick": [{ "type": "navigate", "to": "/items/new" }]
+              "on_click": [{ "type": "navigate", "to": "/items/new" }]
             }
           }
         ]
@@ -474,11 +474,11 @@ Common patterns:
                 "api": "my-plugin.createItem",
                 "args": { "data": "{{state.formData}}" },
                 "onSuccess": [
-                  { "type": "showToast", "message": "Item created!", "level": "success" },
+                  { "type": "show_toast", "message": "Item created!", "level": "success" },
                   { "type": "navigate", "to": "/items" }
                 ],
                 "onError": [
-                  { "type": "showToast", "message": "Failed to create item", "level": "error" }
+                  { "type": "show_toast", "message": "Failed to create item", "level": "error" }
                 ]
               },
               { "type": "set_loading", "target": "submit", "loading": false }

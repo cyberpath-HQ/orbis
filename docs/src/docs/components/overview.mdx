@@ -107,7 +107,7 @@ Components with interactivity have events:
   "type": "Button",
   "label": "Click Me",
   "events": {
-    "onClick": [
+    "on_click": [
       { "type": "update_state", "path": "count", "value": "{{state.count}} + 1" }
     ]
   }
@@ -254,9 +254,9 @@ See [Expressions](../core-concepts/expressions) for full syntax.
   "label": "Save",
   "variant": "default",
   "events": {
-    "onClick": [
+    "on_click": [
       { "type": "call_api", "api": "saveData" },
-      { "type": "showToast", "message": "Saved!" }
+      { "type": "show_toast", "message": "Saved!" }
     ]
   }
 }

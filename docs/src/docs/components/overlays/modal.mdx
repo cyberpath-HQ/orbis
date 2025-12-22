@@ -36,14 +36,14 @@ Dialog window for focused content or actions.
         "label": "Cancel",
         "variant": "outline",
         "events": {
-          "onClick": [{ "type": "update_state", "path": "isModalOpen", "value": false }]
+          "on_click": [{ "type": "update_state", "path": "isModalOpen", "value": false }]
         }
       },
       {
         "type": "Button",
         "label": "Confirm",
         "events": {
-          "onClick": [
+          "on_click": [
             { "type": "call_api", "api": "confirmAction" },
             { "type": "update_state", "path": "isModalOpen", "value": false }
           ]
@@ -101,7 +101,7 @@ Dialog window for focused content or actions.
   "label": "Delete Item",
   "variant": "destructive",
   "events": {
-    "onClick": [{ "type": "update_state", "path": "deleteModalOpen", "value": true }]
+    "on_click": [{ "type": "update_state", "path": "deleteModalOpen", "value": true }]
   }
 }
 ```
@@ -129,7 +129,7 @@ Dialog window for focused content or actions.
         "label": "Cancel",
         "variant": "outline",
         "events": {
-          "onClick": [{ "type": "update_state", "path": "deleteModalOpen", "value": false }]
+          "on_click": [{ "type": "update_state", "path": "deleteModalOpen", "value": false }]
         }
       },
       {
@@ -137,10 +137,10 @@ Dialog window for focused content or actions.
         "label": "Delete",
         "variant": "destructive",
         "events": {
-          "onClick": [
+          "on_click": [
             { "type": "call_api", "api": "deleteItem", "args": { "id": "{{state.itemToDelete.id}}" } },
             { "type": "update_state", "path": "deleteModalOpen", "value": false },
-            { "type": "showToast", "message": "Item deleted", "level": "success" }
+            { "type": "show_toast", "message": "Item deleted", "level": "success" }
           ]
         }
       }
@@ -197,14 +197,14 @@ Dialog window for focused content or actions.
         "label": "Cancel",
         "variant": "ghost",
         "events": {
-          "onClick": [{ "type": "update_state", "path": "showEditModal", "value": false }]
+          "on_click": [{ "type": "update_state", "path": "showEditModal", "value": false }]
         }
       },
       {
         "type": "Button",
         "label": "Save Changes",
         "events": {
-          "onClick": [
+          "on_click": [
             { "type": "validateForm", "form": "edit-profile" },
             { "type": "call_api", "api": "updateProfile", "args": "{{state.editForm}}" },
             { "type": "update_state", "path": "showEditModal", "value": false }
@@ -250,7 +250,7 @@ Dialog window for focused content or actions.
   "label": "Delete",
   "variant": "destructive",
   "events": {
-    "onClick": [
+    "on_click": [
       {
         "type": "showDialog",
         "title": "Delete Item?",
@@ -260,7 +260,7 @@ Dialog window for focused content or actions.
         "cancelText": "Keep",
         "onConfirm": [
           { "type": "call_api", "api": "deleteItem" },
-          { "type": "showToast", "message": "Deleted" }
+          { "type": "show_toast", "message": "Deleted" }
         ]
       }
     ]
@@ -470,7 +470,7 @@ Informational popup on hover.
         "type": "Button",
         "label": "Create New",
         "events": {
-          "onClick": [{ "type": "update_state", "path": "level2Open", "value": true }]
+          "on_click": [{ "type": "update_state", "path": "level2Open", "value": true }]
         }
       }
     ]

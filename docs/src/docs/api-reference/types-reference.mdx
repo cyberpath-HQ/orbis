@@ -322,7 +322,7 @@ interface ButtonSchema extends BaseComponentSchema {
   disabled?: string | boolean;
   loading?: string | boolean;
   events?: {
-    onClick?: ActionSchema[];
+    on_click?: ActionSchema[];
   };
 }
 ```
@@ -423,7 +423,7 @@ interface NavigateAction {
 <CodeBlock lang="typescript">
 ```typescript
 interface ShowToastAction {
-  type: 'showToast';
+  type: 'show_toast';
   message: string;
   level?: 'info' | 'success' | 'warning' | 'error';
   title?: string;
@@ -569,7 +569,7 @@ const page: PageDefinition = {
           type: 'Button',
           text: 'Add User',
           events: {
-            onClick: [{ type: 'navigate', route: '/users/new' }]
+            on_click: [{ type: 'navigate', route: '/users/new' }]
           }
         }
       ]

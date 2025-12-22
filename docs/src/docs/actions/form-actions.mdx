@@ -44,7 +44,7 @@ Validates a form and returns validation results.
   "type": "Button",
   "text": "Submit",
   "events": {
-    "onClick": [
+    "on_click": [
       {
         "type": "validateForm",
         "formId": "contactForm",
@@ -52,7 +52,7 @@ Validates a form and returns validation results.
           { "type": "call_api", "api": "submitContact" }
         ],
         "onInvalid": [
-          { "type": "showToast", "message": "Please fix the errors", "level": "warning" }
+          { "type": "show_toast", "message": "Please fix the errors", "level": "warning" }
         ]
       }
     ]
@@ -93,7 +93,7 @@ Validates a form and returns validation results.
       "type": "Button",
       "text": "Register",
       "events": {
-        "onClick": [
+        "on_click": [
           {
             "type": "validateForm",
             "formId": "userForm",
@@ -121,7 +121,7 @@ Validates a form and returns validation results.
     { "type": "navigate", "route": "/dashboard" }
   ],
   "onInvalid": [
-    { "type": "showToast", "message": "Please complete all required fields", "level": "warning" }
+    { "type": "show_toast", "message": "Please complete all required fields", "level": "warning" }
   ]
 }
 ```
@@ -162,7 +162,7 @@ Resets a form to its initial state.
   "text": "Clear",
   "variant": "ghost",
   "events": {
-    "onClick": [
+    "on_click": [
       { "type": "resetForm", "formId": "searchForm" }
     ]
   }
@@ -195,7 +195,7 @@ Resets a form to its initial state.
   "api": "createItem",
   "params": { "data": "{{form.newItemForm}}" },
   "onSuccess": [
-    { "type": "showToast", "message": "Item created!", "level": "success" },
+    { "type": "show_toast", "message": "Item created!", "level": "success" },
     { "type": "resetForm", "formId": "newItemForm" }
   ]
 }
@@ -210,7 +210,7 @@ Resets a form to its initial state.
   "type": "Button",
   "text": "Cancel",
   "events": {
-    "onClick": [
+    "on_click": [
       { "type": "resetForm", "formId": "editForm" },
       { "type": "closeDialog", "id": "editDialog" }
     ]
@@ -260,7 +260,7 @@ Form data is accessible via the `form` namespace:
   "text": "Submit",
   "disabled": "{{!form.myForm.$valid}}",
   "events": {
-    "onClick": [
+    "on_click": [
       { "type": "call_api", "api": "submit" }
     ]
   }
@@ -326,7 +326,7 @@ Form data is accessible via the `form` namespace:
       "text": "Reset",
       "variant": "ghost",
       "events": {
-        "onClick": [
+        "on_click": [
           { "type": "resetForm", "formId": "myForm" }
         ]
       }
@@ -335,7 +335,7 @@ Form data is accessible via the `form` namespace:
       "type": "Button",
       "text": "Submit",
       "events": {
-        "onClick": [
+        "on_click": [
           {
             "type": "validateForm",
             "formId": "myForm",
@@ -346,7 +346,7 @@ Form data is accessible via the `form` namespace:
                 "api": "submit",
                 "params": { "data": "{{form.myForm}}" },
                 "onSuccess": [
-                  { "type": "showToast", "message": "Submitted!", "level": "success" },
+                  { "type": "show_toast", "message": "Submitted!", "level": "success" },
                   { "type": "resetForm", "formId": "myForm" }
                 ],
                 "onComplete": [
@@ -371,7 +371,7 @@ Form data is accessible via the `form` namespace:
   "type": "Button",
   "text": "Next",
   "events": {
-    "onClick": [
+    "on_click": [
       {
         "type": "validateForm",
         "formId": "step{{state.currentStep}}Form",
@@ -379,7 +379,7 @@ Form data is accessible via the `form` namespace:
           { "type": "update_state", "path": "currentStep", "value": "{{state.currentStep + 1}}" }
         ],
         "onInvalid": [
-          { "type": "showToast", "message": "Please complete this step", "level": "warning" }
+          { "type": "show_toast", "message": "Please complete this step", "level": "warning" }
         ]
       }
     ]
@@ -397,7 +397,7 @@ Form data is accessible via the `form` namespace:
   "text": "Clear All",
   "variant": "ghost",
   "events": {
-    "onClick": [
+    "on_click": [
       {
         "type": "showDialog",
         "id": "confirmReset",

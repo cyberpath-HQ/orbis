@@ -312,7 +312,7 @@ Custom validation function.
   "type": "Button",
   "text": "Submit",
   "events": {
-    "onClick": [
+    "on_click": [
       {
         "type": "validateForm",
         "formId": "myForm",
@@ -320,7 +320,7 @@ Custom validation function.
           { "type": "call_api", "api": "submit" }
         ],
         "onInvalid": [
-          { "type": "showToast", "message": "Please fix errors", "level": "warning" }
+          { "type": "show_toast", "message": "Please fix errors", "level": "warning" }
         ]
       }
     ]

@@ -21,7 +21,7 @@ Interactive button with multiple variants and states.
   "type": "Button",
   "label": "Click Me",
   "events": {
-    "onClick": [
+    "on_click": [
       { "type": "update_state", "path": "clicked", "value": true }
     ]
   }
@@ -48,7 +48,7 @@ Interactive button with multiple variants and states.
 
 | Event | Trigger |
 |-------|---------|
-| `onClick` | Button clicked |
+| `on_click` | Button clicked |
 
 ### Variants
 
@@ -96,7 +96,7 @@ Interactive button with multiple variants and states.
   "type": "Button",
   "label": "Add Item",
   "icon": "Plus",
-  "events": { "onClick": [{ "type": "navigate", "to": "/items/new" }] }
+  "events": { "on_click": [{ "type": "navigate", "to": "/items/new" }] }
 }
 ```
 </CodeBlock>
@@ -110,7 +110,7 @@ Interactive button with multiple variants and states.
   "size": "icon",
   "variant": "ghost",
   "ariaLabel": "Open settings",
-  "events": { "onClick": [{ "type": "navigate", "to": "/settings" }] }
+  "events": { "on_click": [{ "type": "navigate", "to": "/settings" }] }
 }
 ```
 </CodeBlock>
@@ -123,7 +123,7 @@ Interactive button with multiple variants and states.
   "label": "Save",
   "loading": "{{state.isSaving}}",
   "events": {
-    "onClick": [
+    "on_click": [
       { "type": "update_state", "path": "isSaving", "value": true },
       { "type": "call_api", "api": "save" },
       { "type": "update_state", "path": "isSaving", "value": false }
@@ -140,7 +140,7 @@ Interactive button with multiple variants and states.
   "type": "Button",
   "label": "Submit",
   "disabled": "{{!state.formValid}}",
-  "events": { "onClick": [{ "type": "call_api", "api": "submit" }] }
+  "events": { "on_click": [{ "type": "call_api", "api": "submit" }] }
 }
 ```
 </CodeBlock>

@@ -21,8 +21,8 @@ Events are defined in the `events` property:
   "type": "Button",
   "text": "Click me",
   "events": {
-    "onClick": [
-      { "type": "showToast", "message": "Clicked!" }
+    "on_click": [
+      { "type": "show_toast", "message": "Clicked!" }
     ]
   }
 }
@@ -31,7 +31,7 @@ Events are defined in the `events` property:
 
 ## Mouse Events
 
-### onClick
+### on_click
 
 Triggered when element is clicked.
 
@@ -39,7 +39,7 @@ Triggered when element is clicked.
 ```json
 {
   "events": {
-    "onClick": [
+    "on_click": [
       { "type": "update_state", "path": "clicked", "value": true }
     ]
   }
@@ -427,11 +427,11 @@ Execute multiple actions:
 ```json
 {
   "events": {
-    "onClick": [
+    "on_click": [
       { "type": "set_loading", "key": "submit", "value": true },
       { "type": "call_api", "api": "submit" },
       { "type": "set_loading", "key": "submit", "value": false },
-      { "type": "showToast", "message": "Done!" }
+      { "type": "show_toast", "message": "Done!" }
     ]
   }
 }
@@ -444,7 +444,7 @@ Execute multiple actions:
 ```json
 {
   "events": {
-    "onClick": [
+    "on_click": [
       {
         "type": "conditional",
         "condition": "{{state.canSubmit}}",
@@ -452,7 +452,7 @@ Execute multiple actions:
           { "type": "call_api", "api": "submit" }
         ],
         "else": [
-          { "type": "showToast", "message": "Cannot submit", "level": "warning" }
+          { "type": "show_toast", "message": "Cannot submit", "level": "warning" }
         ]
       }
     ]

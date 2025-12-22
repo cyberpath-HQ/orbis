@@ -119,7 +119,7 @@ Notification banner for important messages.
     "label": "Renew Now",
     "size": "sm",
     "events": {
-      "onClick": [{ "type": "navigate", "to": "/billing" }]
+      "on_click": [{ "type": "navigate", "to": "/billing" }]
     }
   }
 }
@@ -438,7 +438,7 @@ Display when content is empty or unavailable.
     "type": "Button",
     "label": "Create Document",
     "events": {
-      "onClick": [{ "type": "navigate", "to": "/documents/new" }]
+      "on_click": [{ "type": "navigate", "to": "/documents/new" }]
     }
   }
 }
@@ -473,7 +473,7 @@ Display when content is empty or unavailable.
       "label": "Clear Search",
       "variant": "outline",
       "events": {
-        "onClick": [
+        "on_click": [
           { "type": "update_state", "path": "searchQuery", "value": "" },
           { "type": "call_api", "api": "search", "args": { "query": "" } }
         ]
@@ -499,13 +499,13 @@ Display when content is empty or unavailable.
       {
         "type": "Button",
         "label": "Create Project",
-        "events": { "onClick": [{ "type": "navigate", "to": "/projects/new" }] }
+        "events": { "on_click": [{ "type": "navigate", "to": "/projects/new" }] }
       },
       {
         "type": "Button",
         "label": "View Tutorial",
         "variant": "outline",
-        "events": { "onClick": [{ "type": "openUrl", "url": "/help/getting-started" }] }
+        "events": { "on_click": [{ "type": "openUrl", "url": "/help/getting-started" }] }
       }
     ]
   }
@@ -526,7 +526,7 @@ Display when content is empty or unavailable.
     "type": "Button",
     "label": "Try Again",
     "events": {
-      "onClick": [{ "type": "call_api", "api": "getData" }]
+      "on_click": [{ "type": "call_api", "api": "getData" }]
     }
   }
 }
@@ -581,15 +581,15 @@ Toasts are triggered via actions, not components:
   "type": "Button",
   "label": "Save",
   "events": {
-    "onClick": [
+    "on_click": [
       {
         "type": "call_api",
         "api": "save",
         "onSuccess": [
-          { "type": "showToast", "message": "Saved successfully!", "level": "success" }
+          { "type": "show_toast", "message": "Saved successfully!", "level": "success" }
         ],
         "onError": [
-          { "type": "showToast", "message": "Failed to save", "level": "error" }
+          { "type": "show_toast", "message": "Failed to save", "level": "error" }
         ]
       }
     ]

@@ -45,7 +45,7 @@ Sets a loading state flag.
   "text": "Save",
   "loading": "{{loading.saving}}",
   "events": {
-    "onClick": [
+    "on_click": [
       { "type": "set_loading", "key": "saving", "value": true },
       {
         "type": "call_api",
@@ -93,7 +93,7 @@ Sets a loading state flag.
       "loading": "{{loading.savingDraft}}",
       "disabled": "{{loading.publishing}}",
       "events": {
-        "onClick": [
+        "on_click": [
           { "type": "set_loading", "key": "savingDraft", "value": true },
           { "type": "call_api", "api": "saveDraft" },
           { "type": "set_loading", "key": "savingDraft", "value": false }
@@ -106,7 +106,7 @@ Sets a loading state flag.
       "loading": "{{loading.publishing}}",
       "disabled": "{{loading.savingDraft}}",
       "events": {
-        "onClick": [
+        "on_click": [
           { "type": "set_loading", "key": "publishing", "value": true },
           { "type": "call_api", "api": "publish" },
           { "type": "set_loading", "key": "publishing", "value": false }
@@ -154,7 +154,7 @@ Downloads a file.
   "text": "Download Report",
   "icon": "Download",
   "events": {
-    "onClick": [
+    "on_click": [
       { "type": "download", "url": "/api/reports/monthly.pdf", "filename": "report.pdf" }
     ]
   }
@@ -170,7 +170,7 @@ Downloads a file.
   "type": "Button",
   "text": "Export",
   "events": {
-    "onClick": [
+    "on_click": [
       {
         "type": "download",
         "url": "/api/export?format={{state.exportFormat}}&ids={{state.selectedIds}}",
@@ -230,9 +230,9 @@ Copies text to clipboard.
   "text": "Copy",
   "icon": "Copy",
   "events": {
-    "onClick": [
+    "on_click": [
       { "type": "copy", "text": "{{state.apiKey}}" },
-      { "type": "showToast", "message": "Copied!", "level": "success", "duration": 2000 }
+      { "type": "show_toast", "message": "Copied!", "level": "success", "duration": 2000 }
     ]
   }
 }
@@ -248,9 +248,9 @@ Copies text to clipboard.
   "text": "Share",
   "icon": "Share",
   "events": {
-    "onClick": [
+    "on_click": [
       { "type": "copy", "text": "{{$window.location.origin}}/share/{{state.item.id}}" },
-      { "type": "showToast", "message": "Link copied to clipboard", "level": "success" }
+      { "type": "show_toast", "message": "Link copied to clipboard", "level": "success" }
     ]
   }
 }
@@ -303,7 +303,7 @@ Opens a URL in a new browser tab.
   "text": "Documentation",
   "icon": "ExternalLink",
   "events": {
-    "onClick": [
+    "on_click": [
       { "type": "openUrl", "url": "https://docs.example.com" }
     ]
   }
@@ -319,7 +319,7 @@ Opens a URL in a new browser tab.
   "type": "Button",
   "text": "View Profile",
   "events": {
-    "onClick": [
+    "on_click": [
       { "type": "openUrl", "url": "https://github.com/{{state.user.githubUsername}}" }
     ]
   }
@@ -374,7 +374,7 @@ Emits a custom event for inter-component communication.
   "type": "Button",
   "text": "Select",
   "events": {
-    "onClick": [
+    "on_click": [
       { "type": "emit", "event": "itemSelected", "data": "{{state.currentItem}}" }
     ]
   }
@@ -424,16 +424,16 @@ Emits a custom event for inter-component communication.
   "text": "Submit",
   "loading": "{{loading.submit}}",
   "events": {
-    "onClick": [
+    "on_click": [
       { "type": "set_loading", "key": "submit", "value": true },
       {
         "type": "call_api",
         "api": "submit",
         "onSuccess": [
-          { "type": "showToast", "message": "Success!", "level": "success" }
+          { "type": "show_toast", "message": "Success!", "level": "success" }
         ],
         "onError": [
-          { "type": "showToast", "message": "{{$error.message}}", "level": "error" }
+          { "type": "show_toast", "message": "{{$error.message}}", "level": "error" }
         ],
         "onComplete": [
           { "type": "set_loading", "key": "submit", "value": false }
@@ -465,10 +465,10 @@ Emits a custom event for inter-component communication.
       "size": "sm",
       "icon": "{{state.copied ? 'Check' : 'Copy'}}",
       "events": {
-        "onClick": [
+        "on_click": [
           { "type": "copy", "text": "{{state.code}}" },
           { "type": "update_state", "path": "copied", "value": true },
-          { "type": "showToast", "message": "Copied!", "level": "success", "duration": 1500 }
+          { "type": "show_toast", "message": "Copied!", "level": "success", "duration": 1500 }
         ]
       }
     }
