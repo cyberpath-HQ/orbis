@@ -354,7 +354,7 @@ The field automatically:
 Use `on_mount` to initialize state when a page loads:
 
 <CodeBlock lang="json" >
-```json lines
+```json {9-17}
 {
   "pages": [
     {
@@ -380,32 +380,14 @@ Use `on_mount` to initialize state when a page loads:
 ```
 </CodeBlock>
 
-### Conditional Initialization
-
-<CodeBlock lang="json">
-```json
-{
-  "on_mount": [
-    {
-      "type": "conditional",
-      "condition": "{{state.data.length === 0}}",
-      "then": [
-        { "type": "call_api", "api": "my-plugin.getData", ... }
-      ]
-    }
-  ]
-}
-```
-</CodeBlock>
-
 ## State Cleanup
 
-Use `onUnmount` to clean up when leaving a page:
+Use `on_unmount` to clean up when leaving a page:
 
 <CodeBlock lang="json">
 ```json
 {
-  "onUnmount": [
+  "on_unmount": [
     {
       "type": "update_state",
       "path": "selectedItem",
@@ -421,7 +403,7 @@ Use `onUnmount` to clean up when leaving a page:
 Each page has its own isolated state store:
 
 - State doesn't leak between pages
-- Navigating away resets state (unless cached)
+- Navigating away **does not** resets state
 - Plugins can't access other plugins' state
 
 ### Sharing Data Between Pages

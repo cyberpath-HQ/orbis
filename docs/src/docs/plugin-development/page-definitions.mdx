@@ -25,7 +25,7 @@ Pages are the primary way plugins provide user interfaces. Each page has its own
       "state": { ... },
       "layout": { ... },
       "on_mount": [ ... ],
-      "onUnmount": [ ... ]
+      "on_unmount": [ ... ]
     }
   ]
 }
@@ -207,13 +207,13 @@ Common patterns:
 - Initialize from URL parameters
 - Set up subscriptions
 
-### onUnmount
+### on_unmount
 
 Actions to execute when leaving the page.
 
 <CodeBlock lang="json">
 ```json
-"onUnmount": [
+"on_unmount": [
   {
     "type": "update_state",
     "path": "selectedItem",
