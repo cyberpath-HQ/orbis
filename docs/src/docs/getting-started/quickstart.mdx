@@ -21,17 +21,15 @@ A plugin that:
 
 ## Prerequisites
 
-- Rust installed (1.70+)
-- wasm32-unknown-unknown target: `rustup target add wasm32-unknown-unknown`
-- Basic familiarity with Rust and JSON
+Ensure you have completed the [Installation](./installation) guide and have the Orbis development environment set up.
 
 ## Step 1: Create the Project
 
 <CodeBlock lang="bash">
 ```bash
 # Create a new Rust library project
-cargo new --lib hello-plugin
-cd hello-plugin
+cargo new --lib quick-start-plugin
+cd quick-start-plugin
 ```
 </CodeBlock>
 
@@ -40,7 +38,7 @@ cd hello-plugin
 <CodeBlock lang="toml">
 ```toml
 [package]
-name = "hello-plugin"
+name = "quick-start-plugin"
 version = "1.0.0"
 edition = "2021"
 
@@ -48,7 +46,7 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
-orbis-plugin-api = { path = "../crates/orbis-plugin-api" }
+orbis-plugin-api = { path = "../../crates/orbis-plugin-api" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 
@@ -78,14 +76,10 @@ fn get_greeting_impl(ctx: Context) -> Result<Response> {
     // Get name from query parameter or use "World"
     let name = ctx.query_param("name").unwrap_or("World");
     
-    // Get click count from state
-    let count: i32 = state::get("count")?.unwrap_or(0);
-    
     log::info!("Greeting requested for: {}", name);
     
     Response::json(&json!({
         "message": format!("Hello, {}!", name),
-        "clickCount": count
     }))
 }
 
@@ -119,15 +113,15 @@ Create `manifest.json`:
 <CodeBlock lang="json">
 ```json
 {
-  "name": "hello-plugin",
+  "name": "quick-start-plugin",
   "version": "1.0.0",
   "description": "A simple greeting plugin with click counter",
   "author": "You",
   "license": "MIT",
   "min_orbis_version": "1.0.0",
-  
-  "wasm_entry": "hello_plugin.wasm",
-  
+
+  "wasm_entry": "quick_start_plugin.wasm",
+
   "routes": [
     {
       "path": "/greeting",
@@ -140,14 +134,14 @@ Create `manifest.json`:
       "handler": "increment_count"
     }
   ],
-  
+
   "pages": [
     {
       "id": "greeting-page",
-      "title": "Hello",
-      "icon": "wave",
+      "title": "Quick Start",
+      "icon": "waves",
       "route": "/hello",
-      
+
       "state": {
         "name": {
           "type": "string",
@@ -162,76 +156,74 @@ Create `manifest.json`:
           "default": ""
         }
       },
-      
-      "layout": {
-        "type": "Container",
-        "className": "flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-500 to-pink-500",
-        "children": [
-          {
-            "type": "Card",
-            "className": "p-8 shadow-2xl max-w-md w-full",
-            "children": [
-              {
-                "type": "Text",
-                "text": "Hello, ${state.name}!",
-                "variant": "h1",
-                "className": "text-4xl font-bold text-center mb-2"
-              },
-              {
-                "type": "Text",
-                "text": "Clicks: ${state.count}",
-                "variant": "p",
-                "className": "text-center text-gray-600 mb-6"
-              },
-              {
-                "type": "Input",
-                "fieldType": "text",
-                "placeholder": "Enter your name",
-                "value": "${state.name}",
-                "className": "mb-4",
-                "events": {
-                  "onChange": [
-                    {
-                      "type": "updateState",
-                      "path": "name",
-                      "value": "${$event.target.value}"
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "Button",
-                "text": "Click Me!",
-                "className": "w-full",
-                "events": {
-                  "onClick": [
-                    {
-                      "type": "callApi",
-                      "api": "/increment",
-                      "method": "POST",
-                      "onSuccess": [
+
+      "sections": [
+        {
+          "type": "Container",
+          "className": "flex items-center justify-center bg-gradient-to-br from-purple-500 to-pink-500",
+          "children": [
+            {
+              "type": "Card",
+              "className": "p-8 shadow-2xl max-w-md w-full",
+              "content": {
+                "type": "Container",
+                "className": "flex flex-col space-y-4",
+                "children": [
+                  {
+                    "type": "Text",
+                    "content": "Hello, {{state.name}}!",
+                    "className": "text-4xl font-bold text-center mb-2"
+                  },
+                  {
+                    "type": "Text",
+                    "content": "Clicks: {{state.count}}",
+                    "className": "text-center text-gray-600 mb-6"
+                  },
+                  {
+                    "type": "Field",
+                    "fieldType": "text",
+                    "placeholder": "Enter your name",
+                    "defaultValue": "{{state.name}}",
+                    "bindTo": "name"
+                  },
+                  {
+                    "type": "Button",
+                    "label": "Click Me!",
+                    "className": "w-full",
+                    "events": {
+                      "on_click": [
                         {
-                          "type": "updateState",
-                          "path": "count",
-                          "value": "${$response.count}"
-                        },
-                        {
-                          "type": "showToast",
-                          "message": "${$response.message}",
-                          "level": "success"
+                          "type": "call_api",
+                          "api": "plugin.increment_count",
+                          "method": "POST",
+                          "on_success": [
+                            {
+                              "type": "update_state",
+                              "path": "count",
+                              "from": "$response.body.count"
+                            },
+                            {
+                              "type": "show_toast",
+                              "message": "{{$response.body.message}}",
+                              "level": "success",
+                              "title": "Counter Updated",
+                              "duration": 3000
+                            }
+                          ]
                         }
                       ]
                     }
-                  ]
-                }
+                  }
+                ]
               }
-            ]
-          }
-        ]
-      }
+            }
+          ]
+        }
+      ]
     }
   ]
 }
+
 ```
 </CodeBlock>
 
@@ -243,7 +235,7 @@ Create `manifest.json`:
 cargo build --target wasm32-unknown-unknown --release
 
 # Output will be at:
-# target/wasm32-unknown-unknown/release/hello_plugin.wasm
+# target/wasm32-unknown-unknown/release/quick_start_plugin.wasm
 ```
 </CodeBlock>
 
@@ -253,17 +245,17 @@ cargo build --target wasm32-unknown-unknown --release
 
 <CodeBlock lang="bash">
 ```bash
-# Create plugin directory
-mkdir -p ~/.orbis/plugins/hello-plugin
+# Create the plugin directory
+mkdir -p ./orbis/src-tauri/plugins/quick-start-plugin
 
 # Copy WASM binary and manifest
-cp target/wasm32-unknown-unknown/release/hello_plugin.wasm ~/.orbis/plugins/hello-plugin/
-cp manifest.json ~/.orbis/plugins/hello-plugin/
+cp target/wasm32-unknown-unknown/release/quick_start_plugin.wasm ./orbis/src-tauri/plugins/quick-start-plugin/
+cp manifest.json ./orbis/src-tauri/plugins/quick-start-plugin/
 
 # Or use custom plugin directory
 export ORBIS_PLUGINS_DIR=/path/to/plugins
-cp target/wasm32-unknown-unknown/release/hello_plugin.wasm $ORBIS_PLUGINS_DIR/hello-plugin/
-cp manifest.json $ORBIS_PLUGINS_DIR/hello-plugin/
+cp target/wasm32-unknown-unknown/release/quick_start_plugin.wasm $ORBIS_PLUGINS_DIR/quick-start-plugin/
+cp manifest.json $ORBIS_PLUGINS_DIR/quick-start-plugin/
 ```
 </CodeBlock>
 
@@ -277,7 +269,7 @@ bun run tauri dev
 ```
 </CodeBlock>
 
-Navigate to the "Hello" page in the sidebar. You should see:
+Navigate to the "Getting Started" page in the sidebar. You should see:
 - A greeting with your custom name
 - An input to change the name
 - A button that increments the counter
@@ -287,7 +279,7 @@ Navigate to the "Hello" page in the sidebar. You should see:
 
 ### Zero-Boilerplate Initialization
 
-The `orbis_plugin!()` macro handles all FFI setup:
+The `orbis_plugin!()` macro handles all FFI (Foreign Function Interface) setup:
 <CodeBlock lang="rust">
 ```rust
 orbis_plugin!();  // Expands to:
@@ -300,13 +292,13 @@ orbis_plugin!();  // Expands to:
 
 ### Type-Safe Handler Wrapping
 
-The `#[wrap_handler]` attribute eliminates manual FFI:
+The `wrap_handler!` macros eliminates manual FFI:
 <CodeBlock lang="rust">
 ```rust
-#[wrap_handler]
-pub fn get_greeting(ctx: Context) -> Result<Response> {
+pub fn get_greeting_impl(ctx: Context) -> Result<Response> {
     // Your business logic here
 }
+wrap_handler!(get_greeting, get_greeting_impl);
 
 // Expands to FFI-compatible export with:
 // - Request parsing from memory
@@ -353,21 +345,21 @@ state::delete("count")          // Remove value
 Now that you've built your first plugin, explore:
 
 ### Plugin Development
-- **[WASM Plugins](../plugin-development/wasm-plugins)** - Full SDK reference with advanced examples
-- **[Building Plugins](../plugin-development/building-plugins)** - Build optimization and packaging
-- **[Testing Plugins](../plugin-development/testing-plugins)** - Testing strategies
+- **[WASM Plugins](../../plugin-development/wasm-plugins)** - Full SDK reference with advanced examples
+- **[Building Plugins](../../plugin-development/building-plugins)** - Build optimization and packaging
+- **[Testing Plugins](../../plugin-development/testing-plugins)** - Testing strategies
 
 ### SDK Features
-- **[Database Access](../plugin-development/wasm-plugins#database-access)** - Query and execute SQL
-- **[HTTP Requests](../plugin-development/wasm-plugins#http-requests)** - Make external API calls
-- **[Logging](../plugin-development/wasm-plugins#logging)** - Debug and monitoring
-- **[Permissions](../plugin-development/wasm-plugins#permissions)** - Security and access control
+- **[Database Access](../../plugin-development/wasm-plugins#database---query-and-execute)** - Query and execute SQL
+- **[HTTP Requests](../../plugin-development/wasm-plugins#http---external-api-calls)** - Make external API calls
+- **[Logging](../../plugin-development/wasm-plugins#logging)** - Debug and monitoring
+- **[Permissions](../../plugin-development/wasm-plugins#available-permissions)** - Security and access control
 
 ### UI Development
-- **[Schema System](../core-concepts/schema-system)** - Deep dive into UI schemas
-- **[Components](../components/overview)** - All available components
-- **[Actions](../actions/overview)** - All action types
-- **[State & Expressions](../core-concepts/state-management)** - Dynamic UI patterns
+- **[Schema System](../../core-concepts/schema-system)** - Deep dive into UI schemas
+- **[Components](../../components/overview)** - All available components
+- **[Actions](../../actions/overview)** - All action types
+- **[State & Expressions](../../core-concepts/state-management)** - Dynamic UI patterns
 
 ## Complete Example
 
