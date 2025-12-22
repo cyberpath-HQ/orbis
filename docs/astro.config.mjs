@@ -7,6 +7,7 @@ import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeSlug from "rehype-slug";
+import { transformerMetaHighlight } from '@shikijs/transformers';
 
 // https://astro.build/config
 export default defineConfig({
@@ -38,7 +39,8 @@ export default defineConfig({
                 light: `github-light`,
                 dark:  `github-dark`,
             },
-            wrap: false,
+            wrap:         false,
+            transformers: [ transformerMetaHighlight() ],
         },
         rehypePlugins: [
             rehypeSlug,
