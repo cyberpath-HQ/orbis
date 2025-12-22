@@ -15,6 +15,7 @@ Orbis uses a layered architecture that separates concerns between the frontend, 
 ## System Overview
 
 <Mermaid>
+```mermaid
 graph TB
     subgraph User["User Interface"]
         Pages[Plugin Pages]
@@ -64,6 +65,7 @@ graph TB
     
     Manifest --> Schemas
     Schemas --> Renderer
+```
 </Mermaid>
 
 ## Layers Explained
@@ -128,6 +130,7 @@ Orbis supports two deployment architectures:
 Everything runs locally on the user's machine.
 
 <Mermaid>
+```mermaid
 graph LR
     subgraph Desktop["User's Computer"]
         App[Orbis App]
@@ -137,6 +140,7 @@ graph LR
     
     App --> DB
     App --> Plugins
+```
 </Mermaid>
 
 **Use Cases:**
@@ -149,6 +153,7 @@ graph LR
 Multiple clients connect to a shared backend.
 
 <Mermaid>
+```mermaid
 graph TB
     subgraph Clients["Client Machines"]
         Client1[Orbis Client 1]
@@ -167,6 +172,7 @@ graph TB
     Client3 --> API
     API --> DB
     API --> PluginHost
+```
 </Mermaid>
 
 **Use Cases:**
@@ -181,6 +187,7 @@ graph TB
 How a plugin page gets displayed:
 
 <Mermaid>
+```mermaid
 sequenceDiagram
     participant User
     participant Router
@@ -192,6 +199,7 @@ sequenceDiagram
     Renderer->>State: Initialize state from definition
     State-->>Renderer: Initial state
     Renderer-->>User: Rendered UI
+```
 </Mermaid>
 
 ### Interaction Flow
@@ -199,6 +207,7 @@ sequenceDiagram
 How user interactions are processed:
 
 <Mermaid>
+```mermaid
 sequenceDiagram
     participant User
     participant Component
@@ -219,6 +228,7 @@ sequenceDiagram
         State-->>Component: State updated
         Component-->>User: UI re-renders
     end
+```
 </Mermaid>
 
 ## Security Architecture
@@ -247,6 +257,7 @@ Plugins run in isolated WASM sandboxes with:
 ### Authentication Flow
 
 <Mermaid>
+```mermaid
 sequenceDiagram
     participant User
     participant Frontend
@@ -261,6 +272,7 @@ sequenceDiagram
     Backend-->>Frontend: Session token
     Frontend->>Frontend: Store in state
     Frontend-->>User: Redirect to app
+```
 </Mermaid>
 
 ## Performance Considerations

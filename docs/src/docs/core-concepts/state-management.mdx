@@ -17,11 +17,13 @@ Orbis uses a reactive state system powered by Zustand. Each page has its own iso
 State in Orbis flows unidirectionally:
 
 <Mermaid>
+```mermaid
 graph LR
     Definition[State Definition] --> Store[Zustand Store]
     Store --> UI[UI Components]
     UI --> Actions[User Actions]
     Actions --> Store
+```
 </Mermaid>
 
 ## Defining State
@@ -458,6 +460,7 @@ For shared data, use:
 State changes trigger automatic UI updates:
 
 <Mermaid>
+```mermaid
 sequenceDiagram
     participant User
     participant Button
@@ -470,6 +473,7 @@ sequenceDiagram
     Action->>Store: setState(path, value)
     Store->>UI: Notify subscribers
     UI->>UI: Re-render affected components
+```
 </Mermaid>
 
 Only components using the changed state values re-render.
