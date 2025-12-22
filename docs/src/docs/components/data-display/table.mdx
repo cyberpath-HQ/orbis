@@ -27,7 +27,7 @@ Data table with sorting, pagination, and row actions.
     { "key": "createdAt", "label": "Created", "sortable": true }
   ],
   "events": {
-    "onRowClick": [
+    "on_row_click": [
       { "type": "navigate", "to": "/items/{{$row.id}}" }
     ]
   }
@@ -63,10 +63,10 @@ Data table with sorting, pagination, and row actions.
 
 | Event | Payload |
 |-------|---------|
-| `onRowClick` | `$row` - clicked row data |
-| `onSelect` | `$selected` - selected rows |
-| `onPageChange` | `$page` - new page number |
-| `onSortChange` | `{ column, direction }` |
+| `on_row_click` | `$row` - clicked row data |
+| `on_select` | `$selected` - selected rows |
+| `on_page_change` | `$page` - new page number |
+| `on_sort_change` | `{ column, direction }` |
 
 ### Examples
 
@@ -114,7 +114,7 @@ Data table with sorting, pagination, and row actions.
   "pageSize": 25,
   "serverPagination": true,
   "events": {
-    "onPageChange": [
+    "on_page_change": [
       {
         "type": "call_api",
         "api": "getItems",

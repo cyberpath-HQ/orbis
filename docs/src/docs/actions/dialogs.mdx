@@ -130,7 +130,7 @@ Displays a modal dialog to the user.
           "type": "call_api",
           "api": "deleteItem",
           "params": { "id": "{{state.selectedItem.id}}" },
-          "onSuccess": [
+          "on_success": [
             { "type": "show_toast", "message": "Item deleted", "level": "success" },
             { "type": "closeDialog", "id": "deleteConfirm" },
             { "type": "call_api", "api": "refreshList" }
@@ -187,7 +187,7 @@ Displays a modal dialog to the user.
           "type": "call_api",
           "api": "updateItem",
           "params": { "id": "{{state.selectedItem.id}}", "data": "{{form.editForm}}" },
-          "onSuccess": [
+          "on_success": [
             { "type": "show_toast", "message": "Changes saved", "level": "success" },
             { "type": "closeDialog", "id": "editItem" }
           ]
@@ -260,7 +260,7 @@ Closes an open dialog.
 {
   "type": "call_api",
   "api": "saveChanges",
-  "onSuccess": [
+  "on_success": [
     { "type": "show_toast", "message": "Saved!", "level": "success" },
     { "type": "closeDialog", "id": "editDialog" }
   ]

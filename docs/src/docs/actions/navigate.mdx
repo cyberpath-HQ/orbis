@@ -61,7 +61,7 @@ Changes the current route/page.
 {
   "type": "Table",
   "events": {
-    "onRowClick": [
+    "on_row_click": [
       { "type": "navigate", "to": "/users/{{$row.id}}" }
     ]
   }
@@ -104,11 +104,11 @@ Changes the current route/page.
 {
   "type": "Form",
   "events": {
-    "onSubmit": [
+    "on_submit": [
       {
         "type": "call_api",
         "api": "createItem",
-        "onSuccess": [
+        "on_success": [
           { "type": "show_toast", "message": "Created!", "level": "success" },
           { "type": "navigate", "to": "/items" }
         ]
@@ -126,7 +126,7 @@ Changes the current route/page.
 {
   "type": "call_api",
   "api": "deleteItem",
-  "onSuccess": [
+  "on_success": [
     { "type": "show_toast", "message": "Deleted" },
     { "type": "navigate", "to": "/items", "replace": true }
   ]

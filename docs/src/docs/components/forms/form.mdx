@@ -44,7 +44,7 @@ A container for form fields with validation and submission handling.
     }
   ],
   "events": {
-    "onSubmit": [
+    "on_submit": [
       { "type": "call_api", "api": "auth.login", "args": "{{state.formData}}" }
     ]
   }
@@ -66,8 +66,8 @@ A container for form fields with validation and submission handling.
 
 | Event | Trigger | Payload |
 |-------|---------|---------|
-| `onSubmit` | Form submission | Form data |
-| `onChange` | Any field change | `{ field, value }` |
+| `on_submit` | Form submission | Form data |
+| `on_change` | Any field change | `{ field, value }` |
 
 ---
 
@@ -408,9 +408,9 @@ Individual form field with various input types.
 
 | Event | Trigger | Payload |
 |-------|---------|---------|
-| `onChange` | Value changes | `{ value, name }` |
-| `onBlur` | Field loses focus | `{ value, name }` |
-| `onFocus` | Field gains focus | `{ name }` |
+| `on_change` | Value changes | `{ value, name }` |
+| `on_blur` | Field loses focus | `{ value, name }` |
+| `on_focus` | Field gains focus | `{ name }` |
 
 ### Example with Events
 
@@ -422,7 +422,7 @@ Individual form field with various input types.
   "label": "Search",
   "bindTo": "filters.search",
   "events": {
-    "onChange": [
+    "on_change": [
       {
         "type": "debouncedAction",
         "delay": 300,
@@ -482,16 +482,16 @@ Individual form field with various input types.
       }
     ],
     "events": {
-      "onSubmit": [
+      "on_submit": [
         { "type": "set_loading", "loading": true },
         {
           "type": "call_api",
           "api": "auth.login",
           "args": "{{state.login}}",
-          "onSuccess": [
+          "on_success": [
             { "type": "navigate", "to": "/dashboard" }
           ],
-          "onError": [
+          "on_error": [
             { "type": "show_toast", "message": "Invalid credentials", "level": "error" }
           ]
         },
@@ -558,12 +558,12 @@ Individual form field with various input types.
     }
   ],
   "events": {
-    "onSubmit": [
+    "on_submit": [
       {
         "type": "call_api",
         "api": "user.updateSettings",
         "args": "{{state.settings}}",
-        "onSuccess": [
+        "on_success": [
           { "type": "show_toast", "message": "Settings saved!", "level": "success" }
         ]
       }
@@ -601,7 +601,7 @@ Individual form field with various input types.
     }
   ],
   "events": {
-    "onSubmit": [
+    "on_submit": [
       { "type": "call_api", "api": "search", "args": "{{state.search}}" }
     ]
   }
@@ -626,7 +626,7 @@ Individual form field with various input types.
           { "name": "email", "fieldType": "email", "label": "Email", "bindTo": "wizard.email" }
         ],
         "events": {
-          "onSubmit": [
+          "on_submit": [
             { "type": "validateForm", "form": "step1" },
             { "type": "update_state", "path": "step", "value": 2 }
           ]
@@ -643,7 +643,7 @@ Individual form field with various input types.
           { "name": "city", "fieldType": "text", "label": "City", "bindTo": "wizard.city" }
         ],
         "events": {
-          "onSubmit": [
+          "on_submit": [
             { "type": "call_api", "api": "submit", "args": "{{state.wizard}}" }
           ]
         }

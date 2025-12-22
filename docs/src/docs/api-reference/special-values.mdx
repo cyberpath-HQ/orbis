@@ -22,7 +22,7 @@ The current value in change events.
 {
   "type": "Field",
   "events": {
-    "onChange": [
+    "on_change": [
       { "type": "update_state", "path": "inputValue", "value": "{{$value}}" }
     ]
   }
@@ -30,7 +30,7 @@ The current value in change events.
 ```
 </CodeBlock>
 
-**Available in:** `onChange`, `onSelect`, `onSort`, `onPageChange`, `onTabChange`
+**Available in:** `on_change`, `on_select`, `onSort`, `on_page_change`, `onTabChange`
 
 ### $event
 
@@ -43,7 +43,7 @@ The full event object.
     "on_click": [
       { "type": "update_state", "path": "clickX", "value": "{{$event.clientX}}" }
     ],
-    "onKeyDown": [
+    "on_key_down": [
       {
         "type": "conditional",
         "condition": "{{$event.key === 'Enter' && $event.ctrlKey}}",
@@ -136,7 +136,7 @@ Full response from API calls.
 {
   "type": "call_api",
   "api": "getUsers",
-  "onSuccess": [
+  "on_success": [
     { "type": "update_state", "path": "users", "value": "{{$response.data}}" },
     { "type": "update_state", "path": "total", "value": "{{$response.total}}" }
   ]
@@ -164,7 +164,7 @@ Error object from failed operations.
 {
   "type": "call_api",
   "api": "saveData",
-  "onError": [
+  "on_error": [
     { "type": "show_toast", "message": "Error: {{$error.message}}", "level": "error" },
     { "type": "update_state", "path": "error", "value": "{{$error}}" }
   ]
@@ -371,10 +371,10 @@ Environment configuration.
         "type": "call_api",
         "api": "saveUser",
         "params": { "data": "{{form.userForm}}" },
-        "onSuccess": [
+        "on_success": [
           { "type": "show_toast", "message": "Saved {{$response.name}}!", "level": "success" }
         ],
-        "onError": [
+        "on_error": [
           { "type": "show_toast", "message": "{{$error.message}}", "level": "error" }
         ],
         "onComplete": [

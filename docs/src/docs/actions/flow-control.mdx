@@ -50,7 +50,7 @@ Debounces action execution to prevent rapid repeated calls.
   "name": "search",
   "placeholder": "Search...",
   "events": {
-    "onChange": [
+    "on_change": [
       {
         "type": "debouncedAction",
         "key": "searchInput",
@@ -73,7 +73,7 @@ Debounces action execution to prevent rapid repeated calls.
   "type": "Form",
   "id": "editor",
   "events": {
-    "onChange": [
+    "on_change": [
       {
         "type": "debouncedAction",
         "key": "autoSave",
@@ -334,7 +334,7 @@ Executes actions in sequence, waiting for each to complete.
   "name": "search",
   "placeholder": "Search...",
   "events": {
-    "onChange": [
+    "on_change": [
       { "type": "update_state", "path": "searchQuery", "value": "{{$value}}" },
       {
         "type": "debouncedAction",
@@ -428,7 +428,7 @@ Executes actions in sequence, waiting for each to complete.
   "type": "Form",
   "id": "document",
   "events": {
-    "onChange": [
+    "on_change": [
       { "type": "update_state", "path": "hasUnsavedChanges", "value": true },
       {
         "type": "debouncedAction",

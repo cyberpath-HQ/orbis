@@ -42,7 +42,7 @@ Notification banner for important messages.
 
 | Event | Trigger |
 |-------|---------|
-| `onClose` | Dismiss clicked |
+| `on_close` | Dismiss clicked |
 
 ### Variants
 
@@ -97,7 +97,7 @@ Notification banner for important messages.
     "message": "Check out our new dashboard.",
     "dismissible": true,
     "events": {
-      "onClose": [
+      "on_close": [
         { "type": "update_state", "path": "showAlert", "value": false }
       ]
     }
@@ -550,7 +550,7 @@ Display when content is empty or unavailable.
     {
       "type": "call_api",
       "api": "getData",
-      "onSuccess": [
+      "on_success": [
         { "type": "update_state", "path": "data", "value": "$response.data" },
         { "type": "update_state", "path": "isLoading", "value": false }
       ]
@@ -585,10 +585,10 @@ Toasts are triggered via actions, not components:
       {
         "type": "call_api",
         "api": "save",
-        "onSuccess": [
+        "on_success": [
           { "type": "show_toast", "message": "Saved successfully!", "level": "success" }
         ],
-        "onError": [
+        "on_error": [
           { "type": "show_toast", "message": "Failed to save", "level": "error" }
         ]
       }

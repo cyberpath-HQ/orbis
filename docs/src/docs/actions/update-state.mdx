@@ -148,7 +148,7 @@ Modifies a value in the page state.
   "type": "Field",
   "name": "search",
   "events": {
-    "onChange": [
+    "on_change": [
       { "type": "update_state", "path": "searchQuery", "value": "{{$value}}" }
     ]
   }
@@ -162,7 +162,7 @@ Modifies a value in the page state.
 {
   "type": "Table",
   "events": {
-    "onRowClick": [
+    "on_row_click": [
       { "type": "update_state", "path": "selectedItem", "value": "{{$row}}" }
     ]
   }
@@ -176,7 +176,7 @@ Modifies a value in the page state.
 {
   "type": "call_api",
   "api": "getData",
-  "onSuccess": [
+  "on_success": [
     { "type": "update_state", "path": "data", "value": "$response.data" },
     { "type": "update_state", "path": "total", "value": "$response.meta.total" }
   ]

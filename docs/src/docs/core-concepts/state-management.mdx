@@ -253,11 +253,11 @@ Track loading status for async operations:
       {
         "type": "call_api",
         "api": "my-plugin.getData",
-        "onSuccess": [
+        "on_success": [
           { "type": "update_state", "path": "data", "value": "$response.data" },
           { "type": "set_loading", "target": "fetchData", "loading": false }
         ],
-        "onError": [
+        "on_error": [
           { "type": "set_loading", "target": "fetchData", "loading": false }
         ]
       }
@@ -276,7 +276,7 @@ Store error messages in state:
 {
   "type": "call_api",
   "api": "my-plugin.submit",
-  "onError": [
+  "on_error": [
     {
       "type": "update_state",
       "path": "errors.submit",
@@ -367,7 +367,7 @@ Use `on_mount` to initialize state when a page loads:
           {
             "type": "call_api",
             "api": "my-plugin.getData",
-            "onSuccess": [
+            "on_success": [
               { "type": "update_state", "path": "data", "value": "$response.data" }
             ]
           }
