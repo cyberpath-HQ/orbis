@@ -168,7 +168,7 @@ export function buildSearchIndex(): Array<SearchEntry> {
             continue;
         }
 
-        const url = slug ? `/docs${ slug }` : filePathToUrl(filePath, docsDir);
+        const url = slug ? `/docs${ slug.startsWith(`/`) ? slug : `/${ slug }` }` : filePathToUrl(filePath, docsDir);
 
         searchEntries.push({
             id:      url,
