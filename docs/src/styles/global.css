@@ -134,6 +134,7 @@
     font-family:
       "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo,
       Consolas, monospace;
+    font-variant-ligatures: none;
   }
 }
 
@@ -510,6 +511,7 @@ keeps the change purely visual and resilient across mermaid versions. */
     font-size: 0.875em;
     display: flex;
     flex-direction: column;
+    font-feature-settings: "liga" 0; /* Disable ligatures for better code readability */
   }
 
   code .line::before {
