@@ -1,0 +1,12 @@
+[package]
+name = "orbis-dsl"
+authors.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+version.workspace = true
+readme.workspace = true
+
+[dependencies]
+
+[lints]
+workspace = true
