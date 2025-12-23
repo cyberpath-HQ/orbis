@@ -126,7 +126,6 @@ function resolveValue(
             // evaluateMathExpression will interpolate {{...}} first, then evaluate
             try {
                 const mathResult = evaluateMathExpression(value, stateData, contextData);
-                (`[resolveValue] Evaluated math expression "${ value }" to`, mathResult);
                 return mathResult;
             }
             catch (error) {
