@@ -223,17 +223,27 @@ const SearchModal: React.FC<SearchModalProps> = ({ open, onClose }) => {
                                                             {highlightMatches(result.item.description, descriptionMatches)}
                                                         </div>
                                                     )}
-                                                    {contentMatches && contentMatches.length > 0 && (
-                                                        <div className="text-xs text-muted-foreground line-clamp-2">
-                                                            {highlightMatches(
-                                                                result.item.content.substring(
-                                                                    Math.max(0, (contentMatches[0]?.indices[0]?.[0] || 0) - 40),
-                                                                    Math.min(result.item.content.length, (contentMatches[0]?.indices[0]?.[1] || 0) + 100),
-                                                                ),
-                                                                contentMatches,
-                                                            )}
-                                                        </div>
-                                                    )}
+                                                    {contentMatches && contentMatches.length > 0 && (() => {
+                                                        const firstMatchStart = contentMatches[0]?.indices[0]?.[0] || 0;
+                                                        const firstMatchEnd = contentMatches[0]?.indices[0]?.[1] || 0;
+                                                        const substringStart = Math.max(0, firstMatchStart - 40);
+                                                        const substringEnd = Math.min(result.item.content.length, firstMatchEnd + 100);
+                                                        const contentSubstring = result.item.content.substring(substringStart, substringEnd);
+
+                                                        // Adjust match indices to be relative to the substring
+                                                        const adjustedMatches: FuseResultMatch[] = contentMatches.map((match) => ({
+                                                            ...match,
+                                                            indices: match.indices
+                                                                .map(([start, end]): [number, number] => [start - substringStart, end - substringStart])
+                                                                .filter(([start, end]) => end >= 0 && start < contentSubstring.length) as unknown as readonly [number, number][],
+                                                        }));
+
+                                                        return (
+                                                            <div className="text-xs text-muted-foreground line-clamp-2">
+                                                                {highlightMatches(contentSubstring, adjustedMatches)}
+                                                            </div>
+                                                        );
+                                                    })()}
                                                 </div>
                                             </div>
                                         </button>
