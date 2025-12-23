@@ -517,7 +517,6 @@ keeps the change purely visual and resilient across mermaid versions. */
   code .line::before {
     content: counter(step);
     counter-increment: step;
-    width: auto;
     margin-right: 1rem;
     display: inline-block;
     text-align: right;
