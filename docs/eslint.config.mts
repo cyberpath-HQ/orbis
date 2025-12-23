@@ -12,13 +12,10 @@ export default defineConfig([
         "**/coverage/**",
         "**/.idea/**",
         "**/.turbo/**",
-        // "./**/*.test.ts",
-        // "./**/*.spec.ts",
         "./**/*.gen.ts",
         "./eslint.config.mts",
         "./src/components/ui/**",
         "./src/components/SearchModal.tsx",
-        "./src/lib/navigation.ts",
     ]),
 
     tseslint.configs.strict as never,
@@ -553,71 +550,6 @@ export default defineConfig([
             ],
             // Allow type assertions in JSX (common pattern)
             "@typescript-eslint/no-unsafe-type-assertion": "off",
-        },
-    },
-    // Lib files with complex logic
-    {
-        files: [ "**/lib/**/*.ts" ],
-        rules: {
-            // Allow higher complexity for state/action management
-            "complexity": [ "warn", 30 ],
-            // Allow await in loops for sequential action execution
-            "no-await-in-loop": "off",
-            // Relax magic numbers for common values
-            "@typescript-eslint/no-magic-numbers": "off",
-            // Allow void expressions
-            "no-void": [ "error", { "allowAsStatement": true } ],
-            // Allow type assertions (common in dynamic code)
-            "@typescript-eslint/no-unsafe-type-assertion": "off",
-            // Allow more flexible naming for dynamic code
-            "@typescript-eslint/naming-convention": [
-                "error",
-                {
-                    "selector":          "property",
-                    "modifiers":         [ "private" ],
-                    "format":            [ "snake_case" ],
-                    "leadingUnderscore": "require",
-                },
-                {
-                    "selector": "variable",
-                    "types":    [ "boolean" ],
-                    "format":   [ "snake_case", "UPPER_CASE", "camelCase" ],
-                    "prefix":   [ "is_", "should_", "has_", "had_", "can_", "did_", "will_", "IS_", "SHOULD_", "HAS_", "HAD_", "CAN_", "DID_", "WILL_", "is", "should", "has", "had", "can", "did", "will" ],
-                },
-                {
-                    "selector": "variable",
-                    "format":   [ "snake_case", "camelCase" ],
-                    "leadingUnderscore": "allow",
-                },
-                {
-                    "selector":  "variable",
-                    "modifiers": [ "global" ],
-                    "format":    [ "UPPER_CASE", "PascalCase" ],
-                },
-                {
-                    "selector": "function",
-                    "format":   [ "camelCase" ],
-                    "leadingUnderscore": "allow",
-                },
-                {
-                    "selector": "typeLike",
-                    "format":   [ "PascalCase" ],
-                },
-                {
-                    "selector":  [
-                        "classProperty",
-                        "objectLiteralProperty",
-                        "typeProperty",
-                        "classMethod",
-                        "objectLiteralMethod",
-                        "typeMethod",
-                        "accessor",
-                        "enumMember",
-                    ],
-                    "format":    null,
-                    "modifiers": [ "requiresQuotes" ],
-                },
-            ],
         },
     },
 
