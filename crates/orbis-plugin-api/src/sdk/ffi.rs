@@ -239,20 +239,33 @@ macro_rules! orbis_allocators {
         #[unsafe(no_mangle)]
         #[inline(never)]
         pub extern "C" fn allocate(size: i32) -> *mut u8 {
+            if size <= 0 {
+                return core::ptr::null_mut();
+            }
             use core::alloc::Layout;
-            let layout = Layout::from_size_align(size as usize, 1).unwrap();
+            let layout = match Layout::from_size_align(size as usize, 1) {
+                Ok(l) => l,
+                Err(_) => return core::ptr::null_mut(),
+            };
             // SAFETY: We're using the global allocator which is valid in WASM
-            unsafe { std::alloc::alloc(layout) }
+            let ptr = unsafe { std::alloc::alloc(layout) };
+            if ptr.is_null() {
+                return core::ptr::null_mut();
+            }
+            ptr
         }
         
         #[unsafe(no_mangle)]
         #[inline(never)]
         pub extern "C" fn deallocate(ptr: *mut u8, size: i32) {
-            if ptr.is_null() {
+            if ptr.is_null() || size <= 0 {
                 return;
             }
             use core::alloc::Layout;
-            let layout = Layout::from_size_align(size as usize, 1).unwrap();
+            let layout = match Layout::from_size_align(size as usize, 1) {
+                Ok(l) => l,
+                Err(_) => return,
+            };
             // SAFETY: ptr was allocated by allocate() with the same layout
             unsafe { std::alloc::dealloc(ptr, layout) }
         }
