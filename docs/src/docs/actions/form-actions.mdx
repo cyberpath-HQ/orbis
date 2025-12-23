@@ -1,0 +1,434 @@
+---
+sidebar_position: 7
+title: Form Actions
+description: Validate and reset forms
+---
+
+import CodeBlock from '@/components/mdx/CodeBlock.astro';
+
+
+## Form Actions
+
+Actions for managing form state and validation.
+
+## validate_form
+
+Validates a form and returns validation results.
+
+### Syntax
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "validate_form",
+  "formId": "myForm"
+}
+```
+</CodeBlock>
+
+### Properties
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `formId` | string | Yes | Form identifier to validate |
+| `onValid` | array | - | Actions if validation passes |
+| `onInvalid` | array | - | Actions if validation fails |
+
+### Examples
+
+**Basic validation:**
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Button",
+  "text": "Submit",
+  "events": {
+    "on_click": [
+      {
+        "type": "validate_form",
+        "formId": "contactForm",
+        "onValid": [
+          { "type": "call_api", "api": "submitContact" }
+        ],
+        "onInvalid": [
+          { "type": "show_toast", "message": "Please fix the errors", "level": "warning" }
+        ]
+      }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+**With form definition:**
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Form",
+  "id": "userForm",
+  "children": [
+    {
+      "type": "Field",
+      "fieldType": "text",
+      "name": "email",
+      "label": "Email",
+      "required": true,
+      "validation": [
+        { "type": "email", "message": "Enter a valid email" }
+      ]
+    },
+    {
+      "type": "Field",
+      "fieldType": "password",
+      "name": "password",
+      "label": "Password",
+      "required": true,
+      "validation": [
+        { "type": "minLength", "value": 8, "message": "At least 8 characters" }
+      ]
+    },
+    {
+      "type": "Button",
+      "text": "Register",
+      "events": {
+        "on_click": [
+          {
+            "type": "validate_form",
+            "formId": "userForm",
+            "onValid": [
+              { "type": "call_api", "api": "register", "params": { "data": "{{form.userForm}}" } }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+</CodeBlock>
+
+**Validation before navigation:**
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "validate_form",
+  "formId": "settingsForm",
+  "onValid": [
+    { "type": "call_api", "api": "saveSettings" },
+    { "type": "navigate", "route": "/dashboard" }
+  ],
+  "onInvalid": [
+    { "type": "show_toast", "message": "Please complete all required fields", "level": "warning" }
+  ]
+}
+```
+</CodeBlock>
+
+---
+
+## reset_form
+
+Resets a form to its initial state.
+
+### Syntax
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "reset_form",
+  "formId": "myForm"
+}
+```
+</CodeBlock>
+
+### Properties
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `formId` | string | Yes | Form identifier to reset |
+| `values` | object | - | Optional values to reset to |
+
+### Examples
+
+**Basic reset:**
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Button",
+  "text": "Clear",
+  "variant": "ghost",
+  "events": {
+    "on_click": [
+      { "type": "reset_form", "formId": "searchForm" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+**Reset to specific values:**
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "reset_form",
+  "formId": "filterForm",
+  "values": {
+    "status": "all",
+    "dateRange": "last7days",
+    "category": ""
+  }
+}
+```
+</CodeBlock>
+
+**Reset after successful submit:**
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "call_api",
+  "api": "createItem",
+  "params": { "data": "{{form.newItemForm}}" },
+  "on_success": [
+    { "type": "show_toast", "message": "Item created!", "level": "success" },
+    { "type": "reset_form", "formId": "newItemForm" }
+  ]
+}
+```
+</CodeBlock>
+
+**Reset on dialog close:**
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Button",
+  "text": "Cancel",
+  "events": {
+    "on_click": [
+      { "type": "reset_form", "formId": "editForm" },
+      { "type": "close_dialog", "id": "editDialog" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+---
+
+## Form Data Access
+
+Form data is accessible via the `form` namespace:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "call_api",
+  "api": "submitForm",
+  "params": {
+    "formData": "{{form.myForm}}",
+    "email": "{{form.myForm.email}}",
+    "name": "{{form.myForm.name}}"
+  }
+}
+```
+</CodeBlock>
+
+### Form State Variables
+
+| Variable | Type | Description |
+|----------|------|-------------|
+| `form.<id>` | object | Complete form data |
+| `form.<id>.<field>` | any | Specific field value |
+| `form.<id>.$valid` | boolean | Form validity state |
+| `form.<id>.$dirty` | boolean | Has form been modified |
+| `form.<id>.$errors` | object | Field error messages |
+
+### Examples
+
+**Conditional submit button:**
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Button",
+  "text": "Submit",
+  "disabled": "{{!form.myForm.$valid}}",
+  "events": {
+    "on_click": [
+      { "type": "call_api", "api": "submit" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+**Show unsaved changes warning:**
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Conditional",
+  "conditions": [
+    {
+      "when": "{{form.settingsForm.$dirty}}",
+      "render": {
+        "type": "Alert",
+        "variant": "warning",
+        "title": "Unsaved Changes",
+        "message": "You have unsaved changes"
+      }
+    }
+  ]
+}
+```
+</CodeBlock>
+
+**Display validation errors:**
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Conditional",
+  "conditions": [
+    {
+      "when": "{{form.myForm.$errors.email}}",
+      "render": {
+        "type": "Text",
+        "text": "{{form.myForm.$errors.email}}",
+        "className": "text-red-500 text-sm"
+      }
+    }
+  ]
+}
+```
+</CodeBlock>
+
+---
+
+## Common Patterns
+
+### Submit and Reset Pattern
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Flex",
+  "gap": "md",
+  "children": [
+    {
+      "type": "Button",
+      "text": "Reset",
+      "variant": "ghost",
+      "events": {
+        "on_click": [
+          { "type": "reset_form", "formId": "myForm" }
+        ]
+      }
+    },
+    {
+      "type": "Button",
+      "text": "Submit",
+      "events": {
+        "on_click": [
+          {
+            "type": "validate_form",
+            "formId": "myForm",
+            "onValid": [
+              { "type": "set_loading", "key": "submitting", "value": true },
+              {
+                "type": "call_api",
+                "api": "submit",
+                "params": { "data": "{{form.myForm}}" },
+                "on_success": [
+                  { "type": "show_toast", "message": "Submitted!", "level": "success" },
+                  { "type": "reset_form", "formId": "myForm" }
+                ],
+                "onComplete": [
+                  { "type": "set_loading", "key": "submitting", "value": false }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+</CodeBlock>
+
+### Multi-Step Form Validation
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Button",
+  "text": "Next",
+  "events": {
+    "on_click": [
+      {
+        "type": "validate_form",
+        "formId": "step{{state.currentStep}}Form",
+        "onValid": [
+          { "type": "update_state", "path": "currentStep", "value": "{{state.currentStep + 1}}" }
+        ],
+        "onInvalid": [
+          { "type": "show_toast", "message": "Please complete this step", "level": "warning" }
+        ]
+      }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+### Confirm Before Reset
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Button",
+  "text": "Clear All",
+  "variant": "ghost",
+  "events": {
+    "on_click": [
+      {
+        "type": "show_dialog",
+        "id": "confirmReset",
+        "title": "Clear Form",
+        "message": "Are you sure you want to clear all fields?",
+        "buttons": [
+          {
+            "label": "Cancel",
+            "variant": "ghost",
+            "action": [{ "type": "close_dialog", "id": "confirmReset" }]
+          },
+          {
+            "label": "Clear",
+            "variant": "destructive",
+            "action": [
+              { "type": "reset_form", "formId": "myForm" },
+              { "type": "close_dialog", "id": "confirmReset" }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+### Best Practices
+
+1. **Always validate before submit** - Prevent invalid API calls
+2. **Show clear error messages** - Help users fix issues
+3. **Reset forms appropriately** - Clear after success, preserve on error
+4. **Disable submit while invalid** - Use `disabled="{{!form.id.$valid}}"`
+5. **Track dirty state** - Warn about unsaved changes

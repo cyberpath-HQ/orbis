@@ -23,6 +23,7 @@ pub enum StateFieldType {
 
 /// A single state field definition.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct StateFieldDefinition {
     /// The type of the state field.
     #[serde(rename = "type")]
@@ -220,6 +221,7 @@ pub struct EventHandlers {
 
 /// Enhanced component schema for JSON-described UI.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct ComponentSchema {
     /// Component type (e.g., "Container", "Button", "Form").
     #[serde(rename = "type")]
@@ -296,9 +298,9 @@ impl ComponentSchema {
     /// # Errors
     ///
     /// Returns an error if the schema is invalid.
-    pub fn validate(&self) -> orbis_core::Result<()> {
+    pub fn validate(&self) -> crate::Result<()> {
         if self.component_type.is_empty() {
-            return Err(orbis_core::Error::plugin("Component type is required"));
+            return Err(crate::Error::schema("Component type is required"));
         }
 
         for child in &self.children {
@@ -315,6 +317,7 @@ impl ComponentSchema {
 
 /// Dialog definition for modals.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct DialogDefinition {
     pub id: String,
     #[serde(default)]
@@ -344,6 +347,7 @@ pub struct PageLifecycleHooks {
 
 /// Enhanced page definition for plugin UI.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct PageDefinition {
     /// Route path for the page.
     pub route: String,
@@ -417,17 +421,17 @@ impl PageDefinition {
     /// # Errors
     ///
     /// Returns an error if the page is invalid.
-    pub fn validate(&self) -> orbis_core::Result<()> {
+    pub fn validate(&self) -> crate::Result<()> {
         if self.route.is_empty() {
-            return Err(orbis_core::Error::plugin("Page route is required"));
+            return Err(crate::Error::schema("Page route is required"));
         }
 
         if !self.route.starts_with('/') {
-            return Err(orbis_core::Error::plugin("Page route must start with '/'"));
+            return Err(crate::Error::schema("Page route must start with '/'"));
         }
 
         if self.title.is_empty() {
-            return Err(orbis_core::Error::plugin("Page title is required"));
+            return Err(crate::Error::schema("Page title is required"));
         }
 
         for section in &self.sections {
@@ -450,6 +454,7 @@ impl PageDefinition {
 
 /// Navigation menu item.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct NavigationItem {
     pub id: String,
     pub label: String,
@@ -473,6 +478,7 @@ pub struct NavigationItem {
 
 /// Navigation configuration.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct NavigationConfig {
     #[serde(default)]
     pub primary: Vec<NavigationItem>,
@@ -490,6 +496,7 @@ pub struct NavigationConfig {
 
 /// Table column definition.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct TableColumn {
     pub key: String,
     pub label: String,
@@ -505,6 +512,7 @@ pub struct TableColumn {
 
 /// Form field definition.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct FormField {
     pub id: String,
     pub name: String,
@@ -533,6 +541,7 @@ pub struct FormField {
 
 /// Select option.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct SelectOption {
     pub value: String,
     pub label: String,
@@ -542,6 +551,7 @@ pub struct SelectOption {
 
 /// Validation rule.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct ValidationRule {
     #[serde(default)]
     pub required: Option<serde_json::Value>,
@@ -565,6 +575,7 @@ pub struct ValidationRule {
 
 /// Custom validation rule.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct CustomValidation {
     pub expression: String,
     pub message: String,
@@ -572,6 +583,7 @@ pub struct CustomValidation {
 
 /// Tab item.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct TabItem {
     pub key: String,
     pub label: String,
@@ -584,6 +596,7 @@ pub struct TabItem {
 
 /// Accordion item.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct AccordionItem {
     pub key: String,
     pub title: String,
@@ -594,6 +607,7 @@ pub struct AccordionItem {
 
 /// Breadcrumb item.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct BreadcrumbItem {
     pub label: String,
     #[serde(default)]

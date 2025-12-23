@@ -493,12 +493,20 @@ pub fn get_plugins(state: State<'_, OrbisState>) -> Result<Value, String> {
     }))
 }
 
-/// Get plugin pages for UI rendering.
+/// Get plugin pages for UI rendering (only from running plugins).
 #[tauri::command]
 pub fn get_plugin_pages(state: State<'_, OrbisState>) -> Result<Value, String> {
     let pages = if let Some(pm) = state.plugins() {
+        // Only include pages from Running plugins
+        let running_plugins: std::collections::HashSet<_> = pm.registry()
+            .list_by_state(orbis_plugin::PluginState::Running)
+            .iter()
+            .map(|info| info.manifest.name.clone())
+            .collect();
+        
         pm.get_all_pages()
             .iter()
+            .filter(|(plugin, _)| running_plugins.contains(plugin))
             .map(|(plugin, page)| {
                 json!({
                     "plugin": plugin,
@@ -509,6 +517,8 @@ pub fn get_plugin_pages(state: State<'_, OrbisState>) -> Result<Value, String> {
                     "show_in_menu": page.show_in_menu,
                     "menu_order": page.menu_order,
                     "sections": page.sections,
+                    "state": page.state,
+                    "hooks": page.hooks,
                 })
             })
             .collect::<Vec<_>>()
@@ -525,10 +535,20 @@ pub fn get_plugin_pages(state: State<'_, OrbisState>) -> Result<Value, String> {
 
 /// Reload a specific plugin (hot reload).
 #[tauri::command]
-pub async fn reload_plugin(name: String, state: State<'_, OrbisState>) -> Result<Value, String> {
+pub async fn reload_plugin(
+    name: String,
+    state: State<'_, OrbisState>,
+    app: tauri::AppHandle,
+) -> Result<Value, String> {
     let pm = state.plugins().ok_or("Plugins not available in client mode")?;
 
     let info = pm.reload_plugin(&name).await.map_err(|e| e.to_string())?;
+
+    // Emit event to notify frontend of reload
+    let _ = app.emit("plugin-state-changed", json!({
+        "plugin": name,
+        "state": format!("{:?}", info.state)
+    }));
 
     Ok(json!({
         "success": true,
@@ -544,10 +564,20 @@ pub async fn reload_plugin(name: String, state: State<'_, OrbisState>) -> Result
 
 /// Enable a disabled plugin.
 #[tauri::command]
-pub async fn enable_plugin(name: String, state: State<'_, OrbisState>) -> Result<Value, String> {
+pub async fn enable_plugin(
+    name: String,
+    state: State<'_, OrbisState>,
+    app: tauri::AppHandle,
+) -> Result<Value, String> {
     let pm = state.plugins().ok_or("Plugins not available in client mode")?;
 
     pm.enable_plugin(&name).await.map_err(|e| e.to_string())?;
+
+    // Emit event to notify frontend of state change
+    let _ = app.emit("plugin-state-changed", json!({
+        "plugin": name,
+        "state": "Running"
+    }));
 
     Ok(json!({
         "success": true,
@@ -557,10 +587,20 @@ pub async fn enable_plugin(name: String, state: State<'_, OrbisState>) -> Result
 
 /// Disable a running plugin.
 #[tauri::command]
-pub async fn disable_plugin(name: String, state: State<'_, OrbisState>) -> Result<Value, String> {
+pub async fn disable_plugin(
+    name: String,
+    state: State<'_, OrbisState>,
+    app: tauri::AppHandle,
+) -> Result<Value, String> {
     let pm = state.plugins().ok_or("Plugins not available in client mode")?;
 
     pm.disable_plugin(&name).await.map_err(|e| e.to_string())?;
+
+    // Emit event to notify frontend of state change
+    let _ = app.emit("plugin-state-changed", json!({
+        "plugin": name,
+        "state": "Disabled"
+    }));
 
     Ok(json!({
         "success": true,
@@ -570,10 +610,20 @@ pub async fn disable_plugin(name: String, state: State<'_, OrbisState>) -> Resul
 
 /// Uninstall a plugin.
 #[tauri::command]
-pub async fn uninstall_plugin(name: String, state: State<'_, OrbisState>) -> Result<Value, String> {
+pub async fn uninstall_plugin(
+    name: String,
+    state: State<'_, OrbisState>,
+    app: tauri::AppHandle,
+) -> Result<Value, String> {
     let pm = state.plugins().ok_or("Plugins not available in client mode")?;
 
     pm.unload_plugin(&name).await.map_err(|e| e.to_string())?;
+
+    // Emit event to notify frontend of state change
+    let _ = app.emit("plugin-state-changed", json!({
+        "plugin": name,
+        "state": "Unloaded"
+    }));
 
     Ok(json!({
         "success": true,
@@ -626,6 +676,70 @@ pub fn get_plugin_info(name: String, state: State<'_, OrbisState>) -> Result<Val
         "routes_count": info.manifest.routes.len(),
         "pages_count": info.manifest.pages.len(),
     }))
+}
+
+/// Call a plugin API endpoint.
+#[tauri::command]
+pub async fn call_plugin_api(
+    command: String,
+    method: Option<String>,
+    args: Option<Value>,
+    state: State<'_, OrbisState>,
+) -> Result<Value, String> {
+    let pm = state.plugins().ok_or("Plugins not available in client mode")?;
+
+    // Parse command format: "plugin_name.handler_name"
+    let parts: Vec<&str> = command.split('.').collect();
+    if parts.len() != 2 {
+        return Err(format!(
+            "Invalid command format '{}'. Expected 'plugin_name.handler_name'",
+            command
+        ));
+    }
+
+    let plugin_name = parts[0];
+    let handler_name = parts[1];
+
+    // Get plugin info to validate it's running
+    let plugin_info = pm.registry().get(plugin_name).ok_or_else(|| {
+        format!("Plugin '{}' not found", plugin_name)
+    })?;
+
+    if plugin_info.state != orbis_plugin::PluginState::Running {
+        return Err(format!(
+            "Plugin '{}' is not running (state: {:?})",
+            plugin_name, plugin_info.state
+        ));
+    }
+
+    // Build plugin context
+    let mut headers = std::collections::HashMap::new();
+    headers.insert("content-type".to_string(), "application/json".to_string());
+
+    let query = std::collections::HashMap::new();
+    
+    // If method is provided, add it to headers
+    let request_method = method.unwrap_or_else(|| "POST".to_string());
+
+    // Get user context from session
+    let session = state.get_session();
+    let user_id = session.as_ref().map(|s| s.user_id.clone());
+    let is_admin = session.as_ref().map(|s| s.is_admin).unwrap_or(false);
+
+    let context = orbis_plugin::PluginContext {
+        method: request_method,
+        path: format!("/{}", handler_name),
+        headers,
+        query,
+        body: args.unwrap_or(serde_json::json!({})),
+        user_id,
+        is_admin,
+    };
+
+    // Execute the plugin route
+    pm.execute_route(plugin_name, handler_name, context)
+        .await
+        .map_err(|e| format!("Plugin execution failed: {}", e))
 }
 
 /// Start watching plugins directory for changes.

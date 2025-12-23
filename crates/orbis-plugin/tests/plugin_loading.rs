@@ -3,7 +3,7 @@ use std::path::PathBuf;
 
 fn get_samples_dir() -> PathBuf {
     let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    manifest_dir.parent().unwrap().parent().unwrap().join("sample-plugins/hello-plugin")
+    manifest_dir.parent().unwrap().parent().unwrap().join("plugins/hello-plugin")
 }
 
 #[test]
@@ -14,7 +14,7 @@ fn test_unpacked_external_manifest() {
     
     let manifest = loader.load_manifest(&source).expect("Failed to load manifest");
     
-    assert_eq!(manifest.name, "Hello Plugin");
+    assert_eq!(manifest.name, "Hello-Plugin");
     assert_eq!(manifest.version, "0.1.0");
     assert_eq!(manifest.description, "A simple hello world plugin demonstrating Orbis plugin system");
     assert_eq!(manifest.author, Some("Orbis Team".to_string()));
@@ -28,7 +28,7 @@ fn test_unpacked_embedded_manifest() {
     
     let manifest = loader.load_manifest(&source).expect("Failed to load manifest");
     
-    assert_eq!(manifest.name, "Hello Plugin");
+    assert_eq!(manifest.name, "Hello-Plugin");
     assert_eq!(manifest.version, "0.1.0");
 }
 
@@ -40,7 +40,7 @@ fn test_standalone_manifest() {
     
     let manifest = loader.load_manifest(&source).expect("Failed to load manifest");
     
-    assert_eq!(manifest.name, "Hello Plugin");
+    assert_eq!(manifest.name, "Hello-Plugin");
     assert_eq!(manifest.version, "0.1.0");
 }
 
@@ -52,7 +52,7 @@ fn test_packed_external_manifest() {
     
     let manifest = loader.load_manifest(&source).expect("Failed to load manifest");
     
-    assert_eq!(manifest.name, "Hello Plugin");
+    assert_eq!(manifest.name, "Hello-Plugin");
     assert_eq!(manifest.version, "0.1.0");
 }
 
@@ -64,7 +64,7 @@ fn test_packed_embedded_manifest() {
     
     let manifest = loader.load_manifest(&source).expect("Failed to load manifest");
     
-    assert_eq!(manifest.name, "Hello Plugin");
+    assert_eq!(manifest.name, "Hello-Plugin");
     assert_eq!(manifest.version, "0.1.0");
 }
 

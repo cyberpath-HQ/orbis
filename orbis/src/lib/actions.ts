@@ -15,10 +15,11 @@ import type {
     SequenceAction
 } from '../types/schema';
 import {
-    type PageStateStore,
+    type PageStateStoreHook,
     getNestedValue,
     interpolateExpression,
-    evaluateBooleanExpression
+    evaluateBooleanExpression,
+    evaluateMathExpression
 } from './state';
 
 // Debounce timers storage
@@ -26,7 +27,7 @@ const DEBOUNCE_TIMERS = new Map<string, ReturnType<typeof setTimeout>>();
 
 // Action execution context
 export interface ActionContext {
-    state:     PageStateStore
+    state:     PageStateStoreHook
     navigate:  NavigateFunction
     apiClient: ApiClient
     event?:    unknown
@@ -102,16 +103,48 @@ function resolveValue(
         );
     }
 
-    // Interpolate expressions
-    const stateData = context.state.getState();
-    return interpolateExpression(value, stateData, {
+    // Check if this is a template expression (contains {{...}})
+    const stateData = context.state.getState().state;
+    const contextData = {
+        state:     stateData,
         $event:    context.event,
         $row:      context.row,
         $item:     context.item,
         $index:    context.index,
         $response: context.response,
         $error:    context.error,
-    });
+    };
+
+    // If the value contains template expressions, process them
+    if (value.includes(`{{`)) {
+        // Check if this might be an arithmetic expression by looking for operators
+        // within or after the template expression
+        const has_arithmetic_ops = /[+\-*/%]/.test(value);
+
+        if (has_arithmetic_ops) {
+            // Try to evaluate as a math expression
+            // evaluateMathExpression will interpolate {{...}} first, then evaluate
+            try {
+                const mathResult = evaluateMathExpression(value, stateData, contextData);
+                return mathResult;
+            }
+            catch (error) {
+                console.warn(
+                    `[resolveValue] Failed to evaluate as math, falling back to interpolation:`,
+                    error
+                );
+
+                // Fall through to regular interpolation
+            }
+        }
+
+        // Regular string interpolation
+        const interpolated = interpolateExpression(value, stateData, contextData);
+        return interpolated;
+    }
+
+    // No template expressions, return as-is
+    return value;
 }
 
 /**
@@ -122,11 +155,11 @@ export async function executeAction(
     context: ActionContext
 ): Promise<void> {
     switch (action.type) {
-        case `updateState`:
+        case `update_state`:
             executeUpdateState(action, context);
             break;
 
-        case `callApi`:
+        case `call_api`:
             await executeCallApi(action, context);
             break;
 
@@ -134,11 +167,11 @@ export async function executeAction(
             executeNavigate(action, context);
             break;
 
-        case `showToast`:
+        case `show_toast`:
             executeShowToast(action, context);
             break;
 
-        case `debouncedAction`:
+        case `debounced_action`:
             executeDebouncedAction(action, context);
             break;
 
@@ -150,11 +183,11 @@ export async function executeAction(
             await executeSequence(action, context);
             break;
 
-        case `setLoading`:
+        case `set_loading`:
             context.state.setLoading(action.target ?? `global`, action.loading);
             break;
 
-        case `showDialog`:
+        case `show_dialog`:
             // Dialog handling will be done through state
             context.state.setState(`__dialogs.${ action.dialogId }`, {
                 open: true,
@@ -162,7 +195,7 @@ export async function executeAction(
             });
             break;
 
-        case `closeDialog`:
+        case `close_dialog`:
             context.state.setState(`__dialogs.${ action.dialogId ?? `current` }`, {
                 open: false,
             });
@@ -172,7 +205,7 @@ export async function executeAction(
             await executeCopy(action, context);
             break;
 
-        case `openUrl`:
+        case `open_url`:
             executeOpenUrl(action, context);
             break;
 
@@ -180,11 +213,11 @@ export async function executeAction(
             await executeDownload(action, context);
             break;
 
-        case `validateForm`:
+        case `validate_form`:
             await executeValidateForm(action, context);
             break;
 
-        case `resetForm`:
+        case `reset_form`:
             executeResetForm(action, context);
             break;
 
@@ -210,7 +243,7 @@ export async function executeActions(
 
 function executeUpdateState(action: UpdateStateAction, context: ActionContext): void {
     const {
-        from, value: actionValue, merge: should_merge, path,
+        from, value: actionValue, merge, path, mode,
     } = action;
     let value: unknown;
 
@@ -221,10 +254,45 @@ function executeUpdateState(action: UpdateStateAction, context: ActionContext): 
         value = actionValue;
     }
 
+    const should_merge = merge === true || mode === `merge`;
     if (should_merge && typeof value === `object` && value !== null) {
         context.state.mergeState(path, value as Record<string, unknown>);
     }
+    else if (mode === `append`) {
+        const existing = context.state.getValue(path);
+        if (Array.isArray(existing)) {
+            context.state.setState(path, [
+                ...existing,
+                value,
+            ]);
+        }
+        else {
+            context.state.setState(path, [ value ]);
+        }
+    }
+    else if (mode === `prepend`) {
+        const existing = context.state.getValue(path);
+        if (Array.isArray(existing)) {
+            context.state.setState(path, [
+                value,
+                ...existing,
+            ]);
+        }
+        else {
+            context.state.setState(path, [ value ]);
+        }
+    }
+    else if (mode === `remove`) {
+        const existing = context.state.getValue(path);
+        if (Array.isArray(existing)) {
+            context.state.setState(
+                path,
+                existing.filter((item) => item !== value)
+            );
+        }
+    }
     else {
+        // Default to set
         context.state.setState(path, value);
     }
 }
@@ -235,15 +303,15 @@ async function executeCallApi(action: CallApiAction, context: ActionContext): Pr
     // Build arguments
     const args: Record<string, unknown> = {};
 
-    if (action.argsFromState) {
-        for (const statePath of action.argsFromState) {
+    if (action.args_from_state) {
+        for (const statePath of action.args_from_state) {
             const value = context.state.getValue(statePath);
             args[statePath] = value;
         }
     }
 
-    if (action.mapArgs) {
-        for (const mapping of action.mapArgs) {
+    if (action.map_args) {
+        for (const mapping of action.map_args) {
             const value = resolveValue(mapping.from, context);
             args[mapping.to] = value;
         }
@@ -261,24 +329,24 @@ async function executeCallApi(action: CallApiAction, context: ActionContext): Pr
     try {
         const response = await context.apiClient.call(action.api, method, args);
 
-        if (action.onSuccess) {
-            await executeActions(action.onSuccess, {
+        if (action.on_success) {
+            await executeActions(action.on_success, {
                 ...context,
                 response,
             });
         }
     }
     catch (error) {
-        if (action.onError) {
-            await executeActions(action.onError, {
+        if (action.on_error) {
+            await executeActions(action.on_error, {
                 ...context,
                 error,
             });
         }
     }
     finally {
-        if (action.onFinally) {
-            await executeActions(action.onFinally, context);
+        if (action.on_finally) {
+            await executeActions(action.on_finally, context);
         }
     }
 }
@@ -356,7 +424,7 @@ function executeDebouncedAction(action: DebouncedAction, context: ActionContext)
 }
 
 async function executeConditional(action: ConditionalAction, context: ActionContext): Promise<void> {
-    const stateData = context.state.getState();
+    const stateData = context.state.getState().state;
     const is_condition_met = evaluateBooleanExpression(action.condition, stateData);
 
     if (is_condition_met) {
@@ -431,7 +499,7 @@ function resolveObjectValues(
  * Download a file from URL or blob
  */
 async function executeDownload(action: { url: string
-    filename?:                                 string }, context: ActionContext): Promise<void> {
+    filename?:                                string }, context: ActionContext): Promise<void> {
     const url = resolveValue(action.url, context) as string;
     const filename = action.filename
         ? resolveValue(action.filename, context) as string
@@ -477,7 +545,7 @@ const FORM_STATES = new Map<string, {
     fields:     Map<string, { value: unknown
         errors:                      Array<string>
         touched:                     boolean }>
-    isValid:    boolean
+    isValid:     boolean
     isSubmitted: boolean
 }>();
 
@@ -565,8 +633,10 @@ async function executeValidateForm(
     },
     context: ActionContext
 ): Promise<void> {
-    const formId = action.formId;
-    let formState = FORM_STATES.get(formId);
+    const {
+        formId,
+    } = action;
+    const formState = FORM_STATES.get(formId);
 
     if (!formState) {
         // No form state, try to validate from DOM
@@ -594,7 +664,7 @@ async function executeValidateForm(
 
     // Validate all fields
     let isValid = true;
-    const stateData = context.state.getState();
+    const stateData = context.state.getState().state;
 
     for (const [
         fieldName,
@@ -605,7 +675,7 @@ async function executeValidateForm(
         // Get validation rules from state if defined
         const validationPath = `__validation.${ formId }.${ fieldName }`;
         const rules = stateData[validationPath] as {
-            required?: boolean
+            required?:  boolean
             minLength?: number
             maxLength?: number
             pattern?:   string
@@ -615,7 +685,9 @@ async function executeValidateForm(
         } | undefined;
 
         if (rules) {
-            const value = field.value;
+            const {
+                value,
+            } = field;
 
             if (rules.required && (value === null || value === undefined || value === ``)) {
                 errors.push(`This field is required`);
@@ -659,10 +731,8 @@ async function executeValidateForm(
             await executeActions(action.onValid, context);
         }
     }
-    else {
-        if (action.onInvalid) {
-            await executeActions(action.onInvalid, context);
-        }
+    else if (action.onInvalid) {
+        await executeActions(action.onInvalid, context);
     }
 }
 
@@ -673,7 +743,9 @@ function executeResetForm(
     action: { formId: string },
     context: ActionContext
 ): void {
-    const formId = action.formId;
+    const {
+        formId,
+    } = action;
 
     // Clear form state tracking
     FORM_STATES.delete(formId);

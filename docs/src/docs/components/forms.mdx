@@ -1,0 +1,430 @@
+---
+sidebar_position: 3
+title: Form Components
+description: Form and Field components for user input
+---
+
+import CodeBlock from '@/components/mdx/CodeBlock.astro';
+
+
+# Form Components
+
+Form components handle user input with validation and state binding.
+
+## Form
+
+A container for form fields with validation and submission handling.
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Form",
+  "id": "login-form",
+  "fields": [
+    {
+      "name": "email",
+      "fieldType": "text",
+      "label": "Email",
+      "placeholder": "you@example.com",
+      "bindTo": "formData.email",
+      "validation": {
+        "required": { "message": "Email is required" },
+        "email": { "message": "Please enter a valid email" }
+      }
+    },
+    {
+      "name": "password",
+      "fieldType": "password",
+      "label": "Password",
+      "bindTo": "formData.password",
+      "validation": {
+        "required": { "message": "Password is required" },
+        "minLength": { "value": 8, "message": "Password must be at least 8 characters" }
+      }
+    }
+  ],
+  "events": {
+    "on_submit": [
+      { "type": "call_api", "api": "auth.login", "args_from_state": ["formData"] }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+### Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `id` | string | - | Form identifier (required) |
+| `fields` | array | `[]` | Form field definitions |
+| `layout` | `vertical` \| `horizontal` \| `inline` | `vertical` | Form layout |
+| `submitLabel` | string | `Submit` | Submit button label |
+| `cancelLabel` | string | `Cancel` | Cancel button label |
+| `showReset` | boolean | `false` | Show reset button |
+| `className` | string | - | CSS classes |
+| `events` | object | - | Event handlers |
+
+### Events
+
+| Event | Trigger | Payload |
+|-------|---------|---------|
+| `on_submit` | Form submission | Form values |
+
+### Examples
+
+**Login form:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "Card",
+  "className": "w-full max-w-md",
+  "title": "Sign In",
+  "content": {
+    "type": "Form",
+    "id": "login",
+    "fields": [
+      {
+        "name": "email",
+        "fieldType": "email",
+        "label": "Email",
+        "placeholder": "you@example.com",
+        "bindTo": "login.email",
+        "validation": {
+          "required": { "message": "Email is required" },
+          "email": { "message": "Invalid email" }
+        }
+      },
+      {
+        "name": "password",
+        "fieldType": "password",
+        "label": "Password",
+        "bindTo": "login.password",
+        "validation": {
+          "required": { "message": "Password is required" }
+        }
+      },
+      {
+        "name": "remember",
+        "fieldType": "checkbox",
+        "label": "Remember me",
+        "bindTo": "login.remember"
+      }
+    ],
+    "submitLabel": "Sign In",
+    "events": {
+      "on_submit": [
+        { "type": "set_loading", "loading": true },
+        {
+          "type": "call_api",
+          "api": "auth.login",
+          "body": "{{state.login}}",
+          "onSuccess": [
+            { "type": "navigate", "to": "/dashboard" }
+          ],
+          "onError": [
+            { "type": "show_toast", "message": "Invalid credentials", "level": "error" }
+          ]
+        },
+        { "type": "set_loading", "loading": false }
+      ]
+    }
+  }
+}
+```
+</CodeBlock>
+
+**Inline search form:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "Form",
+  "layout": "inline",
+  "fields": [
+    {
+      "name": "query",
+      "fieldType": "text",
+      "placeholder": "Search...",
+      "bindTo": "search.query",
+      "className": "w-64"
+    },
+    {
+      "name": "category",
+      "fieldType": "select",
+      "placeholder": "All categories",
+      "bindTo": "search.category",
+      "options": [
+        { "value": "all", "label": "All" },
+        { "value": "docs", "label": "Documents" },
+        { "value": "images", "label": "Images" }
+      ]
+    }
+  ],
+  "submitLabel": "Search",
+  "events": {
+    "on_submit": [
+      { "type": "call_api", "api": "search", "body": "{{state.search}}" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+---
+
+## Field
+
+Individual form field with various input types.
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Field",
+  "name": "username",
+  "fieldType": "text",
+  "label": "Username",
+  "placeholder": "Enter username",
+  "bindTo": "formData.username"
+}
+```
+</CodeBlock>
+
+### Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `name` | string | - | Field name (required) |
+| `fieldType` | string | `text` | Input type |
+| `label` | string | - | Field label |
+| `placeholder` | string | - | Placeholder text |
+| `description` | string | - | Helper text below field |
+| `bindTo` | string | - | State path for binding |
+| `defaultValue` | any | - | Default value |
+| `disabled` | boolean \| string | `false` | Disabled state |
+| `readOnly` | boolean | `false` | Read-only state |
+| `required` | boolean | `false` | Required field |
+| `validation` | object | - | Validation rules |
+| `options` | array | - | Options (for select, radio, checkbox-group) |
+| `events` | object | - | Event handlers |
+| `className` | string | - | CSS classes |
+
+### Field Types
+
+#### Text Input
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Field",
+  "name": "name",
+  "fieldType": "text",
+  "label": "Full Name",
+  "placeholder": "John Doe",
+  "bindTo": "form.name"
+}
+```
+</CodeBlock>
+
+#### Password
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Field",
+  "name": "password",
+  "fieldType": "password",
+  "label": "Password",
+  "bindTo": "form.password"
+}
+```
+</CodeBlock>
+
+#### Email
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Field",
+  "name": "email",
+  "fieldType": "email",
+  "label": "Email Address",
+  "placeholder": "you@example.com",
+  "bindTo": "form.email",
+  "validation": {
+    "email": { "message": "Invalid email format" }
+  }
+}
+```
+</CodeBlock>
+
+#### Number
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Field",
+  "name": "quantity",
+  "fieldType": "number",
+  "label": "Quantity",
+  "bindTo": "form.quantity",
+  "defaultValue": 1
+}
+```
+</CodeBlock>
+
+#### Textarea
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Field",
+  "name": "description",
+  "fieldType": "textarea",
+  "label": "Description",
+  "placeholder": "Enter a description...",
+  "bindTo": "form.description"
+}
+```
+</CodeBlock>
+
+#### Select
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Field",
+  "name": "category",
+  "fieldType": "select",
+  "label": "Category",
+  "bindTo": "form.category",
+  "placeholder": "Select a category",
+  "options": [
+    { "value": "electronics", "label": "Electronics" },
+    { "value": "clothing", "label": "Clothing" },
+    { "value": "books", "label": "Books" }
+  ]
+}
+```
+</CodeBlock>
+
+#### Checkbox
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Field",
+  "name": "agree",
+  "fieldType": "checkbox",
+  "label": "I agree to the terms and conditions",
+  "bindTo": "form.agree"
+}
+```
+</CodeBlock>
+
+#### Radio Group
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Field",
+  "name": "plan",
+  "fieldType": "radio",
+  "label": "Select Plan",
+  "bindTo": "form.plan",
+  "options": [
+    { "value": "free", "label": "Free - $0/month" },
+    { "value": "pro", "label": "Pro - $10/month" },
+    { "value": "enterprise", "label": "Enterprise - $50/month" }
+  ]
+}
+```
+</CodeBlock>
+
+#### Switch/Toggle
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Field",
+  "name": "darkMode",
+  "fieldType": "switch",
+  "label": "Dark Mode",
+  "bindTo": "settings.darkMode"
+}
+```
+</CodeBlock>
+
+#### Date
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Field",
+  "name": "startDate",
+  "fieldType": "date",
+  "label": "Start Date",
+  "bindTo": "form.startDate"
+}
+```
+</CodeBlock>
+
+### Events
+
+| Event | Trigger | Payload |
+|-------|---------|---------|
+| `on_change` | Value changes | `{ value, name }` |
+| `on_blur` | Field loses focus | `{ value, name }` |
+| `on_focus` | Field gains focus | `{ name }` |
+
+### Validation Rules
+
+<CodeBlock lang="json">
+```json
+{
+  "validation": {
+    "required": { "message": "This field is required" },
+    "minLength": { "value": 3, "message": "Minimum 3 characters" },
+    "maxLength": { "value": 100, "message": "Maximum 100 characters" },
+    "pattern": { "value": "^[A-Za-z]+$", "message": "Letters only" },
+    "email": { "message": "Invalid email format" }
+  }
+}
+```
+</CodeBlock>
+
+### Validation Rule Types
+
+| Rule | Parameters | Description |
+|------|------------|-------------|
+| `required` | `message` | Field must have a value |
+| `minLength` | `value`, `message` | Minimum string length |
+| `maxLength` | `value`, `message` | Maximum string length |
+| `pattern` | `value` (regex), `message` | Must match regex |
+| `email` | `message` | Valid email format |
+
+### Example with Events
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Field",
+  "name": "search",
+  "fieldType": "text",
+  "label": "Search",
+  "bindTo": "filters.search",
+  "events": {
+    "on_change": [
+      {
+        "type": "debounced_action",
+        "delayMs": 300,
+        "action": {
+          "type": "call_api",
+          "api": "search",
+          "body": { "query": "{{state.filters.search}}" }
+        }
+      }
+    ]
+  }
+}
+```
+</CodeBlock>

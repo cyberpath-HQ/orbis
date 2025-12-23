@@ -1,0 +1,511 @@
+---
+sidebar_position: 8
+title: Utility Actions
+description: Loading states, downloads, clipboard, URLs, and events
+---
+
+import CodeBlock from '@/components/mdx/CodeBlock.astro';
+
+
+## Utility Actions
+
+General-purpose actions for common operations.
+
+## set_loading
+
+Sets a loading state flag.
+
+### Syntax
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "set_loading",
+  "key": "saving",
+  "value": true
+}
+```
+</CodeBlock>
+
+### Properties
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `key` | string | Yes | Loading state identifier |
+| `value` | boolean | Yes | Loading state value |
+
+### Examples
+
+**Basic usage:**
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Button",
+  "text": "Save",
+  "loading": "{{loading.saving}}",
+  "events": {
+    "on_click": [
+      { "type": "set_loading", "key": "saving", "value": true },
+      {
+        "type": "call_api",
+        "api": "saveData",
+        "onComplete": [
+          { "type": "set_loading", "key": "saving", "value": false }
+        ]
+      }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+**Loading overlay:**
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Conditional",
+  "conditions": [
+    {
+      "when": "{{loading.pageLoading}}",
+      "render": {
+        "type": "LoadingOverlay",
+        "message": "Loading..."
+      }
+    }
+  ]
+}
+```
+</CodeBlock>
+
+**Multiple loading states:**
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Flex",
+  "gap": "md",
+  "children": [
+    {
+      "type": "Button",
+      "text": "Save Draft",
+      "loading": "{{loading.savingDraft}}",
+      "disabled": "{{loading.publishing}}",
+      "events": {
+        "on_click": [
+          { "type": "set_loading", "key": "savingDraft", "value": true },
+          { "type": "call_api", "api": "saveDraft" },
+          { "type": "set_loading", "key": "savingDraft", "value": false }
+        ]
+      }
+    },
+    {
+      "type": "Button",
+      "text": "Publish",
+      "loading": "{{loading.publishing}}",
+      "disabled": "{{loading.savingDraft}}",
+      "events": {
+        "on_click": [
+          { "type": "set_loading", "key": "publishing", "value": true },
+          { "type": "call_api", "api": "publish" },
+          { "type": "set_loading", "key": "publishing", "value": false }
+        ]
+      }
+    }
+  ]
+}
+```
+</CodeBlock>
+
+---
+
+## download
+
+Downloads a file.
+
+### Syntax
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "download",
+  "url": "/api/export/data.csv",
+  "filename": "export.csv"
+}
+```
+</CodeBlock>
+
+### Properties
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `url` | string | Yes | File URL to download |
+| `filename` | string | - | Suggested filename |
+
+### Examples
+
+**Download file:**
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Button",
+  "text": "Download Report",
+  "icon": "Download",
+  "events": {
+    "on_click": [
+      { "type": "download", "url": "/api/reports/monthly.pdf", "filename": "report.pdf" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+**Dynamic download:**
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Button",
+  "text": "Export",
+  "events": {
+    "on_click": [
+      {
+        "type": "download",
+        "url": "/api/export?format={{state.exportFormat}}&ids={{state.selectedIds}}",
+        "filename": "export-{{$now | date:'YYYY-MM-DD'}}.{{state.exportFormat}}"
+      }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+**Download from API response:**
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "call_api",
+  "api": "generateExport",
+  "on_success": [
+    { "type": "download", "url": "{{$response.downloadUrl}}", "filename": "{{$response.filename}}" }
+  ]
+}
+```
+</CodeBlock>
+
+---
+
+## copy
+
+Copies text to clipboard.
+
+### Syntax
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "copy",
+  "text": "Text to copy"
+}
+```
+</CodeBlock>
+
+### Properties
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `text` | string | Yes | Text to copy |
+
+### Examples
+
+**Copy value:**
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Button",
+  "text": "Copy",
+  "icon": "Copy",
+  "events": {
+    "on_click": [
+      { "type": "copy", "text": "{{state.apiKey}}" },
+      { "type": "show_toast", "message": "Copied!", "level": "success", "duration": 2000 }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+**Copy link:**
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Button",
+  "text": "Share",
+  "icon": "Share",
+  "events": {
+    "on_click": [
+      { "type": "copy", "text": "{{$window.location.origin}}/share/{{state.item.id}}" },
+      { "type": "show_toast", "message": "Link copied to clipboard", "level": "success" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+**Copy formatted text:**
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "copy",
+  "text": "Name: {{state.user.name}}\nEmail: {{state.user.email}}\nPhone: {{state.user.phone}}"
+}
+```
+</CodeBlock>
+
+---
+
+## open_url
+
+Opens a URL in a new browser tab.
+
+### Syntax
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "open_url",
+  "url": "https://example.com"
+}
+```
+</CodeBlock>
+
+### Properties
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `url` | string | Yes | URL to open |
+| `target` | string | - | Target window (default: `_blank`) |
+
+### Examples
+
+**Open external link:**
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Button",
+  "text": "Documentation",
+  "icon": "ExternalLink",
+  "events": {
+    "on_click": [
+      { "type": "open_url", "url": "https://docs.example.com" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+**Dynamic URL:**
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Button",
+  "text": "View Profile",
+  "events": {
+    "on_click": [
+      { "type": "open_url", "url": "https://github.com/{{state.user.githubUsername}}" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+**Open in same tab:**
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "open_url",
+  "url": "https://example.com",
+  "target": "_self"
+}
+```
+</CodeBlock>
+
+---
+
+## emit
+
+Emits a custom event for inter-component communication.
+
+### Syntax
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "emit",
+  "event": "itemSelected",
+  "data": { "id": "{{state.item.id}}" }
+}
+```
+</CodeBlock>
+
+### Properties
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `event` | string | Yes | Event name |
+| `data` | any | - | Event payload |
+
+### Examples
+
+**Emit selection event:**
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Button",
+  "text": "Select",
+  "events": {
+    "on_click": [
+      { "type": "emit", "event": "itemSelected", "data": "{{state.currentItem}}" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+**Listen for event:**
+
+<CodeBlock lang="json">
+```json
+{
+  "events": {
+    "onEvent:itemSelected": [
+      { "type": "update_state", "path": "selectedItem", "value": "{{$event.data}}" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+**Parent-child communication:**
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "emit",
+  "event": "formSubmitted",
+  "data": {
+    "formId": "contactForm",
+    "values": "{{form.contactForm}}"
+  }
+}
+```
+</CodeBlock>
+
+---
+
+## Common Patterns
+
+### Loading with Error Handling
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Button",
+  "text": "Submit",
+  "loading": "{{loading.submit}}",
+  "events": {
+    "on_click": [
+      { "type": "set_loading", "key": "submit", "value": true },
+      {
+        "type": "call_api",
+        "api": "submit",
+        "on_success": [
+          { "type": "show_toast", "message": "Success!", "level": "success" }
+        ],
+        "on_error": [
+          { "type": "show_toast", "message": "{{$error.message}}", "level": "error" }
+        ],
+        "onComplete": [
+          { "type": "set_loading", "key": "submit", "value": false }
+        ]
+      }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+### Copy with Feedback
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Flex",
+  "align": "center",
+  "gap": "sm",
+  "children": [
+    {
+      "type": "Text",
+      "text": "{{state.code}}",
+      "className": "font-mono bg-muted px-2 py-1 rounded"
+    },
+    {
+      "type": "Button",
+      "variant": "ghost",
+      "size": "sm",
+      "icon": "{{state.copied ? 'Check' : 'Copy'}}",
+      "events": {
+        "on_click": [
+          { "type": "copy", "text": "{{state.code}}" },
+          { "type": "update_state", "path": "copied", "value": true },
+          { "type": "show_toast", "message": "Copied!", "level": "success", "duration": 1500 }
+        ]
+      }
+    }
+  ]
+}
+```
+</CodeBlock>
+
+### Export Options
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Dropdown",
+  "trigger": { "type": "Button", "text": "Export", "icon": "Download" },
+  "items": [
+    {
+      "label": "CSV",
+      "action": [{ "type": "download", "url": "/api/export?format=csv", "filename": "data.csv" }]
+    },
+    {
+      "label": "Excel",
+      "action": [{ "type": "download", "url": "/api/export?format=xlsx", "filename": "data.xlsx" }]
+    },
+    {
+      "label": "PDF",
+      "action": [{ "type": "download", "url": "/api/export?format=pdf", "filename": "data.pdf" }]
+    }
+  ]
+}
+```
+</CodeBlock>
+
+### Best Practices
+
+1. **Always reset loading states** - Use `onComplete` to ensure loading stops
+2. **Show copy feedback** - Confirm clipboard actions with toasts
+3. **Use meaningful event names** - Make events self-documenting
+4. **Handle download errors** - Wrap downloads in try/catch patterns
+5. **Validate URLs** - Ensure URLs are valid before opening

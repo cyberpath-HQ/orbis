@@ -1,0 +1,174 @@
+---
+import { docsNav, mainNav } from '@/lib/navigation';
+import SearchButton from '@/components/SearchButton.astro';
+
+const currentPath = Astro.url.pathname;
+---
+
+<div class="md:hidden">
+    <button
+        id="mobile-menu-button"
+        type="button"
+        class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring hover:bg-accent hover:text-accent-foreground size-9"
+        aria-label="Toggle menu"
+        aria-expanded="false"
+    >
+        <svg
+            id="menu-open-icon"
+            class="size-5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+        >
+            <line x1="4" x2="20" y1="12" y2="12" />
+            <line x1="4" x2="20" y1="6" y2="6" />
+            <line x1="4" x2="20" y1="18" y2="18" />
+        </svg>
+        <svg
+            id="menu-close-icon"
+            class="hidden size-5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+        >
+            <path d="M18 6 6 18" />
+            <path d="m6 6 12 12" />
+        </svg>
+        <span class="sr-only">Toggle menu</span>
+    </button>
+</div>
+
+<!-- Mobile Menu Panel -->
+<div
+    id="mobile-menu"
+    class="fixed inset-x-0 top-14 z-50 hidden h-[calc(100vh-3.5rem)] overflow-y-auto bg-background md:hidden"
+>
+    <div class="container px-4 pt-6 pb-28">
+        <!-- Main Nav -->
+        <nav class="mb-6 space-y-1">
+            <div class="mb-4">
+                <SearchButton />
+            </div>
+            {mainNav.map((item) => (
+                <a
+                    href={item.href}
+                    target={item.external ? `_blank` : undefined}
+                    rel={item.external ? `noopener noreferrer` : undefined}
+                    class:list={[
+                        `flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors`,
+                        currentPath.startsWith(item.href || `#`)
+                            ? `bg-accent text-accent-foreground`
+                            : `text-muted-foreground hover:bg-accent hover:text-accent-foreground`,
+                    ]}
+                >
+                    {item.title}
+                    {item.external && (
+                        <svg class="ml-auto size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                            <polyline points="15 3 21 3 21 9" />
+                            <line x1="10" y1="14" x2="21" y2="3" />
+                        </svg>
+                    )}
+                </a>
+            ))}
+        </nav>
+
+        <!-- Separator -->
+        <div class="mb-6 h-px bg-border" />
+
+        <!-- Docs Nav -->
+        <nav class="space-y-6">
+            {docsNav.map((section) => (
+                <div>
+                    <h4 class="mb-2 px-3 text-sm font-semibold tracking-tight">{section.title}</h4>
+                    <div class="space-y-1">
+                        {section.items.map((item) => (
+                            item.items ? (
+                                <details class="group">
+                                    <summary class="flex cursor-pointer items-center rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground">
+                                        <svg class="mr-2 size-4 transition-transform group-open:rotate-90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="m9 18 6-6-6-6" />
+                                        </svg>
+                                        {item.title}
+                                    </summary>
+                                    <div class="ml-4 mt-1 space-y-1">
+                                        {item.items.map((subItem) => (
+                                            <a
+                                                href={subItem.href}
+                                                class:list={[
+                                                    `flex items-center rounded-md px-3 py-2 text-sm transition-colors`,
+                                                    currentPath === subItem.href
+                                                        ? `bg-accent text-accent-foreground font-medium`
+                                                        : `text-muted-foreground hover:bg-accent hover:text-accent-foreground`,
+                                                ]}
+                                            >
+                                                {subItem.title}
+                                            </a>
+                                        ))}
+                                    </div>
+                                </details>
+                            ) : (
+                                <a
+                                    href={item.href}
+                                    class:list={[
+                                        `flex items-center rounded-md px-3 py-2 text-sm transition-colors`,
+                                        currentPath === item.href
+                                            ? `bg-accent text-accent-foreground font-medium`
+                                            : `text-muted-foreground hover:bg-accent hover:text-accent-foreground`,
+                                    ]}
+                                >
+                                    {item.title}
+                                </a>
+                            )
+                        ))}
+                    </div>
+                </div>
+            ))}
+        </nav>
+    </div>
+</div>
+
+<script>
+    function setupMobileMenu(): void {
+        const button = document.getElementById(`mobile-menu-button`);
+        const menu = document.getElementById(`mobile-menu`);
+        const openIcon = document.getElementById(`menu-open-icon`);
+        const closeIcon = document.getElementById(`menu-close-icon`);
+        
+        if (!button || !menu || !openIcon || !closeIcon) {
+            return;
+        }
+        
+        button.addEventListener(`click`, () => {
+            const isOpen = menu.classList.contains(`hidden`);
+            menu.classList.toggle(`hidden`);
+            openIcon.classList.toggle(`hidden`);
+            closeIcon.classList.toggle(`hidden`);
+            button.setAttribute(`aria-expanded`, isOpen.toString());
+            
+            // Prevent body scroll when menu is open
+            document.body.style.overflow = isOpen ? `hidden` : ``;
+        });
+        
+        // Close menu on navigation
+        const links = menu.querySelectorAll(`a`);
+        links.forEach((link) => {
+            link.addEventListener(`click`, () => {
+                menu.classList.add(`hidden`);
+                openIcon.classList.remove(`hidden`);
+                closeIcon.classList.add(`hidden`);
+                button.setAttribute(`aria-expanded`, `false`);
+                document.body.style.overflow = ``;
+            });
+        });
+    }
+    
+    setupMobileMenu();
+    document.addEventListener(`astro:after-swap`, setupMobileMenu);
+</script>

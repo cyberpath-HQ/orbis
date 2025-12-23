@@ -1,0 +1,529 @@
+---
+sidebar_position: 4
+title: State Management
+description: Managing reactive state in Orbis pages
+---
+
+import CodeBlock from '@/components/mdx/CodeBlock.astro';
+import Mermaid from '@/components/mdx/Mermaid.astro';
+
+
+# State Management
+
+Orbis uses a reactive state system powered by Zustand. Each page has its own isolated state store that drives UI updates.
+
+## Overview
+
+State in Orbis flows unidirectionally:
+
+<Mermaid>
+```mermaid
+graph LR
+    Definition[State Definition ] --> Store[Zustand Store ]
+    Store --> UI[UI Components ]
+    UI --> Actions[User Actions ]
+    Actions --> Store
+```
+</Mermaid>
+
+## Defining State
+
+State is defined in the page's `state` field:
+
+<CodeBlock lang="json">
+```json
+{
+  "pages": [
+    {
+      "id": "my-page",
+      "state": {
+        "username": {
+          "type": "string",
+          "default": "Guest"
+        },
+        "items": {
+          "type": "array",
+          "default": []
+        },
+        "settings": {
+          "type": "object",
+          "default": {
+            "theme": "light",
+            "notifications": true
+          }
+        },
+        "count": {
+          "type": "number",
+          "default": 0
+        },
+        "isActive": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "layout": { ... }
+    }
+  ]
+}
+```
+</CodeBlock>
+
+### State Field Definition
+
+Each state field has:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `type` | Required | `string`, `number`, `boolean`, `object`, `array` |
+| `default` | Optional | Initial value (auto-generated if not provided) |
+| `nullable` | Optional | Whether the field can be null |
+| `description` | Optional | Documentation for the field |
+
+### Default Values by Type
+
+If no `default` is provided:
+
+| Type | Default Value |
+|------|---------------|
+| `string` | `""` |
+| `number` | `0` |
+| `boolean` | `false` |
+| `object` | `{}` |
+| `array` | `[]` |
+
+## Accessing State
+
+State values are accessed in expressions using the `state.` prefix:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Text",
+  "content": "Hello, {{state.username}}!"
+}
+```
+</CodeBlock>
+
+### Nested State Access
+
+Use dot notation for nested objects:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Text",
+  "content": "Theme: {{state.settings.theme}}"
+}
+```
+</CodeBlock>
+
+### Array Access
+
+Access array elements by index or use loops:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Text",
+  "content": "First item: {{state.items[0].name}}"
+}
+```
+</CodeBlock>
+
+## Updating State
+
+State is updated through the `update_state` action:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Button",
+  "label": "Increment",
+  "events": {
+    "on_click": [
+      {
+        "type": "update_state",
+        "path": "count",
+        "value": "{{state.count + 1}}"
+      }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+### Update Modes
+
+The `update_state` action supports different modes:
+
+#### Set (Default)
+
+Replace the value completely:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "update_state",
+  "path": "username",
+  "value": "John"
+}
+```
+</CodeBlock>
+
+#### Merge
+
+Merge objects (shallow):
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "update_state",
+  "path": "settings",
+  "mode": "merge",
+  "value": {
+    "theme": "dark"
+  }
+}
+```
+</CodeBlock>
+
+Result: `{ theme: "dark", notifications: true }`
+
+#### Append
+
+Add to arrays:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "update_state",
+  "path": "items",
+  "mode": "append",
+  "value": { "id": 1, "name": "New Item" }
+}
+```
+</CodeBlock>
+
+#### Remove
+
+Remove from arrays:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "update_state",
+  "path": "items",
+  "mode": "remove",
+  "value": "{{$item.id === 1}}"
+}
+```
+</CodeBlock>
+
+### Nested Updates
+
+Update nested properties directly:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "update_state",
+  "path": "settings.theme",
+  "value": "dark"
+}
+```
+</CodeBlock>
+
+## Loading States
+
+Track loading status for async operations:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Button",
+  "label": "Load Data",
+  "loading": "{{state.loading.fetchData}}",
+  "events": {
+    "on_click": [
+      {
+        "type": "set_loading",
+        "target": "fetchData",
+        "loading": true
+      },
+      {
+        "type": "call_api",
+        "api": "my-plugin.getData",
+        "on_success": [
+          { "type": "update_state", "path": "data", "value": "$response.data" },
+          { "type": "set_loading", "target": "fetchData", "loading": false }
+        ],
+        "on_error": [
+          { "type": "set_loading", "target": "fetchData", "loading": false }
+        ]
+      }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+## Error States
+
+Store error messages in state:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "call_api",
+  "api": "my-plugin.submit",
+  "on_error": [
+    {
+      "type": "update_state",
+      "path": "errors.submit",
+      "value": "$error.message"
+    }
+  ]
+}
+```
+</CodeBlock>
+
+Display errors conditionally:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Alert",
+  "variant": "destructive",
+  "visible": "{{state.errors.submit}}",
+  "message": "{{state.errors.submit}}"
+}
+```
+</CodeBlock>
+
+## Form Binding
+
+Fields can bind directly to state:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Field",
+  "name": "email",
+  "fieldType": "email",
+  "bindTo": "formData.email"
+}
+```
+</CodeBlock>
+
+The field automatically:
+- Reads its initial value from `state.formData.email`
+- Updates `state.formData.email` on change
+
+### Two-Way Binding
+
+<CodeBlock lang="json">
+```json
+{
+  "state": {
+    "formData": {
+      "type": "object",
+      "default": {
+        "name": "",
+        "email": "",
+        "message": ""
+      }
+    }
+  },
+  "layout": {
+    "type": "Form",
+    "id": "contact-form",
+    "fields": [
+      { "name": "name", "fieldType": "text", "bindTo": "formData.name" },
+      { "name": "email", "fieldType": "email", "bindTo": "formData.email" },
+      { "name": "message", "fieldType": "textarea", "bindTo": "formData.message" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+## State Initialization
+
+### On Page Mount
+
+Use `on_mount` to initialize state when a page loads:
+
+<CodeBlock lang="json" >
+```json {9-17}
+{
+  "pages": [
+    {
+      "id": "dashboard",
+      "state": {
+        "data": { "type": "array", "default": [] }
+      },
+      "hooks": {
+        "on_mount": [
+          {
+            "type": "call_api",
+            "api": "my-plugin.getData",
+            "on_success": [
+              { "type": "update_state", "path": "data", "value": "$response.data" }
+            ]
+          }
+        ]
+      },
+      "sections": { ... }
+    }
+  ]
+}
+```
+</CodeBlock>
+
+## State Cleanup
+
+Use `on_unmount` to clean up when leaving a page:
+
+<CodeBlock lang="json">
+```json
+{
+  "on_unmount": [
+    {
+      "type": "update_state",
+      "path": "selectedItem",
+      "value": null
+    }
+  ]
+}
+```
+</CodeBlock>
+
+## State Isolation
+
+Each page has its own isolated state store:
+
+- State doesn't leak between pages
+- Navigating away **does not** reset state
+- Plugins can't access other plugins' state
+
+### Sharing Data Between Pages
+
+For shared data, use:
+
+1. **Backend storage** - Persist to database
+2. **URL parameters** - Pass via navigation
+3. **API calls** - Fetch on each page load
+
+## Reactive Updates
+
+State changes trigger automatic UI updates:
+
+<Mermaid>
+```mermaid
+sequenceDiagram
+    participant User
+    participant Button
+    participant Action
+    participant Store
+    participant UI
+
+    User->>Button: Click
+    Button->>Action: Execute update_state
+    Action->>Store: setState(path, value)
+    Store->>UI: Notify subscribers
+    UI->>UI: Re-render affected components
+```
+</Mermaid>
+
+Only components using the changed state values re-render.
+
+## Performance Tips
+
+### Minimize State Size
+
+Keep state focused on what's needed:
+
+<CodeBlock lang="json">
+```json
+// Good
+{
+  "selectedId": { "type": "string" },
+  "items": { "type": "array" }
+}
+
+// ❌ Avoid - storing derived data
+{
+  "selectedId": { "type": "string" },
+  "items": { "type": "array" },
+  "selectedItem": { "type": "object" },  // Can be derived
+  "itemCount": { "type": "number" }       // Can be derived
+}
+```
+</CodeBlock>
+
+### Normalize Complex Data
+
+For complex relationships, use normalized structures:
+
+<CodeBlock lang="json">
+```json
+{
+  "usersById": {
+    "type": "object",
+    "default": {
+      "1": { "name": "Alice" },
+      "2": { "name": "Bob" }
+    }
+  },
+  "userIds": {
+    "type": "array",
+    "default": ["1", "2"]
+  }
+}
+```
+</CodeBlock>
+
+### Batch Updates
+
+Multiple state changes in one action sequence are batched:
+
+<CodeBlock lang="json">
+```json
+{
+  "events": {
+    "on_click": [
+      { "type": "update_state", "path": "a", "value": 1 },
+      { "type": "update_state", "path": "b", "value": 2 },
+      { "type": "update_state", "path": "c", "value": 3 }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+This causes only one re-render, not three.
+
+## Debugging State
+
+In development mode, state changes are logged:
+
+<CodeBlock lang="bash">
+```bash
+RUST_LOG=debug bun run tauri dev
+```
+</CodeBlock>
+
+Watch the console for state updates:
+
+<CodeBlock lang="text">
+```text
+[STATE] path: "count", value: 1
+[STATE] path: "settings.theme", value: "dark"
+```
+</CodeBlock>
+
+## Next Steps
+
+- **[Expressions](./expressions)** - Dynamic values in detail
+- **[Event Handling](./event-handling)** - Responding to user input
+- **[Actions](../actions/overview)** - All available actions

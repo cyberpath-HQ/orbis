@@ -1,0 +1,18 @@
+---
+export interface Props {
+    cols?: 1 | 2 | 3 | 4;
+}
+
+const { cols = 2 } = Astro.props;
+
+const gridCols = {
+    1: `grid-cols-1`,
+    2: `grid-cols-1 md:grid-cols-2`,
+    3: `grid-cols-1 md:grid-cols-2 lg:grid-cols-3`,
+    4: `grid-cols-1 md:grid-cols-2 lg:grid-cols-4`,
+};
+---
+
+<div class:list={[`grid gap-4 my-6`, gridCols[cols]]}>
+    <slot />
+</div>

@@ -347,6 +347,13 @@ impl PluginWatcher {
 
     /// Check if a path is a plugin file.
     fn is_plugin_file(path: &Path) -> bool {
+        // Ignore plugin state file to prevent watcher loops
+        if let Some(file_name) = path.file_name().and_then(|s| s.to_str()) {
+            if file_name == ".plugin_states.json" {
+                return false;
+            }
+        }
+        
         // Check for plugin-related files
         if let Some(ext) = path.extension().and_then(|s| s.to_str()) {
             matches!(ext, "wasm" | "zip" | "json")

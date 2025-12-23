@@ -3,13 +3,14 @@ name = "hello-plugin"
 version = "0.1.0"
 edition = "2021"
 
-# Not part of the main workspace
-[workspace]
-
 [lib]
 crate-type = ["cdylib"]
 
 [dependencies]
+# Plugin API for manifest and UI schemas
+orbis-plugin-api = { path = "../../crates/orbis-plugin-api" }
+
+# Serialization
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 

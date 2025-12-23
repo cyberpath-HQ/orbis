@@ -1,0 +1,271 @@
+---
+sidebar_position: 1
+title: Actions Overview
+description: All available action types
+---
+
+import CodeBlock from '@/components/mdx/CodeBlock.astro';
+
+
+# Actions Overview
+
+Actions define what happens in response to events. They are the building blocks of interactivity in Orbis plugins.
+
+## Action Structure
+
+Every action has a `type` and type-specific properties:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "update_state",
+  "path": "count",
+  "value": "{{state.count}} + 1"
+}
+```
+</CodeBlock>
+
+## Action Types
+
+| Type | Purpose |
+|------|---------|
+| [`update_state`](./update-state) | Modify page state |
+| [`call_api`](./call-api) | Make API requests |
+| [`navigate`](./navigate) | Change routes |
+| [`show_toast`](./show-toast) | Display notifications |
+| [`show_dialog`](./dialogs) | Show confirmation dialogs |
+| [`close_dialog`](./dialogs) | Close dialogs |
+| [`debounced_action`](./flow-control) | Debounce actions |
+| [`validate_form`](./form-actions) | Validate forms |
+| [`reset_form`](./form-actions) | Reset form values |
+| [`set_loading`](./utility-actions) | Set loading state |
+| [`download`](./utility-actions) | Download files |
+| [`copy`](./utility-actions) | Copy to clipboard |
+| [`open_url`](./utility-actions) | Open external URLs |
+| [`emit`](./utility-actions) | Emit custom events |
+| [`conditional`](./flow-control) | Conditional execution |
+| [`sequence`](./flow-control) | Sequential execution |
+
+## Using Actions
+
+### In Event Handlers
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Button",
+  "label": "Click Me",
+  "events": {
+    "on_click": [
+      { "type": "update_state", "path": "clicked", "value": true },
+      { "type": "show_toast", "message": "Button clicked!" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+### In Lifecycle Hooks
+
+<CodeBlock lang="json">
+```json
+{
+  "on_mount": [
+    { "type": "call_api", "api": "getData" }
+  ],
+  "on_unmount": [
+    { "type": "update_state", "path": "selectedItem", "value": null }
+  ]
+}
+```
+</CodeBlock>
+
+### Chaining Actions
+
+Actions execute in sequence:
+
+<CodeBlock lang="json">
+```json
+{
+  "events": {
+    "on_click": [
+      { "type": "set_loading", "loading": true },
+      { "type": "call_api", "api": "save" },
+      { "type": "show_toast", "message": "Saved!" },
+      { "type": "set_loading", "loading": false }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+## Event Context
+
+Actions have access to event context via special variables:
+
+| Variable | Context | Description |
+|----------|---------|-------------|
+| `$event` | All events | Raw event object |
+| `$value` | on_change | New field value |
+| `$row` | Table on_row_click | Row data |
+| `$index` | List item events | Item index |
+| `$item` | List item events | Item data |
+| `$response` | call_api on_success | API response |
+| `$error` | call_api on_error | Error object |
+| `$page` | on_page_change | Page number |
+
+### Example
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Table",
+  "dataSource": "state:items",
+  "events": {
+    "on_row_click": [
+      { "type": "update_state", "path": "selectedId", "value": "{{$row.id}}" },
+      { "type": "navigate", "to": "/items/{{$row.id}}" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+## Error Handling
+
+### With call_api
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "call_api",
+  "api": "saveData",
+  "on_success": [
+    { "type": "show_toast", "message": "Saved!", "level": "success" }
+  ],
+  "on_error": [
+    { "type": "show_toast", "message": "Error: {{$error.message}}", "level": "error" }
+  ]
+}
+```
+</CodeBlock>
+
+### Fallback Pattern
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "call_api",
+  "api": "primaryApi",
+  "on_error": [
+    {
+      "type": "call_api",
+      "api": "fallbackApi",
+      "on_error": [
+        { "type": "show_toast", "message": "All APIs failed", "level": "error" }
+      ]
+    }
+  ]
+}
+```
+</CodeBlock>
+
+## Conditional Actions
+
+Execute actions based on conditions:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "conditional",
+  "condition": "{{state.isValid}}",
+  "then": [
+    { "type": "call_api", "api": "submit" }
+  ],
+  "else": [
+    { "type": "show_toast", "message": "Please fix errors", "level": "warning" }
+  ]
+}
+```
+</CodeBlock>
+
+## Common Patterns
+
+### Loading State
+
+<CodeBlock lang="json">
+```json
+[
+  { "type": "set_loading", "loading": true },
+  {
+    "type": "call_api",
+    "api": "fetchData",
+    "on_success": [
+      { "type": "update_state", "path": "data", "value": "$response.data" }
+    ],
+    "finally": [
+      { "type": "set_loading", "loading": false }
+    ]
+  }
+]
+```
+</CodeBlock>
+
+### Optimistic Update
+
+<CodeBlock lang="json">
+```json
+[
+  { "type": "update_state", "path": "items", "value": "{{state.items.filter(i => i.id !== $itemId)}}" },
+  {
+    "type": "call_api",
+    "api": "deleteItem",
+    "on_error": [
+      { "type": "call_api", "api": "getItems" },
+      { "type": "show_toast", "message": "Failed to delete", "level": "error" }
+    ]
+  }
+]
+```
+</CodeBlock>
+
+### Form Submission
+
+<CodeBlock lang="json">
+```json
+[
+  { "type": "validate_form", "form": "myForm" },
+  {
+    "type": "conditional",
+    "condition": "{{state.$formValid}}",
+    "then": [
+      { "type": "set_loading", "loading": true },
+      {
+        "type": "call_api",
+        "api": "submitForm",
+        "args": "{{state.formData}}",
+        "on_success": [
+          { "type": "show_toast", "message": "Submitted!", "level": "success" },
+          { "type": "reset_form", "form": "myForm" },
+          { "type": "navigate", "to": "/success" }
+        ]
+      },
+      { "type": "set_loading", "loading": false }
+    ]
+  }
+]
+```
+</CodeBlock>
+
+## Next Steps
+
+Explore each action type in detail:
+
+- [Update State](./update-state)
+- [Call API](./call-api)
+- [Navigate](./navigate)
+- [Show Toast](./show-toast)
+- [Dialogs](./dialogs)
+- [Form Actions](./form-actions)
+- [Utility Actions](./utility-actions)
+- [Flow Control](./flow-control)

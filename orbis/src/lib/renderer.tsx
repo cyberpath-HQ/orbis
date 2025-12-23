@@ -98,7 +98,7 @@ import type {
     Action
 } from '../types/schema';
 import {
-    type PageStateStore,
+    type PageStateStoreHook,
     getNestedValue,
     interpolateExpression,
     evaluateBooleanExpression
@@ -137,7 +137,7 @@ function useFormContext(): FormContextValue {
 
 // Renderer context
 interface RendererContext {
-    state:     PageStateStore
+    state:     PageStateStoreHook
     apiClient: ApiClient
     navigate:  ReturnType<typeof useNavigate>
     row?:      Record<string, unknown>
@@ -158,7 +158,7 @@ function useRendererContext(): RendererContext {
 // Main schema renderer
 interface SchemaRendererProps {
     schema:    ComponentSchema
-    state:     PageStateStore
+    state:     PageStateStoreHook
     apiClient: ApiClient
 }
 
@@ -197,10 +197,16 @@ const ComponentRenderer = memo(function ComponentRenderer({
     schema,
 }: ComponentRendererProps): React.ReactElement | null {
     const ctx = useRendererContext();
-    const stateData = ctx.state.getState();
+
+    // Use the state hook to subscribe to changes (reactive)
+    const stateData = ctx.state((s) => s.state);
+
+    if (!schema) {
+        return null;
+    }
 
     // Check visibility
-    if (schema.visible !== undefined) {
+    if (schema.visible !== undefined && schema.visible !== null) {
         const isVisible = evaluateBooleanExpression(schema.visible, stateData);
         if (!isVisible) {
             return null;
@@ -209,46 +215,9 @@ const ComponentRenderer = memo(function ComponentRenderer({
 
     // Render based on type
     switch (schema.type) {
+        // Layout components
         case `Container`:
             return <ContainerRenderer schema={schema} />;
-        case `Text`:
-            return <TextRenderer schema={schema} />;
-        case `Heading`:
-            return <HeadingRenderer schema={schema} />;
-        case `Button`:
-            return <ButtonRenderer schema={schema} />;
-        case `Field`:
-            return <FieldRenderer schema={schema} />;
-        case `Form`:
-            return <FormRenderer schema={schema} />;
-        case `Table`:
-            return <TableRenderer schema={schema} />;
-        case `Card`:
-            return <CardRenderer schema={schema} />;
-        case `List`:
-            return <ListRenderer schema={schema} />;
-        case `Image`:
-            return <ImageRenderer schema={schema} />;
-        case `Icon`:
-            return <IconRenderer schema={schema} />;
-        case `Link`:
-            return <LinkRenderer schema={schema} />;
-        case `Badge`:
-            return <BadgeRenderer schema={schema} />;
-        case `Alert`:
-            return <AlertRenderer schema={schema} />;
-        case `Progress`:
-            return <ProgressRenderer schema={schema} />;
-        case `Tabs`:
-            return <TabsRenderer schema={schema} />;
-        case `Accordion`:
-            return <AccordionRenderer schema={schema} />;
-        case `Modal`:
-            return <ModalRenderer schema={schema} />;
-        case `Dropdown`:
-            return <DropdownRenderer schema={schema} />;
-        case `Tooltip`:
-            return <TooltipRenderer schema={schema} />;
         case `Grid`:
             return <GridRenderer schema={schema} />;
         case `Flex`:
@@ -257,26 +226,78 @@ const ComponentRenderer = memo(function ComponentRenderer({
             return <SpacerRenderer schema={schema} />;
         case `Divider`:
             return <DividerRenderer schema={schema} />;
-        case `Skeleton`:
-            return <SkeletonRenderer schema={schema} />;
+        case `Section`:
+            return <SectionRenderer schema={schema} />;
+
+        // Typography components
+        case `Text`:
+            return <TextRenderer schema={schema} />;
+        case `Heading`:
+            return <HeadingRenderer schema={schema} />;
+
+        // Form components
+        case `Field`:
+            return <FieldRenderer schema={schema} />;
+        case `Form`:
+            return <FormRenderer schema={schema} />;
+
+        // Data display components
+        case `Table`:
+            return <TableRenderer schema={schema} />;
+        case `Card`:
+            return <CardRenderer schema={schema} />;
+        case `List`:
+            return <ListRenderer schema={schema} />;
+        case `Badge`:
+            return <BadgeRenderer schema={schema} />;
+        case `Image`:
+            return <ImageRenderer schema={schema} />;
         case `Avatar`:
             return <AvatarRenderer schema={schema} />;
-        case `Breadcrumb`:
-            return <BreadcrumbRenderer schema={schema} />;
         case `StatCard`:
             return <StatCardRenderer schema={schema} />;
+
+        // Feedback components
+        case `Alert`:
+            return <AlertRenderer schema={schema} />;
+        case `Progress`:
+            return <ProgressRenderer schema={schema} />;
+        case `Skeleton`:
+            return <SkeletonRenderer schema={schema} />;
         case `EmptyState`:
             return <EmptyStateRenderer schema={schema} />;
         case `LoadingOverlay`:
             return <LoadingOverlayRenderer schema={schema} />;
+
+        // Navigation components
+        case `Button`:
+            return <ButtonRenderer schema={schema} />;
+        case `Link`:
+            return <LinkRenderer schema={schema} />;
+        case `Tabs`:
+            return <TabsRenderer schema={schema} />;
+        case `Dropdown`:
+            return <DropdownRenderer schema={schema} />;
+        case `Breadcrumb`:
+            return <BreadcrumbRenderer schema={schema} />;
+        case `PageHeader`:
+            return <PageHeaderRenderer schema={schema} />;
+
+        // Overlays components
+        case `Modal`:
+            return <ModalRenderer schema={schema} />;
+        case `Tooltip`:
+            return <TooltipRenderer schema={schema} />;
+
+        // Misc components
+        case `Icon`:
+            return <IconRenderer schema={schema} />;
+        case `Accordion`:
+            return <AccordionRenderer schema={schema} />;
         case `Conditional`:
             return <ConditionalRenderer schema={schema} />;
         case `Loop`:
             return <LoopRenderer schema={schema} />;
-        case `Section`:
-            return <SectionRenderer schema={schema} />;
-        case `PageHeader`:
-            return <PageHeaderRenderer schema={schema} />;
         case `DataDisplay`:
             return <DataDisplayRenderer schema={schema} />;
         case `Fragment`:
@@ -307,6 +328,7 @@ const ComponentRenderer = memo(function ComponentRenderer({
     if (prevProps.schema.id !== nextProps.schema.id) {
         return false;
     }
+
     // Use shallow comparison for schema object
     return shallowEqual(
         prevProps.schema as unknown as Record<string, unknown>,
@@ -343,13 +365,14 @@ function useEventHandler(actions?: Array<Action>): (event?: unknown) => Promise<
 // Expression resolver helper
 function useResolvedValue(expression: string | undefined): string {
     const ctx = useRendererContext();
-    const stateData = ctx.state.getState();
+    const stateData = ctx.state((s) => s.state);
 
     if (!expression) {
         return ``;
     }
 
     return interpolateExpression(expression, stateData, {
+        state:  stateData,
         $row:   ctx.row,
         $item:  ctx.item,
         $index: ctx.index,
@@ -370,7 +393,9 @@ function ContainerRenderer({
     schema,
 }: { schema: ContainerSchema }): React.ReactElement {
     const ctx = useRendererContext();
-    const stateData = ctx.state.getState();
+
+    // Use the state hook to subscribe to changes (reactive)
+    const stateData = ctx.state((s) => s.state);
     const handleClick = useEventHandler(schema.events?.onClick);
 
     const handleOnClick = (): void => {
@@ -453,12 +478,13 @@ function ButtonRenderer({
     schema,
 }: { schema: ButtonSchema }): React.ReactElement {
     const ctx = useRendererContext();
-    const stateData = ctx.state.getState();
-    const handleClick = useEventHandler(schema.events?.onClick);
+
+    const stateData = ctx.state((s) => s.state);
+    const handleClick = useEventHandler(schema.events?.on_click);
     const label = useResolvedValue(schema.label);
 
     const handleOnClick = (): void => {
-        void handleClick();
+        void handleClick(`click`);
     };
 
     const isDisabled = schema.disabled
@@ -486,7 +512,10 @@ function ButtonRenderer({
     };
 
     // Extract ARIA props for accessibility
-    const ariaProps = extractAriaProps(schema, { ...stateData, $loading: isLoading });
+    const ariaProps = extractAriaProps(schema, {
+        ...stateData,
+        $loading: isLoading,
+    });
 
     return (
         <Button
@@ -500,7 +529,9 @@ function ButtonRenderer({
             aria-label={ariaProps[`aria-label`] as string | undefined}
             aria-disabled={isDisabled || isLoading}
             aria-busy={isLoading}
-            {...(ariaProps.role && { role: ariaProps.role as string })}
+            {...(ariaProps.role && {
+                role: ariaProps.role as string,
+            })}
         >
             {isLoading && <LucideIcons.Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {Icon && schema.iconPosition !== `right` && <Icon className="mr-2 h-4 w-4" />}
@@ -515,7 +546,9 @@ function FieldRenderer({
 }: { schema: FieldSchema }): React.ReactElement {
     const ctx = useRendererContext();
     const formCtx = useFormContext();
-    const stateData = ctx.state.getState();
+
+    // Use the state hook to subscribe to changes (reactive)
+    const stateData = ctx.state((s) => s.state);
     const handleChange = useEventHandler(schema.events?.onChange);
 
     const label = useResolvedValue(schema.label);
@@ -534,11 +567,17 @@ function FieldRenderer({
         ? formCtx.form.state.values[schema.name]
         : undefined;
 
-    const value = formCtx.isInForm && formValue !== undefined
-        ? formValue
-        : schema.bindTo
-            ? getNestedValue(stateData, schema.bindTo)
-            : schema.defaultValue;
+    // Calculate value - prefer form value, then bound state value, then default
+    let value: unknown;
+    if (formCtx.isInForm && formValue !== undefined) {
+        value = formValue;
+    }
+    else if (schema.bindTo) {
+        value = getNestedValue(stateData, schema.bindTo);
+    }
+    else {
+        value = schema.defaultValue;
+    }
 
     // Get validation error from form if inside form context
     const fieldError = formFieldMeta?.errors?.[0]
@@ -728,23 +767,26 @@ function FormRenderer({
     // Build Zod schema for validation
     const zodSchema = useMemo(
         () => buildFormSchema(schema.fields),
-        [schema.fields]
+        [ schema.fields ]
     );
 
     // Get initial values from page state or field defaults
+    // Note: we get state once during initialization, not reactively
     const initialValues = useMemo(
-        () => getInitialFormValues(schema.fields, ctx.state.getState()),
-        [schema.fields, ctx.state]
+        () => getInitialFormValues(schema.fields, ctx.state.getState().state),
+        [ schema.fields ]
     );
 
     // Create TanStack Form instance with zod standard schema validation
     const form = useForm({
         defaultValues: initialValues,
-        validators: {
+        validators:    {
             onChange: zodSchema,
             onBlur:   zodSchema,
         },
-        onSubmit: async({ value }) => {
+        onSubmit: async({
+            value,
+        }) => {
             // Sync all form values to page state based on bindTo
             for (const field of schema.fields) {
                 if (field.bindTo && field.name in value) {
@@ -762,7 +804,10 @@ function FormRenderer({
         form,
         formId:   schema.id,
         isInForm: true,
-    }), [form, schema.id]);
+    }), [
+        form,
+        schema.id,
+    ]);
 
     const layoutClasses = {
         vertical:   `space-y-4`,
@@ -779,7 +824,9 @@ function FormRenderer({
         form.reset();
     };
 
-    const isSubmitting = form.state.isSubmitting;
+    const {
+        isSubmitting,
+    } = form.state;
 
     return (
         <FormContext.Provider value={formContextValue}>
@@ -818,7 +865,8 @@ function TableRenderer({
     schema,
 }: { schema: TableSchema }): React.ReactElement {
     const ctx = useRendererContext();
-    const stateData = ctx.state.getState();
+
+    const stateData = ctx.state((s) => s.state);
     const handleRowClick = useEventHandler(schema.events?.onRowClick);
     const handleSortChange = useEventHandler(schema.events?.onSortChange);
     const handlePageChange = useEventHandler(schema.events?.onPageChange);
@@ -853,7 +901,7 @@ function TableRenderer({
 
     // Apply sorting
     if (sortColumn && schema.sortable !== false) {
-        data = [...data].sort((a, b) => {
+        data = [ ...data ].sort((a, b) => {
             const aVal = a[sortColumn];
             const bVal = b[sortColumn];
 
@@ -955,8 +1003,7 @@ function TableRenderer({
     // Handle select all
     const onSelectAll = (selected: boolean): void => {
         if (selected) {
-            const allKeys = paginatedData.map((row, index) =>
-                schema.rowKey ? row[schema.rowKey] : index
+            const allKeys = paginatedData.map((row, index) => schema.rowKey ? row[schema.rowKey] : index
             );
             setSelectedRows(new Set(allKeys as Array<string | number>));
         }
@@ -1209,7 +1256,8 @@ function ListRenderer({
     schema,
 }: { schema: ListSchema }): React.ReactElement {
     const ctx = useRendererContext();
-    const stateData = ctx.state.getState();
+
+    const stateData = ctx.state((s) => s.state);
     const handleRowClick = useEventHandler(schema.events?.onRowClick);
 
     const dataPath = schema.dataSource.startsWith(`state:`)
@@ -1411,7 +1459,8 @@ function ProgressRenderer({
     schema,
 }: { schema: ProgressSchema }): React.ReactElement {
     const ctx = useRendererContext();
-    const stateData = ctx.state.getState();
+
+    const stateData = ctx.state((s) => s.state);
 
     const value = typeof schema.value === `string`
         ? Number(interpolateExpression(schema.value, stateData))
@@ -1510,7 +1559,8 @@ function ModalRenderer({
     schema,
 }: { schema: ModalSchema }): React.ReactElement {
     const ctx = useRendererContext();
-    const stateData = ctx.state.getState();
+
+    const stateData = ctx.state((s) => s.state);
 
     const dialogState = getNestedValue(stateData, `__dialogs.${ schema.id }`) as { open?: boolean } | undefined;
     const isOpen = dialogState?.open ?? false;
@@ -1860,7 +1910,8 @@ function LoadingOverlayRenderer({
     schema,
 }: { schema: LoadingOverlaySchema }): React.ReactElement {
     const ctx = useRendererContext();
-    const stateData = ctx.state.getState();
+
+    const stateData = ctx.state((s) => s.state);
     const isLoading = evaluateBooleanExpression(schema.loading, stateData);
     const text = useResolvedValue(schema.text);
 
@@ -1883,7 +1934,8 @@ function ConditionalRenderer({
     schema,
 }: { schema: ConditionalSchema }): React.ReactElement | null {
     const ctx = useRendererContext();
-    const stateData = ctx.state.getState();
+
+    const stateData = ctx.state((s) => s.state);
     const is_condition_met = evaluateBooleanExpression(schema.condition, stateData);
 
     if (is_condition_met) {
@@ -1901,7 +1953,8 @@ function LoopRenderer({
     schema,
 }: { schema: LoopSchema }): React.ReactElement {
     const ctx = useRendererContext();
-    const stateData = ctx.state.getState();
+
+    const stateData = ctx.state((s) => s.state);
 
     const dataPath = schema.dataSource.startsWith(`state:`)
         ? schema.dataSource.slice(6)

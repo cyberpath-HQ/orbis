@@ -1,0 +1,26 @@
+---
+export interface Props {
+    items: Array<{
+        title: string;
+        description?: string;
+    }>;
+}
+
+const { items } = Astro.props;
+---
+
+<div class="my-6 space-y-8 relative before:absolute before:inset-0 before:ml-5 before:h-full before:w-0.5 before:-translate-x-1/2 before:bg-gradient-to-b before:from-transparent before:via-border before:to-transparent md:before:mx-auto md:before:translate-x-0">
+    {items.map((item, index) => (
+        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border bg-background shadow-sm md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
+                <span class="text-sm font-semibold">{index + 1}</span>
+            </div>
+            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-card p-4 rounded-lg border shadow-sm">
+                <h4 class="font-semibold">{item.title}</h4>
+                {item.description && (
+                    <p class="text-sm text-muted-foreground mt-1">{item.description}</p>
+                )}
+            </div>
+        </div>
+    ))}
+</div>

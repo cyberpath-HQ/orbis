@@ -5,7 +5,9 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import type { StateDefinition } from '../types/schema';
-import { getCachedExpression, setCachedExpression } from './performance';
+import {
+    getCachedExpression, setCachedExpression
+} from './performance';
 
 /**
  * Get nested value from object using dot notation path
@@ -104,6 +106,46 @@ export function initializeState(definition: StateDefinition): Record<string, unk
 }
 
 /**
+ * Save state to localStorage
+ */
+export function saveStateToStorage(key: string, state: Record<string, unknown>): void {
+    try {
+        localStorage.setItem(`orbis_state_${ key }`, JSON.stringify(state));
+    }
+    catch (error) {
+        console.warn(`Failed to save state to localStorage:`, error);
+    }
+}
+
+/**
+ * Load state from localStorage
+ */
+export function loadStateFromStorage(key: string): Record<string, unknown> | null {
+    try {
+        const stored = localStorage.getItem(`orbis_state_${ key }`);
+        if (stored) {
+            return JSON.parse(stored) as Record<string, unknown>;
+        }
+    }
+    catch (error) {
+        console.warn(`Failed to load state from localStorage:`, error);
+    }
+    return null;
+}
+
+/**
+ * Clear state from localStorage
+ */
+export function clearStateFromStorage(key: string): void {
+    try {
+        localStorage.removeItem(`orbis_state_${ key }`);
+    }
+    catch (error) {
+        console.warn(`Failed to clear state from localStorage:`, error);
+    }
+}
+
+/**
  * Page state store interface
  */
 export interface PageStateStore {
@@ -118,17 +160,51 @@ export interface PageStateStore {
     setLoading:  (key: string, loading: boolean) => void
     setError:    (key: string, error: string | null) => void
     clearErrors: () => void
-    getState:    () => Record<string, unknown>
+
+    // Note: getState returns ONLY the state data, not the full store
+    getState: () => Record<string, unknown>
+    getValue: (path: string) => unknown
+}
+
+/**
+ * Page state store hook type (returned by createPageStateStore)
+ * This is a Zustand hook that can be called to get state or use selectors
+ */
+export interface PageStateStoreHook {
+    (): PageStateStore
+    <T>(selector: (state: PageStateStore) => T): T
+
+    // Zustand's getState returns the full store
+    getState:    () => PageStateStore
+
+    // Store action methods (same as PageStateStore)
+    setState:    (path: string, value: unknown) => void
+    mergeState:  (path: string, value: Record<string, unknown>) => void
+    resetState:  (definition: StateDefinition) => void
+    setLoading:  (key: string, loading: boolean) => void
+    setError:    (key: string, error: string | null) => void
+    clearErrors: () => void
     getValue:    (path: string) => unknown
 }
 
 /**
  * Create a page state store
+ * @param initialDefinition - State definition with default values
+ * @param persistenceKey - Optional key for localStorage persistence (e.g., "plugin_name:page_route")
  */
-export function createPageStateStore(initialDefinition?: StateDefinition) {
-    return create<PageStateStore>()(
+export function createPageStateStore(initialDefinition?: StateDefinition, persistenceKey?: string): PageStateStoreHook {
+    // Try to load persisted state if key provided
+    const persistedState = persistenceKey ? loadStateFromStorage(persistenceKey) : null;
+    
+    // Initialize state - merge persisted state with defaults
+    const initialState = initialDefinition ? initializeState(initialDefinition) : {};
+    const mergedInitialState = persistedState 
+        ? { ...initialState, ...persistedState }
+        : initialState;
+
+    const store = create<PageStateStore>()(
         immer((set, get) => ({
-            state:   initialDefinition ? initializeState(initialDefinition) : {},
+            state:   mergedInitialState,
             loading: {},
             errors:  {},
 
@@ -145,6 +221,11 @@ export function createPageStateStore(initialDefinition?: StateDefinition) {
                 }
 
                 current[parts[parts.length - 1]] = value;
+                
+                // Persist state if key provided
+                if (persistenceKey) {
+                    saveStateToStorage(persistenceKey, draft.state);
+                }
             }),
 
             mergeState: (path, value) => set((draft) => {
@@ -168,11 +249,21 @@ export function createPageStateStore(initialDefinition?: StateDefinition) {
                 }
 
                 current[parts[parts.length - 1]] = merged;
+                
+                // Persist state if key provided
+                if (persistenceKey) {
+                    saveStateToStorage(persistenceKey, draft.state);
+                }
             }),
 
             resetState: (definition) => set((draft) => {
                 draft.state = initializeState(definition);
                 draft.errors = {};
+                
+                // Clear persisted state when resetting
+                if (persistenceKey) {
+                    clearStateFromStorage(persistenceKey);
+                }
             }),
 
             setLoading: (key, loading) => set((draft) => {
@@ -197,6 +288,19 @@ export function createPageStateStore(initialDefinition?: StateDefinition) {
             getValue: (path) => getNestedValue(get().state, path),
         }))
     );
+
+    // Expose store methods directly on the hook for easier access
+    // This allows calling stateStore.setState() directly
+    const hook = store as PageStateStoreHook;
+    hook.setState = (path: string, value: unknown) => store.getState().setState(path, value);
+    hook.mergeState = (path: string, value: Record<string, unknown>) => store.getState().mergeState(path, value);
+    hook.resetState = (definition: StateDefinition) => store.getState().resetState(definition);
+    hook.setLoading = (key: string, loading: boolean) => store.getState().setLoading(key, loading);
+    hook.setError = (key: string, error: string | null) => store.getState().setError(key, error);
+    hook.clearErrors = () => store.getState().clearErrors();
+    hook.getValue = (path: string) => store.getState().getValue(path);
+
+    return hook;
 }
 
 /**
@@ -209,11 +313,11 @@ export function interpolateExpression(
     context?: Record<string, unknown>
 ): string {
     // Generate cache key based on expression and relevant state
-    const cacheKey = `${expression}::${JSON.stringify(state)}::${context ? JSON.stringify(context) : ''}`;
-    
+    const cacheKey = `${ expression }::${ JSON.stringify(state) }::${ context ? JSON.stringify(context) : `` }`;
+
     // Check cache first
     const cached = getCachedExpression(cacheKey, {});
-    if (cached !== undefined && typeof cached === 'string') {
+    if (cached !== undefined && typeof cached === `string`) {
         return cached;
     }
 
@@ -224,13 +328,55 @@ export function interpolateExpression(
 
     const result = expression.replace(/\{\{([^}]+)\}\}/g, (_, path: string) => {
         const trimmedPath = path.trim();
+
+        // Check if this looks like an arithmetic expression
+        const has_arithmetic_ops = /[+\-*/%()]/.test(trimmedPath);
+
+        if (has_arithmetic_ops) {
+            // First replace any state references in the expression
+            // e.g., "state.count + 1" -> "5 + 1"
+            const interpolated_path = trimmedPath.replace(/[a-zA-Z_$][a-zA-Z0-9_$.]*/g, (ref) => {
+                const value = getNestedValue(combined, ref);
+                if (value !== undefined) {
+                    if (typeof value === `number` || typeof value === `boolean`) {
+                        return String(value);
+                    }
+                    if (typeof value === `string`) {
+                        return value;
+                    }
+                }
+                return ref;
+            });
+
+            // Now evaluate the arithmetic expression
+            try {
+                const math_result = evaluateMathExpressionInternal(interpolated_path);
+                return String(math_result);
+            }
+            catch (error) {
+                console.warn(`Failed to evaluate arithmetic expression "${ interpolated_path }":`, error);
+                return interpolated_path;
+            }
+        }
+
+        // Regular path lookup
         const value = getNestedValue(combined, trimmedPath);
-        return value !== undefined ? String(value) : ``;
+
+        if (value !== undefined) {
+            if (typeof value === `number` || typeof value === `boolean`) {
+                return value;
+            }
+            if (typeof value === `string`) {
+                return value;
+            }
+            return JSON.stringify(value);
+        }
+        return ``;
     });
 
     // Cache the result
     setCachedExpression(cacheKey, {}, result);
-    
+
     return result;
 }
 
@@ -455,7 +601,7 @@ function evaluateMathExpressionInternal(expr: string): number {
     }
 
     // Handle addition and subtraction (lowest precedence)
-    const addMatch = expr.match(/^(.+?)\s*([+-])\s*([^+-]+)$/);
+    const addMatch = /^(.+?)\s*([+-])\s*([^+-]+)$/.exec(expr);
     if (addMatch) {
         const [
             , left,
@@ -468,7 +614,7 @@ function evaluateMathExpressionInternal(expr: string): number {
     }
 
     // Handle multiplication, division, modulo (higher precedence)
-    const mulMatch = expr.match(/^(.+?)\s*([*/%])\s*([^*/%]+)$/);
+    const mulMatch = /^(.+?)\s*([*/%])\s*([^*/%]+)$/.exec(expr);
     if (mulMatch) {
         const [
             , left,
@@ -514,12 +660,12 @@ export const stringFunctions = {
     split:       (str: string, separator: string) => str.split(separator),
     join:        (arr: Array<string>, separator: string) => arr.join(separator),
     concat:      (...args: Array<string>) => args.join(``),
-    padStart:    (str: string, length: number, fillChar: string = ` `) => str.padStart(length, fillChar),
-    padEnd:      (str: string, length: number, fillChar: string = ` `) => str.padEnd(length, fillChar),
+    padStart:    (str: string, length: number, fillChar = ` `) => str.padStart(length, fillChar),
+    padEnd:      (str: string, length: number, fillChar = ` `) => str.padEnd(length, fillChar),
     repeat:      (str: string, count: number) => str.repeat(count),
-    reverse:     (str: string) => str.split(``).reverse().join(``),
-    truncate:    (str: string, length: number, suffix: string = `...`) =>
-        str.length > length ? str.slice(0, length - suffix.length) + suffix : str,
+    reverse:     (str: string) => str.split(``).reverse()
+        .join(``),
+    truncate:    (str: string, length: number, suffix = `...`) => str.length > length ? str.slice(0, length - suffix.length) + suffix : str,
 };
 
 /**
@@ -533,11 +679,10 @@ export const arrayFunctions = {
     includes: (arr: Array<unknown>, item: unknown) => arr.includes(item),
     indexOf:  (arr: Array<unknown>, item: unknown) => arr.indexOf(item),
     slice:    (arr: Array<unknown>, start: number, end?: number) => arr.slice(start, end),
-    reverse:  (arr: Array<unknown>) => [...arr].reverse(),
-    unique:   (arr: Array<unknown>) => [...new Set(arr)],
+    reverse:  (arr: Array<unknown>) => [ ...arr ].reverse(),
+    unique:   (arr: Array<unknown>) => [ ...new Set(arr) ],
     flatten:  (arr: Array<unknown>) => arr.flat(),
-    count:    (arr: Array<unknown>, predicate?: (item: unknown) => boolean) =>
-        predicate ? arr.filter(predicate).length : arr.length,
+    count:    (arr: Array<unknown>, predicate?: (item: unknown) => boolean) => predicate ? arr.filter(predicate).length : arr.length,
 };
 
 /**
@@ -547,8 +692,8 @@ export const mathFunctions = {
     abs:     (n: number) => Math.abs(n),
     ceil:    (n: number) => Math.ceil(n),
     floor:   (n: number) => Math.floor(n),
-    round:   (n: number, decimals: number = 0) => {
-        const factor = Math.pow(10, decimals);
+    round:   (n: number, decimals = 0) => {
+        const factor = 10 ** decimals;
         return Math.round(n * factor) / factor;
     },
     min:     (...args: Array<number>) => Math.min(...args),
@@ -556,8 +701,8 @@ export const mathFunctions = {
     sum:     (...args: Array<number>) => args.reduce((a, b) => a + b, 0),
     average: (...args: Array<number>) => args.reduce((a, b) => a + b, 0) / args.length,
     clamp:   (n: number, min: number, max: number) => Math.min(Math.max(n, min), max),
-    random:  (min: number = 0, max: number = 1) => Math.random() * (max - min) + min,
-    pow:     (base: number, exponent: number) => Math.pow(base, exponent),
+    random:  (min = 0, max = 1) => Math.random() * (max - min) + min,
+    pow:     (base: number, exponent: number) => base ** exponent,
     sqrt:    (n: number) => Math.sqrt(n),
 };
 

@@ -1,0 +1,74 @@
+---
+export interface Props {
+    headings: Array<{ depth: number; slug: string; text: string }>;
+}
+
+const { headings } = Astro.props;
+
+// Filter to only show h2 and h3 headings
+const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
+---
+
+{tocHeadings.length > 0 && (
+    <div class="space-y-2 pt-8">
+        <p class="font-medium">On This Page</p>
+        <ul class="m-0 list-none space-y-2 text-sm">
+            {tocHeadings.map((heading) => (
+                <li class:list={[heading.depth === 3 && `ml-4`]}>
+                    <a
+                        href={`#${heading.slug}`}
+                        class="toc-link inline-block text-muted-foreground transition-colors hover:text-foreground no-underline"
+                        data-heading-id={heading.slug}
+                    >
+                        {heading.text}
+                    </a>
+                </li>
+            ))}
+        </ul>
+    </div>
+)}
+
+<script>
+    function setupTocHighlight(): void {
+        const tocLinks = document.querySelectorAll<HTMLAnchorElement>(`.toc-link`);
+        if (tocLinks.length === 0) {
+            return;
+        }
+
+        const observerOptions = {
+            rootMargin: `-80px 0px -80% 0px`,
+            threshold:  0,
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.id;
+                    tocLinks.forEach((link) => {
+                        if (link.dataset.headingId === id) {
+                            link.classList.add(`text-foreground`, `font-medium`);
+                            link.classList.remove(`text-muted-foreground`);
+                        } else {
+                            link.classList.remove(`text-foreground`, `font-medium`);
+                            link.classList.add(`text-muted-foreground`);
+                        }
+                    });
+                }
+            });
+        }, observerOptions);
+
+        // Observe all headings
+        tocLinks.forEach((link) => {
+            const id = link.dataset.headingId;
+            if (id) {
+                const heading = document.getElementById(id);
+                if (heading) {
+                    observer.observe(heading);
+                }
+            }
+        });
+    }
+
+    setupTocHighlight();
+    document.addEventListener(`astro:after-swap`, setupTocHighlight);
+</script>

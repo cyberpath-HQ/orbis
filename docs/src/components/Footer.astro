@@ -1,0 +1,32 @@
+---
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="border-t py-6 md:py-0">
+    <div class="container flex flex-col items-center justify-between gap-4 md:h-16 md:flex-row px-4 md:px-8">
+        <p class="text-balance text-center text-sm leading-loose text-muted-foreground md:text-left">
+            Built by{` `}
+            <a
+                href="https://github.com/cyberpath-HQ"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="font-medium underline underline-offset-4 hover:text-foreground"
+            >
+                CyberPath
+            </a>
+            . The source code is available on{` `}
+            <a
+                href="https://github.com/cyberpath-HQ/orbis"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="font-medium underline underline-offset-4 hover:text-foreground"
+            >
+                GitHub
+            </a>
+            .
+        </p>
+        <p class="text-sm text-muted-foreground">
+            © {currentYear} Cyberpath. All rights reserved.
+        </p>
+    </div>
+</footer>

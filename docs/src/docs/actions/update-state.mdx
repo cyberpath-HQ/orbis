@@ -1,0 +1,324 @@
+---
+sidebar_position: 2
+title: update_state
+description: Modify page state values
+---
+
+import CodeBlock from '@/components/mdx/CodeBlock.astro';
+
+
+# update_state
+
+Modifies a value in the page state.
+
+## Syntax
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "update_state",
+  "path": "fieldName",
+  "value": "newValue"
+}
+```
+</CodeBlock>
+
+## Properties
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `path` | string | Yes | Dot-notation path to state field |
+| `value` | any | Yes | New value (supports expressions) |
+
+## Examples
+
+### Simple Value
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "update_state",
+  "path": "count",
+  "value": 5
+}
+```
+</CodeBlock>
+
+### Computed Value
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "update_state",
+  "path": "count",
+  "value": "{{state.count}} + 1"
+}
+```
+</CodeBlock>
+
+### Nested Path
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "update_state",
+  "path": "user.profile.name",
+  "value": "John Doe"
+}
+```
+</CodeBlock>
+
+### Array Operations
+
+**Append to array:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "update_state",
+  "path": "items",
+  "value": "[...state.items, { id: Date.now(), name: 'New Item' }]"
+}
+```
+</CodeBlock>
+
+**Filter array:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "update_state",
+  "path": "items",
+  "value": "{{state.items.filter(item => item.id !== state.selectedId)}}"
+}
+```
+</CodeBlock>
+
+**Update array item:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "update_state",
+  "path": "items",
+  "value": "{{state.items.map(item => item.id === state.editId ? { ...item, name: state.newName } : item)}}"
+}
+```
+</CodeBlock>
+
+### Object Operations
+
+**Update object:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "update_state",
+  "path": "settings",
+  "value": "{{ ...state.settings, theme: 'dark' }}"
+}
+```
+</CodeBlock>
+
+**Clear object:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "update_state",
+  "path": "formData",
+  "value": {}
+}
+```
+</CodeBlock>
+
+### Boolean Toggle
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "update_state",
+  "path": "isVisible",
+  "value": "{{!state.isVisible}}"
+}
+```
+</CodeBlock>
+
+### From Event Context
+
+**From form field:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "Field",
+  "name": "search",
+  "events": {
+    "on_change": [
+      { "type": "update_state", "path": "searchQuery", "value": "{{$value}}" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+**From table row:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "Table",
+  "events": {
+    "on_row_click": [
+      { "type": "update_state", "path": "selectedItem", "value": "{{$row}}" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+**From API response:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "call_api",
+  "api": "getData",
+  "on_success": [
+    { "type": "update_state", "path": "data", "value": "$response.data" },
+    { "type": "update_state", "path": "total", "value": "$response.meta.total" }
+  ]
+}
+```
+</CodeBlock>
+
+## Common Patterns
+
+### Counter
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Flex",
+  "gap": "1rem",
+  "align": "center",
+  "children": [
+    {
+      "type": "Button",
+      "label": "-",
+      "events": {
+        "on_click": [
+          { "type": "update_state", "path": "count", "value": "{{state.count}} - 1" }
+        ]
+      }
+    },
+    { "type": "Text", "content": "{{state.count}}" },
+    {
+      "type": "Button",
+      "label": "+",
+      "events": {
+        "on_click": [
+          { "type": "update_state", "path": "count", "value": "{{state.count}} + 1" }
+        ]
+      }
+    }
+  ]
+}
+```
+</CodeBlock>
+
+### Selection
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "List",
+  "dataSource": "state:items",
+  "itemTemplate": {
+    "type": "Flex",
+    "className": "p-2 cursor-pointer {{$item.id === state.selectedId ? 'bg-blue-100' : ''}}",
+    "children": [
+      { "type": "Text", "content": "{{$item.name}}" }
+    ],
+    "events": {
+      "on_click": [
+        { "type": "update_state", "path": "selectedId", "value": "{{$item.id}}" }
+      ]
+    }
+  }
+}
+```
+</CodeBlock>
+
+### Form Reset
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Button",
+  "label": "Reset",
+  "events": {
+    "on_click": [
+      {
+        "type": "update_state",
+        "path": "formData",
+        "value": {
+          "name": "",
+          "email": "",
+          "message": ""
+        }
+      }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+### Pagination
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Button",
+  "label": "Next Page",
+  "disabled": "{{state.currentPage >= state.totalPages}}",
+  "events": {
+    "on_click": [
+      { "type": "update_state", "path": "currentPage", "value": "{{state.currentPage}} + 1" },
+      { "type": "call_api", "api": "getItems", "args": { "page": "{{state.currentPage}} + 1" } }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+## State Path Syntax
+
+### Root Level
+
+<CodeBlock lang="json">
+```json
+{ "path": "count", "value": 0 }
+```
+</CodeBlock>
+
+State: `{ count: 0 }`
+
+### Nested Object
+
+<CodeBlock lang="json">
+```json
+{ "path": "user.profile.name", "value": "John" }
+```
+</CodeBlock>
+
+State: `{ user: { profile: { name: "John" } } }`
+
+### Array Index
+
+<CodeBlock lang="json">
+```json
+{ "path": "items.0.name", "value": "First Item" }
+```
+</CodeBlock>
+
+State: `{ items: [{ name: "First Item" }] }`
+
+## Notes
+
+- Updates are reactive - components re-render automatically
+- Nested paths create intermediate objects if they don't exist
+- Use expressions for computed values
+- Array mutations should create new arrays for reactivity

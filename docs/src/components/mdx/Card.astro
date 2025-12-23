@@ -1,0 +1,42 @@
+---
+export interface Props {
+    title?: string;
+    description?: string;
+    icon?: string;
+    href?: string;
+}
+
+const { title, description, icon, href } = Astro.props;
+
+const Component = href ? `a` : `div`;
+---
+
+<Component
+    href={href}
+    class:list={[
+        `group relative flex flex-col rounded-lg border p-6 transition-colors`,
+        href && `hover:border-foreground/20 hover:bg-accent`,
+    ]}
+>
+    {icon && (
+        <div class="mb-2 text-2xl">{icon}</div>
+    )}
+    {title && (
+        <h3 class="font-semibold mb-1 group-hover:text-foreground">{title}</h3>
+    )}
+    {description && (
+        <p class="text-sm text-muted-foreground">{description}</p>
+    )}
+    <slot />
+    {href && (
+        <svg
+            class="absolute right-4 top-1/2 -translate-y-1/2 size-5 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+        >
+            <path d="m9 18 6-6-6-6" />
+        </svg>
+    )}
+</Component>

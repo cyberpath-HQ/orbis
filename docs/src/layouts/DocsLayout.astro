@@ -1,0 +1,59 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import DocsSidebar from '@/components/DocsSidebar.astro';
+import TableOfContents from '@/components/TableOfContents.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import DocsPagination from '@/components/DocsPagination.astro';
+
+export interface Props {
+    title: string;
+    description?: string;
+    headings?: Array<{ depth: number; slug: string; text: string }>;
+}
+
+const { title, description, headings = [] } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} ogType="article">
+    <div class="container flex-1 items-start md:grid md:grid-cols-[220px_minmax(0,1fr)] md:gap-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10 px-4 md:px-8">
+        <!-- Sidebar -->
+        <aside class="fixed top-14 z-30 -ml-2 hidden h-[calc(100vh-3.5rem)] w-full shrink-0 md:sticky md:block">
+            <div class="h-full overflow-y-auto py-6 pr-6 lg:py-8">
+                <DocsSidebar />
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="relative py-6 lg:gap-10 lg:py-8 xl:grid xl:grid-cols-[1fr_200px]">
+            <div class="mx-auto w-full min-w-0">
+                <!-- Breadcrumbs -->
+                <Breadcrumbs />
+                
+                <!-- Page Title -->
+                <div class="space-y-2 mb-8">
+                    <h1 class="scroll-m-20 text-4xl font-bold tracking-tight">{title}</h1>
+                    {description && (
+                        <p class="text-lg text-muted-foreground">{description}</p>
+                    )}
+                </div>
+                
+                <!-- Content -->
+                <div class="prose max-w-none">
+                    <slot />
+                </div>
+                
+                <!-- Pagination -->
+                <DocsPagination />
+            </div>
+            
+            <!-- Table of Contents -->
+            <div class="hidden text-sm xl:block">
+                <div class="sticky top-16 -mt-10 pt-4">
+                    <div class="sticky top-16 -mt-10 h-[calc(100vh-3.5rem)] overflow-y-auto pt-4">
+                        <TableOfContents headings={headings} />
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</BaseLayout>

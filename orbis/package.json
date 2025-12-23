@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "tauri:debug": "ORBIS_LOG=debug tauri",
+    "tauri:debug": "WASMTIME_BACKTRACE_DETAILS=1 ORBIS_LOG=debug tauri",
     "tauri": "ORBIS_LOG=info tauri",
     "test": "vitest",
     "test:ui": "vitest --ui",

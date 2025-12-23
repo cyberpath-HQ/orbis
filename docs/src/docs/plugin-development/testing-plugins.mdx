@@ -1,0 +1,682 @@
+---
+sidebar_position: 6
+title: Testing Plugins
+description: Testing strategies for Orbis plugins
+---
+
+import CodeBlock from '@/components/mdx/CodeBlock.astro';
+
+
+# Testing Plugins
+
+Comprehensive guide to testing your Orbis plugins.
+
+## Testing Strategies
+
+| Level | Scope | Tools | SDK Support |
+|-------|-------|-------|-------------|
+| Unit | Rust functions | `cargo test` | Full |
+| Integration | Handler logic | `cargo test` + mocks | SDK helpers |
+| E2E | Full WASM | wasmtime | Works seamlessly |
+| UI | Full UI flow | Playwright/Cypress | N/A |
+
+## Unit Testing with SDK
+
+### Testing Business Logic
+
+<CodeBlock lang="rust">
+```rust
+// src/lib.rs
+use orbis_plugin_api::sdk::prelude::*;
+use serde_json::json;
+
+orbis_plugin!();
+
+pub fn calculate_total(items: &[Item]) -> f64 {
+    items.iter().map(|i| i.price * i.quantity as f64).sum()
+}
+
+pub fn get_total_impl(ctx: Context) -> Result<Response> {
+    let items: Vec<Item> = ctx.body_as()?;
+    let total = calculate_total(&items);
+    Ok(Response::json(&json!({ "total": total })))
+}
+
+wrap_handler!(get_total, get_total_impl);
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde::Deserialize;
+    
+    #[derive(Deserialize)]
+    struct Item {
+        price: f64,
+        quantity: i32,
+    }
+
+    #[test]
+    fn test_calculate_total() {
+        let items = vec![
+            Item { price: 10.0, quantity: 2 },
+            Item { price: 5.0, quantity: 3 },
+        ];
+        assert_eq!(calculate_total(&items), 35.0);
+    }
+
+    #[test]
+    fn test_calculate_total_empty() {
+        let items: Vec<Item> = vec![];
+        assert_eq!(calculate_total(&items), 0.0);
+    }
+}
+```
+</CodeBlock>
+
+Run tests:
+<CodeBlock lang="bash">
+```bash
+cargo test
+```
+</CodeBlock>
+
+### Testing SDK Helpers
+
+<CodeBlock lang="rust">
+```rust
+#[cfg(test)]
+mod tests {
+    use super::*;
+    
+    #[test]
+    fn test_response_json() {
+        let data = json!({"status": "ok"});
+        let response = Response::json(&data);
+        
+        assert_eq!(response.status_code, 200);
+        assert!(response.body.contains("ok"));
+    }
+    
+    #[test]
+    fn test_response_text() {
+        let response = Response::text("Hello, World!");
+        
+        assert_eq!(response.status_code, 200);
+        assert_eq!(response.body, "Hello, World!");
+    }
+}
+```
+</CodeBlock>
+
+### Testing State Operations
+
+<CodeBlock lang="rust">
+```rust
+#[cfg(test)]
+mod tests {
+    use super::*;
+    
+    // Note: These tests work with real state if running in WASM
+    // For pure unit tests, you'd mock the state layer
+    
+    #[test]
+    fn test_state_serialization() {
+        use serde::{Serialize, Deserialize};
+        
+        #[derive(Serialize, Deserialize, PartialEq, Debug)]
+        struct User {
+            name: String,
+            age: i32,
+        }
+        
+        let user = User {
+            name: "Alice".to_string(),
+            age: 30,
+        };
+        
+        // Test that our types serialize correctly
+        let json = serde_json::to_string(&user).unwrap();
+        let parsed: User = serde_json::from_str(&json).unwrap();
+        
+        assert_eq!(user, parsed);
+    }
+}
+```
+</CodeBlock>
+
+## Integration Testing with SDK
+
+### Testing Handlers with Mock Context
+
+<CodeBlock lang="rust">
+```rust
+// tests/integration.rs
+use orbis_plugin_api::sdk::prelude::*;
+use serde_json::json;
+
+// Mock context for testing
+fn mock_context(method: &str, path: &str, body: Option<Value>) -> Context {
+    let request = json!({
+        "method": method,
+        "path": path,
+        "query": {},
+        "headers": {},
+        "body": body.unwrap_or(json!({}))
+    });
+    
+    // Note: This is pseudo-code - actual Context creation
+    // would need access to the internal Context constructor
+    // In practice, you'd test the handler functions directly
+    // or use the full WASM integration test approach below
+}
+
+#[test]
+fn test_get_greeting_handler() {
+    // Direct function testing (best approach with SDK)
+    use my_plugin::handlers::get_greeting;
+    
+    // Test with mock data
+    let result = get_greeting_impl("Alice");
+    assert_eq!(result, "Hello, Alice!");
+}
+
+// Better: Separate testable logic from handlers
+mod my_plugin {
+    pub mod handlers {
+        pub fn get_greeting_impl(name: &str) -> String {
+            format!("Hello, {}!", name)
+        }
+    }
+}
+```
+</CodeBlock>
+
+## Integration Testing
+
+### Test Harness Setup
+
+Create a test project that loads your plugin:
+
+<CodeBlock lang="rust">
+```rust
+// tests/integration.rs
+use wasmtime::*;
+use std::fs;
+
+fn load_plugin() -> (Store<()>, Instance) {
+    let engine = Engine::default();
+    let mut store = Store::new(&engine, ());
+    
+    let wasm_bytes = fs::read("target/wasm32-unknown-unknown/release/my_plugin.wasm")
+        .expect("Failed to read WASM file");
+    
+    let module = Module::new(&engine, &wasm_bytes)
+        .expect("Failed to compile module");
+    
+    let instance = Instance::new(&mut store, &module, &[])
+        .expect("Failed to instantiate");
+    
+    (store, instance)
+}
+
+#[test]
+fn test_plugin_init() {
+    let (mut store, instance) = load_plugin();
+    
+    let init = instance.get_typed_func::<(), i32>(&mut store, "init")
+        .expect("init not found");
+    
+    let result = init.call(&mut store, ())
+        .expect("init failed");
+    
+    assert_eq!(result, 0);  // Success
+}
+
+#[test]
+fn test_plugin_execute() {
+    let (mut store, instance) = load_plugin();
+    
+    // Get memory and functions
+    let memory = instance.get_memory(&mut store, "memory")
+        .expect("memory not found");
+    let alloc = instance.get_typed_func::<i32, i32>(&mut store, "alloc")
+        .expect("alloc not found");
+    let execute = instance.get_typed_func::<(i32, i32), i32>(&mut store, "execute")
+        .expect("execute not found");
+    
+    // Write request to memory
+    let request = r#"{"route":"/items","method":"GET"}"#;
+    let ptr = alloc.call(&mut store, request.len() as i32)
+        .expect("alloc failed");
+    memory.write(&mut store, ptr as usize, request.as_bytes())
+        .expect("memory write failed");
+    
+    // Call execute
+    let response_ptr = execute.call(&mut store, (ptr, request.len() as i32))
+        .expect("execute failed");
+    
+    // Read response
+    let response = read_string(&mut store, &memory, response_ptr);
+    let json: serde_json::Value = serde_json::from_str(&response).unwrap();
+    
+    assert!(json["success"].as_bool().unwrap());
+}
+```
+</CodeBlock>
+
+### Mock Host Functions
+
+<CodeBlock lang="rust">
+```rust
+fn create_mock_imports(store: &mut Store<TestState>) -> Linker<TestState> {
+    let mut linker = Linker::new(store.engine());
+    
+    // Mock database query
+    linker.func_wrap("env", "db_query", |mut caller: Caller<'_, TestState>, ptr: i32, len: i32| -> i32 {
+        let state = caller.data_mut();
+        state.db_calls.push(read_string_from_mem(&caller, ptr, len));
+        
+        // Return mock response
+        let response = r#"{"rows":[{"id":1,"name":"test"}]}"#;
+        write_to_memory(&mut caller, response)
+    }).unwrap();
+    
+    // Mock logging
+    linker.func_wrap("env", "log_info", |_caller: Caller<'_, TestState>, ptr: i32, len: i32| {
+        // Capture logs for testing
+    }).unwrap();
+    
+    linker
+}
+```
+</CodeBlock>
+
+## Schema Testing
+
+### Manifest Validation
+
+<CodeBlock lang="rust">
+```rust
+use serde_json;
+use orbis_plugin::manifest::PluginManifest;
+
+#[test]
+fn test_manifest_valid() {
+    let manifest_json = include_str!("../manifest.json");
+    let manifest: PluginManifest = serde_json::from_str(manifest_json)
+        .expect("Failed to parse manifest");
+    
+    assert!(!manifest.name.is_empty());
+    assert!(manifest.version.contains('.'));
+    assert!(!manifest.pages.is_empty());
+}
+```
+</CodeBlock>
+
+### Page Schema Validation
+
+<CodeBlock lang="rust">
+```rust
+#[test]
+fn test_page_schemas_valid() {
+    let manifest_json = include_str!("../manifest.json");
+    let manifest: serde_json::Value = serde_json::from_str(manifest_json).unwrap();
+    
+    for page in manifest["pages"].as_array().unwrap() {
+        // Required fields
+        assert!(page["title"].is_string());
+        assert!(page["route"].is_string());
+        assert!(page["sections"].is_array());
+        
+        // Route format
+        let route = page["route"].as_str().unwrap();
+        assert!(route.starts_with('/'));
+    }
+}
+```
+</CodeBlock>
+
+### Component Schema Validation
+
+<CodeBlock lang="typescript">
+```typescript
+// tests/schema.test.ts
+import { describe, it, expect } from 'vitest';
+import manifest from '../manifest.json';
+
+describe('Component Schemas', () => {
+  const pages = manifest.pages;
+  
+  it('all pages have valid sections', () => {
+    for (const page of pages) {
+      expect(page.sections).toBeDefined();
+      expect(Array.isArray(page.sections)).toBe(true);
+      for (const section of page.sections) {
+        expect(section.type).toBeDefined();
+      }
+    }
+  });
+  
+  it('all components have valid types', () => {
+    const validTypes = [
+      'Container', 'Flex', 'Grid', 'Text', 'Heading',
+      'Button', 'Form', 'Table', 'Card', 'Modal', // ...
+    ];
+    
+    function validateComponent(component: any) {
+      expect(validTypes).toContain(component.type);
+      
+      if (component.children) {
+        for (const child of component.children) {
+          validateComponent(child);
+        }
+      }
+    }
+    
+    for (const page of pages) {
+      for (const section of page.sections) {
+        validateComponent(section);
+      }
+    }
+  });
+});
+```
+</CodeBlock>
+
+## E2E Testing
+
+### Playwright Setup
+
+<CodeBlock lang="typescript">
+```typescript
+// playwright.config.ts
+import { defineConfig } from '@playwright/test';
+
+export default defineConfig({
+  testDir: './e2e',
+  use: {
+    baseURL: 'http://localhost:5173',
+  },
+  webServer: {
+    command: 'bun run tauri dev',
+    port: 5173,
+    reuseExistingServer: !process.env.CI,
+  },
+});
+```
+</CodeBlock>
+
+### Plugin E2E Tests
+
+<CodeBlock lang="typescript">
+```typescript
+// e2e/my-plugin.spec.ts
+import { test, expect } from '@playwright/test';
+
+test.describe('My Plugin', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/my-plugin');
+    await page.waitForSelector('[data-testid="plugin-loaded"]');
+  });
+  
+  test('displays dashboard', async ({ page }) => {
+    await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
+  });
+  
+  test('loads items list', async ({ page }) => {
+    await page.goto('/my-plugin/items');
+    
+    // Wait for data to load
+    await page.waitForSelector('table tbody tr');
+    
+    // Check items displayed
+    const rows = await page.locator('table tbody tr').count();
+    expect(rows).toBeGreaterThan(0);
+  });
+  
+  test('creates new item', async ({ page }) => {
+    await page.goto('/my-plugin/items');
+    await page.click('button:has-text("New Item")');
+    
+    // Fill form
+    await page.fill('input[name="name"]', 'Test Item');
+    await page.fill('textarea[name="description"]', 'Test Description');
+    await page.selectOption('select[name="category"]', 'a');
+    
+    // Submit
+    await page.click('button[type="submit"]');
+    
+    // Verify success
+    await expect(page.getByText('Item created!')).toBeVisible();
+    await expect(page).toHaveURL('/my-plugin/items');
+  });
+  
+  test('handles form validation', async ({ page }) => {
+    await page.goto('/my-plugin/items/new');
+    
+    // Submit empty form
+    await page.click('button[type="submit"]');
+    
+    // Check validation error
+    await expect(page.getByText('Name is required')).toBeVisible();
+  });
+});
+```
+</CodeBlock>
+
+### Testing Actions
+
+<CodeBlock lang="typescript">
+```typescript
+test('update_state action works', async ({ page }) => {
+  await page.goto('/my-plugin');
+  
+  // Initial state
+  await expect(page.getByTestId('counter')).toHaveText('0');
+  
+  // Click increment button
+  await page.click('button:has-text("Increment")');
+  
+  // State updated
+  await expect(page.getByTestId('counter')).toHaveText('1');
+});
+
+test('call_api action fetches data', async ({ page }) => {
+  await page.goto('/my-plugin/items');
+  
+  // Loading state
+  await expect(page.getByTestId('loading')).toBeVisible();
+  
+  // Data loaded
+  await page.waitForSelector('table');
+  await expect(page.getByTestId('loading')).not.toBeVisible();
+});
+
+test('navigate action changes route', async ({ page }) => {
+  await page.goto('/my-plugin');
+  
+  await page.click('a:has-text("Settings")');
+  
+  await expect(page).toHaveURL('/my-plugin/settings');
+});
+```
+</CodeBlock>
+
+## Test Data
+
+### Fixtures
+
+<CodeBlock lang="typescript">
+```typescript
+// fixtures/items.ts
+export const mockItems = [
+  { id: '1', name: 'Item 1', category: 'a', createdAt: '2024-01-01' },
+  { id: '2', name: 'Item 2', category: 'b', createdAt: '2024-01-02' },
+];
+
+export const mockEmptyState = {
+  items: [],
+  selectedItem: null,
+  isLoading: false,
+};
+```
+</CodeBlock>
+
+### API Mocking
+
+<CodeBlock lang="typescript">
+```typescript
+test.beforeEach(async ({ page }) => {
+  // Mock API responses
+  await page.route('**/api/my-plugin/items', async route => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ data: mockItems }),
+    });
+  });
+});
+```
+</CodeBlock>
+
+## Coverage
+
+### Rust Coverage
+
+<CodeBlock lang="bash">
+```bash
+# Install grcov
+cargo install grcov
+
+# Build with coverage
+CARGO_INCREMENTAL=0 \
+RUSTFLAGS='-Cinstrument-coverage' \
+LLVM_PROFILE_FILE='cargo-test-%p-%m.profraw' \
+cargo test
+
+# Generate report
+grcov . --binary-path ./target/debug/deps/ -s . -t html --branch --ignore-not-existing --ignore '../*' -o coverage/
+```
+</CodeBlock>
+
+### TypeScript Coverage
+
+<CodeBlock lang="bash">
+```bash
+# Run with coverage
+bun test --coverage
+
+# Or with vitest
+vitest --coverage
+```
+</CodeBlock>
+
+## Debugging Tips
+
+### WASM Debugging
+
+<CodeBlock lang="rust">
+```rust
+// Add debug logging
+#[cfg(debug_assertions)]
+macro_rules! debug {
+    ($($arg:tt)*) => {
+        // Call host log function
+        unsafe { log_debug(format!($($arg)*).as_ptr(), format!($($arg)*).len() as i32); }
+    };
+}
+
+#[cfg(not(debug_assertions))]
+macro_rules! debug {
+    ($($arg:tt)*) => {};
+}
+
+// Use in code
+debug!("Processing item: {:?}", item);
+```
+</CodeBlock>
+
+### Browser DevTools
+
+1. Open Chrome DevTools → Sources
+2. Find WASM file under `wasm://`
+3. Set breakpoints in source-mapped code
+4. Inspect memory with `WebAssembly.Memory`
+
+### Console Logging
+
+<CodeBlock lang="json">
+```json
+{
+  "events": {
+    "on_click": [
+      { "type": "update_state", "path": "debug.lastClick", "value": "{{$now}}" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+Check state in React DevTools → Components → PageStateProvider.
+
+## CI Integration
+
+### GitHub Actions
+
+<CodeBlock lang="yaml">
+```yaml
+name: Test Plugin
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install Rust
+        uses: dtolnay/rust-action@stable
+        with:
+          targets: wasm32-unknown-unknown
+      
+      - name: Unit tests
+        run: cargo test
+      
+      - name: Build WASM
+        run: cargo build --target wasm32-unknown-unknown --release
+      
+      - name: Schema validation
+        run: |
+          python3 -c "import json; json.load(open('manifest.json'))"
+      
+      - name: Install deps
+        run: bun install
+      
+      - name: E2E tests
+        run: bun run test:e2e
+
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run coverage
+        run: cargo tarpaulin --out Xml
+      - uses: codecov/codecov-action@v4
+```
+</CodeBlock>
+
+## Best Practices
+
+1. **Test Manifest First** - Validate JSON before testing WASM
+2. **Mock Host Functions** - Isolate plugin logic from platform
+3. **Test State Transitions** - Verify all state changes
+4. **Test Error Paths** - Simulate API failures
+5. **Test Loading States** - Verify async UX
+6. **Keep Tests Fast** - Use unit tests for logic, E2E for flows
+
+## Next Steps
+
+- **[Best Practices](./best-practices)** - Production-ready plugins
+- **[Components](../components/overview)** - Component reference
+- **[Actions](../actions/overview)** - Action reference

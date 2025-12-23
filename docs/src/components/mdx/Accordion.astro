@@ -1,0 +1,28 @@
+---
+export interface Props {
+    title?: string;
+    defaultOpen?: boolean;
+}
+
+const { title, defaultOpen = false } = Astro.props;
+---
+
+<details class="group my-4 rounded-lg border" open={defaultOpen}>
+    <summary class="flex cursor-pointer items-center justify-between p-4 font-medium">
+        <span>{title}</span>
+        <svg
+            class="size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-open:rotate-180"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+        >
+            <path d="m6 9 6 6 6-6" />
+        </svg>
+    </summary>
+    <div class="border-t p-4 pt-0">
+        <div class="pt-4">
+            <slot />
+        </div>
+    </div>
+</details>

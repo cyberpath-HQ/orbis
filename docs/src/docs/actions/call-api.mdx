@@ -1,0 +1,379 @@
+---
+sidebar_position: 3
+title: call_api
+description: Make API requests to plugin routes
+---
+
+import CodeBlock from '@/components/mdx/CodeBlock.astro';
+
+
+# call_api
+
+Makes an API request to a plugin route.
+
+## Syntax
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "call_api",
+  "api": "pluginName.routeName",
+  "args": { "key": "value" },
+  "on_success": [...],
+  "on_error": [...],
+  "finally": [...]
+}
+```
+</CodeBlock>
+
+## Properties
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `api` | string | Yes | API route identifier |
+| `args` | object | - | Arguments to pass |
+| `method` | string | - | HTTP method (default: inferred) |
+| `on_success` | Action[] | - | Actions on success |
+| `on_error` | Action[] | - | Actions on error |
+| `finally` | Action[] | - | Actions always executed |
+
+## API Route Format
+
+<CodeBlock lang="text">
+```text
+pluginName.routeName
+```
+</CodeBlock>
+
+Examples:
+- `my-plugin.getUsers`
+- `inventory.createItem`
+- `auth.login`
+
+## Examples
+
+### Basic Request
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "call_api",
+  "api": "my-plugin.getData"
+}
+```
+</CodeBlock>
+
+### With Arguments
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "call_api",
+  "api": "my-plugin.getUser",
+  "args": {
+    "userId": "{{state.selectedUserId}}"
+  }
+}
+```
+</CodeBlock>
+
+### Full Example
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "call_api",
+  "api": "my-plugin.createItem",
+  "args": {
+    "name": "{{state.formData.name}}",
+    "category": "{{state.formData.category}}"
+  },
+  "on_success": [
+    { "type": "update_state", "path": "items", "value": "[...state.items, $response.data]" },
+    { "type": "show_toast", "message": "Item created!", "level": "success" },
+    { "type": "navigate", "to": "/items" }
+  ],
+  "on_error": [
+    { "type": "show_toast", "message": "Failed: {{$error.message}}", "level": "error" }
+  ],
+  "finally": [
+    { "type": "set_loading", "loading": false }
+  ]
+}
+```
+</CodeBlock>
+
+## Response Variables
+
+In `on_success` handlers, you have access to:
+
+| Variable | Description |
+|----------|-------------|
+| `$response` | Full response object |
+| `$response.data` | Response data |
+| `$response.meta` | Response metadata |
+| `$response.status` | HTTP status code |
+
+### Using Response Data
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "call_api",
+  "api": "my-plugin.getItems",
+  "on_success": [
+    { "type": "update_state", "path": "items", "value": "$response.data" },
+    { "type": "update_state", "path": "totalCount", "value": "$response.meta.total" },
+    { "type": "update_state", "path": "hasMore", "value": "$response.meta.hasNextPage" }
+  ]
+}
+```
+</CodeBlock>
+
+## Error Variables
+
+In `on_error` handlers:
+
+| Variable | Description |
+|----------|-------------|
+| `$error` | Error object |
+| `$error.message` | Error message |
+| `$error.code` | Error code |
+| `$error.status` | HTTP status |
+
+### Error Handling
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "call_api",
+  "api": "my-plugin.sensitiveAction",
+  "on_error": [
+    {
+      "type": "conditional",
+      "condition": "{{$error.status}} === 401",
+      "then": [
+        { "type": "navigate", "to": "/login" }
+      ],
+      "else": [
+        { "type": "show_toast", "message": "{{$error.message}}", "level": "error" }
+      ]
+    }
+  ]
+}
+```
+</CodeBlock>
+
+## Common Patterns
+
+### CRUD Operations
+
+**Fetch list:**
+<CodeBlock lang="json">
+```json
+{
+  "on_mount": [
+    { "type": "set_loading", "loading": true },
+    {
+      "type": "call_api",
+      "api": "my-plugin.getItems",
+      "on_success": [
+        { "type": "update_state", "path": "items", "value": "$response.data" }
+      ],
+      "finally": [
+        { "type": "set_loading", "loading": false }
+      ]
+    }
+  ]
+}
+```
+</CodeBlock>
+
+**Fetch single:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "call_api",
+  "api": "my-plugin.getItem",
+  "args": { "id": "{{params.id}}" },
+  "on_success": [
+    { "type": "update_state", "path": "item", "value": "$response.data" }
+  ]
+}
+```
+</CodeBlock>
+
+**Create:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "call_api",
+  "api": "my-plugin.createItem",
+  "args": "{{state.formData}}",
+  "on_success": [
+    { "type": "show_toast", "message": "Created!", "level": "success" },
+    { "type": "navigate", "to": "/items" }
+  ]
+}
+```
+</CodeBlock>
+
+**Update:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "call_api",
+  "api": "my-plugin.updateItem",
+  "args": {
+    "id": "{{state.item.id}}",
+    "data": "{{state.formData}}"
+  },
+  "on_success": [
+    { "type": "show_toast", "message": "Updated!", "level": "success" }
+  ]
+}
+```
+</CodeBlock>
+
+**Delete:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "call_api",
+  "api": "my-plugin.deleteItem",
+  "args": { "id": "{{state.selectedId}}" },
+  "on_success": [
+    { "type": "update_state", "path": "items", "value": "{{state.items.filter(i => i.id !== state.selectedId)}}" },
+    { "type": "show_toast", "message": "Deleted", "level": "success" }
+  ]
+}
+```
+</CodeBlock>
+
+### Search with Debounce
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Field",
+  "name": "search",
+  "events": {
+    "on_change": [
+      { "type": "update_state", "path": "searchQuery", "value": "{{$value}}" },
+      {
+        "type": "debounced_action",
+        "delay": 300,
+        "action": {
+          "type": "call_api",
+          "api": "my-plugin.search",
+          "args": { "query": "{{$value}}" },
+          "on_success": [
+            { "type": "update_state", "path": "searchResults", "value": "$response.data" }
+          ]
+        }
+      }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+### Pagination
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "call_api",
+  "api": "my-plugin.getItems",
+  "args": {
+    "page": "{{state.currentPage}}",
+    "pageSize": 20,
+    "sortBy": "{{state.sortField}}",
+    "sortOrder": "{{state.sortOrder}}"
+  },
+  "on_success": [
+    { "type": "update_state", "path": "items", "value": "$response.data" },
+    { "type": "update_state", "path": "totalPages", "value": "$response.meta.totalPages" }
+  ]
+}
+```
+</CodeBlock>
+
+### Retry Pattern
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "call_api",
+  "api": "my-plugin.unreliableApi",
+  "on_error": [
+    {
+      "type": "conditional",
+      "condition": "{{state.retryCount}} < 3",
+      "then": [
+        { "type": "update_state", "path": "retryCount", "value": "{{state.retryCount}} + 1" },
+        { "type": "call_api", "api": "my-plugin.unreliableApi" }
+      ],
+      "else": [
+        { "type": "show_toast", "message": "Failed after 3 retries", "level": "error" }
+      ]
+    }
+  ]
+}
+```
+</CodeBlock>
+
+### Parallel Requests
+
+Use multiple call_api in the same event (they run in sequence):
+
+<CodeBlock lang="json">
+```json
+{
+  "on_mount": [
+    { "type": "set_loading", "loading": true },
+    {
+      "type": "call_api",
+      "api": "my-plugin.getUser",
+      "on_success": [{ "type": "update_state", "path": "user", "value": "$response.data" }]
+    },
+    {
+      "type": "call_api",
+      "api": "my-plugin.getSettings",
+      "on_success": [{ "type": "update_state", "path": "settings", "value": "$response.data" }]
+    },
+    { "type": "set_loading", "loading": false }
+  ]
+}
+```
+</CodeBlock>
+
+### Chained Requests
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "call_api",
+  "api": "my-plugin.getUser",
+  "on_success": [
+    { "type": "update_state", "path": "user", "value": "$response.data" },
+    {
+      "type": "call_api",
+      "api": "my-plugin.getUserProjects",
+      "args": { "userId": "$response.data.id" },
+      "on_success": [
+        { "type": "update_state", "path": "projects", "value": "$response.data" }
+      ]
+    }
+  ]
+}
+```
+</CodeBlock>
+
+## Best Practices
+
+1. **Always handle errors** - Provide feedback on failures
+2. **Show loading states** - Use `set_loading` before requests
+3. **Use finally** - Clean up loading states reliably
+4. **Debounce search** - Avoid excessive requests
+5. **Validate before submit** - Check form validity first

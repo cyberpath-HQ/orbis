@@ -249,12 +249,20 @@ export function usePluginWatcher(
 
     useEffect(() => {
         let unlisten: UnlistenFn | null = null;
+        let debounceTimer: NodeJS.Timeout | null = null;
 
         const startListening = async(): Promise<void> => {
             try {
                 unlisten = await listen<PluginChangeEvent>(`plugin-changed`, (event) => {
-                    console.log(`Plugin changed:`, event.payload);
-                    onPluginChange?.(event.payload);
+                    // Debounce to prevent rapid-fire updates
+                    if (debounceTimer) {
+                        clearTimeout(debounceTimer);
+                    }
+
+                    debounceTimer = setTimeout(() => {
+                        onPluginChange?.(event.payload);
+                        debounceTimer = null;
+                    }, 300); // 300ms debounce
                 });
                 setIsWatching(true);
             }
@@ -266,6 +274,9 @@ export function usePluginWatcher(
         void startListening();
 
         return (): void => {
+            if (debounceTimer) {
+                clearTimeout(debounceTimer);
+            }
             if (unlisten) {
                 unlisten();
             }

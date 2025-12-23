@@ -1,10 +1,12 @@
 //! Plugin registry for tracking loaded plugins.
 
-use super::{PluginManifest, PluginSource};
+use super::{PluginSource};
+use orbis_plugin_api::PluginManifest;
 use chrono::{DateTime, Utc};
 use dashmap::DashMap;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
+use std::path::{Path, PathBuf};
 
 /// Plugin state.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -46,6 +48,7 @@ pub struct PluginInfo {
 /// Registry for tracking loaded plugins.
 pub struct PluginRegistry {
     plugins: DashMap<String, PluginInfo>,
+    state_file: Option<PathBuf>,
 }
 
 impl PluginRegistry {
@@ -54,7 +57,22 @@ impl PluginRegistry {
     pub fn new() -> Self {
         Self {
             plugins: DashMap::new(),
+            state_file: None,
         }
+    }
+    
+    /// Create a plugin registry with persistence.
+    #[must_use]
+    pub fn with_persistence(state_file: PathBuf) -> Self {
+        let mut registry = Self {
+            plugins: DashMap::new(),
+            state_file: Some(state_file),
+        };
+        
+        // Load existing state
+        let _ = registry.load_state();
+        
+        registry
     }
 
     /// Register a plugin.
@@ -95,11 +113,17 @@ impl PluginRegistry {
     ///
     /// Returns an error if the plugin is not found.
     pub fn set_state(&self, name: &str, state: PluginState) -> orbis_core::Result<()> {
-        let mut entry = self.plugins.get_mut(name).ok_or_else(|| {
-            orbis_core::Error::plugin(format!("Plugin '{}' not found", name))
-        })?;
-
-        entry.value_mut().state = state;
+        // Update state in a separate scope to release lock before saving
+        {
+            let mut entry = self.plugins.get_mut(name).ok_or_else(|| {
+                orbis_core::Error::plugin(format!("Plugin '{}' not found", name))
+            })?;
+            entry.value_mut().state = state;
+        } // Lock released here
+        
+        // Now safe to call save_state which iterates over plugins
+        let _ = self.save_state();
+        
         Ok(())
     }
 
@@ -122,6 +146,115 @@ impl PluginRegistry {
             .iter()
             .filter(|r| r.value().state == PluginState::Running)
             .count()
+    }
+    
+    /// Save plugin states to disk.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if saving fails.
+    fn save_state(&self) -> orbis_core::Result<()> {
+        if let Some(ref state_file) = self.state_file {
+            #[derive(Serialize)]
+            struct PluginStateRecord {
+                name: String,
+                state: PluginState,
+            }
+            
+            let states: Vec<PluginStateRecord> = self.plugins
+                .iter()
+                .map(|entry| PluginStateRecord {
+                    name: entry.key().clone(),
+                    state: entry.value().state,
+                })
+                .collect();
+            
+            let json = serde_json::to_string_pretty(&states)
+                .map_err(|e| orbis_core::Error::plugin(format!("Failed to serialize state: {}", e)))?;
+            
+            // Ensure parent directory exists
+            if let Some(parent) = state_file.parent() {
+                std::fs::create_dir_all(parent)
+                    .map_err(|e| orbis_core::Error::plugin(format!("Failed to create state directory: {}", e)))?;
+            }
+            
+            std::fs::write(state_file, json)
+                .map_err(|e| orbis_core::Error::plugin(format!("Failed to write state file: {}", e)))?;
+            
+            tracing::debug!("Saved plugin states to {:?}", state_file);
+        }
+        
+        Ok(())
+    }
+    
+    /// Load plugin states from disk.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if loading fails.
+    fn load_state(&mut self) -> orbis_core::Result<()> {
+        if let Some(ref state_file) = self.state_file {
+            if !state_file.exists() {
+                tracing::debug!("State file does not exist: {:?}", state_file);
+                return Ok(());
+            }
+            
+            #[derive(Deserialize)]
+            struct PluginStateRecord {
+                name: String,
+                state: PluginState,
+            }
+            
+            let contents = std::fs::read_to_string(state_file)
+                .map_err(|e| orbis_core::Error::plugin(format!("Failed to read state file: {}", e)))?;
+            
+            let states: Vec<PluginStateRecord> = serde_json::from_str(&contents)
+                .map_err(|e| orbis_core::Error::plugin(format!("Failed to parse state file: {}", e)))?;
+            
+            // Apply saved states to matching plugins
+            for record in states {
+                if let Some(mut entry) = self.plugins.get_mut(&record.name) {
+                    entry.value_mut().state = record.state;
+                }
+            }
+            
+            tracing::info!("Loaded plugin states from {:?}", state_file);
+        }
+        
+        Ok(())
+    }
+    
+    /// Restore states from saved state file for newly loaded plugins.
+    ///
+    /// This is called after loading plugins to restore their previous states.
+    pub fn restore_states(&self) -> orbis_core::Result<()> {
+        if let Some(ref state_file) = self.state_file {
+            if !state_file.exists() {
+                return Ok(());
+            }
+            
+            #[derive(Deserialize)]
+            struct PluginStateRecord {
+                name: String,
+                state: PluginState,
+            }
+            
+            let contents = std::fs::read_to_string(state_file)
+                .map_err(|e| orbis_core::Error::plugin(format!("Failed to read state file: {}", e)))?;
+            
+            let states: Vec<PluginStateRecord> = serde_json::from_str(&contents)
+                .map_err(|e| orbis_core::Error::plugin(format!("Failed to parse state file: {}", e)))?;
+            
+            // Apply saved states to matching plugins
+            for record in states {
+                if let Some(mut entry) = self.plugins.get_mut(&record.name) {
+                    entry.value_mut().state = record.state;
+                    tracing::info!("Restored state for plugin '{}': {:?}", record.name, record.state);
+                }
+            }
+        }
+        
+        Ok(())
     }
 }
 

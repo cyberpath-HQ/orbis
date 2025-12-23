@@ -74,15 +74,15 @@ function PluginCard({
     onDisable,
     onUninstall,
     onViewDetails,
-    is_operating
+    is_operating,
 }: {
-    plugin: PluginInfo
-    onReload: () => void
-    onEnable: () => void
-    onDisable: () => void
-    onUninstall: () => void
+    plugin:        PluginInfo
+    onReload:      () => void
+    onEnable:      () => void
+    onDisable:     () => void
+    onUninstall:   () => void
     onViewDetails: () => void
-    is_operating: boolean
+    is_operating:  boolean
 }): React.ReactElement {
     const getStateVariant = (state: PluginState): `default` | `secondary` | `destructive` | `outline` => {
         switch (state) {
@@ -104,10 +104,10 @@ function PluginCard({
     const has_error = plugin.state === `Error`;
 
     return (
-        <Card className={`relative ${has_error ? `border-destructive` : ``}`}>
+        <Card className={`relative ${ has_error ? `border-destructive` : `` }`}>
             {/* Status indicator */}
             <div
-                className={`absolute top-3 right-3 h-2 w-2 rounded-full ${getPluginStateColor(plugin.state)}`}
+                className={`absolute top-3 right-3 h-2 w-2 rounded-full ${ getPluginStateColor(plugin.state) }`}
                 title={getPluginStateText(plugin.state)}
             />
 
@@ -199,7 +199,7 @@ function PluginCard({
                                     disabled={is_operating}
                                     aria-label="Reload plugin"
                                 >
-                                    <LucideIcons.RefreshCw className={`h-4 w-4 ${is_operating ? `animate-spin` : ``}`} />
+                                    <LucideIcons.RefreshCw className={`h-4 w-4 ${ is_operating ? `animate-spin` : `` }`} />
                                 </Button>
                             </TooltipTrigger>
                             <TooltipContent>Hot Reload</TooltipContent>
@@ -273,9 +273,9 @@ function PluginCard({
 function PluginDetailsDialog({
     plugin,
     is_open,
-    onClose
+    onClose,
 }: {
-    plugin: PluginInfo | null
+    plugin:  PluginInfo | null
     is_open: boolean
     onClose: () => void
 }): React.ReactElement | null {
@@ -372,21 +372,21 @@ function PluginDetailsDialog({
  * Install plugin dialog
  */
 function InstallPluginDialog({
-    onInstall
+    onInstall,
 }: {
     onInstall: (path: string) => Promise<void>
 }): React.ReactElement {
     const [
         is_open,
-        setIsOpen
+        setIsOpen,
     ] = useState(false);
     const [
         path,
-        setPath
+        setPath,
     ] = useState(``);
     const [
         is_installing,
-        setIsInstalling
+        setIsInstalling,
     ] = useState(false);
 
     const handleInstall = async(): Promise<void> => {
@@ -509,24 +509,24 @@ export function PluginsPage(): React.ReactElement {
         disablePlugin,
         installPlugin,
         uninstallPlugin,
-        getPluginInfo
+        getPluginInfo,
     } = usePluginManagement();
 
     const [
         operating_plugin,
-        setOperatingPlugin
+        setOperatingPlugin,
     ] = useState<string | null>(null);
     const [
         selected_plugin,
-        setSelectedPlugin
+        setSelectedPlugin,
     ] = useState<PluginInfo | null>(null);
     const [
         is_details_open,
-        setIsDetailsOpen
+        setIsDetailsOpen,
     ] = useState(false);
     const [
         uninstall_confirm,
-        setUninstallConfirm
+        setUninstallConfirm,
     ] = useState<PluginInfo | null>(null);
 
     // Listen for plugin changes for auto-refresh
@@ -648,7 +648,7 @@ export function PluginsPage(): React.ReactElement {
                 </div>
                 <div className="flex gap-2">
                     <Button variant="outline" onClick={refresh} disabled={isLoading}>
-                        <LucideIcons.RefreshCw className={`mr-2 h-4 w-4 ${isLoading ? `animate-spin` : ``}`} />
+                        <LucideIcons.RefreshCw className={`mr-2 h-4 w-4 ${ isLoading ? `animate-spin` : `` }`} />
                         Refresh
                     </Button>
                     <InstallPluginDialog onInstall={handleInstall} />
@@ -702,11 +702,11 @@ export function PluginsPage(): React.ReactElement {
                         <PluginCard
                             key={plugin.id}
                             plugin={plugin}
-                            onReload={() => handleReload(plugin.name)}
-                            onEnable={() => handleEnable(plugin.name)}
-                            onDisable={() => handleDisable(plugin.name)}
+                            onReload={async() => handleReload(plugin.name)}
+                            onEnable={async() => handleEnable(plugin.name)}
+                            onDisable={async() => handleDisable(plugin.name)}
                             onUninstall={() => setUninstallConfirm(plugin)}
-                            onViewDetails={() => handleViewDetails(plugin.name)}
+                            onViewDetails={async() => handleViewDetails(plugin.name)}
                             is_operating={operating_plugin === plugin.name}
                         />
                     ))}

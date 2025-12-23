@@ -1,0 +1,93 @@
+---
+export interface Props {
+    title: string;
+    description?: string;
+    canonicalUrl?: string;
+    ogImage?: string;
+    ogType?: `website` | `article`;
+    publishedTime?: string;
+    modifiedTime?: string;
+    author?: string;
+    noindex?: boolean;
+    nofollow?: boolean;
+}
+
+const {
+    title,
+    description = `Orbis is a plugin-driven desktop application platform built with Rust and React.`,
+    canonicalUrl = Astro.url.href,
+    ogImage = `/og-image.png`,
+    ogType = `website`,
+    publishedTime,
+    modifiedTime,
+    author = `Orbis Team`,
+    noindex = false,
+    nofollow = false,
+} = Astro.props;
+
+const siteName = `Orbis Documentation`;
+const fullTitle = title === `Orbis` ? title : `${title} | ${siteName}`;
+const robotsContent = [
+    noindex ? `noindex` : `index`,
+    nofollow ? `nofollow` : `follow`,
+].join(`, `);
+---
+
+<!-- Primary Meta Tags -->
+<title>{fullTitle}</title>
+<meta name="title" content={fullTitle} />
+<meta name="description" content={description} />
+<meta name="author" content={author} />
+<meta name="robots" content={robotsContent} />
+<link rel="canonical" href={canonicalUrl} />
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content={ogType} />
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={new URL(ogImage, Astro.site).toString()} />
+<meta property="og:site_name" content={siteName} />
+<meta property="og:locale" content="en_US" />
+
+{ogType === `article` && publishedTime && (
+    <meta property="article:published_time" content={publishedTime} />
+)}
+{ogType === `article` && modifiedTime && (
+    <meta property="article:modified_time" content={modifiedTime} />
+)}
+{ogType === `article` && author && (
+    <meta property="article:author" content={author} />
+)}
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content={canonicalUrl} />
+<meta property="twitter:title" content={fullTitle} />
+<meta property="twitter:description" content={description} />
+<meta property="twitter:image" content={new URL(ogImage, Astro.site).toString()} />
+
+<!-- JSON-LD Structured Data -->
+<script type="application/ld+json" set:html={JSON.stringify({
+    "@context": `https://schema.org`,
+    "@type": ogType === `article` ? `TechArticle` : `WebSite`,
+    "name": fullTitle,
+    "description": description,
+    "url": canonicalUrl,
+    ...(ogType === `article` && {
+        "datePublished": publishedTime,
+        "dateModified": modifiedTime || publishedTime,
+        "author": {
+            "@type": `Organization`,
+            "name": author,
+        },
+    }),
+    "publisher": {
+        "@type": `Organization`,
+        "name": `Orbis`,
+        "logo": {
+            "@type": `ImageObject`,
+            "url": new URL(`/logo.svg`, Astro.site).toString(),
+        },
+    },
+})} />

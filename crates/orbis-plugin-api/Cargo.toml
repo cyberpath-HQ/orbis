@@ -1,0 +1,27 @@
+[package]
+name = "orbis-plugin-api"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = "Public API for developing Orbis plugins"
+repository = "https://github.com/cyberpath-HQ/orbis"
+documentation = "https://docs.rs/orbis-plugin-api"
+keywords = ["orbis", "plugin", "api", "wasm"]
+categories = ["gui", "wasm"]
+license = "Apache-2.0"
+readme = "README.md"
+
+[lints]
+workspace = true
+
+[dependencies]
+# Serialization (required for manifest and UI schemas)
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# Version parsing for manifest validation
+semver = { workspace = true }
+
+# Error handling
+thiserror = { workspace = true }

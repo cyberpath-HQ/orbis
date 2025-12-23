@@ -1,0 +1,462 @@
+---
+sidebar_position: 9
+title: Flow Control
+description: Debouncing, conditionals, and sequences
+---
+
+import CodeBlock from '@/components/mdx/CodeBlock.astro';
+
+
+## Flow Control Actions
+
+Actions for controlling execution flow and timing.
+
+## debounced_action
+
+Debounces action execution to prevent rapid repeated calls.
+
+### Syntax
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "debounced_action",
+  "key": "search",
+  "delay": 300,
+  "action": [
+    { "type": "call_api", "api": "search" }
+  ]
+}
+```
+</CodeBlock>
+
+### Properties
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `key` | string | Yes | Unique identifier for debounce group |
+| `delay` | number | Yes | Delay in milliseconds |
+| `action` | array | Yes | Actions to execute after delay |
+
+### Examples
+
+**Search input debouncing:**
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Field",
+  "fieldType": "text",
+  "name": "search",
+  "placeholder": "Search...",
+  "events": {
+    "on_change": [
+      {
+        "type": "debounced_action",
+        "key": "searchInput",
+        "delay": 300,
+        "action": [
+          { "type": "call_api", "api": "search", "params": { "q": "{{$value}}" } }
+        ]
+      }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+**Auto-save:**
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Form",
+  "id": "editor",
+  "events": {
+    "on_change": [
+      {
+        "type": "debounced_action",
+        "key": "autoSave",
+        "delay": 1000,
+        "action": [
+          { "type": "call_api", "api": "saveDraft", "params": { "content": "{{form.editor}}" } },
+          { "type": "show_toast", "message": "Draft saved", "level": "success", "duration": 1500 }
+        ]
+      }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+**Resize handler:**
+
+<CodeBlock lang="json">
+```json
+{
+  "events": {
+    "onResize": [
+      {
+        "type": "debounced_action",
+        "key": "resize",
+        "delay": 150,
+        "action": [
+          { "type": "update_state", "path": "layout", "value": "{{$window.innerWidth < 768 ? 'mobile' : 'desktop'}}" }
+        ]
+      }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+---
+
+## conditional
+
+Executes actions based on conditions.
+
+### Syntax
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "conditional",
+  "condition": "{{state.count > 10}}",
+  "then": [
+    { "type": "show_toast", "message": "Count exceeded!" }
+  ],
+  "else": [
+    { "type": "show_toast", "message": "Count is within limits" }
+  ]
+}
+```
+</CodeBlock>
+
+### Properties
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `condition` | string | Yes | Condition expression |
+| `then` | array | Yes | Actions if condition is true |
+| `else` | array | - | Actions if condition is false |
+
+### Examples
+
+**Simple condition:**
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "conditional",
+  "condition": "{{state.user.role === 'admin'}}",
+  "then": [
+    { "type": "navigate", "route": "/admin" }
+  ],
+  "else": [
+    { "type": "navigate", "route": "/dashboard" }
+  ]
+}
+```
+</CodeBlock>
+
+**Validation check:**
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Button",
+  "text": "Submit",
+  "events": {
+    "on_click": [
+      {
+        "type": "conditional",
+        "condition": "{{form.myForm.$valid}}",
+        "then": [
+          { "type": "call_api", "api": "submit" }
+        ],
+        "else": [
+          { "type": "show_toast", "message": "Please fix validation errors", "level": "warning" }
+        ]
+      }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+**Multiple conditions (nested):**
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "conditional",
+  "condition": "{{state.status === 'pending'}}",
+  "then": [
+    { "type": "show_toast", "message": "Please wait...", "level": "info" }
+  ],
+  "else": [
+    {
+      "type": "conditional",
+      "condition": "{{state.status === 'success'}}",
+      "then": [
+        { "type": "show_toast", "message": "Success!", "level": "success" }
+      ],
+      "else": [
+        { "type": "show_toast", "message": "Operation failed", "level": "error" }
+      ]
+    }
+  ]
+}
+```
+</CodeBlock>
+
+**Check before action:**
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "conditional",
+  "condition": "{{state.hasUnsavedChanges}}",
+  "then": [
+    {
+      "type": "show_dialog",
+      "id": "confirmLeave",
+      "title": "Unsaved Changes",
+      "message": "You have unsaved changes. Do you want to leave?",
+      "buttons": [
+        { "label": "Stay", "action": [{ "type": "close_dialog", "id": "confirmLeave" }] },
+        { "label": "Leave", "action": [{ "type": "navigate", "route": "{{state.targetRoute}}" }] }
+      ]
+    }
+  ],
+  "else": [
+    { "type": "navigate", "route": "{{state.targetRoute}}" }
+  ]
+}
+```
+</CodeBlock>
+
+---
+
+## sequence
+
+Executes actions in sequence, waiting for each to complete.
+
+### Syntax
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "sequence",
+  "actions": [
+    { "type": "set_loading", "key": "process", "value": true },
+    { "type": "call_api", "api": "step1" },
+    { "type": "call_api", "api": "step2" },
+    { "type": "set_loading", "key": "process", "value": false }
+  ]
+}
+```
+</CodeBlock>
+
+### Properties
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `actions` | array | Yes | Actions to execute in order |
+| `stopOnError` | boolean | - | Stop if any action fails (default: true) |
+
+### Examples
+
+**Multi-step process:**
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "sequence",
+  "actions": [
+    { "type": "set_loading", "key": "import", "value": true },
+    { "type": "update_state", "path": "importStatus", "value": "Validating..." },
+    { "type": "call_api", "api": "validateData" },
+    { "type": "update_state", "path": "importStatus", "value": "Importing..." },
+    { "type": "call_api", "api": "importData" },
+    { "type": "update_state", "path": "importStatus", "value": "Complete!" },
+    { "type": "show_toast", "message": "Import successful!", "level": "success" },
+    { "type": "set_loading", "key": "import", "value": false }
+  ]
+}
+```
+</CodeBlock>
+
+**Continue on error:**
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "sequence",
+  "stopOnError": false,
+  "actions": [
+    { "type": "call_api", "api": "syncService1" },
+    { "type": "call_api", "api": "syncService2" },
+    { "type": "call_api", "api": "syncService3" },
+    { "type": "show_toast", "message": "Sync completed", "level": "success" }
+  ]
+}
+```
+</CodeBlock>
+
+**With delays:**
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "sequence",
+  "actions": [
+    { "type": "show_toast", "message": "Starting...", "level": "info" },
+    { "type": "call_api", "api": "longOperation" },
+    { "type": "show_toast", "message": "Processing complete!", "level": "success" }
+  ]
+}
+```
+</CodeBlock>
+
+---
+
+## Common Patterns
+
+### Debounced Search with Loading
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Field",
+  "fieldType": "text",
+  "name": "search",
+  "placeholder": "Search...",
+  "events": {
+    "on_change": [
+      { "type": "update_state", "path": "searchQuery", "value": "{{$value}}" },
+      {
+        "type": "debounced_action",
+        "key": "search",
+        "delay": 300,
+        "action": [
+          { "type": "set_loading", "key": "searching", "value": true },
+          {
+            "type": "call_api",
+            "api": "search",
+            "params": { "q": "{{state.searchQuery}}" },
+            "onComplete": [
+              { "type": "set_loading", "key": "searching", "value": false }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+### Role-Based Actions
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Button",
+  "text": "Delete",
+  "events": {
+    "on_click": [
+      {
+        "type": "conditional",
+        "condition": "{{state.user.permissions.includes('delete')}}",
+        "then": [
+          {
+            "type": "show_dialog",
+            "id": "confirmDelete",
+            "title": "Delete Item",
+            "message": "Are you sure?",
+            "buttons": [
+              { "label": "Cancel", "action": [{ "type": "close_dialog", "id": "confirmDelete" }] },
+              { "label": "Delete", "variant": "destructive", "action": [{ "type": "call_api", "api": "delete" }] }
+            ]
+          }
+        ],
+        "else": [
+          { "type": "show_toast", "message": "You don't have permission to delete", "level": "error" }
+        ]
+      }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+### Multi-Step Wizard Submission
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "sequence",
+  "actions": [
+    { "type": "set_loading", "key": "wizard", "value": true },
+    { "type": "validate_form", "formId": "step1Form" },
+    { "type": "validate_form", "formId": "step2Form" },
+    { "type": "validate_form", "formId": "step3Form" },
+    {
+      "type": "call_api",
+      "api": "submitWizard",
+      "params": {
+        "step1": "{{form.step1Form}}",
+        "step2": "{{form.step2Form}}",
+        "step3": "{{form.step3Form}}"
+      }
+    },
+    { "type": "show_toast", "message": "Wizard completed!", "level": "success" },
+    { "type": "navigate", "route": "/success" },
+    { "type": "set_loading", "key": "wizard", "value": false }
+  ]
+}
+```
+</CodeBlock>
+
+### Smart Auto-Save
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Form",
+  "id": "document",
+  "events": {
+    "on_change": [
+      { "type": "update_state", "path": "hasUnsavedChanges", "value": true },
+      {
+        "type": "debounced_action",
+        "key": "autoSave",
+        "delay": 2000,
+        "action": [
+          {
+            "type": "conditional",
+            "condition": "{{form.document.$valid}}",
+            "then": [
+              { "type": "call_api", "api": "saveDraft", "params": { "content": "{{form.document}}" } },
+              { "type": "update_state", "path": "hasUnsavedChanges", "value": false },
+              { "type": "update_state", "path": "lastSaved", "value": "{{$now}}" }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+### Best Practices
+
+1. **Use unique debounce keys** - Prevent conflicts between debounced actions
+2. **Choose appropriate delays** - 150-300ms for UI, 500-1000ms for expensive operations
+3. **Handle all branches** - Always provide `else` for important conditionals
+4. **Keep sequences focused** - Break long sequences into smaller logical groups
+5. **Combine with loading states** - Show progress during multi-step operations
+6. **Consider error handling** - Decide if sequence should stop on errors

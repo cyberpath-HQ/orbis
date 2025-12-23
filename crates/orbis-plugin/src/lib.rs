@@ -18,24 +18,25 @@
 //! - Secure WASM sandboxing
 
 mod loader;
-mod manifest;
 mod registry;
 mod runtime;
 mod sandbox;
-mod ui;
 mod watcher;
 
 pub use loader::{PluginLoader, PluginSource};
-pub use manifest::{PluginDependency, PluginManifest, PluginPermission, PluginRoute};
 pub use registry::{PluginInfo, PluginRegistry, PluginState};
 pub use runtime::{PluginContext, PluginRuntime};
 pub use sandbox::SandboxConfig;
-pub use ui::{
-    AccordionItem, Action, BreadcrumbItem, ComponentSchema, DialogDefinition, EventHandlers,
-    FormField, NavigationConfig, NavigationItem, PageDefinition, PageLifecycleHooks, SelectOption,
-    StateFieldDefinition, StateFieldType, TabItem, TableColumn, ToastLevel, ValidationRule,
-};
 pub use watcher::{PluginChangeEvent, PluginChangeKind, PluginWatcher, WatcherConfig};
+
+// Re-export public API types from orbis-plugin-api
+pub use orbis_plugin_api::{
+    AccordionItem, Action, ArgMapping, BreadcrumbItem, ComponentSchema, CustomValidation,
+    DialogDefinition, Error as PluginApiError, EventHandlers, FormField, NavigationConfig,
+    NavigationItem, PageDefinition, PageLifecycleHooks, PluginDependency, PluginManifest,
+    PluginPermission, PluginRoute, Result as PluginApiResult, SelectOption, StateFieldDefinition,
+    StateFieldType, TabItem, TableColumn, ToastLevel, ValidationRule,
+};
 
 use orbis_db::Database;
 use std::path::PathBuf;
@@ -63,11 +64,17 @@ impl PluginManager {
                 orbis_core::Error::plugin(format!("Failed to create plugins directory: {}", e))
             })?;
         }
+        
+        // State file in plugin directory
+        let state_file = plugins_dir.join(".plugin_states.json");
+
+        let runtime = PluginRuntime::new();
+        runtime.set_plugins_dir(plugins_dir.clone());
 
         Ok(Self {
-            registry: PluginRegistry::new(),
-            loader: PluginLoader::new(),
-            runtime: PluginRuntime::new(),
+            registry: PluginRegistry::with_persistence(state_file),
+            loader:   PluginLoader::new(),
+            runtime,
             plugins_dir,
             db,
         })
@@ -167,6 +174,23 @@ impl PluginManager {
         }
 
         tracing::info!("Loaded {} plugins", loaded.len());
+        
+        // Restore saved states (enabled/disabled) from previous session
+        self.registry.restore_states()?;
+        
+        // Auto-start plugins that were previously running
+        // Note: Must get updated state from registry, not stale loaded vector
+        for plugin in &loaded {
+            if let Some(info) = self.registry.get(&plugin.manifest.name) {
+                if info.state == PluginState::Running {
+                    tracing::info!("Auto-starting previously running plugin: {}", info.manifest.name);
+                    if let Err(e) = self.runtime.start(&info.manifest.name).await {
+                        tracing::error!("Failed to auto-start plugin {}: {}", info.manifest.name, e);
+                    }
+                }
+            }
+        }
+        
         Ok(loaded)
     }
 
@@ -218,8 +242,11 @@ impl PluginManager {
             orbis_core::Error::plugin(format!("Plugin '{}' not found", name))
         })?;
 
-        // Stop the plugin runtime
-        self.runtime.stop(&info.manifest.name).await?;
+        // Stop the plugin runtime (ignore errors if not running)
+        let _ = self.runtime.stop(&info.manifest.name).await;
+
+        // Clear runtime cache
+        self.runtime.clear_cache(name);
 
         // Unregister the plugin
         self.registry.unregister(name);
@@ -234,8 +261,28 @@ impl PluginManager {
     ///
     /// Returns an error if the plugin cannot be enabled.
     pub async fn enable_plugin(&self, name: &str) -> orbis_core::Result<()> {
+        // Check if plugin exists in registry
+        let info = self.registry.get(name).ok_or_else(|| {
+            orbis_core::Error::plugin(format!(
+                "Plugin '{}' not found. Install the plugin first.",
+                name
+            ))
+        })?;
+        
+        // Check if already running
+        if info.state == PluginState::Running {
+            return Ok(()); // Already enabled
+        }
+        
+        // If the plugin is not loaded in runtime, re-initialize it
+        if !self.runtime.is_running(name) {
+            // Need to reload the plugin into runtime
+            self.runtime.initialize(&info, &info.source).await?;
+        }
+        
+        // Update state
         self.registry.set_state(name, PluginState::Running)?;
-        self.runtime.start(name).await?;
+        
         tracing::info!("Enabled plugin: {}", name);
         Ok(())
     }
@@ -246,8 +293,22 @@ impl PluginManager {
     ///
     /// Returns an error if the plugin cannot be disabled.
     pub async fn disable_plugin(&self, name: &str) -> orbis_core::Result<()> {
-        self.runtime.stop(name).await?;
+        // Check if plugin exists
+        let info = self.registry.get(name).ok_or_else(|| {
+            orbis_core::Error::plugin(format!("Plugin '{}' not found", name))
+        })?;
+        
+        // Check if already disabled
+        if info.state == PluginState::Disabled {
+            return Ok(()); // Already disabled
+        }
+        
+        // Stop the runtime instance if it exists (ignore errors if not running)
+        let _ = self.runtime.stop(name).await;
+        
+        // Update state
         self.registry.set_state(name, PluginState::Disabled)?;
+        
         tracing::info!("Disabled plugin: {}", name);
         Ok(())
     }
