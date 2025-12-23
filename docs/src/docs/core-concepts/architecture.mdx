@@ -18,28 +18,28 @@ Orbis uses a layered architecture that separates concerns between the frontend, 
 ```mermaid
 graph TB
     subgraph User["User Interface"]
-        Pages[Plugin Pages]
-        Components[UI Components]
+        Pages[Plugin Pages ]
+        Components[UI Components ]
     end
     
     subgraph Frontend["Frontend Layer"]
-        Renderer[Schema Renderer]
-        StateStore[Zustand State Store]
-        ActionExecutor[Action Executor]
-        Router[React Router]
+        Renderer[Schema Renderer ]
+        StateStore[Zustand State Store ]
+        ActionExecutor[Action Executor ]
+        Router[React Router ]
     end
     
     subgraph Backend["Backend Layer"]
-        Commands[Tauri Commands]
-        PluginRT[Plugin Runtime]
-        AuthService[Auth Service]
-        DBLayer[Database Layer]
+        Commands[Tauri Commands ]
+        PluginRT[Plugin Runtime ]
+        AuthService[Auth Service ]
+        DBLayer[Database Layer ]
     end
     
     subgraph Plugins["Plugin System"]
-        WASM[WASM Sandbox]
-        Manifest[Plugin Manifest]
-        Schemas[UI Schemas]
+        WASM[WASM Sandbox ]
+        Manifest[Plugin Manifest ]
+        Schemas[UI Schemas ]
     end
     
     subgraph Storage["Storage Layer"]
@@ -133,9 +133,9 @@ Everything runs locally on the user's machine.
 ```mermaid
 graph LR
     subgraph Desktop["User's Computer"]
-        App[Orbis App]
+        App[Orbis App] 
         DB[(SQLite)]
-        Plugins[Plugins]
+        Plugins[Plugins ]
     end
     
     App --> DB
@@ -156,15 +156,15 @@ Multiple clients connect to a shared backend.
 ```mermaid
 graph TB
     subgraph Clients["Client Machines"]
-        Client1[Orbis Client 1]
-        Client2[Orbis Client 2]
-        Client3[Orbis Client 3]
+        Client1[Orbis Client 1 ]
+        Client2[Orbis Client 2 ]
+        Client3[Orbis Client 3 ]
     end
     
     subgraph Server["Server"]
-        API[Orbis Server]
+        API[Orbis Server ]
         DB[(PostgreSQL)]
-        PluginHost[Plugin Host]
+        PluginHost[Plugin Host ]
     end
     
     Client1 --> API
