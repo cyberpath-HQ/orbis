@@ -1,0 +1,51 @@
+// @builder-insertion-start
+// This section of the file is managed by the Orbis build system.
+// Any changes made directly to this section will be overwritten as part of the build process.
+// To customize the contents of this file, modify the build script located at `crates/orbis-dsl/build.rs`.
+
+types = @{ String | Number | Boolean }
+identifiers = @{ Page | LongString | UserId | ApiVersion }
+
+String = @{ "STRING" | "String" | "string" }
+Number = @{ "NUMBER" | "Number" | "number" }
+Boolean = @{ "BOOLEAN" | "Boolean" | "boolean" }
+Page = @{ "PAGE" | "Page" | "page" }
+LongString = @{ "LONG-STRING" | "LONG_STRING" | "Long-String" | "LongString" | "long-string" | "longString" | "long_string" }
+UserId = @{ "USER-ID" | "USER_ID" | "User-Id" | "UserId" | "user-id" | "userId" | "user_id" }
+ApiVersion = @{ "API-VERSION" | "API_VERSION" | "Api-Version" | "ApiVersion" | "api-version" | "apiVersion" | "api_version" }
+
+// @builder-insertion-end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -7,6 +7,13 @@ version.workspace = true
 readme.workspace = true
 
 [dependencies]
+heck = "0.5"
+pest = "2.8.4"
+pest_derive = "2.8.4"
+
+[build-dependencies]
+heck = "0.5"
+maplit = "1.0.2"
 
 [lints]
 workspace = true
