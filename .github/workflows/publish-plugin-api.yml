@@ -191,33 +191,3 @@ jobs:
           cd crates/orbis-plugin-api
           cargo publish --token "${CARGO_REGISTRY_TOKEN}"
           echo "🚀 Published version ${{ needs.check-version.outputs.version }} to crates.io"
-
-  update-badge:
-    name: Update README badge
-    runs-on: ubuntu-latest
-    needs: [check-version, publish]
-    if: needs.publish.result == 'success' && github.event.inputs.dry_run != 'true'
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Update crates.io badge in README
-        run: |
-          cd crates/orbis-plugin-api
-          if ! grep -q "crates.io" README.md; then
-            # Add badge if it doesn't exist
-            sed -i '1i [![Crates.io](https://img.shields.io/crates/v/orbis-plugin-api.svg)](https://crates.io/crates/orbis-plugin-api) [![Documentation](https://docs.rs/orbis-plugin-api/badge.svg)](https://docs.rs/orbis-plugin-api)\n' README.md
-            
-            git config user.name "github-actions[bot]"
-            git config user.email "github-actions[bot]@users.noreply.github.com"
-            git add README.md
-            git commit -m "docs: add crates.io badge to orbis-plugin-api README"
-            git push
-            echo "✅ Added crates.io badge to README"
-          else
-            echo "ℹ️  Badge already exists in README"
-          fi
