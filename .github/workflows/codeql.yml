@@ -14,8 +14,10 @@ name: "CodeQL Advanced"
 on:
   push:
     branches: [ "main" ]
+  # Run for all pull requests (no branch filter) so CodeQL analyzes every PR.
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - '*'
   schedule:
     - cron: '30 0 * * *'
 
