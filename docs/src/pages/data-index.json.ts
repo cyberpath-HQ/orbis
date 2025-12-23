@@ -53,6 +53,10 @@ function stripMDXTags(content: string): string {
         content = content.replace(/<!--[\s\S]*?-->/g, ``);
     } while (content !== previousContent);
 
+    // Remove any remaining incomplete HTML comment fragments to prevent injection
+    content = content.replace(/<!--/g, ``);
+    content = content.replace(/-->/g, ``);
+
     // Clean up multiple newlines
     content = content.replace(/\n{3,}/g, `\n\n`);
 
