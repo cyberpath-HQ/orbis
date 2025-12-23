@@ -122,6 +122,47 @@ describe(`setNestedValue`, () => {
         expect(original.user.name).toBe(`John`);
         expect(result.user.name).toBe(`Jane`);
     });
+
+    it(`should prevent prototype pollution with __proto__`, () => {
+        const obj = {
+            user: {
+                name: `John`,
+            },
+        };
+        const result = setNestedValue(obj, `__proto__.polluted`, true);
+        expect(result).toEqual(obj);
+        expect(({} as Record<string, unknown>).polluted).toBeUndefined();
+    });
+
+    it(`should prevent prototype pollution with constructor`, () => {
+        const obj = {
+            user: {
+                name: `John`,
+            },
+        };
+        const result = setNestedValue(obj, `constructor.polluted`, true);
+        expect(result).toEqual(obj);
+    });
+
+    it(`should prevent prototype pollution with prototype`, () => {
+        const obj = {
+            user: {
+                name: `John`,
+            },
+        };
+        const result = setNestedValue(obj, `prototype.polluted`, true);
+        expect(result).toEqual(obj);
+    });
+
+    it(`should prevent prototype pollution in nested paths`, () => {
+        const obj = {
+            user: {
+                name: `John`,
+            },
+        };
+        const result = setNestedValue(obj, `user.__proto__.polluted`, true);
+        expect(result).toEqual(obj);
+    });
 });
 
 describe(`interpolateExpression`, () => {
@@ -384,5 +425,95 @@ describe(`createPageStateStore`, () => {
 
         store.getState().setState(`count`, 3);
         expect(notifiedCount).toBe(2);
+    });
+
+    it(`should prevent prototype pollution in setState with __proto__`, () => {
+        const store = createPageStateStore({
+            user: {
+                type:    `object`,
+                default: {
+                    name: `John`,
+                },
+            },
+        });
+
+        store.getState().setState(`__proto__.polluted`, true);
+        expect(({} as Record<string, unknown>).polluted).toBeUndefined();
+    });
+
+    it(`should prevent prototype pollution in setState with constructor`, () => {
+        const store = createPageStateStore({
+            user: {
+                type:    `object`,
+                default: {
+                    name: `John`,
+                },
+            },
+        });
+
+        store.getState().setState(`constructor.polluted`, true);
+        expect(store.getState().state.constructor).toBeUndefined();
+    });
+
+    it(`should prevent prototype pollution in setState with nested dangerous properties`, () => {
+        const store = createPageStateStore({
+            user: {
+                type:    `object`,
+                default: {
+                    name: `John`,
+                },
+            },
+        });
+
+        store.getState().setState(`user.__proto__.polluted`, true);
+        expect(({} as Record<string, unknown>).polluted).toBeUndefined();
+    });
+
+    it(`should prevent prototype pollution in mergeState with __proto__`, () => {
+        const store = createPageStateStore({
+            user: {
+                type:    `object`,
+                default: {
+                    name: `John`,
+                },
+            },
+        });
+
+        store.getState().mergeState(`__proto__`, {
+            polluted: true,
+        });
+        expect(({} as Record<string, unknown>).polluted).toBeUndefined();
+    });
+
+    it(`should prevent prototype pollution in mergeState with constructor`, () => {
+        const store = createPageStateStore({
+            user: {
+                type:    `object`,
+                default: {
+                    name: `John`,
+                },
+            },
+        });
+
+        store.getState().mergeState(`constructor`, {
+            polluted: true,
+        });
+        expect(store.getState().state.constructor).toBeUndefined();
+    });
+
+    it(`should prevent prototype pollution in mergeState with nested dangerous properties`, () => {
+        const store = createPageStateStore({
+            user: {
+                type:    `object`,
+                default: {
+                    name: `John`,
+                },
+            },
+        });
+
+        store.getState().mergeState(`user.__proto__`, {
+            polluted: true,
+        });
+        expect(({} as Record<string, unknown>).polluted).toBeUndefined();
     });
 });
