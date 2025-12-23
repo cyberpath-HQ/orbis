@@ -1,7 +1,7 @@
 ---
 sidebar_position: 7
 title: Overlay Components
-description: Modal and Tooltip components
+description: Modal, Tooltip, Dropdown
 ---
 
 import CodeBlock from '@/components/mdx/CodeBlock.astro';
@@ -19,7 +19,7 @@ Dialog window for focused content or actions.
 ```json
 {
   "type": "Modal",
-  "open": "{{state.isModalOpen}}",
+  "id": "confirm-modal",
   "title": "Confirm Action",
   "description": "Are you sure you want to continue?",
   "content": {
@@ -36,7 +36,7 @@ Dialog window for focused content or actions.
         "label": "Cancel",
         "variant": "outline",
         "events": {
-          "on_click": [{ "type": "update_state", "path": "isModalOpen", "value": false }]
+          "on_click": [{ "type": "closeDialog", "dialogId": "confirm-modal" }]
         }
       },
       {
@@ -44,15 +44,15 @@ Dialog window for focused content or actions.
         "label": "Confirm",
         "events": {
           "on_click": [
-            { "type": "call_api", "api": "confirmAction" },
-            { "type": "update_state", "path": "isModalOpen", "value": false }
+            { "type": "callApi", "api": "confirmAction" },
+            { "type": "closeDialog", "dialogId": "confirm-modal" }
           ]
         }
       }
     ]
   },
   "events": {
-    "on_close": [{ "type": "update_state", "path": "isModalOpen", "value": false }]
+    "onClose": [{ "type": "updateState", "path": "modalData", "value": null }]
   }
 }
 ```
@@ -62,15 +62,13 @@ Dialog window for focused content or actions.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `open` | boolean \| string | `false` | Modal visibility |
+| `id` | string | - | Modal identifier (required) |
 | `title` | string | - | Modal title |
 | `description` | string | - | Subtitle/description |
-| `content` | object | - | Modal body content |
+| `content` | object | - | Modal body content (required) |
 | `footer` | object | - | Modal footer content |
 | `size` | `sm` \| `md` \| `lg` \| `xl` \| `full` | `md` | Modal size |
 | `closable` | boolean | `true` | Show close button |
-| `closeOnOverlay` | boolean | `true` | Close on backdrop click |
-| `closeOnEscape` | boolean | `true` | Close on Escape key |
 | `className` | string | - | CSS classes |
 | `events` | object | - | Event handlers |
 
@@ -78,8 +76,8 @@ Dialog window for focused content or actions.
 
 | Event | Trigger |
 |-------|---------|
-| `on_close` | Modal close requested |
-| `on_open` | Modal opened |
+| `onClose` | Modal close requested |
+| `onOpen` | Modal opened |
 
 ### Sizes
 
@@ -89,7 +87,43 @@ Dialog window for focused content or actions.
 | `md` | 500px |
 | `lg` | 640px |
 | `xl` | 800px |
-| `full` | 100vw |
+| `full` | Full screen |
+
+### Opening Modals
+
+Use the `showDialog` action to open a modal:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Button",
+  "label": "Open Modal",
+  "events": {
+    "on_click": [
+      { "type": "showDialog", "dialogId": "my-modal" }
+    ]
+  }
+}
+```
+</CodeBlock>
+
+### Closing Modals
+
+Use the `closeDialog` action:
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Button",
+  "label": "Close",
+  "events": {
+    "on_click": [
+      { "type": "closeDialog", "dialogId": "my-modal" }
+    ]
+  }
+}
+```
+</CodeBlock>
 
 ### Examples
 
@@ -101,7 +135,9 @@ Dialog window for focused content or actions.
   "label": "Delete Item",
   "variant": "destructive",
   "events": {
-    "on_click": [{ "type": "update_state", "path": "deleteModalOpen", "value": true }]
+    "on_click": [
+      { "type": "showDialog", "dialogId": "delete-modal" }
+    ]
   }
 }
 ```
@@ -111,7 +147,7 @@ Dialog window for focused content or actions.
 ```json
 {
   "type": "Modal",
-  "open": "{{state.deleteModalOpen}}",
+  "id": "delete-modal",
   "title": "Delete Item?",
   "description": "This action cannot be undone.",
   "content": {
@@ -129,7 +165,7 @@ Dialog window for focused content or actions.
         "label": "Cancel",
         "variant": "outline",
         "events": {
-          "on_click": [{ "type": "update_state", "path": "deleteModalOpen", "value": false }]
+          "on_click": [{ "type": "closeDialog", "dialogId": "delete-modal" }]
         }
       },
       {
@@ -138,16 +174,13 @@ Dialog window for focused content or actions.
         "variant": "destructive",
         "events": {
           "on_click": [
-            { "type": "call_api", "api": "deleteItem", "args": { "id": "{{state.itemToDelete.id}}" } },
-            { "type": "update_state", "path": "deleteModalOpen", "value": false },
-            { "type": "show_toast", "message": "Item deleted", "level": "success" }
+            { "type": "callApi", "api": "deleteItem", "body": { "id": "{{state.itemToDelete.id}}" } },
+            { "type": "closeDialog", "dialogId": "delete-modal" },
+            { "type": "showToast", "message": "Item deleted", "level": "success" }
           ]
         }
       }
     ]
-  },
-  "events": {
-    "on_close": [{ "type": "update_state", "path": "deleteModalOpen", "value": false }]
   }
 }
 ```
@@ -158,7 +191,7 @@ Dialog window for focused content or actions.
 ```json
 {
   "type": "Modal",
-  "open": "{{state.showEditModal}}",
+  "id": "edit-profile-modal",
   "title": "Edit Profile",
   "size": "lg",
   "content": {
@@ -176,45 +209,16 @@ Dialog window for focused content or actions.
         "name": "bio",
         "fieldType": "textarea",
         "label": "Bio",
-        "bindTo": "editForm.bio",
-        "rows": 4
-      },
-      {
-        "name": "avatar",
-        "fieldType": "file",
-        "label": "Profile Picture",
-        "accept": "image/*"
+        "bindTo": "editForm.bio"
       }
-    ]
-  },
-  "footer": {
-    "type": "Flex",
-    "justify": "end",
-    "gap": "0.5rem",
-    "children": [
-      {
-        "type": "Button",
-        "label": "Cancel",
-        "variant": "ghost",
-        "events": {
-          "on_click": [{ "type": "update_state", "path": "showEditModal", "value": false }]
-        }
-      },
-      {
-        "type": "Button",
-        "label": "Save Changes",
-        "events": {
-          "on_click": [
-            { "type": "validateForm", "form": "edit-profile" },
-            { "type": "call_api", "api": "updateProfile", "args": "{{state.editForm}}" },
-            { "type": "update_state", "path": "showEditModal", "value": false }
-          ]
-        }
-      }
-    ]
-  },
-  "events": {
-    "on_close": [{ "type": "update_state", "path": "showEditModal", "value": false }]
+    ],
+    "events": {
+      "onSubmit": [
+        { "type": "callApi", "api": "updateProfile", "body": "{{state.editForm}}" },
+        { "type": "closeDialog", "dialogId": "edit-profile-modal" },
+        { "type": "showToast", "message": "Profile updated", "level": "success" }
+      ]
+    }
   }
 }
 ```
@@ -225,7 +229,7 @@ Dialog window for focused content or actions.
 ```json
 {
   "type": "Modal",
-  "open": "{{state.previewOpen}}",
+  "id": "preview-modal",
   "size": "full",
   "title": "Document Preview",
   "content": {
@@ -233,36 +237,6 @@ Dialog window for focused content or actions.
     "className": "h-[80vh] overflow-auto",
     "children": [
       { "type": "Image", "src": "{{state.previewUrl}}", "className": "w-full" }
-    ]
-  },
-  "events": {
-    "on_close": [{ "type": "update_state", "path": "previewOpen", "value": false }]
-  }
-}
-```
-</CodeBlock>
-
-**Using showDialog action:**
-<CodeBlock lang="json">
-```json
-{
-  "type": "Button",
-  "label": "Delete",
-  "variant": "destructive",
-  "events": {
-    "on_click": [
-      {
-        "type": "showDialog",
-        "title": "Delete Item?",
-        "content": "This cannot be undone.",
-        "variant": "destructive",
-        "confirmText": "Delete",
-        "cancelText": "Keep",
-        "onConfirm": [
-          { "type": "call_api", "api": "deleteItem" },
-          { "type": "show_toast", "message": "Deleted" }
-        ]
-      }
     ]
   }
 }
@@ -280,7 +254,7 @@ Informational popup on hover.
 {
   "type": "Tooltip",
   "content": "This is helpful information",
-  "trigger": {
+  "children": {
     "type": "Button",
     "icon": "HelpCircle",
     "variant": "ghost",
@@ -294,11 +268,10 @@ Informational popup on hover.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `content` | string \| object | - | Tooltip content |
-| `trigger` | object | - | Trigger component |
+| `content` | string | - | Tooltip content (required) |
+| `children` | object | - | Trigger component (required) |
 | `side` | `top` \| `bottom` \| `left` \| `right` | `top` | Tooltip position |
-| `align` | `start` \| `center` \| `end` | `center` | Alignment |
-| `delayDuration` | number | `200` | Show delay (ms) |
+| `delayMs` | number | `200` | Show delay (ms) |
 | `className` | string | - | CSS classes |
 
 ### Examples
@@ -309,35 +282,11 @@ Informational popup on hover.
 {
   "type": "Tooltip",
   "content": "Click to edit",
-  "trigger": {
+  "children": {
     "type": "Button",
     "icon": "Edit",
     "variant": "ghost",
     "size": "icon"
-  }
-}
-```
-</CodeBlock>
-
-**With rich content:**
-<CodeBlock lang="json">
-```json
-{
-  "type": "Tooltip",
-  "content": {
-    "type": "Flex",
-    "direction": "column",
-    "gap": "0.25rem",
-    "children": [
-      { "type": "Text", "content": "Keyboard Shortcuts", "className": "font-semibold" },
-      { "type": "Text", "variant": "small", "content": "⌘K - Search" },
-      { "type": "Text", "variant": "small", "content": "⌘S - Save" }
-    ]
-  },
-  "trigger": {
-    "type": "Button",
-    "icon": "Keyboard",
-    "variant": "ghost"
   }
 }
 ```
@@ -356,10 +305,10 @@ Informational popup on hover.
       "type": "Tooltip",
       "content": "Maximum 100 requests per minute",
       "side": "right",
-      "trigger": {
+      "children": {
         "type": "Icon",
         "name": "Info",
-        "className": "w-4 h-4 text-gray-400 cursor-help"
+        "size": "sm"
       }
     }
   ]
@@ -378,25 +327,25 @@ Informational popup on hover.
       "type": "Tooltip",
       "content": "Above",
       "side": "top",
-      "trigger": { "type": "Button", "label": "Top" }
+      "children": { "type": "Button", "label": "Top" }
     },
     {
       "type": "Tooltip",
       "content": "Below",
       "side": "bottom",
-      "trigger": { "type": "Button", "label": "Bottom" }
+      "children": { "type": "Button", "label": "Bottom" }
     },
     {
       "type": "Tooltip",
       "content": "Left side",
       "side": "left",
-      "trigger": { "type": "Button", "label": "Left" }
+      "children": { "type": "Button", "label": "Left" }
     },
     {
       "type": "Tooltip",
       "content": "Right side",
       "side": "right",
-      "trigger": { "type": "Button", "label": "Right" }
+      "children": { "type": "Button", "label": "Right" }
     }
   ]
 }
@@ -409,7 +358,7 @@ Informational popup on hover.
 {
   "type": "Tooltip",
   "content": "You need admin permissions to perform this action",
-  "trigger": {
+  "children": {
     "type": "Container",
     "children": [
       {
@@ -434,11 +383,9 @@ Informational popup on hover.
 ```json
 {
   "type": "Modal",
-  "open": "{{state.modalOpen}}",
+  "id": "processing-modal",
   "title": "Processing",
   "closable": false,
-  "closeOnOverlay": false,
-  "closeOnEscape": false,
   "content": {
     "type": "Flex",
     "direction": "column",
@@ -446,7 +393,7 @@ Informational popup on hover.
     "gap": "1rem",
     "className": "py-4",
     "children": [
-      { "type": "LoadingOverlay" },
+      { "type": "Progress", "value": "{{state.progress}}", "showLabel": true },
       { "type": "Text", "content": "Please wait while we process your request..." }
     ]
   }
@@ -460,7 +407,7 @@ Informational popup on hover.
 ```json
 {
   "type": "Modal",
-  "open": "{{state.level1Open}}",
+  "id": "select-item-modal",
   "title": "Select Item",
   "content": {
     "type": "Container",
@@ -470,7 +417,9 @@ Informational popup on hover.
         "type": "Button",
         "label": "Create New",
         "events": {
-          "on_click": [{ "type": "update_state", "path": "level2Open", "value": true }]
+          "on_click": [
+            { "type": "showDialog", "dialogId": "create-item-modal" }
+          ]
         }
       }
     ]
@@ -483,11 +432,26 @@ Informational popup on hover.
 ```json
 {
   "type": "Modal",
-  "open": "{{state.level2Open}}",
+  "id": "create-item-modal",
   "title": "Create Item",
-  "content": { "type": "Form", "..." },
-  "events": {
-    "on_close": [{ "type": "update_state", "path": "level2Open", "value": false }]
+  "content": {
+    "type": "Form",
+    "id": "create-form",
+    "fields": [
+      {
+        "name": "name",
+        "fieldType": "text",
+        "label": "Name",
+        "bindTo": "newItem.name"
+      }
+    ],
+    "events": {
+      "onSubmit": [
+        { "type": "callApi", "api": "createItem", "body": "{{state.newItem}}" },
+        { "type": "closeDialog", "dialogId": "create-item-modal" },
+        { "type": "closeDialog", "dialogId": "select-item-modal" }
+      ]
+    }
   }
 }
 ```
@@ -508,7 +472,7 @@ Informational popup on hover.
       "render": {
         "type": "Tooltip",
         "content": "{{$row.statusDetails}}",
-        "trigger": {
+        "children": {
           "type": "Badge",
           "text": "{{$cell}}",
           "variant": "{{$cell === 'active' ? 'success' : 'secondary'}}"
@@ -516,6 +480,32 @@ Informational popup on hover.
       }
     }
   ]
+}
+```
+</CodeBlock>
+
+### Confirmation Pattern
+
+<CodeBlock lang="json">
+```json
+{
+  "type": "Button",
+  "label": "Delete All",
+  "variant": "destructive",
+  "events": {
+    "on_click": [
+      {
+        "type": "conditional",
+        "condition": "{{state.items.length}} > 0",
+        "then": [
+          { "type": "showDialog", "dialogId": "confirm-delete-all" }
+        ],
+        "elseActions": [
+          { "type": "showToast", "message": "No items to delete", "level": "info" }
+        ]
+      }
+    ]
+  }
 }
 ```
 </CodeBlock>

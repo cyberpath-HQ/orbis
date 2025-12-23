@@ -11,6 +11,7 @@ export interface NavSection {
     items: Array<NavItem>
 }
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export const docsNav: Array<NavSection> = [
     {
         title: `Getting Started`,
@@ -79,24 +80,7 @@ export const docsNav: Array<NavSection> = [
             },
             {
                 title: `Forms`,
-                items: [
-                    {
-                        title: `Input`,
-                        href:  `/docs/components/forms/input/`,
-                    },
-                    {
-                        title: `Button`,
-                        href:  `/docs/components/forms/button/`,
-                    },
-                    {
-                        title: `Select`,
-                        href:  `/docs/components/forms/select/`,
-                    },
-                    {
-                        title: `Checkbox`,
-                        href:  `/docs/components/forms/checkbox/`,
-                    },
-                ],
+                href:  `/docs/components/forms/`,
             },
             {
                 title: `Data Display`,
@@ -108,29 +92,15 @@ export const docsNav: Array<NavSection> = [
             },
             {
                 title: `Navigation`,
-                items: [
-                    {
-                        title: `Tabs`,
-                        href:  `/docs/components/navigation/tabs/`,
-                    },
-                    {
-                        title: `Breadcrumb`,
-                        href:  `/docs/components/navigation/breadcrumb/`,
-                    },
-                ],
+                href:  `/docs/components/navigation/`,
             },
             {
                 title: `Overlays`,
-                items: [
-                    {
-                        title: `Dialog`,
-                        href:  `/docs/components/overlays/dialog/`,
-                    },
-                    {
-                        title: `Tooltip`,
-                        href:  `/docs/components/overlays/tooltip/`,
-                    },
-                ],
+                href:  `/docs/components/overlays/`,
+            },
+            {
+                title: `Advanced`,
+                href:  `/docs/components/advanced/`,
             },
         ],
     },
@@ -306,6 +276,7 @@ export const docsNav: Array<NavSection> = [
     },
 ];
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export const mainNav: Array<NavItem> = [
     {
         title: `Documentation`,
