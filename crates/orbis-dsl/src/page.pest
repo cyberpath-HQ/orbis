@@ -1,51 +1,300 @@
 // @builder-insertion-start
 // This section of the file is managed by the Orbis build system.
-// Any changes made directly to this section will be overwritten as part of the build process.
-// To customize the contents of this file, modify the build script located at `crates/orbis-dsl/build.rs`.
 
-types = @{ String | Number | Boolean }
-identifiers = @{ Page | LongString | UserId | ApiVersion }
+Api = @{ ^"API" | ^"Api" | ^"api" }
+AriaAtomic = @{ ^"ARIA-ATOMIC" | ^"ARIA_ATOMIC" | ^"Aria-Atomic" | ^"AriaAtomic" | ^"aria-atomic" | ^"ariaAtomic" | ^"aria_atomic" }
+AriaBusy = @{ ^"ARIA-BUSY" | ^"ARIA_BUSY" | ^"Aria-Busy" | ^"AriaBusy" | ^"aria-busy" | ^"ariaBusy" | ^"aria_busy" }
+AriaChecked = @{ ^"ARIA-CHECKED" | ^"ARIA_CHECKED" | ^"Aria-Checked" | ^"AriaChecked" | ^"aria-checked" | ^"ariaChecked" | ^"aria_checked" }
+AriaControls = @{ ^"ARIA-CONTROLS" | ^"ARIA_CONTROLS" | ^"Aria-Controls" | ^"AriaControls" | ^"aria-controls" | ^"ariaControls" | ^"aria_controls" }
+AriaCurrent = @{ ^"ARIA-CURRENT" | ^"ARIA_CURRENT" | ^"Aria-Current" | ^"AriaCurrent" | ^"aria-current" | ^"ariaCurrent" | ^"aria_current" }
+AriaDescribedBy = @{ ^"ARIA-DESCRIBED-BY" | ^"ARIA_DESCRIBED_BY" | ^"Aria-Described-By" | ^"AriaDescribedBy" | ^"aria-described-by" | ^"ariaDescribedBy" | ^"aria_described_by" }
+AriaDisabled = @{ ^"ARIA-DISABLED" | ^"ARIA_DISABLED" | ^"Aria-Disabled" | ^"AriaDisabled" | ^"aria-disabled" | ^"ariaDisabled" | ^"aria_disabled" }
+AriaErrorMessage = @{ ^"ARIA-ERROR-MESSAGE" | ^"ARIA_ERROR_MESSAGE" | ^"Aria-Error-Message" | ^"AriaErrorMessage" | ^"aria-error-message" | ^"ariaErrorMessage" | ^"aria_error_message" }
+AriaExpanded = @{ ^"ARIA-EXPANDED" | ^"ARIA_EXPANDED" | ^"Aria-Expanded" | ^"AriaExpanded" | ^"aria-expanded" | ^"ariaExpanded" | ^"aria_expanded" }
+AriaFlowTo = @{ ^"ARIA-FLOW-TO" | ^"ARIA_FLOW_TO" | ^"Aria-Flow-To" | ^"AriaFlowTo" | ^"aria-flow-to" | ^"ariaFlowTo" | ^"aria_flow_to" }
+AriaHidden = @{ ^"ARIA-HIDDEN" | ^"ARIA_HIDDEN" | ^"Aria-Hidden" | ^"AriaHidden" | ^"aria-hidden" | ^"ariaHidden" | ^"aria_hidden" }
+AriaInvalid = @{ ^"ARIA-INVALID" | ^"ARIA_INVALID" | ^"Aria-Invalid" | ^"AriaInvalid" | ^"aria-invalid" | ^"ariaInvalid" | ^"aria_invalid" }
+AriaLabel = @{ ^"ARIA-LABEL" | ^"ARIA_LABEL" | ^"Aria-Label" | ^"AriaLabel" | ^"aria-label" | ^"ariaLabel" | ^"aria_label" }
+AriaLabelledBy = @{ ^"ARIA-LABELLED-BY" | ^"ARIA_LABELLED_BY" | ^"Aria-Labelled-By" | ^"AriaLabelledBy" | ^"aria-labelled-by" | ^"ariaLabelledBy" | ^"aria_labelled_by" }
+AriaLive = @{ ^"ARIA-LIVE" | ^"ARIA_LIVE" | ^"Aria-Live" | ^"AriaLive" | ^"aria-live" | ^"ariaLive" | ^"aria_live" }
+AriaOwns = @{ ^"ARIA-OWNS" | ^"ARIA_OWNS" | ^"Aria-Owns" | ^"AriaOwns" | ^"aria-owns" | ^"ariaOwns" | ^"aria_owns" }
+AriaPlaceholder = @{ ^"ARIA-PLACEHOLDER" | ^"ARIA_PLACEHOLDER" | ^"Aria-Placeholder" | ^"AriaPlaceholder" | ^"aria-placeholder" | ^"ariaPlaceholder" | ^"aria_placeholder" }
+AriaPressed = @{ ^"ARIA-PRESSED" | ^"ARIA_PRESSED" | ^"Aria-Pressed" | ^"AriaPressed" | ^"aria-pressed" | ^"ariaPressed" | ^"aria_pressed" }
+AriaRelevant = @{ ^"ARIA-RELEVANT" | ^"ARIA_RELEVANT" | ^"Aria-Relevant" | ^"AriaRelevant" | ^"aria-relevant" | ^"ariaRelevant" | ^"aria_relevant" }
+AriaRequired = @{ ^"ARIA-REQUIRED" | ^"ARIA_REQUIRED" | ^"Aria-Required" | ^"AriaRequired" | ^"aria-required" | ^"ariaRequired" | ^"aria_required" }
+AriaSelected = @{ ^"ARIA-SELECTED" | ^"ARIA_SELECTED" | ^"Aria-Selected" | ^"AriaSelected" | ^"aria-selected" | ^"ariaSelected" | ^"aria_selected" }
+Array = @{ ^"ARRAY" | ^"Array" | ^"array" }
+Blur = @{ ^"BLUR" | ^"Blur" | ^"blur" }
+Bool = @{ ^"BOOL" | ^"Bool" | ^"bool" }
+ClassName = @{ ^"CLASS-NAME" | ^"CLASS_NAME" | ^"Class-Name" | ^"ClassName" | ^"class-name" | ^"className" | ^"class_name" }
+Click = @{ ^"CLICK" | ^"Click" | ^"click" }
+Console = @{ ^"CONSOLE" | ^"Console" | ^"console" }
+Else = @{ ^"ELSE" | ^"Else" | ^"else" }
+Event = @{ ^"EVENT" | ^"Event" | ^"event" }
+Focus = @{ ^"FOCUS" | ^"Focus" | ^"focus" }
+For = @{ ^"FOR" | ^"For" | ^"for" }
+Hooks = @{ ^"HOOKS" | ^"Hooks" | ^"hooks" }
+Id = @{ ^"ID" | ^"Id" | ^"id" }
+If = @{ ^"IF" | ^"If" | ^"if" }
+In = @{ ^"IN" | ^"In" | ^"in" }
+Mount = @{ ^"MOUNT" | ^"Mount" | ^"mount" }
+MouseEnter = @{ ^"MOUSE-ENTER" | ^"MOUSE_ENTER" | ^"Mouse-Enter" | ^"MouseEnter" | ^"mouse-enter" | ^"mouseEnter" | ^"mouse_enter" }
+MouseLeave = @{ ^"MOUSE-LEAVE" | ^"MOUSE_LEAVE" | ^"Mouse-Leave" | ^"MouseLeave" | ^"mouse-leave" | ^"mouseLeave" | ^"mouse_leave" }
+Number = @{ ^"NUMBER" | ^"Number" | ^"number" }
+Object = @{ ^"OBJECT" | ^"Object" | ^"object" }
+Page = @{ ^"PAGE" | ^"Page" | ^"page" }
+Role = @{ ^"ROLE" | ^"Role" | ^"role" }
+Router = @{ ^"ROUTER" | ^"Router" | ^"router" }
+State = @{ ^"STATE" | ^"State" | ^"state" }
+String = @{ ^"STRING" | ^"String" | ^"string" }
+Style = @{ ^"STYLE" | ^"Style" | ^"style" }
+TabIndex = @{ ^"TAB-INDEX" | ^"TAB_INDEX" | ^"Tab-Index" | ^"TabIndex" | ^"tab-index" | ^"tabIndex" | ^"tab_index" }
+Template = @{ ^"TEMPLATE" | ^"Template" | ^"template" }
+Toast = @{ ^"TOAST" | ^"Toast" | ^"toast" }
+Unmount = @{ ^"UNMOUNT" | ^"Unmount" | ^"unmount" }
+Visible = @{ ^"VISIBLE" | ^"Visible" | ^"visible" }
+When = @{ ^"WHEN" | ^"When" | ^"when" }
 
-String = @{ "STRING" | "String" | "string" }
-Number = @{ "NUMBER" | "Number" | "number" }
-Boolean = @{ "BOOLEAN" | "Boolean" | "boolean" }
-Page = @{ "PAGE" | "Page" | "page" }
-LongString = @{ "LONG-STRING" | "LONG_STRING" | "Long-String" | "LongString" | "long-string" | "longString" | "long_string" }
-UserId = @{ "USER-ID" | "USER_ID" | "User-Id" | "UserId" | "user-id" | "userId" | "user_id" }
-ApiVersion = @{ "API-VERSION" | "API_VERSION" | "Api-Version" | "ApiVersion" | "api-version" | "apiVersion" | "api_version" }
+// Category rules
+ActionNamespaces = @{ Api | Toast | Router | Console | Event }
+CommonAttributes = @{ Role | AriaLabel | AriaLabelledBy | AriaDescribedBy | AriaHidden | AriaDisabled | AriaExpanded | AriaPressed | AriaSelected | AriaChecked | AriaRequired | AriaInvalid | AriaErrorMessage | AriaPlaceholder | AriaLive | AriaAtomic | AriaBusy | AriaRelevant | AriaControls | AriaOwns | AriaFlowTo | AriaCurrent | TabIndex | Id | ClassName | Style | Visible }
+CommonEvents = @{ Click | Focus | Blur | MouseEnter | MouseLeave }
+Hook = @{ Hooks }
+Keywords = @{ Page | State | Template | If | Else | For | In | When }
+LifecycleHooks = @{ Mount | Unmount }
+PrimitiveTypes = @{ String | Number | Bool | Object | Array }
+
+// Component-specific rules
+ContainerAttributes = @{ CommonAttributes }
+ContainerEvents = @{ Click | MouseEnter | MouseLeave }
+ContainerComponentNames = @{ "CONTAINER" | "Container" | "container" }
+
+ContainerAttributeDefinition = {
+    ContainerAttributes ~ "=" ~ attribute_value
+}
+ContainerEventsDefinition = {
+    "@" ~ ContainerEvents ~ "=>" ~ action_list
+}
+ContainerComponent = { 
+    "<" ~ 
+    ContainerComponentNames ~ 
+    (ContainerAttributeDefinition | ContainerEventsDefinition)* ~ 
+    ">" 
+}
+
+// Event rules
+
+// Attribute rules
 
 // @builder-insertion-end
 
+// ============================================================================
+// FILE STRUCTURE
+// ============================================================================
+file = { SOI ~ WHITESPACE* ~ (page_block | state_block | hooks_block | template_block)* ~ WHITESPACE* ~ EOI }
 
+// Top-level blocks
+page_block = { Page ~ "{" ~ page_property* ~ "}" }
+state_block = { State ~ "{" ~ state_declaration* ~ "}" }
+hooks_block = { Hook ~ "{" ~ lifecycle_hook* ~ "}" }
+template_block = { Template ~ "{" ~ component* ~ "}" }
 
+// ============================================================================
+// PAGE BLOCK
+// ============================================================================
+page_property = { page_key ~ "=" ~ literal_value }
+page_key = @{ ^"title" | ^"description" | ^"route" | ^"icon" }
 
+// ============================================================================
+// STATE BLOCK
+// ============================================================================
+state_declaration = {
+    identifier ~ (":" ~ type_annotation)? ~ ("=" ~ value)?
+}
 
+type_annotation = {
+    String | Number | Bool | Object | Array |
+    (Array ~ "<" ~ type_annotation ~ ">") |
+    (Object ~ "<" ~ identifier ~ ">")
+}
 
+// ============================================================================
+// HOOKS BLOCK (Global Lifecycle)
+// ============================================================================
+lifecycle_hook = {
+    "@" ~ hook_name ~ "=>" ~ action_list
+}
 
+hook_name = { Mount | Unmount }
 
+// ============================================================================
+// TEMPLATE BLOCK
+// ============================================================================
+component = {
+    component_tag ~ component_body?
+}
 
+component_tag = {
+    ComponentTypes
+}
 
+component_body = {
+    "{" ~ (attribute | event_handler | child_element | control_flow)* ~ "}"
+}
 
+// Attributes (no @ prefix)
+attribute = {
+    attribute_name ~ "=" ~ attribute_value
+}
 
+attribute_name = {
+    identifier
+}
 
+attribute_value = {
+    literal_value | expression | interpolated_string
+}
 
+// Event handlers (@ prefix required)
+event_handler = {
+    "@" ~ event_name ~ "=>" ~ action_list
+}
 
+event_name = { identifier }
 
+// Child elements
+child_element = {
+    component | text_node | control_flow
+}
 
+text_node = {
+    quoted_string | interpolated_string
+}
 
+// ============================================================================
+// CONTROL FLOW
+// ============================================================================
+control_flow = {
+    if_block | for_block | when_block
+}
 
+if_block = {
+    If ~ expression ~ "{" ~ component* ~ "}" ~ (Else ~ "{" ~ component* ~ "}")?
+}
 
+for_block = {
+    For ~ identifier ~ In ~ expression ~ "{" ~ component* ~ "}"
+}
 
+when_block = {
+    When ~ expression ~ "{" ~ component* ~ "}"
+}
 
+// ============================================================================
+// ACTIONS
+// ============================================================================
+action_list = {
+    "{" ~ action* ~ "}" | action
+}
 
+action = {
+    state_assignment | method_call
+}
 
+// State assignment: state.field = value
+state_assignment = {
+    state_path ~ "=" ~ expression
+}
 
+state_path = {
+    ^"state" ~ ("." ~ identifier)+
+}
 
+// Method calls: api.call(), toast.show(), etc.
+method_call = {
+    namespace ~ "." ~ method_name ~ "(" ~ argument_list? ~ ")"
+}
 
+namespace = {
+    Api | Toast | Router | Console | Event
+}
 
+method_name = { identifier }
 
+argument_list = {
+    argument ~ ("," ~ argument)*
+}
 
+argument = {
+    (identifier ~ ":" ~ value) | value
+}
 
+// ============================================================================
+// EXPRESSIONS & VALUES
+// ============================================================================
+// Use a simpler expression grammar without left-recursion
+expression = {
+    term ~ (bin_op ~ term)*
+}
 
+term = {
+    literal_value |
+    identifier_expr |
+    object_literal |
+    array_literal |
+    "(" ~ expression ~ ")"
+}
 
+bin_op = @{
+    "==" | "!=" | "<=" | ">=" | "<" | ">" |
+    "&&" | "||" |
+    "+" | "-" | "*" | "/" | "%"
+}
 
+identifier_expr = {
+    (^"state" ~ "." ~ identifier ~ ("." ~ identifier)*) |
+    identifier
+}
+
+value = {
+    literal_value | expression | object_literal | array_literal
+}
+
+literal_value = {
+    boolean | number | quoted_string | null_value
+}
+
+boolean = @{ ^"true" | ^"false" }
+number = @{ "-"? ~ ASCII_DIGIT+ ~ ("." ~ ASCII_DIGIT+)? }
+null_value = @{ ^"null" }
+
+quoted_string = ${ "\"" ~ string_inner ~ "\"" }
+string_inner = @{ (!"\"" ~ ANY)* }
+
+interpolated_string = ${ "\"" ~ interpolated_inner+ ~ "\"" }
+interpolated_inner = _{ interpolation | plain_text }
+plain_text = @{ (!("\"" | "{") ~ ANY)+ }
+
+interpolation = ${ "{" ~ expression ~ "}" }
+
+object_literal = {
+    "{" ~ object_pair* ~ "}"
+}
+
+object_pair = {
+    identifier ~ ":" ~ value
+}
+
+array_literal = {
+    "[" ~ (value ~ ("," ~ value)*)? ~ "]"
+}
+
+// ============================================================================
+// PRIMITIVES
+// ============================================================================
+identifier = @{
+    (ASCII_ALPHA | "_") ~ (ASCII_ALPHANUMERIC | "_")*
+}
+
+WHITESPACE = _{ " " | "\t" | "\r" | "\n" }
+COMMENT = _{ "//" ~ (!"\n" ~ ANY)* ~ "\n" | "/*" ~ (!"*/" ~ ANY)* ~ "*/" }
