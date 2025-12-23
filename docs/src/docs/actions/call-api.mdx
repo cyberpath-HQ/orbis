@@ -261,7 +261,7 @@ In `on_error` handlers:
     "on_change": [
       { "type": "update_state", "path": "searchQuery", "value": "{{$value}}" },
       {
-        "type": "debouncedAction",
+        "type": "debounced_action",
         "delay": 300,
         "action": {
           "type": "call_api",

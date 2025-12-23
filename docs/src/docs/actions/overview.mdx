@@ -33,15 +33,15 @@ Every action has a `type` and type-specific properties:
 | [`call_api`](./call-api) | Make API requests |
 | [`navigate`](./navigate) | Change routes |
 | [`show_toast`](./show-toast) | Display notifications |
-| [`showDialog`](./dialogs) | Show confirmation dialogs |
-| [`closeDialog`](./dialogs) | Close dialogs |
-| [`debouncedAction`](./flow-control) | Debounce actions |
-| [`validateForm`](./form-actions) | Validate forms |
-| [`resetForm`](./form-actions) | Reset form values |
+| [`show_dialog`](./dialogs) | Show confirmation dialogs |
+| [`close_dialog`](./dialogs) | Close dialogs |
+| [`debounced_action`](./flow-control) | Debounce actions |
+| [`validate_form`](./form-actions) | Validate forms |
+| [`reset_form`](./form-actions) | Reset form values |
 | [`set_loading`](./utility-actions) | Set loading state |
 | [`download`](./utility-actions) | Download files |
 | [`copy`](./utility-actions) | Copy to clipboard |
-| [`openUrl`](./utility-actions) | Open external URLs |
+| [`open_url`](./utility-actions) | Open external URLs |
 | [`emit`](./utility-actions) | Emit custom events |
 | [`conditional`](./flow-control) | Conditional execution |
 | [`sequence`](./flow-control) | Sequential execution |
@@ -234,7 +234,7 @@ Execute actions based on conditions:
 <CodeBlock lang="json">
 ```json
 [
-  { "type": "validateForm", "form": "myForm" },
+  { "type": "validate_form", "form": "myForm" },
   {
     "type": "conditional",
     "condition": "{{state.$formValid}}",
@@ -246,7 +246,7 @@ Execute actions based on conditions:
         "args": "{{state.formData}}",
         "on_success": [
           { "type": "show_toast", "message": "Submitted!", "level": "success" },
-          { "type": "resetForm", "form": "myForm" },
+          { "type": "reset_form", "form": "myForm" },
           { "type": "navigate", "to": "/success" }
         ]
       },

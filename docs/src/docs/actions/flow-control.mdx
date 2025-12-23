@@ -11,7 +11,7 @@ import CodeBlock from '@/components/mdx/CodeBlock.astro';
 
 Actions for controlling execution flow and timing.
 
-## debouncedAction
+## debounced_action
 
 Debounces action execution to prevent rapid repeated calls.
 
@@ -20,7 +20,7 @@ Debounces action execution to prevent rapid repeated calls.
 <CodeBlock lang="json">
 ```json
 {
-  "type": "debouncedAction",
+  "type": "debounced_action",
   "key": "search",
   "delay": 300,
   "action": [
@@ -52,7 +52,7 @@ Debounces action execution to prevent rapid repeated calls.
   "events": {
     "on_change": [
       {
-        "type": "debouncedAction",
+        "type": "debounced_action",
         "key": "searchInput",
         "delay": 300,
         "action": [
@@ -75,7 +75,7 @@ Debounces action execution to prevent rapid repeated calls.
   "events": {
     "on_change": [
       {
-        "type": "debouncedAction",
+        "type": "debounced_action",
         "key": "autoSave",
         "delay": 1000,
         "action": [
@@ -97,7 +97,7 @@ Debounces action execution to prevent rapid repeated calls.
   "events": {
     "onResize": [
       {
-        "type": "debouncedAction",
+        "type": "debounced_action",
         "key": "resize",
         "delay": 150,
         "action": [
@@ -220,12 +220,12 @@ Executes actions based on conditions.
   "condition": "{{state.hasUnsavedChanges}}",
   "then": [
     {
-      "type": "showDialog",
+      "type": "show_dialog",
       "id": "confirmLeave",
       "title": "Unsaved Changes",
       "message": "You have unsaved changes. Do you want to leave?",
       "buttons": [
-        { "label": "Stay", "action": [{ "type": "closeDialog", "id": "confirmLeave" }] },
+        { "label": "Stay", "action": [{ "type": "close_dialog", "id": "confirmLeave" }] },
         { "label": "Leave", "action": [{ "type": "navigate", "route": "{{state.targetRoute}}" }] }
       ]
     }
@@ -337,7 +337,7 @@ Executes actions in sequence, waiting for each to complete.
     "on_change": [
       { "type": "update_state", "path": "searchQuery", "value": "{{$value}}" },
       {
-        "type": "debouncedAction",
+        "type": "debounced_action",
         "key": "search",
         "delay": 300,
         "action": [
@@ -372,12 +372,12 @@ Executes actions in sequence, waiting for each to complete.
         "condition": "{{state.user.permissions.includes('delete')}}",
         "then": [
           {
-            "type": "showDialog",
+            "type": "show_dialog",
             "id": "confirmDelete",
             "title": "Delete Item",
             "message": "Are you sure?",
             "buttons": [
-              { "label": "Cancel", "action": [{ "type": "closeDialog", "id": "confirmDelete" }] },
+              { "label": "Cancel", "action": [{ "type": "close_dialog", "id": "confirmDelete" }] },
               { "label": "Delete", "variant": "destructive", "action": [{ "type": "call_api", "api": "delete" }] }
             ]
           }
@@ -400,9 +400,9 @@ Executes actions in sequence, waiting for each to complete.
   "type": "sequence",
   "actions": [
     { "type": "set_loading", "key": "wizard", "value": true },
-    { "type": "validateForm", "formId": "step1Form" },
-    { "type": "validateForm", "formId": "step2Form" },
-    { "type": "validateForm", "formId": "step3Form" },
+    { "type": "validate_form", "formId": "step1Form" },
+    { "type": "validate_form", "formId": "step2Form" },
+    { "type": "validate_form", "formId": "step3Form" },
     {
       "type": "call_api",
       "api": "submitWizard",
@@ -431,7 +431,7 @@ Executes actions in sequence, waiting for each to complete.
     "on_change": [
       { "type": "update_state", "path": "hasUnsavedChanges", "value": true },
       {
-        "type": "debouncedAction",
+        "type": "debounced_action",
         "key": "autoSave",
         "delay": 2000,
         "action": [
