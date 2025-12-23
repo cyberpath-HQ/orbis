@@ -143,13 +143,14 @@ use serde_json::json;
 
 orbis_plugin!();
 
-#[wrap_handler]
-pub fn get_greeting(ctx: Context) -> Result<Response> {
+pub fn get_greeting_impl(ctx: Context) -> Result<Response> {
     let name = ctx.query_param("name").unwrap_or("World");
     Ok(Response::json(&json!({
         "message": format!("Hello, {}!", name)
     })))
 }
+
+wrap_handler!(get_greeting, get_greeting_impl);
 ```
 </CodeBlock>
 
