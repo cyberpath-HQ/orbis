@@ -104,7 +104,7 @@ export const docsNav: Array<NavSection> = [
             },
             {
                 title: `Feedback`,
-                        href:  `/docs/components/feedback/`,
+                href:  `/docs/components/feedback/`,
             },
             {
                 title: `Navigation`,
