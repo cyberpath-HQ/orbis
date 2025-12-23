@@ -75,25 +75,26 @@ For simple UI-only plugins, create `plugins/hello/manifest.json`:
   "description": "Hello World plugin",
   "pages": [
     {
-      "id": "main",
-      "title": "Hello World",
       "route": "/hello",
+      "title": "Hello World",
       "icon": "Hand",
-      "layout": {
-        "type": "Container",
-        "className": "p-6",
-        "children": [
-          {
-            "type": "Heading",
-            "level": 1,
-            "text": "Hello, World!"
-          },
-          {
-            "type": "Text",
-            "content": "This is my first Orbis plugin."
-          }
-        ]
-      }
+      "sections": [
+        {
+          "type": "Container",
+          "className": "p-6",
+          "children": [
+            {
+              "type": "Heading",
+              "level": 1,
+              "text": "Hello, World!"
+            },
+            {
+              "type": "Text",
+              "content": "This is my first Orbis plugin."
+            }
+          ]
+        }
+      ]
     }
   ]
 }
@@ -164,15 +165,16 @@ pub fn get_greeting(ctx: Context) -> Result<Response> {
   ],
   "pages": [
     {
-      "id": "home",
-      "title": "My Plugin",
       "route": "/my-plugin",
-      "layout": {
-        "type": "Container",
-        "children": [
-          { "type": "Text", "text": "${state.message}" }
-        ]
-      }
+      "title": "My Plugin",
+      "sections": [
+        {
+          "type": "Container",
+          "children": [
+            { "type": "Text", "content": "{{state.message}}" }
+          ]
+        }
+      ]
     }
   ]
 }
@@ -306,7 +308,7 @@ Actions respond to user events:
 {
   "events": {
     "on_click": [
-      { "type": "update_state", "path": "count", "value": "{{state.count + 1}}" }
+      { "type": "update_state", "path": "count", "from": "{{state.count + 1}}" }
     ]
   }
 }
@@ -335,62 +337,63 @@ Actions respond to user events:
   "version": "1.0.0",
   "pages": [
     {
-      "id": "main",
-      "title": "Counter",
       "route": "/counter",
+      "title": "Counter",
       "icon": "Hash",
       "state": {
         "count": { "type": "number", "default": 0 }
       },
-      "layout": {
-        "type": "Flex",
-        "direction": "column",
-        "align": "center",
-        "gap": "1rem",
-        "className": "p-6",
-        "children": [
-          {
-            "type": "Heading",
-            "level": 1,
-            "text": "Count: {{state.count}}"
-          },
-          {
-            "type": "Flex",
-            "gap": "0.5rem",
-            "children": [
-              {
-                "type": "Button",
-                "label": "-",
-                "variant": "outline",
-                "events": {
-                  "on_click": [
-                    { "type": "update_state", "path": "count", "value": "{{state.count - 1}}" }
-                  ]
+      "sections": [
+        {
+          "type": "Flex",
+          "direction": "column",
+          "align": "center",
+          "gap": "1rem",
+          "className": "p-6",
+          "children": [
+            {
+              "type": "Heading",
+              "level": 1,
+              "text": "Count: {{state.count}}"
+            },
+            {
+              "type": "Flex",
+              "gap": "0.5rem",
+              "children": [
+                {
+                  "type": "Button",
+                  "label": "-",
+                  "variant": "outline",
+                  "events": {
+                    "on_click": [
+                      { "type": "update_state", "path": "count", "from": "{{state.count - 1}}" }
+                    ]
+                  }
+                },
+                {
+                  "type": "Button",
+                  "label": "+",
+                  "events": {
+                    "on_click": [
+                      { "type": "update_state", "path": "count", "from": "{{state.count + 1}}" }
+                    ]
+                  }
                 }
-              },
-              {
-                "type": "Button",
-                "label": "+",
-                "events": {
-                  "on_click": [
-                    { "type": "update_state", "path": "count", "value": "{{state.count + 1}}" }
-                  ]
-                }
-              }
-            ]
-          },
-          {
-            "type": "Button",
-            "label": "Reset",
-            "variant": "ghost",
-            "events": {
-              "on_click": [
-                { "type": "update_state", "path": "count", "value": 0 }
               ]
+            },
+            {
+              "type": "Button",
+              "label": "Reset",
+              "variant": "ghost",
+              "events": {
+                "on_click": [
+                  { "type": "update_state", "path": "count", "from": "0" }
+                ]
+              }
             }
-          }
-        ]
-      }
+          ]
+        }
+      ]
     }
   ]
 }

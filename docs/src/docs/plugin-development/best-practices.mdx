@@ -425,19 +425,21 @@ For large lists, use pagination:
 <CodeBlock lang="json">
 ```json
 {
-  "on_mount": [
-    {
-      "type": "call_api",
-      "api": "getData",
-      "on_success": [
-        { "type": "update_state", "path": "data", "value": "$response.data" },
-        { "type": "update_state", "path": "ui.loadError", "value": null }
-      ],
-      "on_error": [
-        { "type": "update_state", "path": "ui.loadError", "value": "$error.message" }
-      ]
-    }
-  ]
+  "hooks": {
+    "on_mount": [
+      {
+        "type": "call_api",
+        "api": "getData",
+        "on_success": [
+          { "type": "update_state", "path": "data", "from": "$response.data" },
+          { "type": "update_state", "path": "ui.loadError", "value": null }
+        ],
+        "on_error": [
+          { "type": "update_state", "path": "ui.loadError", "from": "$error.message" }
+        ]
+      }
+    ]
+  }
 }
 ```
 </CodeBlock>
@@ -565,19 +567,21 @@ Always show loading feedback:
 <CodeBlock lang="json">
 ```json
 {
-  "on_mount": [
-    { "type": "set_loading", "loading": true },
-    {
-      "type": "call_api",
-      "api": "getData",
-      "on_success": [
-        { "type": "update_state", "path": "data", "value": "$response.data" }
-      ],
-      "finally": [
-        { "type": "set_loading", "loading": false }
-      ]
-    }
-  ]
+  "hooks": {
+    "on_mount": [
+      { "type": "set_loading", "loading": true },
+      {
+        "type": "call_api",
+        "api": "getData",
+        "on_success": [
+          { "type": "update_state", "path": "data", "from": "$response.data" }
+        ],
+        "finally": [
+          { "type": "set_loading", "loading": false }
+        ]
+      }
+    ]
+  }
 }
 ```
 </CodeBlock>
