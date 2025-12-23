@@ -36,12 +36,13 @@ pub fn calculate_total(items: &[Item]) -> f64 {
     items.iter().map(|i| i.price * i.quantity as f64).sum()
 }
 
-#[wrap_handler]
-pub fn get_total(ctx: Context) -> Result<Response> {
+pub fn get_total_impl(ctx: Context) -> Result<Response> {
     let items: Vec<Item> = ctx.body_as()?;
     let total = calculate_total(&items);
     Ok(Response::json(&json!({ "total": total })))
 }
+
+wrap_handler!(get_total, get_total_impl);
 
 #[cfg(test)]
 mod tests {

@@ -363,24 +363,25 @@ API routes for backend functionality (WASM plugins only).
 
 ### Handler Implementation with SDK
 
-When using the Orbis SDK, handlers are simple functions wrapped with `#[wrap_handler]`:
+When using the Orbis SDK, handlers are simple functions wrapped with `wrap_handler!()`:
 
 <CodeBlock lang="rust">
 ```rust
 use orbis_plugin_api::sdk::prelude::*;
 
-#[wrap_handler]
-pub fn get_items(ctx: Context) -> Result<Response> {
+pub fn get_items_impl(ctx: Context) -> Result<Response> {
     let items: Vec<Item> = state::get("items").unwrap_or_default();
     Ok(Response::json(&items))
 }
 
-#[wrap_handler]
-pub fn create_item(ctx: Context) -> Result<Response> {
+pub fn create_item_impl(ctx: Context) -> Result<Response> {
     let new_item: NewItem = ctx.body_as()?;
     // ... business logic
     Ok(Response::json(&created_item))
 }
+
+wrap_handler!(get_items, get_items_impl);
+wrap_handler!(create_item, create_item_impl);
 ```
 </CodeBlock>
 
