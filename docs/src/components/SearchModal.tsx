@@ -111,10 +111,8 @@ const SearchModal: React.FC<SearchModalProps> = ({ open, onClose }) => {
     }, [results, selectedIndex]);
 
     const navigateToResult = (item: SearchEntry) => {
-        if (!item.url.endsWith("/")) {
-            item.url += "/";
-        }
-        window.location.href = item.url;
+        const url = item.url.endsWith("/") ? item.url : `${item.url}/`;
+        window.location.href = url;
         onClose();
     };
 
