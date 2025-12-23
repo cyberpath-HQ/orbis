@@ -36,7 +36,7 @@ Dialog window for focused content or actions.
         "label": "Cancel",
         "variant": "outline",
         "events": {
-          "on_click": [{ "type": "closeDialog", "dialogId": "confirm-modal" }]
+          "on_click": [{ "type": "close_dialog", "dialogId": "confirm-modal" }]
         }
       },
       {
@@ -44,15 +44,15 @@ Dialog window for focused content or actions.
         "label": "Confirm",
         "events": {
           "on_click": [
-            { "type": "callApi", "api": "confirmAction" },
-            { "type": "closeDialog", "dialogId": "confirm-modal" }
+            { "type": "call_api", "api": "confirmAction" },
+            { "type": "close_dialog", "dialogId": "confirm-modal" }
           ]
         }
       }
     ]
   },
   "events": {
-    "onClose": [{ "type": "updateState", "path": "modalData", "value": null }]
+    "on_close": [{ "type": "update_state", "path": "modalData", "value": null }]
   }
 }
 ```
@@ -76,8 +76,8 @@ Dialog window for focused content or actions.
 
 | Event | Trigger |
 |-------|---------|
-| `onClose` | Modal close requested |
-| `onOpen` | Modal opened |
+| `on_close` | Modal close requested |
+| `on_open` | Modal opened |
 
 ### Sizes
 
@@ -91,7 +91,7 @@ Dialog window for focused content or actions.
 
 ### Opening Modals
 
-Use the `showDialog` action to open a modal:
+Use the `show_dialog` action to open a modal:
 
 <CodeBlock lang="json">
 ```json
@@ -100,7 +100,7 @@ Use the `showDialog` action to open a modal:
   "label": "Open Modal",
   "events": {
     "on_click": [
-      { "type": "showDialog", "dialogId": "my-modal" }
+      { "type": "show_dialog", "dialogId": "my-modal" }
     ]
   }
 }
@@ -109,7 +109,7 @@ Use the `showDialog` action to open a modal:
 
 ### Closing Modals
 
-Use the `closeDialog` action:
+Use the `close_dialog` action:
 
 <CodeBlock lang="json">
 ```json
@@ -118,7 +118,7 @@ Use the `closeDialog` action:
   "label": "Close",
   "events": {
     "on_click": [
-      { "type": "closeDialog", "dialogId": "my-modal" }
+      { "type": "close_dialog", "dialogId": "my-modal" }
     ]
   }
 }
@@ -136,7 +136,7 @@ Use the `closeDialog` action:
   "variant": "destructive",
   "events": {
     "on_click": [
-      { "type": "showDialog", "dialogId": "delete-modal" }
+      { "type": "show_dialog", "dialogId": "delete-modal" }
     ]
   }
 }
@@ -165,7 +165,7 @@ Use the `closeDialog` action:
         "label": "Cancel",
         "variant": "outline",
         "events": {
-          "on_click": [{ "type": "closeDialog", "dialogId": "delete-modal" }]
+          "on_click": [{ "type": "close_dialog", "dialogId": "delete-modal" }]
         }
       },
       {
@@ -174,9 +174,9 @@ Use the `closeDialog` action:
         "variant": "destructive",
         "events": {
           "on_click": [
-            { "type": "callApi", "api": "deleteItem", "body": { "id": "{{state.itemToDelete.id}}" } },
-            { "type": "closeDialog", "dialogId": "delete-modal" },
-            { "type": "showToast", "message": "Item deleted", "level": "success" }
+            { "type": "call_api", "api": "deleteItem", "body": { "id": "{{state.itemToDelete.id}}" } },
+            { "type": "close_dialog", "dialogId": "delete-modal" },
+            { "type": "show_toast", "message": "Item deleted", "level": "success" }
           ]
         }
       }
@@ -213,10 +213,10 @@ Use the `closeDialog` action:
       }
     ],
     "events": {
-      "onSubmit": [
-        { "type": "callApi", "api": "updateProfile", "body": "{{state.editForm}}" },
-        { "type": "closeDialog", "dialogId": "edit-profile-modal" },
-        { "type": "showToast", "message": "Profile updated", "level": "success" }
+      "on_submit": [
+        { "type": "call_api", "api": "updateProfile", "body": "{{state.editForm}}" },
+        { "type": "close_dialog", "dialogId": "edit-profile-modal" },
+        { "type": "show_toast", "message": "Profile updated", "level": "success" }
       ]
     }
   }
@@ -418,7 +418,7 @@ Informational popup on hover.
         "label": "Create New",
         "events": {
           "on_click": [
-            { "type": "showDialog", "dialogId": "create-item-modal" }
+            { "type": "show_dialog", "dialogId": "create-item-modal" }
           ]
         }
       }
@@ -446,10 +446,10 @@ Informational popup on hover.
       }
     ],
     "events": {
-      "onSubmit": [
-        { "type": "callApi", "api": "createItem", "body": "{{state.newItem}}" },
-        { "type": "closeDialog", "dialogId": "create-item-modal" },
-        { "type": "closeDialog", "dialogId": "select-item-modal" }
+      "on_submit": [
+        { "type": "call_api", "api": "createItem", "body": "{{state.newItem}}" },
+        { "type": "close_dialog", "dialogId": "create-item-modal" },
+        { "type": "close_dialog", "dialogId": "select-item-modal" }
       ]
     }
   }
@@ -498,10 +498,10 @@ Informational popup on hover.
         "type": "conditional",
         "condition": "{{state.items.length}} > 0",
         "then": [
-          { "type": "showDialog", "dialogId": "confirm-delete-all" }
+          { "type": "show_dialog", "dialogId": "confirm-delete-all" }
         ],
         "elseActions": [
-          { "type": "showToast", "message": "No items to delete", "level": "info" }
+          { "type": "show_toast", "message": "No items to delete", "level": "info" }
         ]
       }
     ]

@@ -22,7 +22,7 @@ Interactive button with multiple variants and states.
   "label": "Click Me",
   "events": {
     "on_click": [
-      { "type": "updateState", "path": "clicked", "value": true }
+      { "type": "update_state", "path": "clicked", "value": true }
     ]
   }
 }
@@ -126,9 +126,9 @@ Interactive button with multiple variants and states.
   "loading": "{{state.isSaving}}",
   "events": {
     "on_click": [
-      { "type": "updateState", "path": "isSaving", "value": true },
-      { "type": "callApi", "api": "save" },
-      { "type": "updateState", "path": "isSaving", "value": false }
+      { "type": "update_state", "path": "isSaving", "value": true },
+      { "type": "call_api", "api": "save" },
+      { "type": "update_state", "path": "isSaving", "value": false }
     ]
   }
 }
@@ -143,7 +143,7 @@ Interactive button with multiple variants and states.
   "label": "Submit",
   "disabled": "{{!state.formValid}}",
   "events": {
-    "on_click": [{ "type": "callApi", "api": "submit" }]
+    "on_click": [{ "type": "call_api", "api": "submit" }]
   }
 }
 ```
@@ -257,7 +257,7 @@ Tabbed navigation for switching between views.
 
 | Event | Payload |
 |-------|---------|
-| `onChange` | `$value` - new tab key |
+| `on_change` | `$value` - new tab key |
 
 ### Examples
 
@@ -309,9 +309,9 @@ Tabbed navigation for switching between views.
     }
   ],
   "events": {
-    "onChange": [
+    "on_change": [
       {
-        "type": "callApi",
+        "type": "call_api",
         "api": "getItems",
         "body": { "status": "{{$value}}" }
       }
@@ -438,7 +438,7 @@ Dropdown menu for actions.
 
 | Event | Trigger |
 |-------|---------|
-| `onClick` | Item clicked |
+| `on_click` | Item clicked |
 
 ### Examples
 
