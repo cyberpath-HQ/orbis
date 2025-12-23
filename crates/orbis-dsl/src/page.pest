@@ -91,36 +91,58 @@ ContainerComponent = {
 // ============================================================================
 // FILE STRUCTURE
 // ============================================================================
-file = { SOI ~ WHITESPACE* ~ (page_block | state_block | hooks_block | template_block)* ~ WHITESPACE* ~ EOI }
+// Top-level elements can be blocks or standalone lifecycle hooks
+file = { SOI ~ WHITESPACE* ~ top_level_element* ~ WHITESPACE* ~ EOI }
+
+top_level_element = {
+    page_block | state_block | hooks_block | template_block | standalone_lifecycle_hook
+}
 
 // Top-level blocks
 page_block = { Page ~ "{" ~ page_property* ~ "}" }
 state_block = { State ~ "{" ~ state_declaration* ~ "}" }
 hooks_block = { Hook ~ "{" ~ lifecycle_hook* ~ "}" }
-template_block = { Template ~ "{" ~ component* ~ "}" }
+template_block = { Template ~ "{" ~ (component | control_flow | line_comment)* ~ "}" }
+
+// Standalone lifecycle hooks at top level (outside hooks block)
+standalone_lifecycle_hook = {
+    "@" ~ hook_name ~ "=>" ~ action_list
+}
 
 // ============================================================================
 // PAGE BLOCK
 // ============================================================================
-page_property = { page_key ~ "=" ~ literal_value }
-page_key = @{ ^"title" | ^"description" | ^"route" | ^"icon" }
+page_property = { page_key ~ ":" ~ literal_value }
+page_key = @{ ^"id" | ^"title" | ^"description" | ^"route" | ^"icon" }
 
 // ============================================================================
 // STATE BLOCK
 // ============================================================================
 state_declaration = {
-    identifier ~ (":" ~ type_annotation)? ~ ("=" ~ value)?
+    identifier ~ (":" ~ type_annotation)? ~ ("=" ~ state_value)?
 }
 
 type_annotation = {
-    String | Number | Bool | Object | Array |
-    (Array ~ "<" ~ type_annotation ~ ">") |
-    (Object ~ "<" ~ identifier ~ ">")
+    nullable_type | array_type | simple_type
+}
+
+nullable_type = {
+    simple_type ~ "?"
+}
+
+array_type = {
+    simple_type ~ "[" ~ "]"
+}
+
+simple_type = {
+    String | Number | Bool | Object | Array | identifier
 }
 
 // ============================================================================
 // HOOKS BLOCK (Global Lifecycle)
 // ============================================================================
+// Hooks can be in a block: hooks { @mount => [...] }
+// Or standalone: @mount => [...]
 lifecycle_hook = {
     "@" ~ hook_name ~ "=>" ~ action_list
 }
@@ -131,44 +153,85 @@ hook_name = { Mount | Unmount }
 // TEMPLATE BLOCK
 // ============================================================================
 component = {
-    component_tag ~ component_body?
+    self_closing_component | component_with_children
 }
 
-component_tag = {
-    ComponentTypes
+// Self-closing: <Component attr="value" />
+self_closing_component = {
+    "<" ~ component_name ~ component_attrs* ~ "/>"
 }
 
-component_body = {
-    "{" ~ (attribute | event_handler | child_element | control_flow)* ~ "}"
+// With children: <Component>...</Component>
+component_with_children = {
+    "<" ~ component_name ~ component_attrs* ~ ">" ~
+    (component | control_flow | text_content | line_comment)* ~
+    "</" ~ component_name ~ ">"
 }
 
-// Attributes (no @ prefix)
-attribute = {
+// Attributes and events combined (can mix)
+component_attrs = {
+    component_event | component_attribute
+}
+
+// Component names (PascalCase convention)
+component_name = @{
+    ASCII_ALPHA_UPPER ~ (ASCII_ALPHANUMERIC)*
+}
+
+// Attributes (no @ prefix): attr="value" or attr={expression}
+component_attribute = {
     attribute_name ~ "=" ~ attribute_value
 }
 
-attribute_name = {
-    identifier
+attribute_name = @{
+    (ASCII_ALPHA | "_") ~ (ASCII_ALPHANUMERIC | "_" | "-")*
 }
 
 attribute_value = {
-    literal_value | expression | interpolated_string
+    quoted_string | expression_value
 }
 
-// Event handlers (@ prefix required)
-event_handler = {
-    "@" ~ event_name ~ "=>" ~ action_list
+expression_value = {
+    "{" ~ expression ~ "}"
 }
 
-event_name = { identifier }
-
-// Child elements
-child_element = {
-    component | text_node | control_flow
+// Event handlers (@ prefix required): @click => [actions]
+// Events can have inline action list OR action with response handlers
+component_event = {
+    "@" ~ event_name ~ "=>" ~ (action_with_handlers | action_list)
 }
 
-text_node = {
-    quoted_string | interpolated_string
+event_name = @{ 
+    (ASCII_ALPHA | "_") ~ (ASCII_ALPHANUMERIC | "_")*
+}
+
+// Action list for simple cases: [action1, action2]
+action_list = {
+    "[" ~ (action ~ (","? ~ action)*)? ~ "]"
+}
+
+// Action with response handlers: api.call(...) { success => [...], error => [...] }
+action_with_handlers = {
+    method_call ~ "{" ~ response_handler+ ~ "}"
+}
+
+response_handler = {
+    handler_type ~ "=>" ~ action_list
+}
+
+handler_type = @{ ^"success" | ^"error" | ^"finally" }
+
+// Text content inside components (plain text or interpolated)
+text_content = {
+    interpolated_text | plain_component_text
+}
+
+plain_component_text = @{
+    (!(("<" | "{" | "}") | NEWLINE) ~ ANY)+
+}
+
+interpolated_text = {
+    "{" ~ expression ~ "}"
 }
 
 // ============================================================================
@@ -178,30 +241,48 @@ control_flow = {
     if_block | for_block | when_block
 }
 
+// If-else: if condition { ... } else if cond { ... } else { ... }
 if_block = {
-    If ~ expression ~ "{" ~ component* ~ "}" ~ (Else ~ "{" ~ component* ~ "}")?
+    If ~ expression ~ "{" ~ template_content* ~ "}" ~ 
+    (Else ~ If ~ expression ~ "{" ~ template_content* ~ "}")* ~
+    (Else ~ "{" ~ template_content* ~ "}")?
 }
 
+// For loop: for item in collection { ... } OR for (index, item) in collection { ... }
 for_block = {
-    For ~ identifier ~ In ~ expression ~ "{" ~ component* ~ "}"
+    For ~ for_binding ~ In ~ expression ~ "{" ~ template_content* ~ "}"
 }
 
+for_binding = {
+    ("(" ~ identifier ~ "," ~ identifier ~ ")") | identifier
+}
+
+// When pattern matching: when expr { "pattern" => { ... } else => { ... } }
 when_block = {
-    When ~ expression ~ "{" ~ component* ~ "}"
+    When ~ expression ~ "{" ~ when_arm+ ~ "}"
+}
+
+when_arm = {
+    (when_pattern | Else) ~ "=>" ~ ("{" ~ template_content* ~ "}" | component)
+}
+
+when_pattern = {
+    literal_value
+}
+
+// Template content (used in control flow blocks)
+template_content = {
+    component | control_flow | line_comment
 }
 
 // ============================================================================
 // ACTIONS
 // ============================================================================
-action_list = {
-    "{" ~ action* ~ "}" | action
-}
-
 action = {
     state_assignment | method_call
 }
 
-// State assignment: state.field = value
+// State assignment: state.field = value OR state.nested.field = value
 state_assignment = {
     state_path ~ "=" ~ expression
 }
@@ -210,13 +291,13 @@ state_path = {
     ^"state" ~ ("." ~ identifier)+
 }
 
-// Method calls: api.call(), toast.show(), etc.
+// Method calls: api.call(), toast.show(), router.navigate(), etc.
 method_call = {
     namespace ~ "." ~ method_name ~ "(" ~ argument_list? ~ ")"
 }
 
 namespace = {
-    Api | Toast | Router | Console | Event
+    Api | Toast | Router | Console | Event | ^"modal" | ^"cleanup" | ^"delay"
 }
 
 method_name = { identifier }
@@ -225,21 +306,43 @@ argument_list = {
     argument ~ ("," ~ argument)*
 }
 
+// Named or positional arguments
 argument = {
-    (identifier ~ ":" ~ value) | value
+    named_argument | expression
 }
+
+named_argument = {
+    identifier ~ ":" ~ expression
+}
+
+// Special variables
+special_variable = {
+    response_var | error_var | event_var
+}
+
+response_var = { "$response" ~ ("." ~ identifier)* }
+error_var = { "$error" ~ ("." ~ identifier)* }
+event_var = { "$event" ~ ("." ~ identifier)* }
 
 // ============================================================================
 // EXPRESSIONS & VALUES
 // ============================================================================
-// Use a simpler expression grammar without left-recursion
+// Expressions with operators (non-left-recursive)
 expression = {
-    term ~ (bin_op ~ term)*
+    unary_expr ~ (bin_op ~ unary_expr)*
 }
 
+unary_expr = {
+    unary_op? ~ term
+}
+
+unary_op = @{ "!" | "-" }
+
 term = {
+    special_variable |
     literal_value |
-    identifier_expr |
+    member_access |
+    identifier |
     object_literal |
     array_literal |
     "(" ~ expression ~ ")"
@@ -251,13 +354,14 @@ bin_op = @{
     "+" | "-" | "*" | "/" | "%"
 }
 
-identifier_expr = {
-    (^"state" ~ "." ~ identifier ~ ("." ~ identifier)*) |
-    identifier
+// Member access: state.field, item.name, etc.
+member_access = {
+    identifier ~ ("." ~ identifier)+
 }
 
-value = {
-    literal_value | expression | object_literal | array_literal
+// Values for state initialization (no expressions, just literals and structures)
+state_value = {
+    literal_value | object_literal | array_literal
 }
 
 literal_value = {
@@ -268,25 +372,29 @@ boolean = @{ ^"true" | ^"false" }
 number = @{ "-"? ~ ASCII_DIGIT+ ~ ("." ~ ASCII_DIGIT+)? }
 null_value = @{ ^"null" }
 
-quoted_string = ${ "\"" ~ string_inner ~ "\"" }
-string_inner = @{ (!"\"" ~ ANY)* }
-
-interpolated_string = ${ "\"" ~ interpolated_inner+ ~ "\"" }
-interpolated_inner = _{ interpolation | plain_text }
-plain_text = @{ (!("\"" | "{") ~ ANY)+ }
-
-interpolation = ${ "{" ~ expression ~ "}" }
+// Quoted string with interpolation support: "Hello, {state.name}!"
+quoted_string = ${ "\"" ~ string_content* ~ "\"" }
+string_content = _{
+    string_interpolation | string_escape | string_char
+}
+string_char = @{ (!("\"" | "\\" | "{") ~ ANY)+ }
+string_escape = @{ "\\" ~ ANY }
+string_interpolation = ${ "{" ~ (member_access | identifier) ~ "}" }
 
 object_literal = {
-    "{" ~ object_pair* ~ "}"
+    "{" ~ (object_pair ~ (","? ~ object_pair)*)? ~ "}"
 }
 
 object_pair = {
-    identifier ~ ":" ~ value
+    (identifier | quoted_string) ~ ":" ~ (literal_value | object_literal | array_literal | member_access | identifier)
 }
 
 array_literal = {
-    "[" ~ (value ~ ("," ~ value)*)? ~ "]"
+    "[" ~ (array_element ~ ("," ~ array_element)*)? ~ "]"
+}
+
+array_element = {
+    literal_value | object_literal | array_literal | member_access | identifier
 }
 
 // ============================================================================
@@ -296,5 +404,8 @@ identifier = @{
     (ASCII_ALPHA | "_") ~ (ASCII_ALPHANUMERIC | "_")*
 }
 
+// Line comments inside template (not COMMENT which is silent)
+line_comment = @{ "//" ~ (!NEWLINE ~ ANY)* }
+
 WHITESPACE = _{ " " | "\t" | "\r" | "\n" }
-COMMENT = _{ "//" ~ (!"\n" ~ ANY)* ~ "\n" | "/*" ~ (!"*/" ~ ANY)* ~ "*/" }
+COMMENT = _{ "//" ~ (!"\n" ~ ANY)* ~ "\n"? | "/*" ~ (!"*/" ~ ANY)* ~ "*/" }

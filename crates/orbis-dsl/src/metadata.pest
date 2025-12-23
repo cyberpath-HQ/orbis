@@ -3,16 +3,16 @@
 // Any changes made directly to this section will be overwritten as part of the build process.
 // To customize the contents of this file, modify the build script located at `crates/orbis-dsl/build.rs`.
 
-config_types = @{ Required | Optional | Deprecated }
 meta_fields = @{ Author | Version | Description | License }
+config_types = @{ Required | Optional | Deprecated }
 
-Required = @{ "REQUIRED" | "Required" | "required" }
-Optional = @{ "OPTIONAL" | "Optional" | "optional" }
-Deprecated = @{ "DEPRECATED" | "Deprecated" | "deprecated" }
 Author = @{ "AUTHOR" | "Author" | "author" }
 Version = @{ "VERSION" | "Version" | "version" }
 Description = @{ "DESCRIPTION" | "Description" | "description" }
 License = @{ "LICENSE" | "License" | "license" }
+Required = @{ "REQUIRED" | "Required" | "required" }
+Optional = @{ "OPTIONAL" | "Optional" | "optional" }
+Deprecated = @{ "DEPRECATED" | "Deprecated" | "deprecated" }
 
 // @builder-insertion-end
 
