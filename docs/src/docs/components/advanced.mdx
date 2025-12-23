@@ -1,7 +1,7 @@
 ---
 sidebar_position: 8
 title: Advanced Components
-description: Conditional, Loop, Accordion, Icon, Fragment, Slot, Custom
+description: Conditional, Loop, Accordion, Section, Icon, Fragment, Slot, Custom
 ---
 
 import CodeBlock from '@/components/mdx/CodeBlock.astro';
@@ -30,8 +30,8 @@ Conditional rendering based on expressions.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `condition` | string | - | Expression to evaluate |
-| `then` | object | - | Component when true |
+| `condition` | string | - | Expression to evaluate (required) |
+| `then` | object | - | Component when true (required) |
 | `else` | object | - | Component when false (optional) |
 
 ### Condition Syntax
@@ -65,7 +65,7 @@ Conditional rendering based on expressions.
 {
   "type": "Conditional",
   "condition": "{{state.isLoading}}",
-  "then": { "type": "Skeleton", "count": 5 },
+  "then": { "type": "Skeleton", "variant": "rectangular", "height": "200px" },
   "else": { "type": "Table", "dataSource": "state:items" }
 }
 ```
@@ -80,7 +80,8 @@ Conditional rendering based on expressions.
   "then": {
     "type": "EmptyState",
     "title": "No Items",
-    "description": "Create your first item"
+    "description": "Create your first item",
+    "icon": "Inbox"
   },
   "else": { "type": "List", "dataSource": "state:items" }
 }
@@ -96,7 +97,9 @@ Conditional rendering based on expressions.
   "then": {
     "type": "Button",
     "label": "Admin Settings",
-    "events": { "on_click": [{ "type": "navigate", "to": "/admin" }] }
+    "events": {
+      "on_click": [{ "type": "navigate", "to": "/admin" }]
+    }
   }
 }
 ```
@@ -108,11 +111,15 @@ Conditional rendering based on expressions.
 {
   "type": "Conditional",
   "condition": "{{state.status}} === 'loading'",
-  "then": { "type": "Skeleton" },
+  "then": { "type": "Skeleton", "variant": "text" },
   "else": {
     "type": "Conditional",
     "condition": "{{state.status}} === 'error'",
-    "then": { "type": "Alert", "variant": "destructive", "message": "{{state.error}}" },
+    "then": {
+      "type": "Alert",
+      "variant": "destructive",
+      "message": "{{state.error}}"
+    },
     "else": { "type": "Text", "content": "{{state.data}}" }
   }
 }
@@ -129,8 +136,8 @@ Iterate over arrays to render repeated content.
 ```json
 {
   "type": "Loop",
-  "items": "{{state.items}}",
-  "itemTemplate": {
+  "dataSource": "state:items",
+  "template": {
     "type": "Card",
     "title": "{{$item.name}}",
     "content": { "type": "Text", "content": "{{$item.description}}" }
@@ -143,23 +150,19 @@ Iterate over arrays to render repeated content.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `items` | string \| array | - | Data source or static array |
-| `itemTemplate` | object | - | Component template for each item |
-| `keyField` | string | - | Unique key field name |
-| `emptyMessage` | string | - | Empty state message |
+| `dataSource` | string | - | Data source path (required) |
+| `template` | object | - | Component template for each item (required) |
+| `emptyTemplate` | object | - | Component when data is empty |
 
 ### Loop Variables
 
-Inside `itemTemplate`, you have access to:
+Inside `template`, you have access to:
 
 | Variable | Description |
 |----------|-------------|
 | `$item` | Current item |
 | `$index` | Zero-based index |
-| `$first` | Is first item |
-| `$last` | Is last item |
-| `$even` | Is even index |
-| `$odd` | Is odd index |
+| `$row` | Alias for `$item` (table context) |
 
 ### Examples
 
@@ -168,21 +171,32 @@ Inside `itemTemplate`, you have access to:
 ```json
 {
   "type": "Loop",
-  "items": "{{state.users}}",
-  "keyField": "id",
-  "itemTemplate": {
+  "dataSource": "state:users",
+  "template": {
     "type": "Flex",
     "align": "center",
     "gap": "1rem",
     "className": "p-4 border-b",
     "children": [
-      { "type": "Avatar", "src": "{{$item.avatar}}", "fallback": "{{$item.initials}}" },
+      {
+        "type": "Avatar",
+        "src": "{{$item.avatar}}",
+        "fallback": "{{$item.initials}}"
+      },
       {
         "type": "Flex",
         "direction": "column",
         "children": [
-          { "type": "Text", "content": "{{$item.name}}", "className": "font-medium" },
-          { "type": "Text", "variant": "muted", "content": "{{$item.email}}" }
+          {
+            "type": "Text",
+            "content": "{{$item.name}}",
+            "className": "font-medium"
+          },
+          {
+            "type": "Text",
+            "variant": "muted",
+            "content": "{{$item.email}}"
+          }
         ]
       }
     ]
@@ -201,14 +215,18 @@ Inside `itemTemplate`, you have access to:
   "children": [
     {
       "type": "Loop",
-      "items": "{{state.products}}",
-      "itemTemplate": {
+      "dataSource": "state:products",
+      "template": {
         "type": "Card",
         "className": "overflow-hidden",
         "content": {
           "type": "Container",
           "children": [
-            { "type": "Image", "src": "{{$item.image}}", "className": "w-full h-48 object-cover" },
+            {
+              "type": "Image",
+              "src": "{{$item.image}}",
+              "className": "w-full h-48 object-cover"
+            },
             {
               "type": "Container",
               "className": "p-4",
@@ -226,15 +244,15 @@ Inside `itemTemplate`, you have access to:
 ```
 </CodeBlock>
 
-**With index styling:**
+**With index:**
 <CodeBlock lang="json">
 ```json
 {
   "type": "Loop",
-  "items": "{{state.items}}",
-  "itemTemplate": {
+  "dataSource": "state:items",
+  "template": {
     "type": "Flex",
-    "className": "{{$even ? 'bg-gray-50' : 'bg-white'}} p-4",
+    "className": "p-4",
     "children": [
       { "type": "Text", "content": "{{$index + 1}}. {{$item.name}}" }
     ]
@@ -243,27 +261,20 @@ Inside `itemTemplate`, you have access to:
 ```
 </CodeBlock>
 
-**Static array:**
+**With empty state:**
 <CodeBlock lang="json">
 ```json
 {
   "type": "Loop",
-  "items": [
-    { "icon": "Home", "label": "Dashboard", "path": "/" },
-    { "icon": "Settings", "label": "Settings", "path": "/settings" }
-  ],
-  "itemTemplate": {
-    "type": "Link",
-    "to": "{{$item.path}}",
-    "children": {
-      "type": "Flex",
-      "align": "center",
-      "gap": "0.5rem",
-      "children": [
-        { "type": "Icon", "name": "{{$item.icon}}" },
-        { "type": "Text", "content": "{{$item.label}}" }
-      ]
-    }
+  "dataSource": "state:items",
+  "template": {
+    "type": "Card",
+    "title": "{{$item.name}}"
+  },
+  "emptyTemplate": {
+    "type": "EmptyState",
+    "title": "No items found",
+    "icon": "Inbox"
   }
 }
 ```
@@ -281,10 +292,12 @@ Collapsible content sections.
   "type": "Accordion",
   "items": [
     {
+      "key": "section-1",
       "title": "Section 1",
       "content": { "type": "Text", "content": "Content for section 1" }
     },
     {
+      "key": "section-2",
       "title": "Section 2",
       "content": { "type": "Text", "content": "Content for section 2" }
     }
@@ -297,24 +310,20 @@ Collapsible content sections.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `items` | array | `[]` | Accordion items |
-| `type` | `single` \| `multiple` | `single` | Selection mode |
-| `defaultValue` | string \| array | - | Initially expanded |
+| `items` | array | `[]` | Accordion items (required) |
+| `type_` | `single` \| `multiple` | `single` | Selection mode |
+| `defaultOpen` | array | `[]` | Initially expanded keys |
 | `collapsible` | boolean | `true` | Allow collapse all |
 | `className` | string | - | CSS classes |
 
 ### Item Definition
 
-<CodeBlock lang="typescript">
-```typescript
-interface AccordionItem {
-  id?: string;
-  title: string;
-  content: ComponentSchema;
-  disabled?: boolean;
-}
-```
-</CodeBlock>
+| Property | Type | Description |
+|----------|------|-------------|
+| `key` | string | Unique item identifier |
+| `title` | string | Item header text |
+| `content` | object | Item body component |
+| `disabled` | boolean \| string | Disabled state |
 
 ### Examples
 
@@ -323,11 +332,11 @@ interface AccordionItem {
 ```json
 {
   "type": "Accordion",
-  "type": "single",
+  "type_": "single",
   "collapsible": true,
   "items": [
     {
-      "id": "faq-1",
+      "key": "faq-1",
       "title": "What is Orbis?",
       "content": {
         "type": "Text",
@@ -335,7 +344,7 @@ interface AccordionItem {
       }
     },
     {
-      "id": "faq-2",
+      "key": "faq-2",
       "title": "How do I install plugins?",
       "content": {
         "type": "Text",
@@ -343,7 +352,7 @@ interface AccordionItem {
       }
     },
     {
-      "id": "faq-3",
+      "key": "faq-3",
       "title": "Is Orbis open source?",
       "content": {
         "type": "Text",
@@ -360,30 +369,101 @@ interface AccordionItem {
 ```json
 {
   "type": "Accordion",
-  "type": "multiple",
-  "defaultValue": ["section-1"],
+  "type_": "multiple",
+  "defaultOpen": ["section-1"],
   "items": [
     {
-      "id": "section-1",
+      "key": "section-1",
       "title": "General Settings",
-      "content": { "type": "Form", "..." }
+      "content": {
+        "type": "Form",
+        "id": "general",
+        "fields": [
+          { "name": "name", "fieldType": "text", "label": "Name" }
+        ]
+      }
     },
     {
-      "id": "section-2",
+      "key": "section-2",
       "title": "Advanced Settings",
-      "content": { "type": "Form", "..." }
+      "content": {
+        "type": "Form",
+        "id": "advanced",
+        "fields": [
+          { "name": "apiKey", "fieldType": "text", "label": "API Key" }
+        ]
+      }
     }
   ]
 }
 ```
 </CodeBlock>
 
-**Dynamic from state:**
+---
+
+## Section
+
+Semantic grouping with optional collapsible header.
+
 <CodeBlock lang="json">
 ```json
 {
-  "type": "Accordion",
-  "items": "{{state.faqItems}}"
+  "type": "Section",
+  "title": "User Details",
+  "description": "Personal information",
+  "children": [
+    { "type": "DataDisplay", "label": "Name", "value": "{{user.name}}" },
+    { "type": "DataDisplay", "label": "Email", "value": "{{user.email}}" }
+  ]
+}
+```
+</CodeBlock>
+
+### Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `title` | string | - | Section title |
+| `description` | string | - | Section description |
+| `children` | array | `[]` | Child components (required) |
+| `collapsible` | boolean | `false` | Make section collapsible |
+| `defaultCollapsed` | boolean | `false` | Initially collapsed |
+| `className` | string | - | CSS classes |
+
+### Examples
+
+**Basic section:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "Section",
+  "title": "Account Settings",
+  "description": "Manage your account preferences",
+  "children": [
+    {
+      "type": "Form",
+      "id": "account",
+      "fields": [
+        { "name": "email", "fieldType": "email", "label": "Email" },
+        { "name": "password", "fieldType": "password", "label": "Password" }
+      ]
+    }
+  ]
+}
+```
+</CodeBlock>
+
+**Collapsible section:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "Section",
+  "title": "Advanced Options",
+  "collapsible": true,
+  "defaultCollapsed": true,
+  "children": [
+    { "type": "Text", "content": "Advanced configuration options..." }
+  ]
 }
 ```
 </CodeBlock>
@@ -399,7 +479,7 @@ Display icons from lucide-react.
 {
   "type": "Icon",
   "name": "Settings",
-  "className": "w-5 h-5"
+  "size": "md"
 }
 ```
 </CodeBlock>
@@ -409,13 +489,30 @@ Display icons from lucide-react.
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `name` | string | - | Icon name (required) |
-| `size` | number \| string | - | Icon size |
+| `size` | `xs` \| `sm` \| `md` \| `lg` \| `xl` | `md` | Icon size |
+| `color` | string | - | Icon color (CSS color) |
 | `className` | string | - | CSS classes |
-| `strokeWidth` | number | `2` | Stroke width |
+| `events` | object | - | Event handlers |
+
+### Sizes
+
+| Size | Dimension |
+|------|-----------|
+| `xs` | 12px |
+| `sm` | 16px |
+| `md` | 20px |
+| `lg` | 24px |
+| `xl` | 32px |
+
+### Events
+
+| Event | Trigger |
+|-------|---------|
+| `onClick` | Icon clicked |
 
 ### Examples
 
-**With size:**
+**Different sizes:**
 <CodeBlock lang="json">
 ```json
 {
@@ -423,9 +520,11 @@ Display icons from lucide-react.
   "gap": "1rem",
   "align": "center",
   "children": [
-    { "type": "Icon", "name": "Star", "className": "w-4 h-4" },
-    { "type": "Icon", "name": "Star", "className": "w-6 h-6" },
-    { "type": "Icon", "name": "Star", "className": "w-8 h-8" }
+    { "type": "Icon", "name": "Star", "size": "xs" },
+    { "type": "Icon", "name": "Star", "size": "sm" },
+    { "type": "Icon", "name": "Star", "size": "md" },
+    { "type": "Icon", "name": "Star", "size": "lg" },
+    { "type": "Icon", "name": "Star", "size": "xl" }
   ]
 }
 ```
@@ -437,7 +536,23 @@ Display icons from lucide-react.
 {
   "type": "Icon",
   "name": "CheckCircle",
-  "className": "w-5 h-5 text-green-500"
+  "size": "lg",
+  "color": "#22c55e"
+}
+```
+</CodeBlock>
+
+**Clickable icon:**
+<CodeBlock lang="json">
+```json
+{
+  "type": "Icon",
+  "name": "Settings",
+  "size": "md",
+  "className": "cursor-pointer",
+  "events": {
+    "onClick": [{ "type": "navigate", "to": "/settings" }]
+  }
 }
 ```
 </CodeBlock>
@@ -448,7 +563,7 @@ Display icons from lucide-react.
 {
   "type": "Icon",
   "name": "{{state.status === 'success' ? 'CheckCircle' : 'AlertCircle'}}",
-  "className": "w-5 h-5 {{state.status === 'success' ? 'text-green-500' : 'text-red-500'}}"
+  "color": "{{state.status === 'success' ? '#22c55e' : '#ef4444'}}"
 }
 ```
 </CodeBlock>
@@ -470,7 +585,7 @@ Browse all icons at [lucide.dev](https://lucide.dev/icons).
 
 ## Fragment
 
-Invisible wrapper for grouping components.
+Invisible wrapper for grouping components without extra DOM nodes.
 
 <CodeBlock lang="json">
 ```json
@@ -488,7 +603,7 @@ Invisible wrapper for grouping components.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `children` | array | `[]` | Child components |
+| `children` | array | `[]` | Child components (required) |
 
 ### Use Cases
 
@@ -515,13 +630,13 @@ Invisible wrapper for grouping components.
 ```json
 {
   "type": "Loop",
-  "items": "{{state.items}}",
-  "itemTemplate": {
+  "dataSource": "state:items",
+  "template": {
     "type": "Fragment",
     "children": [
       { "type": "Heading", "level": 3, "text": "{{$item.title}}" },
       { "type": "Text", "content": "{{$item.description}}" },
-      { "type": "Conditional", "condition": "!{{$last}}", "then": { "type": "Divider" } }
+      { "type": "Divider" }
     ]
   }
 }
@@ -548,9 +663,8 @@ Placeholder for plugin-defined content.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `name` | string | - | Slot identifier |
-| `fallback` | object | - | Fallback content |
-| `props` | object | - | Props passed to slot content |
+| `name` | string | - | Slot identifier (required) |
+| `fallback` | object | - | Fallback content when slot empty |
 
 ### Use Cases
 
@@ -565,10 +679,23 @@ Slots allow plugins to inject content into predefined areas:
     {
       "type": "Grid",
       "columns": { "lg": 3 },
+      "gap": "1rem",
       "children": [
-        { "type": "Slot", "name": "dashboard-widget-1" },
-        { "type": "Slot", "name": "dashboard-widget-2" },
-        { "type": "Slot", "name": "dashboard-widget-3" }
+        {
+          "type": "Slot",
+          "name": "dashboard-widget-1",
+          "fallback": { "type": "Card", "title": "Widget 1" }
+        },
+        {
+          "type": "Slot",
+          "name": "dashboard-widget-2",
+          "fallback": { "type": "Card", "title": "Widget 2" }
+        },
+        {
+          "type": "Slot",
+          "name": "dashboard-widget-3",
+          "fallback": { "type": "Card", "title": "Widget 3" }
+        }
       ]
     }
   ]
@@ -601,8 +728,8 @@ Render a custom component registered by the host application.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `component` | string | - | Registered component name |
-| `props` | object | - | Props to pass |
+| `component` | string | - | Registered component name (required) |
+| `props` | object | `{}` | Props to pass to component |
 | `className` | string | - | CSS classes |
 
 ### Example
@@ -632,40 +759,53 @@ If the host app registers a `MapView` component:
 <CodeBlock lang="json">
 ```json
 {
-  "state": {
-    "status": { "type": "string", "default": "idle" }
-  },
-  "layout": {
-    "type": "Container",
-    "children": [
-      {
-        "type": "Conditional",
-        "condition": "{{state.status}} === 'idle'",
-        "then": {
-          "type": "Button",
-          "label": "Start",
-          "events": {
-            "on_click": [{ "type": "update_state", "path": "status", "value": "loading" }]
-          }
+  "type": "Container",
+  "children": [
+    {
+      "type": "Conditional",
+      "condition": "{{state.status}} === 'idle'",
+      "then": {
+        "type": "Button",
+        "label": "Start",
+        "events": {
+          "on_click": [
+            { "type": "updateState", "path": "status", "value": "loading" },
+            { "type": "callApi", "api": "process" }
+          ]
         }
-      },
-      {
-        "type": "Conditional",
-        "condition": "{{state.status}} === 'loading'",
-        "then": { "type": "LoadingOverlay", "text": "Processing..." }
-      },
-      {
-        "type": "Conditional",
-        "condition": "{{state.status}} === 'success'",
-        "then": { "type": "Alert", "variant": "success", "message": "Done!" }
-      },
-      {
-        "type": "Conditional",
-        "condition": "{{state.status}} === 'error'",
-        "then": { "type": "Alert", "variant": "destructive", "message": "{{state.error}}" }
       }
-    ]
-  }
+    },
+    {
+      "type": "Conditional",
+      "condition": "{{state.status}} === 'loading'",
+      "then": {
+        "type": "LoadingOverlay",
+        "loading": true,
+        "text": "Processing...",
+        "children": { "type": "Container" }
+      }
+    },
+    {
+      "type": "Conditional",
+      "condition": "{{state.status}} === 'success'",
+      "then": {
+        "type": "Alert",
+        "variant": "default",
+        "title": "Success",
+        "message": "Operation completed!"
+      }
+    },
+    {
+      "type": "Conditional",
+      "condition": "{{state.status}} === 'error'",
+      "then": {
+        "type": "Alert",
+        "variant": "destructive",
+        "title": "Error",
+        "message": "{{state.error}}"
+      }
+    }
+  ]
 }
 ```
 </CodeBlock>
@@ -675,47 +815,59 @@ If the host app registers a `MapView` component:
 <CodeBlock lang="json">
 ```json
 {
-  "type": "Loop",
-  "items": "{{state.formSchema.fields}}",
-  "itemTemplate": {
-    "type": "Conditional",
-    "condition": "{{$item.visible}} !== false",
-    "then": {
-      "type": "Field",
-      "name": "{{$item.name}}",
-      "fieldType": "{{$item.type}}",
-      "label": "{{$item.label}}",
-      "bindTo": "formData.{{$item.name}}",
-      "options": "{{$item.options}}"
+  "type": "Form",
+  "id": "dynamic-form",
+  "fields": [
+    {
+      "type": "Loop",
+      "dataSource": "state:formSchema.fields",
+      "template": {
+        "type": "Conditional",
+        "condition": "{{$item.visible}} !== false",
+        "then": {
+          "name": "{{$item.name}}",
+          "fieldType": "{{$item.type}}",
+          "label": "{{$item.label}}",
+          "bindTo": "formData.{{$item.name}}",
+          "options": "{{$item.options}}"
+        }
+      }
     }
-  }
+  ]
 }
 ```
 </CodeBlock>
 
-### Recursive Components
-
-For tree structures, use nested loops:
+### Nested Data Display
 
 <CodeBlock lang="json">
 ```json
 {
   "type": "Loop",
-  "items": "{{state.treeNodes}}",
-  "itemTemplate": {
+  "dataSource": "state:categories",
+  "template": {
     "type": "Accordion",
     "items": [
       {
+        "key": "{{$item.id}}",
         "title": "{{$item.name}}",
         "content": {
           "type": "Conditional",
-          "condition": "{{$item.children.length}} > 0",
+          "condition": "{{$item.items.length}} > 0",
           "then": {
             "type": "Loop",
-            "items": "{{$item.children}}",
-            "itemTemplate": { "type": "Text", "content": "{{$item.name}}" }
+            "dataSource": "{{$item.items}}",
+            "template": {
+              "type": "Card",
+              "title": "{{$item.name}}",
+              "content": { "type": "Text", "content": "{{$item.description}}" }
+            }
           },
-          "else": { "type": "Text", "content": "No children" }
+          "else": {
+            "type": "EmptyState",
+            "title": "No items",
+            "icon": "Inbox"
+          }
         }
       }
     ]
