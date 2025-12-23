@@ -32,39 +32,39 @@ export type DataSource = string;
 // ARIA accessibility properties
 export interface AriaProps {
     // Basic ARIA
-    role?:           string
-    ariaLabel?:      Expression
-    ariaLabelledBy?: string
+    role?:            string
+    ariaLabel?:       Expression
+    ariaLabelledBy?:  string
     ariaDescribedBy?: string
-    ariaHidden?:     BooleanExpression
-    
+    ariaHidden?:      BooleanExpression
+
     // Interactive states
-    ariaDisabled?:   BooleanExpression
-    ariaExpanded?:   BooleanExpression
-    ariaPressed?:    BooleanExpression | `mixed`
-    ariaSelected?:   BooleanExpression
-    ariaChecked?:    BooleanExpression | `mixed`
-    
+    ariaDisabled?: BooleanExpression
+    ariaExpanded?: BooleanExpression
+    ariaPressed?:  BooleanExpression | `mixed`
+    ariaSelected?: BooleanExpression
+    ariaChecked?:  BooleanExpression | `mixed`
+
     // Form/input
-    ariaRequired?:   BooleanExpression
-    ariaInvalid?:    BooleanExpression
+    ariaRequired?:     BooleanExpression
+    ariaInvalid?:      BooleanExpression
     ariaErrorMessage?: string
-    ariaPlaceholder?: Expression
-    
+    ariaPlaceholder?:  Expression
+
     // Live regions
-    ariaLive?:       `off` | `polite` | `assertive`
-    ariaAtomic?:     BooleanExpression
-    ariaBusy?:       BooleanExpression
-    ariaRelevant?:   `additions` | `removals` | `text` | `all`
-    
+    ariaLive?:     `off` | `polite` | `assertive`
+    ariaAtomic?:   BooleanExpression
+    ariaBusy?:     BooleanExpression
+    ariaRelevant?: `additions` | `removals` | `text` | `all`
+
     // Relationships
-    ariaControls?:   string
-    ariaOwns?:       string
-    ariaFlowTo?:     string
-    
+    ariaControls?: string
+    ariaOwns?:     string
+    ariaFlowTo?:   string
+
     // Current state
     ariaCurrent?:    boolean | `page` | `step` | `location` | `date` | `time`
-    
+
     // Keyboard
     tabIndex?:       number
 }
