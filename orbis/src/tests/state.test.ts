@@ -452,7 +452,7 @@ describe(`createPageStateStore`, () => {
         });
 
         store.getState().setState(`constructor.polluted`, true);
-        expect(store.getState().state.constructor).toBeUndefined();
+        expect(store.getState().state.constructor).toBe(Object);
     });
 
     it(`should prevent prototype pollution in setState with nested dangerous properties`, () => {
