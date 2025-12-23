@@ -75,7 +75,6 @@ export interface BaseComponentProps extends AriaProps {
     className?: string
     style?:     Record<string, string | number>
     visible?:   BooleanExpression
-    testId?:    string
 }
 
 // Special values that can be used in event handlers
@@ -92,19 +91,35 @@ export type SpecialValue =
 
 // Field validation rules
 export interface ValidationRule {
-    required?: boolean | { message: string }
-    min?:       number | { value: number
-        message:                  string }
-    max?:       number | { value: number
-        message:                  string }
-    minLength?: number | { value: number
-        message:                  string }
-    maxLength?: number | { value: number
-        message:                  string }
-    pattern?:   string | { value: string
-        message:                  string }
-    email?:  boolean | { message: string }
-    url?:    boolean | { message: string }
+    required?: boolean | {
+        message: string
+    }
+    min?:       number | {
+        value:   number
+        message: string
+    }
+    max?:       number | {
+        value:   number
+        message: string
+    }
+    minLength?: number | {
+        value:   number
+        message: string
+    }
+    maxLength?: number | {
+        value:   number
+        message: string
+    }
+    pattern?:   string | {
+        value:   string
+        message: string
+    }
+    email?:  boolean | {
+        message: string
+    }
+    url?:    boolean | {
+        message: string
+    }
     custom?: {
         expression: Expression
         message:    string
