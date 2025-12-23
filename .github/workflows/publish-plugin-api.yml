@@ -1,0 +1,223 @@
+name: Publish orbis-plugin-api to crates.io
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'orbis-plugin-api-v*.*.*'
+    paths:
+      - 'crates/orbis-plugin-api/**'
+      - '.github/workflows/publish-plugin-api.yml'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (skip actual publishing)'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  detect-version-change:
+    name: Detect version change on main
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && !startsWith(github.ref, 'refs/tags/')
+    outputs:
+      version_changed: ${{ steps.detect.outputs.version_changed }}
+      new_version: ${{ steps.detect.outputs.new_version }}
+      old_version: ${{ steps.detect.outputs.old_version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect version change
+        id: detect
+        run: |
+          # Get current version from Cargo.toml
+          NEW_VERSION=$(grep -m1 '^version = ' crates/orbis-plugin-api/Cargo.toml | cut -d'"' -f2)
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          
+          # Get previous commit version (if it exists)
+          if git show HEAD~1:crates/orbis-plugin-api/Cargo.toml 2>/dev/null > /tmp/old_cargo.toml; then
+            OLD_VERSION=$(grep -m1 '^version = ' /tmp/old_cargo.toml | cut -d'"' -f2)
+            echo "old_version=$OLD_VERSION" >> $GITHUB_OUTPUT
+          else
+            echo "old_version=0.0.0" >> $GITHUB_OUTPUT
+          fi
+          
+          # Check if version changed
+          if [ "$NEW_VERSION" != "$OLD_VERSION" ]; then
+            echo "version_changed=true" >> $GITHUB_OUTPUT
+            echo "✅ Version changed: $OLD_VERSION → $NEW_VERSION"
+          else
+            echo "version_changed=false" >> $GITHUB_OUTPUT
+            echo "ℹ️  No version change detected"
+          fi
+
+  create-tag:
+    name: Create release tag
+    runs-on: ubuntu-latest
+    needs: detect-version-change
+    if: needs.detect-version-change.outputs.version_changed == 'true'
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create and push tag
+        env:
+          NEW_VERSION: ${{ needs.detect-version-change.outputs.new_version }}
+        run: |
+          TAG="orbis-plugin-api-v${NEW_VERSION}"
+          
+          # Check if tag already exists
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "⚠️  Tag $TAG already exists, skipping tag creation"
+            exit 0
+          fi
+          
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          git tag -a "$TAG" -m "Release orbis-plugin-api v${NEW_VERSION}"
+          git push origin "$TAG"
+          echo "🏷️  Created and pushed tag: $TAG"
+
+  check-version:
+    name: Check version bump
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+    outputs:
+      should_publish: ${{ steps.check.outputs.should_publish }}
+      version: ${{ steps.check.outputs.version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Extract version from Cargo.toml
+        id: check
+        run: |
+          VERSION=$(grep -m1 '^version = ' crates/orbis-plugin-api/Cargo.toml | cut -d'"' -f2)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "📦 Current version in Cargo.toml: $VERSION"
+          
+          # Check if this version exists on crates.io
+          if curl -s "https://crates.io/api/v1/crates/orbis-plugin-api/versions" | grep -q "\"num\":\"$VERSION\""; then
+            echo "⚠️  Version $VERSION already exists on crates.io"
+            echo "should_publish=false" >> $GITHUB_OUTPUT
+          else
+            echo "✅ Version $VERSION is new, ready to publish"
+            echo "should_publish=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Validate tag matches version
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          TAG_VERSION="${GITHUB_REF#refs/tags/orbis-plugin-api-v}"
+          CARGO_VERSION="${{ steps.check.outputs.version }}"
+          if [ "$TAG_VERSION" != "$CARGO_VERSION" ]; then
+            echo "❌ Tag version ($TAG_VERSION) does not match Cargo.toml version ($CARGO_VERSION)"
+            exit 1
+          fi
+          echo "✅ Tag version matches Cargo.toml version"
+
+  publish:
+    name: Publish to crates.io
+    runs-on: ubuntu-latest
+    needs: check-version
+    if: needs.check-version.outputs.should_publish == 'true' || github.event.inputs.dry_run == 'true'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache cargo index
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/git
+          key: ${{ runner.os }}-cargo-git-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache cargo build
+        uses: actions/cache@v4
+        with:
+          path: target
+          key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Run tests
+        run: |
+          cd crates/orbis-plugin-api
+          cargo test --all-features
+
+      - name: Check package
+        run: |
+          cd crates/orbis-plugin-api
+          cargo package --list
+          cargo package --allow-dirty
+
+      - name: Dry run publish
+        if: github.event.inputs.dry_run == 'true'
+        run: |
+          cd crates/orbis-plugin-api
+          cargo publish --dry-run --allow-dirty
+          echo "🔍 Dry run completed successfully"
+
+      - name: Publish to crates.io
+        if: github.event.inputs.dry_run != 'true'
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        run: |
+          cd crates/orbis-plugin-api
+          cargo publish --token "${CARGO_REGISTRY_TOKEN}"
+          echo "🚀 Published version ${{ needs.check-version.outputs.version }} to crates.io"
+
+  update-badge:
+    name: Update README badge
+    runs-on: ubuntu-latest
+    needs: [check-version, publish]
+    if: needs.publish.result == 'success' && github.event.inputs.dry_run != 'true'
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update crates.io badge in README
+        run: |
+          cd crates/orbis-plugin-api
+          if ! grep -q "crates.io" README.md; then
+            # Add badge if it doesn't exist
+            sed -i '1i [![Crates.io](https://img.shields.io/crates/v/orbis-plugin-api.svg)](https://crates.io/crates/orbis-plugin-api) [![Documentation](https://docs.rs/orbis-plugin-api/badge.svg)](https://docs.rs/orbis-plugin-api)\n' README.md
+            
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add README.md
+            git commit -m "docs: add crates.io badge to orbis-plugin-api README"
+            git push
+            echo "✅ Added crates.io badge to README"
+          else
+            echo "ℹ️  Badge already exists in README"
+          fi
