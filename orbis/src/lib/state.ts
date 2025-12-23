@@ -30,9 +30,10 @@ export function setNestedValue<T extends Record<string, unknown>>(
     value: unknown
 ): T {
     const parts = path.split(`.`);
+
     // Prevent prototype pollution by rejecting dangerous properties
-    if (parts.some(part => part === '__proto__' || part === 'constructor' || part === 'prototype')) {
-        console.warn('Attempted to set dangerous property in path:', path);
+    if (parts.some((part) => part === `__proto__` || part === `constructor` || part === `prototype`)) {
+        console.warn(`Attempted to set dangerous property in path:`, path);
         return obj;
     }
     const clone = structuredClone(obj);
@@ -195,11 +196,14 @@ export interface PageStateStoreHook {
 export function createPageStateStore(initialDefinition?: StateDefinition, persistenceKey?: string): PageStateStoreHook {
     // Try to load persisted state if key provided
     const persistedState = persistenceKey ? loadStateFromStorage(persistenceKey) : null;
-    
+
     // Initialize state - merge persisted state with defaults
     const initialState = initialDefinition ? initializeState(initialDefinition) : {};
-    const mergedInitialState = persistedState 
-        ? { ...initialState, ...persistedState }
+    const mergedInitialState = persistedState
+        ? {
+            ...initialState,
+            ...persistedState,
+        }
         : initialState;
 
     const store = create<PageStateStore>()(
@@ -210,6 +214,13 @@ export function createPageStateStore(initialDefinition?: StateDefinition, persis
 
             setState: (path, value) => set((draft) => {
                 const parts = path.split(`.`);
+
+                // Prevent prototype pollution by rejecting dangerous properties
+                if (parts.some((part) => part === `__proto__` || part === `constructor` || part === `prototype`)) {
+                    console.warn(`Attempted to set dangerous property in path:`, path);
+                    return;
+                }
+
                 let current: Record<string, unknown> = draft.state;
 
                 for (let i = 0; i < parts.length - 1; i++) {
@@ -221,7 +232,7 @@ export function createPageStateStore(initialDefinition?: StateDefinition, persis
                 }
 
                 current[parts[parts.length - 1]] = value;
-                
+
                 // Persist state if key provided
                 if (persistenceKey) {
                     saveStateToStorage(persistenceKey, draft.state);
@@ -229,6 +240,14 @@ export function createPageStateStore(initialDefinition?: StateDefinition, persis
             }),
 
             mergeState: (path, value) => set((draft) => {
+                const parts = path.split(`.`);
+
+                // Prevent prototype pollution by rejecting dangerous properties
+                if (parts.some((part) => part === `__proto__` || part === `constructor` || part === `prototype`)) {
+                    console.warn(`Attempted to merge dangerous property in path:`, path);
+                    return;
+                }
+
                 const existing = getNestedValue(draft.state, path);
                 const merged = typeof existing === `object` && existing !== null
                     ? {
@@ -237,7 +256,6 @@ export function createPageStateStore(initialDefinition?: StateDefinition, persis
                     }
                     : value;
 
-                const parts = path.split(`.`);
                 let current: Record<string, unknown> = draft.state;
 
                 for (let i = 0; i < parts.length - 1; i++) {
@@ -249,7 +267,7 @@ export function createPageStateStore(initialDefinition?: StateDefinition, persis
                 }
 
                 current[parts[parts.length - 1]] = merged;
-                
+
                 // Persist state if key provided
                 if (persistenceKey) {
                     saveStateToStorage(persistenceKey, draft.state);
@@ -259,7 +277,7 @@ export function createPageStateStore(initialDefinition?: StateDefinition, persis
             resetState: (definition) => set((draft) => {
                 draft.state = initializeState(definition);
                 draft.errors = {};
-                
+
                 // Clear persisted state when resetting
                 if (persistenceKey) {
                     clearStateFromStorage(persistenceKey);
