@@ -46,8 +46,12 @@ function stripMDXTags(content: string): string {
     content = content.replace(/```[a-z]*\n/g, ``);
     content = content.replace(/```/g, ``);
 
-    // Remove HTML comments
-    content = content.replace(/<!--[\s\S]*?-->/g, ``);
+    // Remove HTML comments (loop until no more matches to handle nested/overlapping patterns)
+    let previousContent;
+    do {
+        previousContent = content;
+        content = content.replace(/<!--[\s\S]*?-->/g, ``);
+    } while (content !== previousContent);
 
     // Clean up multiple newlines
     content = content.replace(/\n{3,}/g, `\n\n`);
