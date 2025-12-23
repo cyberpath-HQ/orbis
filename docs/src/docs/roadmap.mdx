@@ -14,7 +14,7 @@ The table below provides a comprehensive overview of all planned features across
 
 | Priority | Feature | Status | Issues / PRs |
 | --- | --- | --- | --- |
-| **High** | Publish `orbis-plugin-api` to crates.io | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=crates.io+plugin-api) |
+| **High** | Publish `orbis-plugin-api` to crates.io | Done | [Workflow](https://github.com/cyberpath-HQ/orbis/blob/main/.github/workflows/publish-plugin-api.yml) |
 | **High** | Deploy docs to GitHub Pages | Done | [Issue](https://github.com/cyberpath-HQ/orbis/issues/24) |
 | **High** | Build & Release Tauri Binaries with auto-updates | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=tauri+release+auto-update) |
 | **High** | Automated Testing CI/CD | Planned | [Search](https://github.com/cyberpath-HQ/orbis/issues?q=ci+automated+testing) |
@@ -62,11 +62,18 @@ The table below provides a comprehensive overview of all planned features across
 
 ### CI/CD & Automation
 
-#### GitHub Actions: Publish orbis-plugin-api to crates.io
-- Trigger on changes to `crates/orbis-plugin-api/**`
-- Automated version bump detection
-- Publish on tag creation
-- Add crates.io badge to README
+#### ✅ GitHub Actions: Publish orbis-plugin-api to crates.io
+
+**Status: Done** - Workflow implemented at [`.github/workflows/publish-plugin-api.yml`](https://github.com/cyberpath-HQ/orbis/blob/main/.github/workflows/publish-plugin-api.yml)
+
+Features:
+- Triggers on tag creation (`orbis-plugin-api-v*.*.*`) or path changes
+- Automated version bump detection (checks crates.io API)
+- Validates tag version matches Cargo.toml
+- Runs tests before publishing
+- Manual workflow dispatch with dry-run option
+- Creates GitHub Release automatically
+- Updates README with crates.io badge
 
 #### GitHub Actions: Deploy docs to GitHub Pages
 - Trigger on changes to `docs/**`
