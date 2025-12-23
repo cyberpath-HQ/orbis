@@ -22,7 +22,7 @@ Interactive button with multiple variants and states.
   "label": "Click Me",
   "events": {
     "on_click": [
-      { "type": "update_state", "path": "clicked", "value": true }
+      { "type": "updateState", "path": "clicked", "value": true }
     ]
   }
 }
@@ -33,14 +33,13 @@ Interactive button with multiple variants and states.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `label` | string | - | Button text |
+| `label` | string | - | Button text (required) |
 | `variant` | `default` \| `secondary` \| `outline` \| `ghost` \| `link` \| `destructive` | `default` | Button style |
 | `size` | `sm` \| `md` \| `lg` \| `icon` | `md` | Button size |
-| `icon` | string | - | Icon name |
+| `icon` | string | - | Icon name (Lucide icon) |
 | `iconPosition` | `left` \| `right` | `left` | Icon placement |
 | `disabled` | boolean \| string | `false` | Disabled state |
 | `loading` | boolean \| string | `false` | Loading state |
-| `type` | `button` \| `submit` \| `reset` | `button` | HTML type |
 | `className` | string | - | CSS classes |
 | `events` | object | - | Event handlers |
 
@@ -57,7 +56,7 @@ Interactive button with multiple variants and states.
 {
   "type": "Flex",
   "gap": "0.5rem",
-  "wrap": "wrap",
+  "wrap": true,
   "children": [
     { "type": "Button", "label": "Default", "variant": "default" },
     { "type": "Button", "label": "Secondary", "variant": "secondary" },
@@ -96,7 +95,9 @@ Interactive button with multiple variants and states.
   "type": "Button",
   "label": "Add Item",
   "icon": "Plus",
-  "events": { "on_click": [{ "type": "navigate", "to": "/items/new" }] }
+  "events": {
+    "on_click": [{ "type": "navigate", "to": "/items/new" }]
+  }
 }
 ```
 </CodeBlock>
@@ -109,8 +110,9 @@ Interactive button with multiple variants and states.
   "icon": "Settings",
   "size": "icon",
   "variant": "ghost",
-  "ariaLabel": "Open settings",
-  "events": { "on_click": [{ "type": "navigate", "to": "/settings" }] }
+  "events": {
+    "on_click": [{ "type": "navigate", "to": "/settings" }]
+  }
 }
 ```
 </CodeBlock>
@@ -124,9 +126,9 @@ Interactive button with multiple variants and states.
   "loading": "{{state.isSaving}}",
   "events": {
     "on_click": [
-      { "type": "update_state", "path": "isSaving", "value": true },
-      { "type": "call_api", "api": "save" },
-      { "type": "update_state", "path": "isSaving", "value": false }
+      { "type": "updateState", "path": "isSaving", "value": true },
+      { "type": "callApi", "api": "save" },
+      { "type": "updateState", "path": "isSaving", "value": false }
     ]
   }
 }
@@ -140,7 +142,9 @@ Interactive button with multiple variants and states.
   "type": "Button",
   "label": "Submit",
   "disabled": "{{!state.formValid}}",
-  "events": { "on_click": [{ "type": "call_api", "api": "submit" }] }
+  "events": {
+    "on_click": [{ "type": "callApi", "api": "submit" }]
+  }
 }
 ```
 </CodeBlock>
@@ -155,8 +159,8 @@ Navigation link component.
 ```json
 {
   "type": "Link",
-  "to": "/dashboard",
-  "label": "Go to Dashboard"
+  "href": "/dashboard",
+  "text": "Go to Dashboard"
 }
 ```
 </CodeBlock>
@@ -165,10 +169,10 @@ Navigation link component.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `to` | string | - | Navigation path |
-| `label` | string | - | Link text |
+| `href` | string | - | Navigation path (required) |
+| `text` | string | - | Link text (required) |
 | `external` | boolean | `false` | Open in new tab |
-| `children` | object | - | Custom content |
+| `icon` | string | - | Icon name |
 | `className` | string | - | CSS classes |
 
 ### Examples
@@ -178,8 +182,8 @@ Navigation link component.
 ```json
 {
   "type": "Link",
-  "to": "/help",
-  "label": "Help Center"
+  "href": "/help",
+  "text": "Help Center"
 }
 ```
 </CodeBlock>
@@ -189,28 +193,22 @@ Navigation link component.
 ```json
 {
   "type": "Link",
-  "to": "https://github.com",
-  "label": "GitHub",
-  "external": true
+  "href": "https://github.com",
+  "text": "GitHub",
+  "external": true,
+  "icon": "ExternalLink"
 }
 ```
 </CodeBlock>
 
-**With custom content:**
+**With icon:**
 <CodeBlock lang="json">
 ```json
 {
   "type": "Link",
-  "to": "/profile",
-  "children": {
-    "type": "Flex",
-    "align": "center",
-    "gap": "0.5rem",
-    "children": [
-      { "type": "Avatar", "src": "{{user.avatar}}", "size": "sm" },
-      { "type": "Text", "content": "{{user.name}}" }
-    ]
-  }
+  "href": "/profile",
+  "text": "View Profile",
+  "icon": "User"
 }
 ```
 </CodeBlock>
@@ -225,17 +223,12 @@ Tabbed navigation for switching between views.
 ```json
 {
   "type": "Tabs",
-  "defaultValue": "overview",
-  "tabs": [
-    { "id": "overview", "label": "Overview" },
-    { "id": "analytics", "label": "Analytics" },
-    { "id": "settings", "label": "Settings" }
-  ],
-  "content": {
-    "overview": { "type": "Text", "content": "Overview content" },
-    "analytics": { "type": "Text", "content": "Analytics content" },
-    "settings": { "type": "Text", "content": "Settings content" }
-  }
+  "defaultTab": "overview",
+  "items": [
+    { "key": "overview", "label": "Overview", "content": { "type": "Text", "content": "Overview content" } },
+    { "key": "analytics", "label": "Analytics", "content": { "type": "Text", "content": "Analytics content" } },
+    { "key": "settings", "label": "Settings", "content": { "type": "Text", "content": "Settings content" } }
+  ]
 }
 ```
 </CodeBlock>
@@ -244,33 +237,27 @@ Tabbed navigation for switching between views.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `tabs` | array | `[]` | Tab definitions |
-| `content` | object | - | Content for each tab |
-| `defaultValue` | string | - | Initially active tab |
-| `bindTo` | string | - | State path for active tab |
-| `variant` | `default` \| `pills` \| `underline` | `default` | Tab style |
+| `items` | array | `[]` | Tab definitions (required) |
+| `defaultTab` | string | - | Initially active tab |
 | `orientation` | `horizontal` \| `vertical` | `horizontal` | Layout direction |
 | `className` | string | - | CSS classes |
+| `events` | object | - | Event handlers |
+
+### Tab Item Definition
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `key` | string | Unique tab identifier |
+| `label` | string | Tab label |
+| `icon` | string | Optional icon name |
+| `disabled` | boolean \| string | Disabled state |
+| `content` | object | Tab content component |
 
 ### Events
 
 | Event | Payload |
 |-------|---------|
-| `onTabChange` | `$value` - new tab id |
-
-### Tab Definition
-
-<CodeBlock lang="typescript">
-```typescript
-interface Tab {
-  id: string;
-  label: string;
-  icon?: string;
-  disabled?: boolean;
-  badge?: string;
-}
-```
-</CodeBlock>
+| `onChange` | `$value` - new tab key |
 
 ### Examples
 
@@ -279,45 +266,54 @@ interface Tab {
 ```json
 {
   "type": "Tabs",
-  "tabs": [
-    { "id": "home", "label": "Home", "icon": "Home" },
-    { "id": "profile", "label": "Profile", "icon": "User" },
-    { "id": "settings", "label": "Settings", "icon": "Settings" }
-  ],
-  "content": { "..." }
-}
-```
-</CodeBlock>
-
-**With badges:**
-<CodeBlock lang="json">
-```json
-{
-  "type": "Tabs",
-  "tabs": [
-    { "id": "all", "label": "All" },
-    { "id": "unread", "label": "Unread", "badge": "{{state.unreadCount}}" }
+  "items": [
+    {
+      "key": "home",
+      "label": "Home",
+      "icon": "Home",
+      "content": { "type": "Text", "content": "Home content" }
+    },
+    {
+      "key": "profile",
+      "label": "Profile",
+      "icon": "User",
+      "content": { "type": "Text", "content": "Profile content" }
+    },
+    {
+      "key": "settings",
+      "label": "Settings",
+      "icon": "Settings",
+      "content": { "type": "Text", "content": "Settings content" }
+    }
   ]
 }
 ```
 </CodeBlock>
 
-**Controlled:**
+**With data loading:**
 <CodeBlock lang="json">
 ```json
 {
   "type": "Tabs",
-  "bindTo": "activeTab",
-  "tabs": [
-    { "id": "pending", "label": "Pending" },
-    { "id": "completed", "label": "Completed" }
+  "defaultTab": "pending",
+  "items": [
+    {
+      "key": "pending",
+      "label": "Pending",
+      "content": { "type": "Table", "dataSource": "state:pendingItems" }
+    },
+    {
+      "key": "completed",
+      "label": "Completed",
+      "content": { "type": "Table", "dataSource": "state:completedItems" }
+    }
   ],
   "events": {
-    "onTabChange": [
+    "onChange": [
       {
-        "type": "call_api",
+        "type": "callApi",
         "api": "getItems",
-        "args": { "status": "{{$value}}" }
+        "body": { "status": "{{$value}}" }
       }
     ]
   }
@@ -336,9 +332,9 @@ Navigation path indicator.
 {
   "type": "Breadcrumb",
   "items": [
-    { "label": "Home", "to": "/" },
-    { "label": "Products", "to": "/products" },
-    { "label": "Electronics", "to": "/products/electronics" },
+    { "label": "Home", "href": "/" },
+    { "label": "Products", "href": "/products" },
+    { "label": "Electronics", "href": "/products/electronics" },
     { "label": "Laptops" }
   ]
 }
@@ -349,21 +345,17 @@ Navigation path indicator.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `items` | array | `[]` | Breadcrumb items |
+| `items` | array | `[]` | Breadcrumb items (required) |
 | `separator` | string | `/` | Separator character |
 | `className` | string | - | CSS classes |
 
-### Item Definition
+### Breadcrumb Item Definition
 
-<CodeBlock lang="typescript">
-```typescript
-interface BreadcrumbItem {
-  label: string;
-  to?: string;      // Optional - last item typically has no link
-  icon?: string;
-}
-```
-</CodeBlock>
+| Property | Type | Description |
+|----------|------|-------------|
+| `label` | string | Item text |
+| `href` | string | Optional link (last item typically has none) |
+| `icon` | string | Optional icon name |
 
 ### Examples
 
@@ -373,8 +365,8 @@ interface BreadcrumbItem {
 {
   "type": "Breadcrumb",
   "items": [
-    { "label": "Home", "to": "/", "icon": "Home" },
-    { "label": "Users", "to": "/users" },
+    { "label": "Home", "href": "/", "icon": "Home" },
+    { "label": "Users", "href": "/users" },
     { "label": "John Doe" }
   ]
 }
@@ -386,7 +378,11 @@ interface BreadcrumbItem {
 ```json
 {
   "type": "Breadcrumb",
-  "items": "{{state.breadcrumbs}}"
+  "items": [
+    { "label": "Products", "href": "/products" },
+    { "label": "{{state.product.category}}", "href": "/products?category={{state.product.categoryId}}" },
+    { "label": "{{state.product.name}}" }
+  ]
 }
 ```
 </CodeBlock>
@@ -408,10 +404,10 @@ Dropdown menu for actions.
     "size": "icon"
   },
   "items": [
-    { "label": "Edit", "icon": "Edit", "action": [{ "type": "navigate", "to": "/edit" }] },
-    { "label": "Duplicate", "icon": "Copy" },
-    { "separator": true },
-    { "label": "Delete", "icon": "Trash", "variant": "destructive" }
+    { "key": "edit", "label": "Edit", "icon": "Edit", "events": { "onClick": [{ "type": "navigate", "to": "/edit" }] } },
+    { "key": "duplicate", "label": "Duplicate", "icon": "Copy" },
+    { "key": "sep1", "separator": true },
+    { "key": "delete", "label": "Delete", "icon": "Trash", "danger": true }
   ]
 }
 ```
@@ -421,27 +417,28 @@ Dropdown menu for actions.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `trigger` | object | - | Trigger component |
-| `items` | array | `[]` | Menu items |
+| `trigger` | object | - | Trigger component (required) |
+| `items` | array | `[]` | Menu items (required) |
 | `align` | `start` \| `center` \| `end` | `end` | Menu alignment |
-| `side` | `top` \| `bottom` \| `left` \| `right` | `bottom` | Menu position |
 | `className` | string | - | CSS classes |
 
-### Item Definition
+### Dropdown Item Definition
 
-<CodeBlock lang="typescript">
-```typescript
-interface DropdownItem {
-  label?: string;
-  icon?: string;
-  shortcut?: string;
-  disabled?: boolean;
-  variant?: 'default' | 'destructive';
-  action?: Action[];
-  separator?: boolean;  // If true, renders a separator
-}
-```
-</CodeBlock>
+| Property | Type | Description |
+|----------|------|-------------|
+| `key` | string | Unique item identifier |
+| `label` | string | Item text |
+| `icon` | string | Optional icon name |
+| `disabled` | boolean \| string | Disabled state |
+| `danger` | boolean | Red destructive styling |
+| `separator` | boolean | Render as separator (ignores other props) |
+| `events` | object | Event handlers |
+
+### Events
+
+| Event | Trigger |
+|-------|---------|
+| `onClick` | Item clicked |
 
 ### Examples
 
@@ -451,20 +448,40 @@ interface DropdownItem {
 {
   "type": "Dropdown",
   "trigger": {
-    "type": "Flex",
-    "align": "center",
-    "gap": "0.5rem",
+    "type": "Container",
     "className": "cursor-pointer",
     "children": [
-      { "type": "Avatar", "src": "{{user.avatar}}", "size": "sm" },
-      { "type": "Icon", "name": "ChevronDown", "className": "w-4 h-4" }
+      {
+        "type": "Flex",
+        "align": "center",
+        "gap": "0.5rem",
+        "children": [
+          { "type": "Avatar", "src": "{{user.avatar}}", "size": "sm" },
+          { "type": "Icon", "name": "ChevronDown", "size": "sm" }
+        ]
+      }
     ]
   },
   "items": [
-    { "label": "Profile", "icon": "User", "action": [{ "type": "navigate", "to": "/profile" }] },
-    { "label": "Settings", "icon": "Settings", "action": [{ "type": "navigate", "to": "/settings" }] },
-    { "separator": true },
-    { "label": "Sign Out", "icon": "LogOut", "action": [{ "type": "call_api", "api": "auth.logout" }] }
+    {
+      "key": "profile",
+      "label": "Profile",
+      "icon": "User",
+      "events": { "onClick": [{ "type": "navigate", "to": "/profile" }] }
+    },
+    {
+      "key": "settings",
+      "label": "Settings",
+      "icon": "Settings",
+      "events": { "onClick": [{ "type": "navigate", "to": "/settings" }] }
+    },
+    { "key": "sep", "separator": true },
+    {
+      "key": "signout",
+      "label": "Sign Out",
+      "icon": "LogOut",
+      "events": { "onClick": [{ "type": "callApi", "api": "auth.logout" }] }
+    }
   ]
 }
 ```
@@ -483,10 +500,18 @@ interface DropdownItem {
     "variant": "outline"
   },
   "items": [
-    { "label": "Export CSV", "icon": "Download", "action": [{ "type": "download", "url": "/export/csv" }] },
-    { "label": "Export PDF", "icon": "FileText", "action": [{ "type": "download", "url": "/export/pdf" }] },
-    { "separator": true },
-    { "label": "Print", "icon": "Printer", "shortcut": "⌘P" }
+    {
+      "key": "csv",
+      "label": "Export CSV",
+      "icon": "Download",
+      "events": { "onClick": [{ "type": "openUrl", "url": "/export/csv" }] }
+    },
+    {
+      "key": "pdf",
+      "label": "Export PDF",
+      "icon": "FileText",
+      "events": { "onClick": [{ "type": "openUrl", "url": "/export/pdf" }] }
+    }
   ]
 }
 ```
@@ -512,11 +537,11 @@ Page title with optional subtitle and actions.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `title` | string | - | Page title |
+| `title` | string | - | Page title (required) |
 | `subtitle` | string | - | Subtitle text |
 | `backLink` | string | - | Back navigation path |
-| `actions` | array | - | Action buttons |
 | `breadcrumb` | array | - | Breadcrumb items |
+| `actions` | array | - | Action buttons |
 | `className` | string | - | CSS classes |
 
 ### Examples
@@ -558,8 +583,8 @@ Page title with optional subtitle and actions.
   "type": "PageHeader",
   "title": "{{state.product.name}}",
   "breadcrumb": [
-    { "label": "Products", "to": "/products" },
-    { "label": "{{state.product.category}}", "to": "/products?category={{state.product.categoryId}}" },
+    { "label": "Products", "href": "/products" },
+    { "label": "{{state.product.category}}", "href": "/products?category={{state.product.categoryId}}" },
     { "label": "{{state.product.name}}" }
   ],
   "actions": [
@@ -579,10 +604,15 @@ Page title with optional subtitle and actions.
   "actions": [
     {
       "type": "Dropdown",
-      "trigger": { "type": "Button", "label": "Quick Actions", "icon": "ChevronDown", "iconPosition": "right" },
+      "trigger": {
+        "type": "Button",
+        "label": "Quick Actions",
+        "icon": "ChevronDown",
+        "iconPosition": "right"
+      },
       "items": [
-        { "label": "New Project", "icon": "Plus" },
-        { "label": "Import Data", "icon": "Upload" }
+        { "key": "new", "label": "New Project", "icon": "Plus" },
+        { "key": "import", "label": "Import Data", "icon": "Upload" }
       ]
     }
   ]
@@ -609,31 +639,24 @@ Page title with optional subtitle and actions.
       "children": [
         {
           "type": "Link",
-          "to": "/dashboard",
-          "children": {
-            "type": "Flex",
-            "align": "center",
-            "gap": "0.75rem",
-            "className": "px-3 py-2 rounded hover:bg-gray-100 {{$path === '/dashboard' ? 'bg-gray-100' : ''}}",
-            "children": [
-              { "type": "Icon", "name": "Home" },
-              { "type": "Text", "content": "Dashboard" }
-            ]
-          }
+          "href": "/dashboard",
+          "text": "Dashboard",
+          "icon": "Home",
+          "className": "px-3 py-2 rounded hover:bg-gray-100"
         },
         {
           "type": "Link",
-          "to": "/projects",
-          "children": {
-            "type": "Flex",
-            "align": "center",
-            "gap": "0.75rem",
-            "className": "px-3 py-2 rounded hover:bg-gray-100",
-            "children": [
-              { "type": "Icon", "name": "Folder" },
-              { "type": "Text", "content": "Projects" }
-            ]
-          }
+          "href": "/projects",
+          "text": "Projects",
+          "icon": "Folder",
+          "className": "px-3 py-2 rounded hover:bg-gray-100"
+        },
+        {
+          "type": "Link",
+          "href": "/settings",
+          "text": "Settings",
+          "icon": "Settings",
+          "className": "px-3 py-2 rounded hover:bg-gray-100"
         }
       ]
     }
