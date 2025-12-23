@@ -307,15 +307,14 @@ WASM plugins must be initialized using the `orbis_plugin!` macro, this optionall
 ```rust
 orbis_plugin!({
   init: || {
-    /// Initialize the plugin (called once at load)
+    // Initialize the plugin (called once at load)
     
     log::info!("Plugin starting!");
     state::set("initialized", &true)?;
     Ok(())
   },
   cleanup: || {
-    /// Clean up resources (called at unload)
-    /// 
+    // Clean up resources (called at unload)
     log::info!("Plugin stopping!");
     Ok(())
   }
