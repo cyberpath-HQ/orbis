@@ -35,7 +35,6 @@ interface BaseSchema {
   visible?: string;       // Visibility expression
   className?: string;     // CSS classes (Tailwind)
   style?: object;         // Inline styles
-  testId?: string;        // Test identifier
   ariaLabel?: string;     // Accessibility label
 }
 ```
@@ -80,19 +79,6 @@ Tailwind CSS classes:
 {
   "type": "Container",
   "className": "p-6 bg-white rounded-lg shadow"
-}
-```
-</CodeBlock>
-
-### testId
-
-For testing:
-
-<CodeBlock lang="json">
-```json
-{
-  "type": "Button",
-  "testId": "submit-btn"
 }
 ```
 </CodeBlock>
