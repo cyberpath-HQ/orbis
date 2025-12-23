@@ -4016,7 +4016,7 @@ dependencies = [
 
 [[package]]
 name = "orbis-plugin-api"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "semver",
  "serde",
