@@ -286,14 +286,15 @@ UI pages exposed by the plugin.
 ```json
 "pages": [
   {
-    "id": "dashboard",
+    "route": "/my-plugin/dashboard",
     "title": "Dashboard",
-    "route": "/my-plugin",
     "icon": "LayoutDashboard",
     "state": {},
-    "layout": {},
-    "on_mount": [],
-    "on_unmount": []
+    "sections": [],
+    "hooks": {
+      "on_mount": [],
+      "on_unmount": []
+    }
   }
 ]
 ```
@@ -500,34 +501,38 @@ Configuration is accessible in WASM handlers and can be used in expressions:
   
   "pages": [
     {
-      "id": "tasks",
       "title": "Tasks",
       "route": "/tasks",
       "icon": "CheckSquare",
+      "show_in_menu": true,
       "state": {
         "tasks": { "type": "array", "default": [] },
         "filter": { "type": "string", "default": "all" }
       },
-      "layout": {
-        "type": "Container",
-        "className": "p-6",
-        "children": [
-          {
-            "type": "PageHeader",
-            "title": "My Tasks",
-            "subtitle": "Manage your daily tasks"
-          }
-        ]
-      },
-      "on_mount": [
+      "sections": [
         {
-          "type": "call_api",
-          "api": "task-manager.get_tasks",
-          "on_success": [
-            { "type": "update_state", "path": "tasks", "value": "$response.data" }
+          "type": "Container",
+          "className": "p-6",
+          "children": [
+            {
+              "type": "PageHeader",
+              "title": "My Tasks",
+              "subtitle": "Manage your daily tasks"
+            }
           ]
         }
-      ]
+      ],
+      "hooks": {
+        "on_mount": [
+          {
+            "type": "call_api",
+            "api": "task-manager.get_tasks",
+            "on_success": [
+              { "type": "update_state", "path": "tasks", "from": "$response.data" }
+            ]
+          }
+        ]
+      }
     }
   ],
   

@@ -18,14 +18,16 @@ Pages are the primary way plugins provide user interfaces. Each page has its own
 {
   "pages": [
     {
-      "id": "my-page",
-      "title": "My Page",
       "route": "/my-plugin/page",
+      "title": "My Page",
       "icon": "FileText",
+      "show_in_menu": true,
       "state": { ... },
-      "layout": { ... },
-      "on_mount": [ ... ],
-      "on_unmount": [ ... ]
+      "sections": [ ... ],
+      "hooks": {
+        "on_mount": [ ... ],
+        "on_unmount": [ ... ]
+      }
     }
   ]
 }
@@ -33,18 +35,6 @@ Pages are the primary way plugins provide user interfaces. Each page has its own
 </CodeBlock>
 
 ## Required Fields
-
-### id
-
-Unique identifier within the plugin.
-
-<CodeBlock lang="json">
-```json
-"id": "dashboard"
-```
-</CodeBlock>
-
-Used for internal references and debugging.
 
 ### title
 
@@ -69,18 +59,20 @@ URL path for the page.
 
 <CodeBlock lang="json">
 ```json
-"route": "/my-plugin/dashboard"
+"route": "/dashboard"
 ```
 </CodeBlock>
+
+**Note:** The plugin name is automatically prefixed, so `/dashboard` becomes `/plugins/my-plugin/dashboard`.
 
 #### Route Patterns
 
 | Pattern | Example | Description |
 |---------|---------|-------------|
-| Static | `/my-plugin` | Fixed path |
-| Nested | `/my-plugin/settings` | Nested path |
-| Parameter | `/my-plugin/items/:id` | Dynamic segment |
-| Catch-all | `/my-plugin/*` | Match remaining path |
+| Static | `/dashboard` | Fixed path |
+| Nested | `/settings/profile` | Nested path |
+| Parameter | `/items/:id` | Dynamic segment |
+| Wildcard | `/*` | Catch-all |
 
 #### Route Parameters
 
@@ -88,26 +80,30 @@ Access in expressions:
 <CodeBlock lang="json">
 ```json
 "route": "/items/:itemId",
-"layout": {
-  "type": "Text",
-  "content": "Viewing item: {{params.itemId}}"
-}
+"sections": [
+  {
+    "type": "Text",
+    "content": "Viewing item: {{params.itemId}}"
+  }
+]
 ```
 </CodeBlock>
 
-### layout
+### sections
 
-Root component schema defining the UI.
+Array of root component schemas defining the UI.
 
 <CodeBlock lang="json">
 ```json
-"layout": {
-  "type": "Container",
-  "className": "p-6",
-  "children": [
-    { "type": "Heading", "text": "Welcome" }
-  ]
-}
+"sections": [
+  {
+    "type": "Container",
+    "className": "p-6",
+    "children": [
+      { "type": "Heading", "text": "Welcome", "level": 1 }
+    ]
+  }
+]
 ```
 </CodeBlock>
 
@@ -175,30 +171,35 @@ Page state definition.
 | `object` | Key-value map | `{}` |
 | `array` | List of items | `[]` |
 
-### on_mount
+### hooks
+
+Page lifecycle hooks.
+
+#### on_mount
 
 Actions to execute when page loads.
 
 <CodeBlock lang="json">
 ```json
-"on_mount": [
-  {
-    "type": "set_loading",
-    "loading": true
-  },
-  {
-    "type": "call_api",
-    "api": "my-plugin.getData",
-    "on_success": [
-      { "type": "update_state", "path": "items", "value": "$response.data" },
-      { "type": "set_loading", "loading": false }
-    ],
-    "on_error": [
-      { "type": "show_toast", "message": "Failed to load data", "level": "error" },
-      { "type": "set_loading", "loading": false }
-    ]
-  }
-]
+"hooks": {
+  "on_mount": [
+    {
+      "type": "set_loading",
+      "loading": true
+    },
+    {
+      "type": "call_api",
+      "api": "my-plugin.getData",
+      "on_success": [
+        { "type": "update_state", "path": "items", "from": "$response.data" },
+        { "type": "set_loading", "loading": false }
+      ],
+      "on_error": [
+        { "type": "show_toast", "message": "Failed to load data", "level": "error" },
+        { "type": "set_loading", "loading": false }
+      ]
+    }
+  ]
 ```
 </CodeBlock>
 
@@ -207,19 +208,21 @@ Common patterns:
 - Initialize from URL parameters
 - Set up subscriptions
 
-### on_unmount
+#### on_unmount
 
 Actions to execute when leaving the page.
 
 <CodeBlock lang="json">
 ```json
-"on_unmount": [
-  {
-    "type": "update_state",
-    "path": "selectedItem",
-    "value": null
-  }
-]
+"hooks": {
+  "on_unmount": [
+    {
+      "type": "update_state",
+      "path": "selectedItem",
+      "from": "null"
+    }
+  ]
+}
 ```
 </CodeBlock>
 
@@ -235,24 +238,26 @@ Common patterns:
 <CodeBlock lang="json">
 ```json
 {
-  "layout": {
-    "type": "Container",
-    "className": "p-6 max-w-4xl mx-auto",
-    "children": [
-      {
-        "type": "PageHeader",
-        "title": "My Page",
-        "subtitle": "Page description here"
-      },
-      {
-        "type": "Card",
-        "content": {
-          "type": "Text",
-          "content": "Page content goes here"
+  "sections": [
+    {
+      "type": "Container",
+      "className": "p-6 max-w-4xl mx-auto",
+      "children": [
+        {
+          "type": "PageHeader",
+          "title": "My Page",
+          "subtitle": "Page description here"
+        },
+        {
+          "type": "Card",
+          "content": {
+            "type": "Text",
+            "content": "Page content goes here"
+          }
         }
-      }
-    ]
-  }
+      ]
+    }
+  ]
 }
 ```
 </CodeBlock>
@@ -262,39 +267,40 @@ Common patterns:
 <CodeBlock lang="json">
 ```json
 {
-  "layout": {
-    "type": "Container",
-    "className": "p-6",
-    "children": [
-      {
-        "type": "PageHeader",
-        "title": "Dashboard",
-        "actions": [
-          { "type": "Button", "label": "New Item", "icon": "Plus" }
-        ]
-      },
-      {
-        "type": "Grid",
-        "columns": { "sm": 1, "md": 2, "lg": 4 },
-        "gap": "1rem",
-        "className": "mb-6",
-        "children": [
-          { "type": "StatCard", "title": "Total Users", "value": "{{state.stats.users}}" },
-          { "type": "StatCard", "title": "Active Sessions", "value": "{{state.stats.sessions}}" },
-          { "type": "StatCard", "title": "Revenue", "value": "${{state.stats.revenue}}" },
-          { "type": "StatCard", "title": "Growth", "value": "{{state.stats.growth}}%", "changeType": "increase" }
-        ]
-      },
-      {
-        "type": "Grid",
-        "columns": { "sm": 1, "lg": 2 },
-        "gap": "1rem",
-        "children": [
-          {
-            "type": "Card",
-            "title": "Recent Activity",
-            "content": { "type": "List", "dataSource": "state:recentActivity" }
-          },
+  "sections": [
+    {
+      "type": "Container",
+      "className": "p-6",
+      "children": [
+        {
+          "type": "PageHeader",
+          "title": "Dashboard",
+          "actions": [
+            { "type": "Button", "label": "New Item", "icon": "Plus" }
+          ]
+        },
+        {
+          "type": "Grid",
+          "columns": { "sm": 1, "md": 2, "lg": 4 },
+          "gap": "1rem",
+          "className": "mb-6",
+          "children": [
+            { "type": "StatCard", "title": "Total Users", "value": "{{state.stats.users}}" },
+            { "type": "StatCard", "title": "Active Sessions", "value": "{{state.stats.sessions}}" },
+            { "type": "StatCard", "title": "Revenue", "value": "${{state.stats.revenue}}" },
+            { "type": "StatCard", "title": "Growth", "value": "{{state.stats.growth}}%", "changeType": "increase" }
+          ]
+        },
+        {
+          "type": "Grid",
+          "columns": { "sm": 1, "lg": 2 },
+          "gap": "1rem",
+          "children": [
+            {
+              "type": "Card",
+              "title": "Recent Activity",
+              "content": { "type": "List", "dataSource": "state:recentActivity" }
+            },
           {
             "type": "Card",
             "title": "Performance",
@@ -314,40 +320,41 @@ Common patterns:
 <CodeBlock lang="json">
 ```json
 {
-  "id": "items-list",
   "route": "/items",
-  "layout": {
-    "type": "Container",
-    "children": [
-      {
-        "type": "PageHeader",
-        "title": "Items",
-        "actions": [
-          {
-            "type": "Button",
-            "label": "New Item",
-            "events": {
-              "on_click": [{ "type": "navigate", "to": "/items/new" }]
+  "sections": [
+    {
+      "type": "Container",
+      "children": [
+        {
+          "type": "PageHeader",
+          "title": "Items",
+          "actions": [
+            {
+              "type": "Button",
+              "label": "New Item",
+              "events": {
+                "on_click": [{ "type": "navigate", "to": "/items/new" }]
+              }
             }
-          }
-        ]
-      },
-      {
-        "type": "Table",
-        "dataSource": "state:items",
-        "columns": [
-          { "key": "name", "label": "Name" },
-          { "key": "status", "label": "Status" },
-          { "key": "createdAt", "label": "Created" }
-        ],
-        "events": {
-          "on_row_click": [
-            { "type": "navigate", "to": "/items/{{$row.id}}" }
           ]
+        },
+        {
+          "type": "Table",
+          "dataSource": "state:items",
+          "columns": [
+            { "key": "name", "label": "Name" },
+            { "key": "status", "label": "Status" },
+            { "key": "createdAt", "label": "Created" }
+          ],
+          "events": {
+            "on_row_click": [
+              { "type": "navigate", "to": "/items/{{$row.id}}" }
+            ]
+          }
         }
-      }
-    ]
-  }
+      ]
+    }
+  ]
 }
 ```
 </CodeBlock>
@@ -356,42 +363,44 @@ Common patterns:
 <CodeBlock lang="json">
 ```json
 {
-  "id": "item-detail",
   "route": "/items/:id",
   "state": {
     "item": { "type": "object", "default": null }
   },
-  "on_mount": [
+  "hooks": {
+    "on_mount": [
+      {
+        "type": "call_api",
+        "api": "my-plugin.getItem",
+        "args": { "id": "{{params.id}}" },
+        "on_success": [
+          { "type": "update_state", "path": "item", "from": "$response.data" }
+        ]
+      }
+    ]
+  },
+  "sections": [
     {
-      "type": "call_api",
-      "api": "my-plugin.getItem",
-      "args": { "id": "{{params.id}}" },
-      "on_success": [
-        { "type": "update_state", "path": "item", "value": "$response.data" }
-      ]
-    }
-  ],
-  "layout": {
-    "type": "Container",
-    "children": [
-      {
-        "type": "PageHeader",
-        "title": "{{state.item.name}}",
-        "backLink": "/items"
-      },
-      {
-        "type": "Conditional",
-        "condition": "{{state.item}}",
-        "then": {
-          "type": "Card",
-          "content": {
-            "type": "Flex",
-            "direction": "column",
-            "gap": "1rem",
-            "children": [
-              { "type": "DataDisplay", "label": "Name", "value": "{{state.item.name}}" },
-              { "type": "DataDisplay", "label": "Status", "value": "{{state.item.status}}" },
-              { "type": "DataDisplay", "label": "Created", "value": "{{state.item.createdAt}}" }
+      "type": "Container",
+      "children": [
+        {
+          "type": "PageHeader",
+          "title": "{{state.item.name}}",
+          "backLink": "/items"
+        },
+        {
+          "type": "Conditional",
+          "condition": "{{state.item}}",
+          "then": {
+            "type": "Card",
+            "content": {
+              "type": "Flex",
+              "direction": "column",
+              "gap": "1rem",
+              "children": [
+                { "type": "DataDisplay", "label": "Name", "value": "{{state.item.name}}" },
+                { "type": "DataDisplay", "label": "Status", "value": "{{state.item.status}}" },
+                { "type": "DataDisplay", "label": "Created", "value": "{{state.item.createdAt}}" }
             ]
           }
         },
@@ -410,7 +419,6 @@ Common patterns:
 <CodeBlock lang="json">
 ```json
 {
-  "id": "create-item",
   "route": "/items/new",
   "state": {
     "formData": {
@@ -423,71 +431,73 @@ Common patterns:
     },
     "isSubmitting": { "type": "boolean", "default": false }
   },
-  "layout": {
-    "type": "Container",
-    "className": "p-6 max-w-2xl mx-auto",
-    "children": [
-      {
-        "type": "PageHeader",
-        "title": "Create Item",
-        "backLink": "/items"
-      },
-      {
-        "type": "Card",
-        "content": {
-          "type": "Form",
-          "id": "create-form",
-          "fields": [
-            {
-              "name": "name",
-              "fieldType": "text",
-              "label": "Name",
-              "placeholder": "Enter item name",
-              "bindTo": "formData.name",
-              "validation": {
-                "required": { "message": "Name is required" }
+  "sections": [
+    {
+      "type": "Container",
+      "className": "p-6 max-w-2xl mx-auto",
+      "children": [
+        {
+          "type": "PageHeader",
+          "title": "Create Item",
+          "backLink": "/items"
+        },
+        {
+          "type": "Card",
+          "content": {
+            "type": "Form",
+            "id": "create-form",
+            "fields": [
+              {
+                "name": "name",
+                "fieldType": "text",
+                "label": "Name",
+                "placeholder": "Enter item name",
+                "bindTo": "formData.name",
+                "validation": {
+                  "required": { "message": "Name is required" }
+                }
+              },
+              {
+                "name": "description",
+                "fieldType": "textarea",
+                "label": "Description",
+                "placeholder": "Enter description",
+                "bindTo": "formData.description"
+              },
+              {
+                "name": "category",
+                "fieldType": "select",
+                "label": "Category",
+                "bindTo": "formData.category",
+                "options": [
+                  { "value": "a", "label": "Category A" },
+                  { "value": "b", "label": "Category B" }
+                ]
               }
-            },
-            {
-              "name": "description",
-              "fieldType": "textarea",
-              "label": "Description",
-              "placeholder": "Enter description",
-              "bindTo": "formData.description"
-            },
-            {
-              "name": "category",
-              "fieldType": "select",
-              "label": "Category",
-              "bindTo": "formData.category",
-              "options": [
-                { "value": "a", "label": "Category A" },
-                { "value": "b", "label": "Category B" }
+            ],
+            "events": {
+              "on_submit": [
+                { "type": "set_loading", "target": "submit", "loading": true },
+                {
+                  "type": "call_api",
+                  "api": "my-plugin.createItem",
+                  "args": { "data": "{{state.formData}}" },
+                  "on_success": [
+                    { "type": "show_toast", "message": "Item created!", "level": "success" },
+                    { "type": "navigate", "to": "/items" }
+                  ],
+                  "on_error": [
+                    { "type": "show_toast", "message": "Failed to create item", "level": "error" }
+                  ]
+                },
+                { "type": "set_loading", "target": "submit", "loading": false }
               ]
             }
-          ],
-          "events": {
-            "on_submit": [
-              { "type": "set_loading", "target": "submit", "loading": true },
-              {
-                "type": "call_api",
-                "api": "my-plugin.createItem",
-                "args": { "data": "{{state.formData}}" },
-                "on_success": [
-                  { "type": "show_toast", "message": "Item created!", "level": "success" },
-                  { "type": "navigate", "to": "/items" }
-                ],
-                "on_error": [
-                  { "type": "show_toast", "message": "Failed to create item", "level": "error" }
-                ]
-              },
-              { "type": "set_loading", "target": "submit", "loading": false }
-            ]
           }
         }
-      }
-    ]
-  }
+      ]
+    }
+  ]
 }
 ```
 </CodeBlock>
@@ -501,25 +511,25 @@ Plugins can define multiple pages:
 {
   "pages": [
     {
-      "id": "dashboard",
       "title": "Dashboard",
-      "route": "/my-plugin",
+      "route": "/dashboard",
       "icon": "Home",
-      "layout": { ... }
+      "show_in_menu": true,
+      "sections": [ ... ]
     },
     {
-      "id": "items",
       "title": "Items",
-      "route": "/my-plugin/items",
+      "route": "/items",
       "icon": "List",
-      "layout": { ... }
+      "show_in_menu": true,
+      "sections": [ ... ]
     },
     {
-      "id": "settings",
       "title": "Settings",
-      "route": "/my-plugin/settings",
+      "route": "/settings",
       "icon": "Settings",
-      "layout": { ... }
+      "show_in_menu": true,
+      "sections": [ ... ]
     }
   ]
 }
@@ -586,15 +596,17 @@ Handle load failures:
 
 <CodeBlock lang="json">
 ```json
-"on_mount": [
-  {
-    "type": "call_api",
-    "api": "getData",
-    "on_error": [
-      { "type": "update_state", "path": "error", "value": "$error.message" }
-    ]
-  }
-]
+"hooks": {
+  "on_mount": [
+    {
+      "type": "call_api",
+      "api": "getData",
+      "on_error": [
+        { "type": "update_state", "path": "error", "from": "$error.message" }
+      ]
+    }
+  ]
+}
 ```
 </CodeBlock>
 

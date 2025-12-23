@@ -323,10 +323,9 @@ fn test_page_schemas_valid() {
     
     for page in manifest["pages"].as_array().unwrap() {
         // Required fields
-        assert!(page["id"].is_string());
         assert!(page["title"].is_string());
         assert!(page["route"].is_string());
-        assert!(page["layout"].is_object());
+        assert!(page["sections"].is_array());
         
         // Route format
         let route = page["route"].as_str().unwrap();
@@ -347,10 +346,13 @@ import manifest from '../manifest.json';
 describe('Component Schemas', () => {
   const pages = manifest.pages;
   
-  it('all pages have valid layouts', () => {
+  it('all pages have valid sections', () => {
     for (const page of pages) {
-      expect(page.layout).toBeDefined();
-      expect(page.layout.type).toBeDefined();
+      expect(page.sections).toBeDefined();
+      expect(Array.isArray(page.sections)).toBe(true);
+      for (const section of page.sections) {
+        expect(section.type).toBeDefined();
+      }
     }
   });
   
@@ -371,7 +373,9 @@ describe('Component Schemas', () => {
     }
     
     for (const page of pages) {
-      validateComponent(page.layout);
+      for (const section of page.sections) {
+        validateComponent(section);
+      }
     }
   });
 });
