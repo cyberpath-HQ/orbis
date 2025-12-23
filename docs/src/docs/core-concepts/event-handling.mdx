@@ -343,7 +343,7 @@ The `set_loading` after `call_api` runs immediately, not after the API completes
   "events": {
     "on_change": [{ "type": "update_state", "path": "email", "value": "$event.value" }],
     "on_focus": [{ "type": "update_state", "path": "focused", "value": "email" }],
-    "on_blur": [{ "type": "validateForm", "formId": "my-form" }]
+    "on_blur": [{ "type": "validate_form", "formId": "my-form" }]
   }
 }
 ```
@@ -358,7 +358,7 @@ The `set_loading` after `call_api` runs immediately, not after the API completes
   "id": "contact-form",
   "events": {
     "on_submit": [
-      { "type": "validateForm", "formId": "contact-form" },
+      { "type": "validate_form", "formId": "contact-form" },
       {
         "type": "conditional",
         "condition": "{{state.formValid}}",

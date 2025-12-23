@@ -270,7 +270,7 @@ Copies text to clipboard.
 
 ---
 
-## openUrl
+## open_url
 
 Opens a URL in a new browser tab.
 
@@ -279,7 +279,7 @@ Opens a URL in a new browser tab.
 <CodeBlock lang="json">
 ```json
 {
-  "type": "openUrl",
+  "type": "open_url",
   "url": "https://example.com"
 }
 ```
@@ -304,7 +304,7 @@ Opens a URL in a new browser tab.
   "icon": "ExternalLink",
   "events": {
     "on_click": [
-      { "type": "openUrl", "url": "https://docs.example.com" }
+      { "type": "open_url", "url": "https://docs.example.com" }
     ]
   }
 }
@@ -320,7 +320,7 @@ Opens a URL in a new browser tab.
   "text": "View Profile",
   "events": {
     "on_click": [
-      { "type": "openUrl", "url": "https://github.com/{{state.user.githubUsername}}" }
+      { "type": "open_url", "url": "https://github.com/{{state.user.githubUsername}}" }
     ]
   }
 }
@@ -332,7 +332,7 @@ Opens a URL in a new browser tab.
 <CodeBlock lang="json">
 ```json
 {
-  "type": "openUrl",
+  "type": "open_url",
   "url": "https://example.com",
   "target": "_self"
 }

@@ -146,43 +146,6 @@ export const docsNav: Array<NavSection> = [
         ],
     },
     {
-        title: `API Reference`,
-        items: [
-            {
-                title: `Overview`,
-                href:  `/docs/api-reference/overview/`,
-            },
-            {
-                title: `Types Reference`,
-                href:  `/docs/api-reference/types-reference/`,
-            },
-            {
-                title: `Expressions`,
-                href:  `/docs/api-reference/expressions/`,
-            },
-            {
-                title: `State Management`,
-                href:  `/docs/api-reference/state-management/`,
-            },
-            {
-                title: `Event Handlers`,
-                href:  `/docs/api-reference/event-handlers/`,
-            },
-            {
-                title: `Data Sources`,
-                href:  `/docs/api-reference/data-sources/`,
-            },
-            {
-                title: `Validation`,
-                href:  `/docs/api-reference/validation/`,
-            },
-            {
-                title: `Special Values`,
-                href:  `/docs/api-reference/special-values/`,
-            },
-        ],
-    },
-    {
         title: `Plugin Development`,
         items: [
             {
@@ -287,8 +250,8 @@ export const mainNav: Array<NavItem> = [
         href:  `/docs/components/overview/`,
     },
     {
-        title: `API Reference`,
-        href:  `/docs/api-reference/overview/`,
+        title: `Plugin Development`,
+        href:  `/docs/plugin-development/overview/`,
     },
     {
         title:    `GitHub`,

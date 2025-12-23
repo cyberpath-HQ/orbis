@@ -11,7 +11,7 @@ import CodeBlock from '@/components/mdx/CodeBlock.astro';
 
 Actions for managing form state and validation.
 
-## validateForm
+## validate_form
 
 Validates a form and returns validation results.
 
@@ -20,7 +20,7 @@ Validates a form and returns validation results.
 <CodeBlock lang="json">
 ```json
 {
-  "type": "validateForm",
+  "type": "validate_form",
   "formId": "myForm"
 }
 ```
@@ -46,7 +46,7 @@ Validates a form and returns validation results.
   "events": {
     "on_click": [
       {
-        "type": "validateForm",
+        "type": "validate_form",
         "formId": "contactForm",
         "onValid": [
           { "type": "call_api", "api": "submitContact" }
@@ -95,7 +95,7 @@ Validates a form and returns validation results.
       "events": {
         "on_click": [
           {
-            "type": "validateForm",
+            "type": "validate_form",
             "formId": "userForm",
             "onValid": [
               { "type": "call_api", "api": "register", "params": { "data": "{{form.userForm}}" } }
@@ -114,7 +114,7 @@ Validates a form and returns validation results.
 <CodeBlock lang="json">
 ```json
 {
-  "type": "validateForm",
+  "type": "validate_form",
   "formId": "settingsForm",
   "onValid": [
     { "type": "call_api", "api": "saveSettings" },
@@ -129,7 +129,7 @@ Validates a form and returns validation results.
 
 ---
 
-## resetForm
+## reset_form
 
 Resets a form to its initial state.
 
@@ -138,7 +138,7 @@ Resets a form to its initial state.
 <CodeBlock lang="json">
 ```json
 {
-  "type": "resetForm",
+  "type": "reset_form",
   "formId": "myForm"
 }
 ```
@@ -163,7 +163,7 @@ Resets a form to its initial state.
   "variant": "ghost",
   "events": {
     "on_click": [
-      { "type": "resetForm", "formId": "searchForm" }
+      { "type": "reset_form", "formId": "searchForm" }
     ]
   }
 }
@@ -175,7 +175,7 @@ Resets a form to its initial state.
 <CodeBlock lang="json">
 ```json
 {
-  "type": "resetForm",
+  "type": "reset_form",
   "formId": "filterForm",
   "values": {
     "status": "all",
@@ -196,7 +196,7 @@ Resets a form to its initial state.
   "params": { "data": "{{form.newItemForm}}" },
   "on_success": [
     { "type": "show_toast", "message": "Item created!", "level": "success" },
-    { "type": "resetForm", "formId": "newItemForm" }
+    { "type": "reset_form", "formId": "newItemForm" }
   ]
 }
 ```
@@ -211,8 +211,8 @@ Resets a form to its initial state.
   "text": "Cancel",
   "events": {
     "on_click": [
-      { "type": "resetForm", "formId": "editForm" },
-      { "type": "closeDialog", "id": "editDialog" }
+      { "type": "reset_form", "formId": "editForm" },
+      { "type": "close_dialog", "id": "editDialog" }
     ]
   }
 }
@@ -327,7 +327,7 @@ Form data is accessible via the `form` namespace:
       "variant": "ghost",
       "events": {
         "on_click": [
-          { "type": "resetForm", "formId": "myForm" }
+          { "type": "reset_form", "formId": "myForm" }
         ]
       }
     },
@@ -337,7 +337,7 @@ Form data is accessible via the `form` namespace:
       "events": {
         "on_click": [
           {
-            "type": "validateForm",
+            "type": "validate_form",
             "formId": "myForm",
             "onValid": [
               { "type": "set_loading", "key": "submitting", "value": true },
@@ -347,7 +347,7 @@ Form data is accessible via the `form` namespace:
                 "params": { "data": "{{form.myForm}}" },
                 "on_success": [
                   { "type": "show_toast", "message": "Submitted!", "level": "success" },
-                  { "type": "resetForm", "formId": "myForm" }
+                  { "type": "reset_form", "formId": "myForm" }
                 ],
                 "onComplete": [
                   { "type": "set_loading", "key": "submitting", "value": false }
@@ -373,7 +373,7 @@ Form data is accessible via the `form` namespace:
   "events": {
     "on_click": [
       {
-        "type": "validateForm",
+        "type": "validate_form",
         "formId": "step{{state.currentStep}}Form",
         "onValid": [
           { "type": "update_state", "path": "currentStep", "value": "{{state.currentStep + 1}}" }
@@ -399,7 +399,7 @@ Form data is accessible via the `form` namespace:
   "events": {
     "on_click": [
       {
-        "type": "showDialog",
+        "type": "show_dialog",
         "id": "confirmReset",
         "title": "Clear Form",
         "message": "Are you sure you want to clear all fields?",
@@ -407,14 +407,14 @@ Form data is accessible via the `form` namespace:
           {
             "label": "Cancel",
             "variant": "ghost",
-            "action": [{ "type": "closeDialog", "id": "confirmReset" }]
+            "action": [{ "type": "close_dialog", "id": "confirmReset" }]
           },
           {
             "label": "Clear",
             "variant": "destructive",
             "action": [
-              { "type": "resetForm", "formId": "myForm" },
-              { "type": "closeDialog", "id": "confirmReset" }
+              { "type": "reset_form", "formId": "myForm" },
+              { "type": "close_dialog", "id": "confirmReset" }
             ]
           }
         ]
