@@ -13,7 +13,7 @@ members = [
     # Main application
     "orbis/src-tauri",
     # Sample plugins are independent packages
-    "plugins/*",
+    "plugins/*", "crates/orbis-dsl",
 ]
 
 [workspace.package]
