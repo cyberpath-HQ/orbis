@@ -46,7 +46,7 @@ fn test_alert_with_message() {
 fn test_component_specific_events() {
     // Container with valid events (click, mouseEnter, mouseLeave)
     let input = r#"template {
-        <Container @click => [state.count = state.count + 1] />
+        <Container @click => { state.count = state.count + 1 } />
     }"#;
     
     let result = parse_file(input);
