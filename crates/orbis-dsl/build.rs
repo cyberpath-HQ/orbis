@@ -91,10 +91,14 @@ fn define_components() -> Vec<ComponentDef> {
         // Layout Components
         ComponentDef {
             name:       "Container",
-            attributes: vec![],
+            attributes: vec![
+                AttributeDef::literal("id"),
+                AttributeDef::literal("className"),
+                AttributeDef::expr("visible"),
+            ],
             events:     vec!["click", "mouse_enter", "mouse_leave"],
         },
-        /* ComponentDef {
+        ComponentDef {
             name:       "Grid",
             attributes: vec![
                 AttributeDef::literal("id"),
@@ -350,7 +354,7 @@ fn define_components() -> Vec<ComponentDef> {
                 AttributeDef::expr("visible"),
             ],
             events:     vec![],
-        }, */
+        },
     ]
 }
 
@@ -399,6 +403,11 @@ fn generate_page_grammar_keywords() -> HashMap<&'static str, Vec<&'static str>> 
             "className",
             "style",
             "visible",
+            // HTML form attributes
+            "placeholder",
+            "disabled",
+            "required",
+            "label",
         ],
 
         // Common event names
@@ -492,16 +501,22 @@ fn generate_page_grammar_file(
             attr_names.join(" | ")
         ));
 
-        // Generate event list
+        // Generate event list (handle empty events with placeholder)
         let event_names: Vec<String> = component
             .events
             .iter()
             .map(|e| e.to_upper_camel_case())
             .collect();
+        let events_rule = if event_names.is_empty() {
+            // Use a never-matching rule for components with no events
+            "!\"__never__\"".to_string()
+        } else {
+            event_names.join(" | ")
+        };
         generated_content.push_str(&format!(
             "{}Events = @{{ {} }}\n",
             comp_name,
-            event_names.join(" | ")
+            events_rule
         ));
 
         // generate component name variations
@@ -513,23 +528,54 @@ fn generate_page_grammar_file(
             quoted_variants.join(" | ")
         ));
 
-        // Generate component rule
+        // Generate component rules - separate self-closing and opening
         generated_content.push_str(&format!(
             "
 {comp_name}AttributeDefinition = {{
     {comp_name}Attributes ~ \"=\" ~ attribute_value
 }}
 {comp_name}EventsDefinition = {{
-    \"@\" ~ {comp_name}Events ~ \"=>\" ~ action_list
+    \"@\" ~ {comp_name}Events ~ \"=>\" ~ (action_with_handlers | action_list)
 }}
-{comp_name}Component = {{ 
+
+// Self-closing variant: <{} ... />
+{comp_name}SelfClosing = {{ 
     \"<\" ~ 
     {comp_name}ComponentNames ~ 
     ({comp_name}AttributeDefinition | {comp_name}EventsDefinition)* ~ 
-    \">\" 
-}}\n",
+    \"/>\"
+}}
+
+// Opening tag variant: <{} ... >
+{comp_name}Opening = {{ 
+    \"<\" ~ 
+    {comp_name}ComponentNames ~ 
+    ({comp_name}AttributeDefinition | {comp_name}EventsDefinition)* ~ 
+    \">\"
+}}
+", component.name.to_lower_camel_case(), component.name.to_lower_camel_case()
         ));
     }
+
+    // Generate ComponentTypes rules (union of self-closing and opening variants)
+    generated_content.push_str("\n// Component types (union of all whitelisted components)\n");
+    let self_closing_rules: Vec<String> = components
+        .iter()
+        .map(|c| format!("{}SelfClosing", c.name.to_upper_camel_case()))
+        .collect();
+    let opening_rules: Vec<String> = components
+        .iter()
+        .map(|c| format!("{}Opening", c.name.to_upper_camel_case()))
+        .collect();
+    
+    generated_content.push_str(&format!(
+        "SelfClosingComponents = {{ {} }}\n",
+        self_closing_rules.join(" | ")
+    ));
+    generated_content.push_str(&format!(
+        "OpeningComponents = {{ {} }}\n",
+        opening_rules.join(" | ")
+    ));
 
     generated_content.push_str("\n// Event rules\n");
     // Generate event rules
@@ -541,6 +587,12 @@ fn generate_page_grammar_file(
     // Generate attribute rules
     for attribute in components.iter().flat_map(|c| &c.attributes) {
         generate_keyword_rules(&[attribute.name], &mut generated_content);
+    }
+    
+    // Explicitly generate common HTML attribute rules that might be missing
+    let html_attrs = vec!["placeholder", "disabled", "required", "label"];
+    for attr in &html_attrs {
+        generate_keyword_rules(&[attr], &mut generated_content);
     }
 
     generated_content.push_str(&format!("\n{}", builder_insertion_end));
