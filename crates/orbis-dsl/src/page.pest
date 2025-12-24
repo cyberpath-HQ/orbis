@@ -10,6 +10,7 @@ Align = @{ ^"ALIGN" | ^"Align" | ^"align" }
 Alt = @{ ^"ALT" | ^"Alt" | ^"alt" }
 Any = @{ ^"ANY" | ^"Any" | ^"any" }
 Api = @{ ^"API" | ^"Api" | ^"api" }
+Apply = @{ ^"APPLY" | ^"Apply" | ^"apply" }
 AriaAtomic = @{ ^"ARIA-ATOMIC" | ^"ARIA_ATOMIC" | ^"Aria-Atomic" | ^"AriaAtomic" | ^"aria-atomic" | ^"ariaAtomic" | ^"aria_atomic" }
 AriaBusy = @{ ^"ARIA-BUSY" | ^"ARIA_BUSY" | ^"Aria-Busy" | ^"AriaBusy" | ^"aria-busy" | ^"ariaBusy" | ^"aria_busy" }
 AriaChecked = @{ ^"ARIA-CHECKED" | ^"ARIA_CHECKED" | ^"Aria-Checked" | ^"AriaChecked" | ^"aria-checked" | ^"ariaChecked" | ^"aria_checked" }
@@ -32,16 +33,23 @@ AriaRelevant = @{ ^"ARIA-RELEVANT" | ^"ARIA_RELEVANT" | ^"Aria-Relevant" | ^"Ari
 AriaRequired = @{ ^"ARIA-REQUIRED" | ^"ARIA_REQUIRED" | ^"Aria-Required" | ^"AriaRequired" | ^"aria-required" | ^"ariaRequired" | ^"aria_required" }
 AriaSelected = @{ ^"ARIA-SELECTED" | ^"ARIA_SELECTED" | ^"Aria-Selected" | ^"AriaSelected" | ^"aria-selected" | ^"ariaSelected" | ^"aria_selected" }
 Array = @{ ^"ARRAY" | ^"Array" | ^"array" }
+As = @{ ^"AS" | ^"As" | ^"as" }
 BackLink = @{ ^"BACK-LINK" | ^"BACK_LINK" | ^"Back-Link" | ^"BackLink" | ^"back-link" | ^"backLink" | ^"back_link" }
+Base64 = @{ ^"BASE64" | ^"Base64" | ^"base64" }
+Bic = @{ ^"BIC" | ^"Bic" | ^"bic" }
 BindTo = @{ ^"BIND-TO" | ^"BIND_TO" | ^"Bind-To" | ^"BindTo" | ^"bind-to" | ^"bindTo" | ^"bind_to" }
 Blur = @{ ^"BLUR" | ^"Blur" | ^"blur" }
 Bool = @{ ^"BOOL" | ^"Bool" | ^"bool" }
+Brand = @{ ^"BRAND" | ^"Brand" | ^"brand" }
 Breadcrumb = @{ ^"BREADCRUMB" | ^"Breadcrumb" | ^"breadcrumb" }
 CancelLabel = @{ ^"CANCEL-LABEL" | ^"CANCEL_LABEL" | ^"Cancel-Label" | ^"CancelLabel" | ^"cancel-label" | ^"cancelLabel" | ^"cancel_label" }
+Catch = @{ ^"CATCH" | ^"Catch" | ^"catch" }
+Catchall = @{ ^"CATCHALL" | ^"Catchall" | ^"catchall" }
 Change = @{ ^"CHANGE" | ^"Change" | ^"change" }
 ChangeType = @{ ^"CHANGE-TYPE" | ^"CHANGE_TYPE" | ^"Change-Type" | ^"ChangeType" | ^"change-type" | ^"changeType" | ^"change_type" }
 ChartType = @{ ^"CHART-TYPE" | ^"CHART_TYPE" | ^"Chart-Type" | ^"ChartType" | ^"chart-type" | ^"chartType" | ^"chart_type" }
 Children = @{ ^"CHILDREN" | ^"Children" | ^"children" }
+Cidr = @{ ^"CIDR" | ^"Cidr" | ^"cidr" }
 ClassName = @{ ^"CLASS-NAME" | ^"CLASS_NAME" | ^"Class-Name" | ^"ClassName" | ^"class-name" | ^"className" | ^"class_name" }
 Click = @{ ^"CLICK" | ^"Click" | ^"click" }
 Closable = @{ ^"CLOSABLE" | ^"Closable" | ^"closable" }
@@ -53,11 +61,19 @@ Component = @{ ^"COMPONENT" | ^"Component" | ^"component" }
 Computed = @{ ^"COMPUTED" | ^"Computed" | ^"computed" }
 Condition = @{ ^"CONDITION" | ^"Condition" | ^"condition" }
 Console = @{ ^"CONSOLE" | ^"Console" | ^"console" }
+Const = @{ ^"CONST" | ^"Const" | ^"const" }
+Container = @{ ^"CONTAINER" | ^"Container" | ^"container" }
 Content = @{ ^"CONTENT" | ^"Content" | ^"content" }
 Copyable = @{ ^"COPYABLE" | ^"Copyable" | ^"copyable" }
+CreditCard = @{ ^"CREDIT-CARD" | ^"CREDIT_CARD" | ^"Credit-Card" | ^"CreditCard" | ^"credit-card" | ^"creditCard" | ^"credit_card" }
+Cuid = @{ ^"CUID" | ^"Cuid" | ^"cuid" }
+Cuid2 = @{ ^"CUID2" | ^"Cuid2" | ^"cuid2" }
 DataSource = @{ ^"DATA-SOURCE" | ^"DATA_SOURCE" | ^"Data-Source" | ^"DataSource" | ^"data-source" | ^"dataSource" | ^"data_source" }
+Date = @{ ^"DATE" | ^"Date" | ^"date" }
+Datetime = @{ ^"DATETIME" | ^"Datetime" | ^"datetime" }
 Debounce = @{ ^"DEBOUNCE" | ^"Debounce" | ^"debounce" }
 Deep = @{ ^"DEEP" | ^"Deep" | ^"deep" }
+Default = @{ ^"DEFAULT" | ^"Default" | ^"default" }
 DefaultCollapsed = @{ ^"DEFAULT-COLLAPSED" | ^"DEFAULT_COLLAPSED" | ^"Default-Collapsed" | ^"DefaultCollapsed" | ^"default-collapsed" | ^"defaultCollapsed" | ^"default_collapsed" }
 DefaultOpen = @{ ^"DEFAULT-OPEN" | ^"DEFAULT_OPEN" | ^"Default-Open" | ^"DefaultOpen" | ^"default-open" | ^"defaultOpen" | ^"default_open" }
 DefaultTab = @{ ^"DEFAULT-TAB" | ^"DEFAULT_TAB" | ^"Default-Tab" | ^"DefaultTab" | ^"default-tab" | ^"defaultTab" | ^"default_tab" }
@@ -67,67 +83,115 @@ Description = @{ ^"DESCRIPTION" | ^"Description" | ^"description" }
 Direction = @{ ^"DIRECTION" | ^"Direction" | ^"direction" }
 Disabled = @{ ^"DISABLED" | ^"Disabled" | ^"disabled" }
 Dismissible = @{ ^"DISMISSIBLE" | ^"Dismissible" | ^"dismissible" }
+Duration = @{ ^"DURATION" | ^"Duration" | ^"duration" }
 Else = @{ ^"ELSE" | ^"Else" | ^"else" }
+Email = @{ ^"EMAIL" | ^"Email" | ^"email" }
+Emoji = @{ ^"EMOJI" | ^"Emoji" | ^"emoji" }
 EmptyTemplate = @{ ^"EMPTY-TEMPLATE" | ^"EMPTY_TEMPLATE" | ^"Empty-Template" | ^"EmptyTemplate" | ^"empty-template" | ^"emptyTemplate" | ^"empty_template" }
 EmptyText = @{ ^"EMPTY-TEXT" | ^"EMPTY_TEXT" | ^"Empty-Text" | ^"EmptyText" | ^"empty-text" | ^"emptyText" | ^"empty_text" }
+EndsWith = @{ ^"ENDS-WITH" | ^"ENDS_WITH" | ^"Ends-With" | ^"EndsWith" | ^"ends-with" | ^"endsWith" | ^"ends_with" }
+ErrorMap = @{ ^"ERROR-MAP" | ^"ERROR_MAP" | ^"Error-Map" | ^"ErrorMap" | ^"error-map" | ^"errorMap" | ^"error_map" }
 Event = @{ ^"EVENT" | ^"Event" | ^"event" }
+Export = @{ ^"EXPORT" | ^"Export" | ^"export" }
 External = @{ ^"EXTERNAL" | ^"External" | ^"external" }
 Fallback = @{ ^"FALLBACK" | ^"Fallback" | ^"fallback" }
 Fields = @{ ^"FIELDS" | ^"Fields" | ^"fields" }
 FieldType = @{ ^"FIELD-TYPE" | ^"FIELD_TYPE" | ^"Field-Type" | ^"FieldType" | ^"field-type" | ^"fieldType" | ^"field_type" }
+Finite = @{ ^"FINITE" | ^"Finite" | ^"finite" }
 Fit = @{ ^"FIT" | ^"Fit" | ^"fit" }
 Focus = @{ ^"FOCUS" | ^"Focus" | ^"focus" }
 Footer = @{ ^"FOOTER" | ^"Footer" | ^"footer" }
 For = @{ ^"FOR" | ^"For" | ^"for" }
 Fragment = @{ ^"FRAGMENT" | ^"Fragment" | ^"fragment" }
+From = @{ ^"FROM" | ^"From" | ^"from" }
 Gap = @{ ^"GAP" | ^"Gap" | ^"gap" }
+Global = @{ ^"GLOBAL" | ^"Global" | ^"global" }
+Gt = @{ ^"GT" | ^"Gt" | ^"gt" }
+Gte = @{ ^"GTE" | ^"Gte" | ^"gte" }
 Header = @{ ^"HEADER" | ^"Header" | ^"header" }
 Height = @{ ^"HEIGHT" | ^"Height" | ^"height" }
 Hooks = @{ ^"HOOKS" | ^"Hooks" | ^"hooks" }
 Hoverable = @{ ^"HOVERABLE" | ^"Hoverable" | ^"hoverable" }
 Href = @{ ^"HREF" | ^"Href" | ^"href" }
+Iban = @{ ^"IBAN" | ^"Iban" | ^"iban" }
 Icon = @{ ^"ICON" | ^"Icon" | ^"icon" }
 IconPosition = @{ ^"ICON-POSITION" | ^"ICON_POSITION" | ^"Icon-Position" | ^"IconPosition" | ^"icon-position" | ^"iconPosition" | ^"icon_position" }
 Id = @{ ^"ID" | ^"Id" | ^"id" }
 If = @{ ^"IF" | ^"If" | ^"if" }
 Immediate = @{ ^"IMMEDIATE" | ^"Immediate" | ^"immediate" }
+Import = @{ ^"IMPORT" | ^"Import" | ^"import" }
 In = @{ ^"IN" | ^"In" | ^"in" }
+Includes = @{ ^"INCLUDES" | ^"Includes" | ^"includes" }
 IndexVar = @{ ^"INDEX-VAR" | ^"INDEX_VAR" | ^"Index-Var" | ^"IndexVar" | ^"index-var" | ^"indexVar" | ^"index_var" }
+Int = @{ ^"INT" | ^"Int" | ^"int" }
 Interface = @{ ^"INTERFACE" | ^"Interface" | ^"interface" }
+Ip = @{ ^"IP" | ^"Ip" | ^"ip" }
 Items = @{ ^"ITEMS" | ^"Items" | ^"items" }
 ItemTemplate = @{ ^"ITEM-TEMPLATE" | ^"ITEM_TEMPLATE" | ^"Item-Template" | ^"ItemTemplate" | ^"item-template" | ^"itemTemplate" | ^"item_template" }
 ItemVar = @{ ^"ITEM-VAR" | ^"ITEM_VAR" | ^"Item-Var" | ^"ItemVar" | ^"item-var" | ^"itemVar" | ^"item_var" }
 Justify = @{ ^"JUSTIFY" | ^"Justify" | ^"justify" }
+Jwt = @{ ^"JWT" | ^"Jwt" | ^"jwt" }
+Keyframes = @{ ^"KEYFRAMES" | ^"Keyframes" | ^"keyframes" }
 Label = @{ ^"LABEL" | ^"Label" | ^"label" }
+Layer = @{ ^"LAYER" | ^"Layer" | ^"layer" }
 Layout = @{ ^"LAYOUT" | ^"Layout" | ^"layout" }
+Length = @{ ^"LENGTH" | ^"Length" | ^"length" }
 Level = @{ ^"LEVEL" | ^"Level" | ^"level" }
 Loading = @{ ^"LOADING" | ^"Loading" | ^"loading" }
+Lt = @{ ^"LT" | ^"Lt" | ^"lt" }
+Lte = @{ ^"LTE" | ^"Lte" | ^"lte" }
 Max = @{ ^"MAX" | ^"Max" | ^"max" }
+Media = @{ ^"MEDIA" | ^"Media" | ^"media" }
 Message = @{ ^"MESSAGE" | ^"Message" | ^"message" }
+Min = @{ ^"MIN" | ^"Min" | ^"min" }
+Mod = @{ ^"MOD" | ^"Mod" | ^"mod" }
 Mount = @{ ^"MOUNT" | ^"Mount" | ^"mount" }
 MouseEnter = @{ ^"MOUSE-ENTER" | ^"MOUSE_ENTER" | ^"Mouse-Enter" | ^"MouseEnter" | ^"mouse-enter" | ^"mouseEnter" | ^"mouse_enter" }
 MouseLeave = @{ ^"MOUSE-LEAVE" | ^"MOUSE_LEAVE" | ^"Mouse-Leave" | ^"MouseLeave" | ^"mouse-leave" | ^"mouseLeave" | ^"mouse_leave" }
+MultipleOf = @{ ^"MULTIPLE-OF" | ^"MULTIPLE_OF" | ^"Multiple-Of" | ^"MultipleOf" | ^"multiple-of" | ^"multipleOf" | ^"multiple_of" }
 Name = @{ ^"NAME" | ^"Name" | ^"name" }
+Nanoid = @{ ^"NANOID" | ^"Nanoid" | ^"nanoid" }
+Negative = @{ ^"NEGATIVE" | ^"Negative" | ^"negative" }
 Never = @{ ^"NEVER" | ^"Never" | ^"never" }
+Nonempty = @{ ^"NONEMPTY" | ^"Nonempty" | ^"nonempty" }
+Nonnegative = @{ ^"NONNEGATIVE" | ^"Nonnegative" | ^"nonnegative" }
+Nonpositive = @{ ^"NONPOSITIVE" | ^"Nonpositive" | ^"nonpositive" }
 Null = @{ ^"NULL" | ^"Null" | ^"null" }
+Nullable = @{ ^"NULLABLE" | ^"Nullable" | ^"nullable" }
+Nullish = @{ ^"NULLISH" | ^"Nullish" | ^"nullish" }
 Number = @{ ^"NUMBER" | ^"Number" | ^"number" }
 Object = @{ ^"OBJECT" | ^"Object" | ^"object" }
 Open = @{ ^"OPEN" | ^"Open" | ^"open" }
+Optional = @{ ^"OPTIONAL" | ^"Optional" | ^"optional" }
 Options = @{ ^"OPTIONS" | ^"Options" | ^"options" }
 Orientation = @{ ^"ORIENTATION" | ^"Orientation" | ^"orientation" }
 Page = @{ ^"PAGE" | ^"Page" | ^"page" }
 PageChange = @{ ^"PAGE-CHANGE" | ^"PAGE_CHANGE" | ^"Page-Change" | ^"PageChange" | ^"page-change" | ^"pageChange" | ^"page_change" }
 Pagination = @{ ^"PAGINATION" | ^"Pagination" | ^"pagination" }
+Passthrough = @{ ^"PASSTHROUGH" | ^"Passthrough" | ^"passthrough" }
+Pattern = @{ ^"PATTERN" | ^"Pattern" | ^"pattern" }
+Pipe = @{ ^"PIPE" | ^"Pipe" | ^"pipe" }
 Placeholder = @{ ^"PLACEHOLDER" | ^"Placeholder" | ^"placeholder" }
+Positive = @{ ^"POSITIVE" | ^"Positive" | ^"positive" }
+PostalCode = @{ ^"POSTAL-CODE" | ^"POSTAL_CODE" | ^"Postal-Code" | ^"PostalCode" | ^"postal-code" | ^"postalCode" | ^"postal_code" }
 Prefix = @{ ^"PREFIX" | ^"Prefix" | ^"prefix" }
 Props = @{ ^"PROPS" | ^"Props" | ^"props" }
+Pub = @{ ^"PUB" | ^"Pub" | ^"pub" }
+Readonly = @{ ^"READONLY" | ^"Readonly" | ^"readonly" }
 ReadOnly = @{ ^"READ-ONLY" | ^"READ_ONLY" | ^"Read-Only" | ^"ReadOnly" | ^"read-only" | ^"readOnly" | ^"read_only" }
+Refine = @{ ^"REFINE" | ^"Refine" | ^"refine" }
+Regex = @{ ^"REGEX" | ^"Regex" | ^"regex" }
 Required = @{ ^"REQUIRED" | ^"Required" | ^"required" }
+Return = @{ ^"RETURN" | ^"Return" | ^"return" }
 Role = @{ ^"ROLE" | ^"Role" | ^"role" }
 Router = @{ ^"ROUTER" | ^"Router" | ^"router" }
 RowClick = @{ ^"ROW-CLICK" | ^"ROW_CLICK" | ^"Row-Click" | ^"RowClick" | ^"row-click" | ^"rowClick" | ^"row_click" }
 RowDoubleClick = @{ ^"ROW-DOUBLE-CLICK" | ^"ROW_DOUBLE_CLICK" | ^"Row-Double-Click" | ^"RowDoubleClick" | ^"row-double-click" | ^"rowDoubleClick" | ^"row_double_click" }
 RowKey = @{ ^"ROW-KEY" | ^"ROW_KEY" | ^"Row-Key" | ^"RowKey" | ^"row-key" | ^"rowKey" | ^"row_key" }
+Safe = @{ ^"SAFE" | ^"Safe" | ^"safe" }
+Scope = @{ ^"SCOPE" | ^"Scope" | ^"scope" }
+Scoped = @{ ^"SCOPED" | ^"Scoped" | ^"scoped" }
+Screen = @{ ^"SCREEN" | ^"Screen" | ^"screen" }
 Searchable = @{ ^"SEARCHABLE" | ^"Searchable" | ^"searchable" }
 Select = @{ ^"SELECT" | ^"Select" | ^"select" }
 Selectable = @{ ^"SELECTABLE" | ^"Selectable" | ^"selectable" }
@@ -140,25 +204,43 @@ Slot = @{ ^"SLOT" | ^"Slot" | ^"slot" }
 Sortable = @{ ^"SORTABLE" | ^"Sortable" | ^"sortable" }
 SortChange = @{ ^"SORT-CHANGE" | ^"SORT_CHANGE" | ^"Sort-Change" | ^"SortChange" | ^"sort-change" | ^"sortChange" | ^"sort_change" }
 Src = @{ ^"SRC" | ^"Src" | ^"src" }
+StartsWith = @{ ^"STARTS-WITH" | ^"STARTS_WITH" | ^"Starts-With" | ^"StartsWith" | ^"starts-with" | ^"startsWith" | ^"starts_with" }
 State = @{ ^"STATE" | ^"State" | ^"state" }
+Strict = @{ ^"STRICT" | ^"Strict" | ^"strict" }
 String = @{ ^"STRING" | ^"String" | ^"string" }
+Strip = @{ ^"STRIP" | ^"Strip" | ^"strip" }
 Style = @{ ^"STYLE" | ^"Style" | ^"style" }
+Styles = @{ ^"STYLES" | ^"Styles" | ^"styles" }
 Submit = @{ ^"SUBMIT" | ^"Submit" | ^"submit" }
 SubmitLabel = @{ ^"SUBMIT-LABEL" | ^"SUBMIT_LABEL" | ^"Submit-Label" | ^"SubmitLabel" | ^"submit-label" | ^"submitLabel" | ^"submit_label" }
 Subtitle = @{ ^"SUBTITLE" | ^"Subtitle" | ^"subtitle" }
 Suffix = @{ ^"SUFFIX" | ^"Suffix" | ^"suffix" }
+SuperRefine = @{ ^"SUPER-REFINE" | ^"SUPER_REFINE" | ^"Super-Refine" | ^"SuperRefine" | ^"super-refine" | ^"superRefine" | ^"super_refine" }
+Supports = @{ ^"SUPPORTS" | ^"Supports" | ^"supports" }
 TabIndex = @{ ^"TAB-INDEX" | ^"TAB_INDEX" | ^"Tab-Index" | ^"TabIndex" | ^"tab-index" | ^"tabIndex" | ^"tab_index" }
 Template = @{ ^"TEMPLATE" | ^"Template" | ^"template" }
 Text = @{ ^"TEXT" | ^"Text" | ^"text" }
+Theme = @{ ^"THEME" | ^"Theme" | ^"theme" }
 Then = @{ ^"THEN" | ^"Then" | ^"then" }
+Time = @{ ^"TIME" | ^"Time" | ^"time" }
 Title = @{ ^"TITLE" | ^"Title" | ^"title" }
 Toast = @{ ^"TOAST" | ^"Toast" | ^"toast" }
+ToLowerCase = @{ ^"TO-LOWER-CASE" | ^"TO_LOWER_CASE" | ^"To-Lower-Case" | ^"ToLowerCase" | ^"to-lower-case" | ^"toLowerCase" | ^"to_lower_case" }
+ToUpperCase = @{ ^"TO-UPPER-CASE" | ^"TO_UPPER_CASE" | ^"To-Upper-Case" | ^"ToUpperCase" | ^"to-upper-case" | ^"toUpperCase" | ^"to_upper_case" }
+Transform = @{ ^"TRANSFORM" | ^"Transform" | ^"transform" }
 Trigger = @{ ^"TRIGGER" | ^"Trigger" | ^"trigger" }
+Trim = @{ ^"TRIM" | ^"Trim" | ^"trim" }
 Type = @{ ^"TYPE" | ^"Type" | ^"type" }
+Ulid = @{ ^"ULID" | ^"Ulid" | ^"ulid" }
+Unique = @{ ^"UNIQUE" | ^"Unique" | ^"unique" }
 Unmount = @{ ^"UNMOUNT" | ^"Unmount" | ^"unmount" }
+Url = @{ ^"URL" | ^"Url" | ^"url" }
+Use = @{ ^"USE" | ^"Use" | ^"use" }
+Uuid = @{ ^"UUID" | ^"Uuid" | ^"uuid" }
 Validation = @{ ^"VALIDATION" | ^"Validation" | ^"validation" }
 Value = @{ ^"VALUE" | ^"Value" | ^"value" }
 Variant = @{ ^"VARIANT" | ^"Variant" | ^"variant" }
+Variants = @{ ^"VARIANTS" | ^"Variants" | ^"variants" }
 Visible = @{ ^"VISIBLE" | ^"Visible" | ^"visible" }
 Void = @{ ^"VOID" | ^"Void" | ^"void" }
 Watch = @{ ^"WATCH" | ^"Watch" | ^"watch" }
@@ -168,16 +250,20 @@ Wrap = @{ ^"WRAP" | ^"Wrap" | ^"wrap" }
 
 // Category rules
 ActionNamespaces = @{ Api | Toast | Router | Console | Event }
+AdditionalKeywords = @{ Return | Const | Type | Styles }
 CommonAttributes = @{ Role | AriaLabel | AriaLabelledBy | AriaDescribedBy | AriaHidden | AriaDisabled | AriaExpanded | AriaPressed | AriaSelected | AriaChecked | AriaRequired | AriaInvalid | AriaErrorMessage | AriaPlaceholder | AriaLive | AriaAtomic | AriaBusy | AriaRelevant | AriaControls | AriaOwns | AriaFlowTo | AriaCurrent | TabIndex | Id | ClassName | Style | Visible | Placeholder | Disabled | Required | Label | Slot }
 CommonEvents = @{ Click | Focus | Blur | MouseEnter | MouseLeave }
 ComputedKeyword = @{ Computed }
+CssKeywords = @{ Styles | Scoped | Global | Media | Keyframes | Layer | Supports | Container | Scope | Apply | Theme | Screen | Variants }
 FragmentKeyword = @{ Fragment }
 Hook = @{ Hooks }
+ImportExportKeywords = @{ Import | Export | From | As | Default | Pub | Use | Mod }
 InterfaceKeyword = @{ Interface }
-Keywords = @{ Page | State | Template | If | Else | For | In | When | Fragment | Interface }
+Keywords = @{ Page | State | Template | If | Else | For | In | When | Fragment | Interface | Styles }
 LifecycleHooks = @{ Mount | Unmount | Watch }
 PrimitiveTypes = @{ String | Number | Bool | Object | Array | Null | Any | Void | Never }
 SlotKeyword = @{ Slot }
+ValidationKeywords = @{ Min | Max | Length | Email | Url | Uuid | Cuid | Cuid2 | Ulid | Regex | Pattern | Includes | StartsWith | EndsWith | Trim | ToLowerCase | ToUpperCase | Datetime | Date | Time | Duration | Ip | Cidr | Base64 | Emoji | Nanoid | Jwt | CreditCard | Iban | Bic | PostalCode | Gt | Gte | Lt | Lte | Int | Positive | Nonnegative | Negative | Nonpositive | MultipleOf | Finite | Safe | Nonempty | Unique | Strict | Passthrough | Strip | Catchall | Required | Optional | Nullable | Nullish | Default | Catch | Transform | Refine | SuperRefine | Pipe | Brand | Readonly | Message | ErrorMap }
 WatcherOptions = @{ Debounce | Immediate | Deep }
 
 // Strongly typed attribute values
@@ -218,7 +304,7 @@ ContainerAttributeDefinition = {
     ContainerAttributes ~ "=" ~ attribute_value
 }
 ContainerEventsDefinition = {
-    "@" ~ ContainerEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ ContainerEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <container ... />
@@ -244,7 +330,7 @@ GridAttributeDefinition = {
     GridAttributes ~ "=" ~ attribute_value
 }
 GridEventsDefinition = {
-    "@" ~ GridEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ GridEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <grid ... />
@@ -270,7 +356,7 @@ FlexAttributeDefinition = {
     FlexAttributes ~ "=" ~ attribute_value
 }
 FlexEventsDefinition = {
-    "@" ~ FlexEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ FlexEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <flex ... />
@@ -296,7 +382,7 @@ SpacerAttributeDefinition = {
     SpacerAttributes ~ "=" ~ attribute_value
 }
 SpacerEventsDefinition = {
-    "@" ~ SpacerEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ SpacerEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <spacer ... />
@@ -322,7 +408,7 @@ DividerAttributeDefinition = {
     DividerAttributes ~ "=" ~ attribute_value
 }
 DividerEventsDefinition = {
-    "@" ~ DividerEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ DividerEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <divider ... />
@@ -348,7 +434,7 @@ TextAttributeDefinition = {
     TextAttributes ~ "=" ~ attribute_value
 }
 TextEventsDefinition = {
-    "@" ~ TextEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ TextEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <text ... />
@@ -374,7 +460,7 @@ HeadingAttributeDefinition = {
     HeadingAttributes ~ "=" ~ attribute_value
 }
 HeadingEventsDefinition = {
-    "@" ~ HeadingEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ HeadingEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <heading ... />
@@ -400,7 +486,7 @@ FieldAttributeDefinition = {
     FieldAttributes ~ "=" ~ attribute_value
 }
 FieldEventsDefinition = {
-    "@" ~ FieldEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ FieldEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <field ... />
@@ -426,7 +512,7 @@ FormAttributeDefinition = {
     FormAttributes ~ "=" ~ attribute_value
 }
 FormEventsDefinition = {
-    "@" ~ FormEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ FormEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <form ... />
@@ -452,7 +538,7 @@ ButtonAttributeDefinition = {
     ButtonAttributes ~ "=" ~ attribute_value
 }
 ButtonEventsDefinition = {
-    "@" ~ ButtonEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ ButtonEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <button ... />
@@ -478,7 +564,7 @@ DropdownAttributeDefinition = {
     DropdownAttributes ~ "=" ~ attribute_value
 }
 DropdownEventsDefinition = {
-    "@" ~ DropdownEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ DropdownEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <dropdown ... />
@@ -504,7 +590,7 @@ CardAttributeDefinition = {
     CardAttributes ~ "=" ~ attribute_value
 }
 CardEventsDefinition = {
-    "@" ~ CardEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ CardEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <card ... />
@@ -530,7 +616,7 @@ TableAttributeDefinition = {
     TableAttributes ~ "=" ~ attribute_value
 }
 TableEventsDefinition = {
-    "@" ~ TableEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ TableEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <table ... />
@@ -556,7 +642,7 @@ ListAttributeDefinition = {
     ListAttributes ~ "=" ~ attribute_value
 }
 ListEventsDefinition = {
-    "@" ~ ListEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ ListEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <list ... />
@@ -582,7 +668,7 @@ BadgeAttributeDefinition = {
     BadgeAttributes ~ "=" ~ attribute_value
 }
 BadgeEventsDefinition = {
-    "@" ~ BadgeEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ BadgeEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <badge ... />
@@ -608,7 +694,7 @@ StatCardAttributeDefinition = {
     StatCardAttributes ~ "=" ~ attribute_value
 }
 StatCardEventsDefinition = {
-    "@" ~ StatCardEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ StatCardEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <statCard ... />
@@ -634,7 +720,7 @@ DataDisplayAttributeDefinition = {
     DataDisplayAttributes ~ "=" ~ attribute_value
 }
 DataDisplayEventsDefinition = {
-    "@" ~ DataDisplayEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ DataDisplayEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <dataDisplay ... />
@@ -660,7 +746,7 @@ LinkAttributeDefinition = {
     LinkAttributes ~ "=" ~ attribute_value
 }
 LinkEventsDefinition = {
-    "@" ~ LinkEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ LinkEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <link ... />
@@ -686,7 +772,7 @@ TabsAttributeDefinition = {
     TabsAttributes ~ "=" ~ attribute_value
 }
 TabsEventsDefinition = {
-    "@" ~ TabsEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ TabsEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <tabs ... />
@@ -712,7 +798,7 @@ AccordionAttributeDefinition = {
     AccordionAttributes ~ "=" ~ attribute_value
 }
 AccordionEventsDefinition = {
-    "@" ~ AccordionEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ AccordionEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <accordion ... />
@@ -738,7 +824,7 @@ BreadcrumbAttributeDefinition = {
     BreadcrumbAttributes ~ "=" ~ attribute_value
 }
 BreadcrumbEventsDefinition = {
-    "@" ~ BreadcrumbEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ BreadcrumbEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <breadcrumb ... />
@@ -764,7 +850,7 @@ AlertAttributeDefinition = {
     AlertAttributes ~ "=" ~ attribute_value
 }
 AlertEventsDefinition = {
-    "@" ~ AlertEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ AlertEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <alert ... />
@@ -790,7 +876,7 @@ ProgressAttributeDefinition = {
     ProgressAttributes ~ "=" ~ attribute_value
 }
 ProgressEventsDefinition = {
-    "@" ~ ProgressEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ ProgressEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <progress ... />
@@ -816,7 +902,7 @@ LoadingOverlayAttributeDefinition = {
     LoadingOverlayAttributes ~ "=" ~ attribute_value
 }
 LoadingOverlayEventsDefinition = {
-    "@" ~ LoadingOverlayEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ LoadingOverlayEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <loadingOverlay ... />
@@ -842,7 +928,7 @@ SkeletonAttributeDefinition = {
     SkeletonAttributes ~ "=" ~ attribute_value
 }
 SkeletonEventsDefinition = {
-    "@" ~ SkeletonEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ SkeletonEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <skeleton ... />
@@ -868,7 +954,7 @@ EmptyStateAttributeDefinition = {
     EmptyStateAttributes ~ "=" ~ attribute_value
 }
 EmptyStateEventsDefinition = {
-    "@" ~ EmptyStateEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ EmptyStateEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <emptyState ... />
@@ -894,7 +980,7 @@ ModalAttributeDefinition = {
     ModalAttributes ~ "=" ~ attribute_value
 }
 ModalEventsDefinition = {
-    "@" ~ ModalEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ ModalEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <modal ... />
@@ -920,7 +1006,7 @@ TooltipAttributeDefinition = {
     TooltipAttributes ~ "=" ~ attribute_value
 }
 TooltipEventsDefinition = {
-    "@" ~ TooltipEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ TooltipEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <tooltip ... />
@@ -946,7 +1032,7 @@ ImageAttributeDefinition = {
     ImageAttributes ~ "=" ~ attribute_value
 }
 ImageEventsDefinition = {
-    "@" ~ ImageEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ ImageEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <image ... />
@@ -972,7 +1058,7 @@ IconAttributeDefinition = {
     IconAttributes ~ "=" ~ attribute_value
 }
 IconEventsDefinition = {
-    "@" ~ IconEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ IconEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <icon ... />
@@ -998,7 +1084,7 @@ AvatarAttributeDefinition = {
     AvatarAttributes ~ "=" ~ attribute_value
 }
 AvatarEventsDefinition = {
-    "@" ~ AvatarEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ AvatarEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <avatar ... />
@@ -1024,7 +1110,7 @@ ChartAttributeDefinition = {
     ChartAttributes ~ "=" ~ attribute_value
 }
 ChartEventsDefinition = {
-    "@" ~ ChartEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ ChartEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <chart ... />
@@ -1050,7 +1136,7 @@ ConditionalAttributeDefinition = {
     ConditionalAttributes ~ "=" ~ attribute_value
 }
 ConditionalEventsDefinition = {
-    "@" ~ ConditionalEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ ConditionalEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <conditional ... />
@@ -1076,7 +1162,7 @@ LoopAttributeDefinition = {
     LoopAttributes ~ "=" ~ attribute_value
 }
 LoopEventsDefinition = {
-    "@" ~ LoopEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ LoopEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <loop ... />
@@ -1102,7 +1188,7 @@ SlotAttributeDefinition = {
     SlotAttributes ~ "=" ~ attribute_value
 }
 SlotEventsDefinition = {
-    "@" ~ SlotEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ SlotEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <slot ... />
@@ -1128,7 +1214,7 @@ FragmentAttributeDefinition = {
     FragmentAttributes ~ "=" ~ attribute_value
 }
 FragmentEventsDefinition = {
-    "@" ~ FragmentEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ FragmentEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <fragment ... />
@@ -1154,7 +1240,7 @@ CustomAttributeDefinition = {
     CustomAttributes ~ "=" ~ attribute_value
 }
 CustomEventsDefinition = {
-    "@" ~ CustomEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ CustomEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <custom ... />
@@ -1180,7 +1266,7 @@ SectionAttributeDefinition = {
     SectionAttributes ~ "=" ~ attribute_value
 }
 SectionEventsDefinition = {
-    "@" ~ SectionEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ SectionEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <section ... />
@@ -1206,7 +1292,7 @@ PageHeaderAttributeDefinition = {
     PageHeaderAttributes ~ "=" ~ attribute_value
 }
 PageHeaderEventsDefinition = {
-    "@" ~ PageHeaderEvents ~ "=>" ~ (action_with_handlers | action_list)
+    "@" ~ PageHeaderEvents ~ "=>" ~ action_body
 }
 
 // Self-closing variant: <pageHeader ... />
@@ -1234,11 +1320,17 @@ OpeningComponents = { ContainerOpening | GridOpening | FlexOpening | SpacerOpeni
 // ============================================================================
 // FILE STRUCTURE
 // ============================================================================
-// Top-level elements include blocks, fragments, and interfaces
-file = { SOI ~ WHITESPACE* ~ top_level_element* ~ WHITESPACE* ~ EOI }
+// Top-level elements include imports, blocks, fragments, interfaces, and styles
+file = { SOI ~ WHITESPACE* ~ import_section? ~ top_level_element* ~ WHITESPACE* ~ EOI }
+
+// Import section must come first (like TypeScript/Rust)
+import_section = {
+    import_statement+
+}
 
 top_level_element = {
-    page_block | state_block | hooks_block | template_block | fragment_definition | interface_definition
+    export_statement | page_block | state_block | hooks_block | template_block | 
+    fragment_definition | interface_definition | styles_block
 }
 
 // Top-level blocks
@@ -1248,15 +1340,107 @@ hooks_block = { Hook ~ "{" ~ hook_entry* ~ "}" }
 template_block = { Template ~ "{" ~ (component | control_flow | fragment_usage | line_comment)* ~ "}" }
 
 // ============================================================================
+// IMPORT/EXPORT SYSTEM
+// ============================================================================
+// Inspired by TypeScript and Rust, supporting modular code organization.
+//
+// Import syntax:
+//   import { UserCard, PostCard } from "./fragments/cards.orbis"
+//   import UserCard from "./fragments/user-card.orbis"
+//   import * as Cards from "./fragments/cards.orbis"
+//   import { type User, type Config } from "./types.orbis"
+//   use super::components::Button          // Rust-style path
+//   use crate::common::*                   // Glob import
+//
+// Export syntax:
+//   export fragment UserCard(user: User) { ... }
+//   export interface User { ... }
+//   export default fragment MainLayout { ... }
+//   pub fragment SharedCard { ... }         // Rust-style pub
+// ============================================================================
+
+// Import statements (TypeScript-style)
+import_statement = {
+    ts_import | rust_use
+}
+
+// TypeScript-style import: import { X, Y } from "path"
+ts_import = {
+    Import ~ (ts_import_clause | ts_import_default | ts_import_namespace) ~ From ~ import_path
+}
+
+// Named imports: { X, Y, Z as Alias }
+ts_import_clause = {
+    "{" ~ ts_import_specifier ~ ("," ~ ts_import_specifier)* ~ ","? ~ "}"
+}
+
+ts_import_specifier = {
+    (Type)? ~ identifier ~ (As ~ identifier)?
+}
+
+// Default import: import X from "path"
+ts_import_default = {
+    identifier
+}
+
+// Namespace import: import * as X from "path"
+ts_import_namespace = {
+    "*" ~ As ~ identifier
+}
+
+// Rust-style use: use path::to::Item
+rust_use = {
+    Use ~ rust_path ~ ("as" ~ identifier)?
+}
+
+rust_path = {
+    rust_path_segment ~ ("::" ~ rust_path_segment)*
+}
+
+rust_path_segment = @{
+    "crate" | "super" | "self" | "*" | identifier
+}
+
+// Import path (quoted string)
+import_path = {
+    quoted_string
+}
+
+// Export statements
+export_statement = {
+    ts_export | rust_pub
+}
+
+// TypeScript-style export
+ts_export = {
+    Export ~ (Default)? ~ exportable_item
+}
+
+// Rust-style pub (public visibility)
+rust_pub = {
+    Pub ~ exportable_item
+}
+
+// Items that can be exported
+exportable_item = {
+    fragment_definition | interface_definition | const_declaration
+}
+
+// Constant declaration (for exported values)
+const_declaration = {
+    Const ~ identifier ~ (":" ~ type_annotation)? ~ "=" ~ state_value
+}
+
+// ============================================================================
 // PAGE BLOCK
 // ============================================================================
 page_property = { page_key ~ ":" ~ literal_value }
 page_key = @{ ^"id" | ^"title" | ^"description" | ^"route" | ^"icon" }
 
 // ============================================================================
-// STATE BLOCK
+// STATE BLOCK WITH VALIDATION
 // ============================================================================
-// State declarations support both regular and computed properties.
+// State declarations support regular, computed, and validated properties.
 //
 // Regular state:
 //   count: number = 0
@@ -1266,16 +1450,29 @@ page_key = @{ ^"id" | ^"title" | ^"description" | ^"route" | ^"icon" }
 //   @computed doubled => state.count * 2
 //   fullName => state.firstName + " " + state.lastName
 //
-// The @computed prefix is OPTIONAL - computed properties are detected by
-// using "=>" instead of "=" for assignment.
+// Validated state (Zod v4-like validation):
+//   email: string = "" @email @min(1) @message("Email required")
+//   age: number = 0 @int @min(18) @max(120)
+//   password: string @min(8) @regex(/[A-Z]/) @message("Must contain uppercase")
+//
+// Validation is Zod v4-compatible with all keywords optional and case-insensitive.
 // ============================================================================
 
-// State declaration: either computed (with =>) or regular (with =)
+// State declaration: either computed (with =>) or regular (with =, optional validation)
 state_declaration = {
-    computed_state_declaration | regular_state_declaration
+    computed_state_declaration | validated_state_declaration | regular_state_declaration
 }
 
-// Regular state: identifier with optional ? marker, type, and value
+// Validated state: adds @validators after the value
+// Examples:
+//   email: string = "" @email @min(1)
+//   age: number @int @gte(18) @lte(120) @message("Age must be 18-120")
+//   username: string @min(3) @max(20) @regex(/^[a-z]+$/) @trim
+validated_state_declaration = {
+    identifier ~ "?"? ~ (":" ~ type_annotation)? ~ ("=" ~ state_value)? ~ validation_chain
+}
+
+// Regular state: identifier with optional ? marker, type, and value (no validation)
 // Examples:
 //   count: number = 0
 //   user?: User = null       (optional property shorthand)
@@ -1290,6 +1487,118 @@ regular_state_declaration = {
 //   fullName => state.firstName + " " + state.lastName
 computed_state_declaration = {
     ("@" ~ ComputedKeyword)? ~ identifier ~ (":" ~ type_annotation)? ~ "=>" ~ expression
+}
+
+// ============================================================================
+// VALIDATION SYSTEM (Zod v4-compatible)
+// ============================================================================
+// All validators use @prefix, are optional, and case-insensitive.
+// Validators can be chained after state declaration.
+//
+// String validators:
+//   @min(1) @max(100) @length(10)
+//   @email @url @uuid @cuid @cuid2 @ulid @nanoid
+//   @regex(/pattern/) @pattern(/pattern/)
+//   @includes("substring") @startsWith("prefix") @endsWith("suffix")
+//   @trim @toLowerCase @toUpperCase
+//   @datetime @date @time @duration @ip @cidr @base64
+//   @emoji @jwt @creditCard @iban @bic @postalCode("US")
+//
+// Number validators:
+//   @gt(0) @gte(0) @lt(100) @lte(100) @min(0) @max(100)
+//   @int @positive @nonnegative @negative @nonpositive
+//   @multipleOf(5) @finite @safe
+//
+// Array validators:
+//   @min(1) @max(10) @length(5) @nonempty @unique
+//
+// Object validators:
+//   @strict @passthrough @strip @catchall(string)
+//
+// Common validators:
+//   @required @optional @nullable @nullish
+//   @default("value") @catch("fallback")
+//   @transform(val => val.toUpperCase())
+//   @refine(val => val.length > 0, "Cannot be empty")
+//   @readonly @brand("UserId")
+//
+// Custom messages:
+//   @message("Custom error message")
+//   @errorMap({ required: "This field is required" })
+// ============================================================================
+
+validation_chain = {
+    validator+
+}
+
+validator = {
+    "@" ~ validator_name ~ validator_args?
+}
+
+// All Zod v4 validator names (case-insensitive via keyword rules)
+validator_name = @{
+    // String validators
+    ^"min" | ^"max" | ^"length" | ^"email" | ^"url" | ^"uuid" | ^"cuid" | ^"cuid2" |
+    ^"ulid" | ^"nanoid" | ^"regex" | ^"pattern" | ^"includes" | ^"startsWith" |
+    ^"endsWith" | ^"trim" | ^"toLowerCase" | ^"toUpperCase" | ^"datetime" |
+    ^"date" | ^"time" | ^"duration" | ^"ip" | ^"cidr" | ^"base64" | ^"emoji" |
+    ^"jwt" | ^"creditCard" | ^"iban" | ^"bic" | ^"postalCode" |
+    // Number validators
+    ^"gt" | ^"gte" | ^"lt" | ^"lte" | ^"int" | ^"positive" | ^"nonnegative" |
+    ^"negative" | ^"nonpositive" | ^"multipleOf" | ^"finite" | ^"safe" |
+    // Array validators
+    ^"nonempty" | ^"unique" |
+    // Object validators
+    ^"strict" | ^"passthrough" | ^"strip" | ^"catchall" |
+    // Common validators
+    ^"required" | ^"optional" | ^"nullable" | ^"nullish" | ^"default" | ^"catch" |
+    ^"transform" | ^"refine" | ^"superRefine" | ^"pipe" | ^"brand" | ^"readonly" |
+    // Messages
+    ^"message" | ^"errorMap"
+}
+
+// Validator arguments (optional, depends on validator)
+// @min(5), @regex(/pattern/), @message("error"), @transform(v => v.trim())
+validator_args = {
+    "(" ~ validator_arg_list? ~ ")"
+}
+
+validator_arg_list = {
+    validator_arg ~ ("," ~ validator_arg)*
+}
+
+validator_arg = {
+    regex_literal | arrow_function | object_literal | literal_value | identifier
+}
+
+// Regex literal: /pattern/flags
+regex_literal = @{
+    "/" ~ regex_body ~ "/" ~ regex_flags?
+}
+
+regex_body = @{
+    (!"/" ~ ("\\" ~ ANY | ANY))*
+}
+
+regex_flags = @{
+    ("g" | "i" | "m" | "s" | "u" | "y")+
+}
+
+// Arrow function for transforms/refines: v => v.trim(), (val) => val > 0
+arrow_function = {
+    arrow_params ~ "=>" ~ arrow_body
+}
+
+arrow_params = {
+    identifier | "(" ~ (identifier ~ ("," ~ identifier)*)? ~ ")"
+}
+
+arrow_body = {
+    expression | "{" ~ arrow_statement* ~ "}"
+}
+
+arrow_statement = {
+    Return ~ expression
 }
 
 // ============================================================================
@@ -1381,21 +1690,243 @@ interface_member = {
 }
 
 // ============================================================================
+// STYLES BLOCK (CSS-in-DSL)
+// ============================================================================
+// Scoped CSS with interpolation, Tailwind support, and CSS features.
+//
+// Basic styles:
+//   styles {
+//       .card {
+//           padding: 1rem;
+//           border-radius: 8px;
+//       }
+//   }
+//
+// Tailwind utilities via @apply:
+//   styles {
+//       .card {
+//           @apply flex items-center justify-between p-4 rounded-lg shadow-md;
+//           @apply hover:shadow-lg transition-shadow;
+//       }
+//   }
+//
+// CSS interpolation with state:
+//   styles {
+//       .dynamic {
+//           color: {state.theme.primaryColor};
+//           font-size: {state.fontSize}px;
+//       }
+//   }
+//
+// Scoped/global modifiers:
+//   styles scoped {  // Default, classes are scoped
+//       .card { ... }
+//   }
+//   styles global {  // Global styles, not scoped
+//       .card { ... }
+//   }
+//
+// Tailwind screen variants:
+//   styles {
+//       @screen md {
+//           .card { padding: 2rem; }
+//       }
+//   }
+//
+// CSS at-rules supported:
+//   @media, @keyframes, @layer, @supports, @container, @scope
+//
+// Theme and variants:
+//   styles {
+//       @theme {
+//           --primary: #3b82f6;
+//           --secondary: #64748b;
+//       }
+//       @variants dark {
+//           .card { background: #1e293b; }
+//       }
+//   }
+// ============================================================================
+
+styles_block = {
+    Styles ~ style_modifier? ~ "{" ~ style_content* ~ "}"
+}
+
+style_modifier = @{
+    ^"scoped" | ^"global"
+}
+
+style_content = {
+    style_at_rule | style_rule | line_comment
+}
+
+// CSS at-rules: @media, @keyframes, @layer, @supports, @container, @scope
+style_at_rule = {
+    at_media | at_keyframes | at_layer | at_supports | at_container | 
+    at_scope | at_apply | at_screen | at_theme | at_variants
+}
+
+// @media (min-width: 768px) { ... }
+at_media = {
+    "@" ~ ^"media" ~ media_query ~ "{" ~ style_content* ~ "}"
+}
+
+media_query = @{
+    (!"{"  ~ ANY)+
+}
+
+// @keyframes animationName { ... }
+at_keyframes = {
+    "@" ~ ^"keyframes" ~ identifier ~ "{" ~ keyframe_block* ~ "}"
+}
+
+keyframe_block = {
+    keyframe_selector ~ "{" ~ style_declaration* ~ "}"
+}
+
+keyframe_selector = @{
+    (^"from" | ^"to" | percentage)
+}
+
+percentage = @{
+    ASCII_DIGIT+ ~ "%"
+}
+
+// @layer base, components, utilities { ... }
+at_layer = {
+    "@" ~ ^"layer" ~ layer_names ~ "{" ~ style_content* ~ "}"
+}
+
+layer_names = {
+    identifier ~ ("," ~ identifier)*
+}
+
+// @supports (display: grid) { ... }
+at_supports = {
+    "@" ~ ^"supports" ~ supports_condition ~ "{" ~ style_content* ~ "}"
+}
+
+supports_condition = @{
+    (!"{"  ~ ANY)+
+}
+
+// @container (min-width: 400px) { ... }
+at_container = {
+    "@" ~ ^"container" ~ container_query ~ "{" ~ style_content* ~ "}"
+}
+
+container_query = @{
+    (!"{"  ~ ANY)+
+}
+
+// @scope (.card) { ... }
+at_scope = {
+    "@" ~ ^"scope" ~ scope_selector ~ "{" ~ style_content* ~ "}"
+}
+
+scope_selector = @{
+    (!"{"  ~ ANY)+
+}
+
+// @apply flex items-center justify-between; (Tailwind)
+at_apply = {
+    "@" ~ ^"apply" ~ tailwind_classes ~ ";"
+}
+
+tailwind_classes = @{
+    (!(";" | "}") ~ ANY)+
+}
+
+// @screen md { ... } (Tailwind screen variants)
+at_screen = {
+    "@" ~ ^"screen" ~ screen_name ~ "{" ~ style_content* ~ "}"
+}
+
+screen_name = @{
+    ^"sm" | ^"md" | ^"lg" | ^"xl" | ^"2xl" | identifier
+}
+
+// @theme { --primary: #3b82f6; }
+at_theme = {
+    "@" ~ ^"theme" ~ "{" ~ theme_variable* ~ "}"
+}
+
+theme_variable = {
+    css_variable ~ ":" ~ css_value ~ ";"
+}
+
+css_variable = @{
+    "--" ~ (ASCII_ALPHANUMERIC | "-" | "_")+
+}
+
+// @variants dark, hover { ... }
+at_variants = {
+    "@" ~ ^"variants" ~ variant_names ~ "{" ~ style_content* ~ "}"
+}
+
+variant_names = {
+    identifier ~ ("," ~ identifier)*
+}
+
+// Style rule: .class, #id, element, [attr] { ... }
+style_rule = {
+    style_selector_list ~ "{" ~ style_declaration* ~ "}"
+}
+
+style_selector_list = {
+    style_selector ~ ("," ~ style_selector)*
+}
+
+// CSS selector (simplified but covers common cases)
+style_selector = @{
+    (style_selector_part)+
+}
+
+style_selector_part = @{
+    // Class, ID, element, attribute, pseudo-class, pseudo-element, combinator
+    ("." | "#" | "[" | ":" | "::" | "&" | ">" | "+" | "~" | " ")? ~
+    (ASCII_ALPHANUMERIC | "-" | "_" | "(" | ")" | "=" | "\"" | "'" | "]" | "*")+
+}
+
+// Style declaration: property: value;
+style_declaration = {
+    at_apply | css_property ~ ":" ~ css_value ~ ";"
+}
+
+css_property = @{
+    (ASCII_ALPHA | "-") ~ (ASCII_ALPHANUMERIC | "-")*
+}
+
+// CSS value with interpolation support: {state.color}, calc(), etc.
+css_value = {
+    (css_value_part | css_interpolation)+
+}
+
+css_value_part = @{
+    (!(";" | "}" | "{") ~ ANY)+
+}
+
+// Interpolation in CSS: {state.theme.color}
+css_interpolation = {
+    "{" ~ (member_access | identifier) ~ "}"
+}
+
+// ============================================================================
 // HOOKS BLOCK (Lifecycle + Watchers)
 // ============================================================================
 // The hooks block contains lifecycle hooks and state watchers:
 //
 // hooks {
-//     @mount => [console.log("Mounted")]
-//     @unmount => [cleanup.all()]
+//     @mount => { console.log("Mounted") }
+//     @unmount => { cleanup.all() }
 //     
-//     @watch(state.count) => [
+//     @watch(state.count) => {
 //         console.log("Count changed")
-//     ]
+//     }
 //     
-//     @watch(state.query, debounce: 300) => [
+//     @watch(state.query, debounce: 300) => {
 //         api.call("search", query: state.query)
-//     ]
+//     }
 // }
 // ============================================================================
 
@@ -1409,25 +1940,26 @@ lifecycle_hook = {
 
 lifecycle_hook_name = { Mount | Unmount }
 
-// Watcher hook: @watch(state.path) or @watch(state.path, options) => [actions]
+// Watcher hook: @watch(state.path) or @watch(state.path, options) => { actions }
 watcher_hook = {
     "@" ~ Watch ~ "(" ~ watch_target ~ ("," ~ watch_target)* ~ ("," ~ watcher_options)? ~ ")" ~ "=>" ~ hook_action_body
 }
 
 // Hook action body can be either:
-// - A simple action list: [action1, action2]
-// - An action list containing actions with handlers inside
+// - A simple action block: { action1, action2 }
+// - An action with nested handlers
 hook_action_body = {
-    hook_action_list | action_with_handlers
+    action_body | action_with_handlers
 }
 
-// Action list that can contain actions with handlers
-hook_action_list = {
-    "[" ~ (hook_action_item ~ (","? ~ hook_action_item)*)? ~ "]"
+// Action block that can contain actions with handlers
+// Uses {} syntax for consistency with other languages
+action_body = {
+    "{" ~ (action_item ~ (","? ~ action_item)*)? ~ "}"
 }
 
 // An action in a hook can be simple or have handlers
-hook_action_item = {
+action_item = {
     action_with_handlers | action
 }
 
@@ -1587,9 +2119,9 @@ fragment_property_binding = {
     identifier ~ "=" ~ attribute_value
 }
 
-// Event binding: @onClick={handler} or @onClick => [actions]
+// Event binding: @onClick={handler} or @onClick => { actions }
 fragment_event_binding = {
-    "@" ~ identifier ~ ("=" ~ expression_value | "=>" ~ (action_with_handlers | action_list))
+    "@" ~ identifier ~ ("=" ~ expression_value | "=>" ~ (action_with_handlers | action_body))
 }
 
 // Slot content: components with optional slot attribute for named slots
@@ -1636,18 +2168,19 @@ expression_value = {
     "{" ~ expression ~ "}"
 }
 
-// Action list for simple cases: [action1, action2]
-action_list = {
-    "[" ~ (action ~ (","? ~ action)*)? ~ "]"
+// Action block using {} syntax: { action1, action2 }
+// Also supports legacy [] syntax for backward compatibility
+action_block = {
+    "{" ~ (action ~ (","? ~ action)*)? ~ "}"
 }
 
-// Action with response handlers: api.call(...) { success => [...], error => [...] }
+// Action with response handlers: api.call(...) { success => { ... }, error => { ... } }
 action_with_handlers = {
     method_call ~ "{" ~ response_handler+ ~ "}"
 }
 
 response_handler = {
-    handler_type ~ "=>" ~ action_list
+    handler_type ~ "=>" ~ action_block
 }
 
 handler_type = @{ ^"success" | ^"error" | ^"finally" }

@@ -51,6 +51,9 @@
 /// - `FragmentKeyword`: Fragment definition keyword
 /// - `SlotKeyword`: Slot attribute for named slot content projection
 /// - `InterfaceKeyword`: Interface definition keyword
+/// - `ImportExportKeywords`: Import/export for modular code organization
+/// - `ValidationKeywords`: Zod-like validation decorators
+/// - `CssKeywords`: CSS-in-DSL support
 /// - `CommonAttributes`: ARIA and HTML attributes shared by all components
 /// - `CommonEvents`: Events shared by multiple components
 /// - `Hook`: The hooks block keyword
@@ -58,7 +61,12 @@ pub fn generate_page_grammar_keywords() -> HashMap<&'static str, Vec<&'static st
     hashmap! {
         // Core DSL keywords for structure
         "Keywords" => vec![
-            "page", "state", "template", "if", "else", "for", "in", "when", "fragment", "interface",
+            "page", "state", "template", "if", "else", "for", "in", "when", "fragment", "interface", "styles",
+        ],
+
+        // Import/Export keywords for modular code organization
+        "ImportExportKeywords" => vec![
+            "import", "export", "from", "as", "default", "pub", "use", "mod",
         ],
 
         // Lifecycle and reactive hook names (used with @prefix)
@@ -87,6 +95,34 @@ pub fn generate_page_grammar_keywords() -> HashMap<&'static str, Vec<&'static st
         // Watcher options
         "WatcherOptions" => vec!["debounce", "immediate", "deep"],
 
+        // Validation keywords (Zod v4-like)
+        // All are optional and case-insensitive
+        "ValidationKeywords" => vec![
+            // String validators
+            "min", "max", "length", "email", "url", "uuid", "cuid", "cuid2", "ulid",
+            "regex", "pattern", "includes", "startsWith", "endsWith", "trim", "toLowerCase",
+            "toUpperCase", "datetime", "date", "time", "duration", "ip", "cidr", "base64",
+            "emoji", "nanoid", "jwt", "creditCard", "iban", "bic", "postalCode",
+            // Number validators
+            "gt", "gte", "lt", "lte", "int", "positive", "nonnegative", "negative",
+            "nonpositive", "multipleOf", "finite", "safe",
+            // Array validators
+            "nonempty", "unique",
+            // Object validators
+            "strict", "passthrough", "strip", "catchall",
+            // Common validators
+            "required", "optional", "nullable", "nullish", "default", "catch",
+            "transform", "refine", "superRefine", "pipe", "brand", "readonly",
+            // Custom messages
+            "message", "errorMap",
+        ],
+
+        // CSS-in-DSL keywords
+        "CssKeywords" => vec![
+            "styles", "scoped", "global", "media", "keyframes", "layer", "supports",
+            "container", "scope", "apply", "theme", "screen", "variants",
+        ],
+
         // Common attributes shared by all components (ARIA + HTML)
         // Added "slot" for named slot content projection
         "CommonAttributes" => vec![
@@ -109,6 +145,14 @@ pub fn generate_page_grammar_keywords() -> HashMap<&'static str, Vec<&'static st
 
         // The hooks block keyword
         "Hook" => vec!["hooks"],
+
+        // Additional required keywords
+        "AdditionalKeywords" => vec![
+            // Control flow
+            "return", "const", "type",
+            // CSS styles
+            "styles",
+        ],
     }
 }
 
@@ -275,7 +319,7 @@ pub fn generate_component_rules(component: &ComponentDef, generated_content: &mu
     {comp_name}Attributes ~ \"=\" ~ attribute_value
 }}
 {comp_name}EventsDefinition = {{
-    \"@\" ~ {comp_name}Events ~ \"=>\" ~ (action_with_handlers | action_list)
+    \"@\" ~ {comp_name}Events ~ \"=>\" ~ action_body
 }}
 
 // Self-closing variant: <{lower} ... />

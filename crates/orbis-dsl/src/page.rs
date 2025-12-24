@@ -68,12 +68,12 @@ mod tests {
     #[test]
     fn parse_hooks_block() {
         let input = r#"hooks {
-                @mount => [
+                @mount => {
                     console.log("mounted")
-                ]
-                @unmount => [
+                }
+                @unmount => {
                     console.log("cleanup")
-                ]
+                }
             }"#;
 
         let result = parse_file(input);
@@ -103,9 +103,9 @@ mod tests {
     #[test]
     fn parse_component_with_event() {
         let input = r#"template {
-                <Button label="Click" @click => [
+                <Button label="Click" @click => {
                     state.count = state.count + 1
-                ] />
+                } />
             }"#;
 
         let result = parse_file(input);
@@ -168,9 +168,9 @@ state {
 }
 
 hooks {
-    @mount => [
+    @mount => {
         console.log("Page mounted")
-    ]
+    }
 }
 
 template {
@@ -190,10 +190,10 @@ template {
             
             <Button 
                 label="Click Me!"
-                @click => [
+                @click => {
                     state.count = state.count + 1,
                     toast.show("Clicked!", level: success)
-                ]
+                }
             />
         </Card>
     </Container>
@@ -214,12 +214,12 @@ template {
                 <Button 
                     label="Load Data"
                     @click => api.call("endpoint") {
-                        success => [
+                        success => {
                             state.data = $response.body
-                        ]
-                        error => [
+                        }
+                        error => {
                             toast.show("Error", level: error)
-                        ]
+                        }
                     }
                 />
             }"#;
@@ -261,11 +261,11 @@ template {
     #[test]
     fn parse_watcher_basic() {
         let input = r#"hooks {
-            @mount => [console.log("mounted")]
+            @mount => { console.log("mounted") }
             
-            @watch(state.count) => [
+            @watch(state.count) => {
                 console.log("Count changed")
-            ]
+            }
         }"#;
 
         let result = parse_file(input);
@@ -279,9 +279,9 @@ template {
     #[test]
     fn parse_watcher_with_options() {
         let input = r#"hooks {
-            @watch(state.searchQuery, debounce: 300) => [
+            @watch(state.searchQuery, debounce: 300) => {
                 api.call("search", query: state.searchQuery)
-            ]
+            }
         }"#;
 
         let result = parse_file(input);
@@ -295,9 +295,9 @@ template {
     #[test]
     fn parse_watcher_multiple_targets() {
         let input = r#"hooks {
-            @watch(state.firstName, state.lastName) => [
+            @watch(state.firstName, state.lastName) => {
                 console.log("Name changed")
-            ]
+            }
         }"#;
 
         let result = parse_file(input);
@@ -311,9 +311,9 @@ template {
     #[test]
     fn parse_watcher_with_immediate() {
         let input = r#"hooks {
-            @watch(state.theme, immediate: true) => [
+            @watch(state.theme, immediate: true) => {
                 console.log("Theme applied")
-            ]
+            }
         }"#;
 
         let result = parse_file(input);
@@ -544,6 +544,237 @@ template {
     }
 
     // =========================================================================
+    // IMPORT/EXPORT TESTS
+    // =========================================================================
+
+    #[test]
+    fn parse_typescript_style_imports() {
+        let input = r#"import { UserCard, PostCard } from "./fragments/cards.orbis"
+import { type User, type Config } from "./types.orbis"
+import * as Utils from "./utils.orbis"
+import DefaultLayout from "./layouts/default.orbis"
+
+page {
+    id: "test"
+    title: "Test"
+}"#;
+
+        let result = parse_file(input);
+        assert!(
+            result.is_ok(),
+            "Failed to parse TypeScript-style imports: {:?}",
+            result.err()
+        );
+    }
+
+    #[test]
+    fn parse_rust_style_use() {
+        let input = r#"use super::components::Button
+use crate::common::*
+
+page {
+    id: "test"
+    title: "Test"
+}"#;
+
+        let result = parse_file(input);
+        assert!(
+            result.is_ok(),
+            "Failed to parse Rust-style use statements: {:?}",
+            result.err()
+        );
+    }
+
+    #[test]
+    fn parse_export_fragment() {
+        let input = r#"export fragment UserCard(user: User) {
+    <Card>
+        <Text content={user.name} />
+    </Card>
+}
+
+pub interface Config {
+    theme: string
+}"#;
+
+        let result = parse_file(input);
+        assert!(
+            result.is_ok(),
+            "Failed to parse exported fragment: {:?}",
+            result.err()
+        );
+    }
+
+    // =========================================================================
+    // VALIDATION TESTS
+    // =========================================================================
+
+    #[test]
+    fn parse_state_with_validation() {
+        let input = r#"state {
+            email: string = "" @email @min(1) @message("Email is required")
+            age: number = 0 @int @min(18) @max(120)
+            username: string @min(3) @max(20) @trim
+        }"#;
+
+        let result = parse_file(input);
+        assert!(
+            result.is_ok(),
+            "Failed to parse state with validation: {:?}",
+            result.err()
+        );
+    }
+
+    #[test]
+    fn parse_validation_with_regex() {
+        let input = r#"state {
+            password: string @min(8) @regex(/[A-Z]/) @regex(/[0-9]/)
+            phone: string @pattern(/^\+?[0-9]{10,}$/) @message("Invalid phone")
+        }"#;
+
+        let result = parse_file(input);
+        assert!(
+            result.is_ok(),
+            "Failed to parse validation with regex: {:?}",
+            result.err()
+        );
+    }
+
+    #[test]
+    fn parse_validation_with_transforms() {
+        let input = r#"state {
+            name: string @trim @toLowerCase
+            email: string @toLowerCase @trim
+        }"#;
+
+        let result = parse_file(input);
+        assert!(
+            result.is_ok(),
+            "Failed to parse validation with transforms: {:?}",
+            result.err()
+        );
+    }
+
+    // =========================================================================
+    // CSS-IN-DSL TESTS
+    // =========================================================================
+
+    #[test]
+    fn parse_basic_styles_block() {
+        let input = r#"styles {
+    .card {
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .button {
+        background-color: blue;
+        color: white;
+    }
+}"#;
+
+        let result = parse_file(input);
+        assert!(
+            result.is_ok(),
+            "Failed to parse basic styles block: {:?}",
+            result.err()
+        );
+    }
+
+    #[test]
+    fn parse_styles_with_tailwind_apply() {
+        let input = r#"styles {
+    .card {
+        @apply flex items-center justify-between p-4 rounded-lg shadow-md;
+        @apply hover:shadow-lg transition-shadow;
+    }
+}"#;
+
+        let result = parse_file(input);
+        assert!(
+            result.is_ok(),
+            "Failed to parse styles with Tailwind @apply: {:?}",
+            result.err()
+        );
+    }
+
+    #[test]
+    fn parse_styles_with_media_queries() {
+        let input = r#"styles {
+    .container {
+        width: 100%;
+    }
+    
+    @media (min-width: 768px) {
+        .container {
+            max-width: 768px;
+        }
+    }
+    
+    @screen md {
+        .card {
+            padding: 2rem;
+        }
+    }
+}"#;
+
+        let result = parse_file(input);
+        assert!(
+            result.is_ok(),
+            "Failed to parse styles with media queries: {:?}",
+            result.err()
+        );
+    }
+
+    #[test]
+    fn parse_styles_with_keyframes() {
+        let input = r#"styles {
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+    
+    .animated {
+        animation: fadeIn 0.3s ease-in-out;
+    }
+}"#;
+
+        let result = parse_file(input);
+        assert!(
+            result.is_ok(),
+            "Failed to parse styles with keyframes: {:?}",
+            result.err()
+        );
+    }
+
+    #[test]
+    fn parse_scoped_and_global_styles() {
+        let input = r#"styles scoped {
+    .card {
+        padding: 1rem;
+    }
+}
+
+styles global {
+    body {
+        margin: 0;
+    }
+}"#;
+
+        let result = parse_file(input);
+        assert!(
+            result.is_ok(),
+            "Failed to parse scoped and global styles: {:?}",
+            result.err()
+        );
+    }
+
+    // =========================================================================
     // COMPREHENSIVE INTEGRATION TEST
     // =========================================================================
 
@@ -588,18 +819,18 @@ state {
 }
 
 hooks {
-    @mount => [
+    @mount => {
         api.call("users") {
-            success => [state.users = $response.data]
-            error => [toast.show("Failed to load", level: error)]
+            success => { state.users = $response.data }
+            error => { toast.show("Failed to load", level: error) }
         }
-    ]
+    }
     
-    @watch(state.searchQuery, debounce: 300) => [
+    @watch(state.searchQuery, debounce: 300) => {
         api.call("search", query: state.searchQuery) {
-            success => [state.users = $response.data]
+            success => { state.users = $response.data }
         }
-    ]
+    }
 }
 
 template {
@@ -617,7 +848,7 @@ template {
             <LoadingOverlay text="Loading..." />
         } else {
             for user in state.filteredUsers {
-                <UserCard user={user} @onClick => [state.selectedUser = user]>
+                <UserCard user={user} @onClick => { state.selectedUser = user }>
                     <Container slot="actions">
                         <Button label="Edit" variant="outline" />
                     </Container>
