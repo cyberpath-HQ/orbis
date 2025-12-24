@@ -57,7 +57,7 @@ When = @{ ^"WHEN" | ^"When" | ^"when" }
 
 // Category rules
 ActionNamespaces = @{ Api | Toast | Router | Console | Event }
-CommonAttributes = @{ Role | AriaLabel | AriaLabelledBy | AriaDescribedBy | AriaHidden | AriaDisabled | AriaExpanded | AriaPressed | AriaSelected | AriaChecked | AriaRequired | AriaInvalid | AriaErrorMessage | AriaPlaceholder | AriaLive | AriaAtomic | AriaBusy | AriaRelevant | AriaControls | AriaOwns | AriaFlowTo | AriaCurrent | TabIndex | Id | ClassName | Style | Visible }
+CommonAttributes = @{ Role | AriaLabel | AriaLabelledBy | AriaDescribedBy | AriaHidden | AriaDisabled | AriaExpanded | AriaPressed | AriaSelected | AriaChecked | AriaRequired | AriaInvalid | AriaErrorMessage | AriaPlaceholder | AriaLive | AriaAtomic | AriaBusy | AriaRelevant | AriaControls | AriaOwns | AriaFlowTo | AriaCurrent | TabIndex | Id | ClassName | Style | Visible | Placeholder | Disabled | Required | Label }
 CommonEvents = @{ Click | Focus | Blur | MouseEnter | MouseLeave }
 Hook = @{ Hooks }
 Keywords = @{ Page | State | Template | If | Else | For | In | When }
@@ -65,7 +65,7 @@ LifecycleHooks = @{ Mount | Unmount }
 PrimitiveTypes = @{ String | Number | Bool | Object | Array }
 
 // Component-specific rules
-ContainerAttributes = @{ CommonAttributes }
+ContainerAttributes = @{ Id | ClassName | Visible | CommonAttributes }
 ContainerEvents = @{ Click | MouseEnter | MouseLeave }
 ContainerComponentNames = @{ "CONTAINER" | "Container" | "container" }
 
@@ -73,20 +73,649 @@ ContainerAttributeDefinition = {
     ContainerAttributes ~ "=" ~ attribute_value
 }
 ContainerEventsDefinition = {
-    "@" ~ ContainerEvents ~ "=>" ~ action_list
+    "@" ~ ContainerEvents ~ "=>" ~ (action_with_handlers | action_list)
 }
-ContainerComponent = { 
+
+// Self-closing variant: <container ... />
+ContainerSelfClosing = { 
     "<" ~ 
     ContainerComponentNames ~ 
     (ContainerAttributeDefinition | ContainerEventsDefinition)* ~ 
-    ">" 
+    "/>"
 }
 
+// Opening tag variant: <container ... >
+ContainerOpening = { 
+    "<" ~ 
+    ContainerComponentNames ~ 
+    (ContainerAttributeDefinition | ContainerEventsDefinition)* ~ 
+    ">"
+}
+GridAttributes = @{ Id | ClassName | Cols | Gap | Visible | CommonAttributes }
+GridEvents = @{ Click }
+GridComponentNames = @{ "GRID" | "Grid" | "grid" }
+
+GridAttributeDefinition = {
+    GridAttributes ~ "=" ~ attribute_value
+}
+GridEventsDefinition = {
+    "@" ~ GridEvents ~ "=>" ~ (action_with_handlers | action_list)
+}
+
+// Self-closing variant: <grid ... />
+GridSelfClosing = { 
+    "<" ~ 
+    GridComponentNames ~ 
+    (GridAttributeDefinition | GridEventsDefinition)* ~ 
+    "/>"
+}
+
+// Opening tag variant: <grid ... >
+GridOpening = { 
+    "<" ~ 
+    GridComponentNames ~ 
+    (GridAttributeDefinition | GridEventsDefinition)* ~ 
+    ">"
+}
+FlexAttributes = @{ Id | ClassName | Direction | Justify | Align | Gap | Visible | CommonAttributes }
+FlexEvents = @{ Click }
+FlexComponentNames = @{ "FLEX" | "Flex" | "flex" }
+
+FlexAttributeDefinition = {
+    FlexAttributes ~ "=" ~ attribute_value
+}
+FlexEventsDefinition = {
+    "@" ~ FlexEvents ~ "=>" ~ (action_with_handlers | action_list)
+}
+
+// Self-closing variant: <flex ... />
+FlexSelfClosing = { 
+    "<" ~ 
+    FlexComponentNames ~ 
+    (FlexAttributeDefinition | FlexEventsDefinition)* ~ 
+    "/>"
+}
+
+// Opening tag variant: <flex ... >
+FlexOpening = { 
+    "<" ~ 
+    FlexComponentNames ~ 
+    (FlexAttributeDefinition | FlexEventsDefinition)* ~ 
+    ">"
+}
+TextAttributes = @{ Id | ClassName | Content | Visible | CommonAttributes }
+TextEvents = @{ Click }
+TextComponentNames = @{ "TEXT" | "Text" | "text" }
+
+TextAttributeDefinition = {
+    TextAttributes ~ "=" ~ attribute_value
+}
+TextEventsDefinition = {
+    "@" ~ TextEvents ~ "=>" ~ (action_with_handlers | action_list)
+}
+
+// Self-closing variant: <text ... />
+TextSelfClosing = { 
+    "<" ~ 
+    TextComponentNames ~ 
+    (TextAttributeDefinition | TextEventsDefinition)* ~ 
+    "/>"
+}
+
+// Opening tag variant: <text ... >
+TextOpening = { 
+    "<" ~ 
+    TextComponentNames ~ 
+    (TextAttributeDefinition | TextEventsDefinition)* ~ 
+    ">"
+}
+HeadingAttributes = @{ Id | ClassName | Content | Level | Visible | CommonAttributes }
+HeadingEvents = @{ Click }
+HeadingComponentNames = @{ "HEADING" | "Heading" | "heading" }
+
+HeadingAttributeDefinition = {
+    HeadingAttributes ~ "=" ~ attribute_value
+}
+HeadingEventsDefinition = {
+    "@" ~ HeadingEvents ~ "=>" ~ (action_with_handlers | action_list)
+}
+
+// Self-closing variant: <heading ... />
+HeadingSelfClosing = { 
+    "<" ~ 
+    HeadingComponentNames ~ 
+    (HeadingAttributeDefinition | HeadingEventsDefinition)* ~ 
+    "/>"
+}
+
+// Opening tag variant: <heading ... >
+HeadingOpening = { 
+    "<" ~ 
+    HeadingComponentNames ~ 
+    (HeadingAttributeDefinition | HeadingEventsDefinition)* ~ 
+    ">"
+}
+FieldAttributes = @{ Id | ClassName | Type | FieldName | Placeholder | Bind | Value | DefaultValue | Disabled | Required | Visible | CommonAttributes }
+FieldEvents = @{ Input | Change | Focus | Blur | KeyDown | KeyUp }
+FieldComponentNames = @{ "FIELD" | "Field" | "field" }
+
+FieldAttributeDefinition = {
+    FieldAttributes ~ "=" ~ attribute_value
+}
+FieldEventsDefinition = {
+    "@" ~ FieldEvents ~ "=>" ~ (action_with_handlers | action_list)
+}
+
+// Self-closing variant: <field ... />
+FieldSelfClosing = { 
+    "<" ~ 
+    FieldComponentNames ~ 
+    (FieldAttributeDefinition | FieldEventsDefinition)* ~ 
+    "/>"
+}
+
+// Opening tag variant: <field ... >
+FieldOpening = { 
+    "<" ~ 
+    FieldComponentNames ~ 
+    (FieldAttributeDefinition | FieldEventsDefinition)* ~ 
+    ">"
+}
+ButtonAttributes = @{ Id | ClassName | Label | Type | Disabled | Visible | CommonAttributes }
+ButtonEvents = @{ Click | MouseEnter | MouseLeave }
+ButtonComponentNames = @{ "BUTTON" | "Button" | "button" }
+
+ButtonAttributeDefinition = {
+    ButtonAttributes ~ "=" ~ attribute_value
+}
+ButtonEventsDefinition = {
+    "@" ~ ButtonEvents ~ "=>" ~ (action_with_handlers | action_list)
+}
+
+// Self-closing variant: <button ... />
+ButtonSelfClosing = { 
+    "<" ~ 
+    ButtonComponentNames ~ 
+    (ButtonAttributeDefinition | ButtonEventsDefinition)* ~ 
+    "/>"
+}
+
+// Opening tag variant: <button ... >
+ButtonOpening = { 
+    "<" ~ 
+    ButtonComponentNames ~ 
+    (ButtonAttributeDefinition | ButtonEventsDefinition)* ~ 
+    ">"
+}
+FormAttributes = @{ Id | ClassName | Visible | CommonAttributes }
+FormEvents = @{ Submit }
+FormComponentNames = @{ "FORM" | "Form" | "form" }
+
+FormAttributeDefinition = {
+    FormAttributes ~ "=" ~ attribute_value
+}
+FormEventsDefinition = {
+    "@" ~ FormEvents ~ "=>" ~ (action_with_handlers | action_list)
+}
+
+// Self-closing variant: <form ... />
+FormSelfClosing = { 
+    "<" ~ 
+    FormComponentNames ~ 
+    (FormAttributeDefinition | FormEventsDefinition)* ~ 
+    "/>"
+}
+
+// Opening tag variant: <form ... >
+FormOpening = { 
+    "<" ~ 
+    FormComponentNames ~ 
+    (FormAttributeDefinition | FormEventsDefinition)* ~ 
+    ">"
+}
+CardAttributes = @{ Id | ClassName | Title | Visible | CommonAttributes }
+CardEvents = @{ Click }
+CardComponentNames = @{ "CARD" | "Card" | "card" }
+
+CardAttributeDefinition = {
+    CardAttributes ~ "=" ~ attribute_value
+}
+CardEventsDefinition = {
+    "@" ~ CardEvents ~ "=>" ~ (action_with_handlers | action_list)
+}
+
+// Self-closing variant: <card ... />
+CardSelfClosing = { 
+    "<" ~ 
+    CardComponentNames ~ 
+    (CardAttributeDefinition | CardEventsDefinition)* ~ 
+    "/>"
+}
+
+// Opening tag variant: <card ... >
+CardOpening = { 
+    "<" ~ 
+    CardComponentNames ~ 
+    (CardAttributeDefinition | CardEventsDefinition)* ~ 
+    ">"
+}
+TableAttributes = @{ Id | ClassName | Data | Columns | Visible | CommonAttributes }
+TableEvents = @{ RowClick | CellClick }
+TableComponentNames = @{ "TABLE" | "Table" | "table" }
+
+TableAttributeDefinition = {
+    TableAttributes ~ "=" ~ attribute_value
+}
+TableEventsDefinition = {
+    "@" ~ TableEvents ~ "=>" ~ (action_with_handlers | action_list)
+}
+
+// Self-closing variant: <table ... />
+TableSelfClosing = { 
+    "<" ~ 
+    TableComponentNames ~ 
+    (TableAttributeDefinition | TableEventsDefinition)* ~ 
+    "/>"
+}
+
+// Opening tag variant: <table ... >
+TableOpening = { 
+    "<" ~ 
+    TableComponentNames ~ 
+    (TableAttributeDefinition | TableEventsDefinition)* ~ 
+    ">"
+}
+ListAttributes = @{ Id | ClassName | Items | Visible | CommonAttributes }
+ListEvents = @{ ItemClick }
+ListComponentNames = @{ "LIST" | "List" | "list" }
+
+ListAttributeDefinition = {
+    ListAttributes ~ "=" ~ attribute_value
+}
+ListEventsDefinition = {
+    "@" ~ ListEvents ~ "=>" ~ (action_with_handlers | action_list)
+}
+
+// Self-closing variant: <list ... />
+ListSelfClosing = { 
+    "<" ~ 
+    ListComponentNames ~ 
+    (ListAttributeDefinition | ListEventsDefinition)* ~ 
+    "/>"
+}
+
+// Opening tag variant: <list ... >
+ListOpening = { 
+    "<" ~ 
+    ListComponentNames ~ 
+    (ListAttributeDefinition | ListEventsDefinition)* ~ 
+    ">"
+}
+BadgeAttributes = @{ Id | ClassName | Content | Variant | Visible | CommonAttributes }
+BadgeEvents = @{ Click }
+BadgeComponentNames = @{ "BADGE" | "Badge" | "badge" }
+
+BadgeAttributeDefinition = {
+    BadgeAttributes ~ "=" ~ attribute_value
+}
+BadgeEventsDefinition = {
+    "@" ~ BadgeEvents ~ "=>" ~ (action_with_handlers | action_list)
+}
+
+// Self-closing variant: <badge ... />
+BadgeSelfClosing = { 
+    "<" ~ 
+    BadgeComponentNames ~ 
+    (BadgeAttributeDefinition | BadgeEventsDefinition)* ~ 
+    "/>"
+}
+
+// Opening tag variant: <badge ... >
+BadgeOpening = { 
+    "<" ~ 
+    BadgeComponentNames ~ 
+    (BadgeAttributeDefinition | BadgeEventsDefinition)* ~ 
+    ">"
+}
+StatCardAttributes = @{ Id | ClassName | Title | Value | Change | Icon | Trend | Visible | CommonAttributes }
+StatCardEvents = @{ Click }
+StatCardComponentNames = @{ "STAT-CARD" | "STAT_CARD" | "Stat-Card" | "StatCard" | "stat-card" | "statCard" | "stat_card" }
+
+StatCardAttributeDefinition = {
+    StatCardAttributes ~ "=" ~ attribute_value
+}
+StatCardEventsDefinition = {
+    "@" ~ StatCardEvents ~ "=>" ~ (action_with_handlers | action_list)
+}
+
+// Self-closing variant: <statCard ... />
+StatCardSelfClosing = { 
+    "<" ~ 
+    StatCardComponentNames ~ 
+    (StatCardAttributeDefinition | StatCardEventsDefinition)* ~ 
+    "/>"
+}
+
+// Opening tag variant: <statCard ... >
+StatCardOpening = { 
+    "<" ~ 
+    StatCardComponentNames ~ 
+    (StatCardAttributeDefinition | StatCardEventsDefinition)* ~ 
+    ">"
+}
+AlertAttributes = @{ Id | ClassName | Type | Title | Message | Visible | CommonAttributes }
+AlertEvents = @{ Close }
+AlertComponentNames = @{ "ALERT" | "Alert" | "alert" }
+
+AlertAttributeDefinition = {
+    AlertAttributes ~ "=" ~ attribute_value
+}
+AlertEventsDefinition = {
+    "@" ~ AlertEvents ~ "=>" ~ (action_with_handlers | action_list)
+}
+
+// Self-closing variant: <alert ... />
+AlertSelfClosing = { 
+    "<" ~ 
+    AlertComponentNames ~ 
+    (AlertAttributeDefinition | AlertEventsDefinition)* ~ 
+    "/>"
+}
+
+// Opening tag variant: <alert ... >
+AlertOpening = { 
+    "<" ~ 
+    AlertComponentNames ~ 
+    (AlertAttributeDefinition | AlertEventsDefinition)* ~ 
+    ">"
+}
+LinkAttributes = @{ Id | ClassName | Href | Content | Visible | CommonAttributes }
+LinkEvents = @{ Click }
+LinkComponentNames = @{ "LINK" | "Link" | "link" }
+
+LinkAttributeDefinition = {
+    LinkAttributes ~ "=" ~ attribute_value
+}
+LinkEventsDefinition = {
+    "@" ~ LinkEvents ~ "=>" ~ (action_with_handlers | action_list)
+}
+
+// Self-closing variant: <link ... />
+LinkSelfClosing = { 
+    "<" ~ 
+    LinkComponentNames ~ 
+    (LinkAttributeDefinition | LinkEventsDefinition)* ~ 
+    "/>"
+}
+
+// Opening tag variant: <link ... >
+LinkOpening = { 
+    "<" ~ 
+    LinkComponentNames ~ 
+    (LinkAttributeDefinition | LinkEventsDefinition)* ~ 
+    ">"
+}
+DropdownAttributes = @{ Id | ClassName | Options | Value | Placeholder | Disabled | Visible | CommonAttributes }
+DropdownEvents = @{ Change }
+DropdownComponentNames = @{ "DROPDOWN" | "Dropdown" | "dropdown" }
+
+DropdownAttributeDefinition = {
+    DropdownAttributes ~ "=" ~ attribute_value
+}
+DropdownEventsDefinition = {
+    "@" ~ DropdownEvents ~ "=>" ~ (action_with_handlers | action_list)
+}
+
+// Self-closing variant: <dropdown ... />
+DropdownSelfClosing = { 
+    "<" ~ 
+    DropdownComponentNames ~ 
+    (DropdownAttributeDefinition | DropdownEventsDefinition)* ~ 
+    "/>"
+}
+
+// Opening tag variant: <dropdown ... >
+DropdownOpening = { 
+    "<" ~ 
+    DropdownComponentNames ~ 
+    (DropdownAttributeDefinition | DropdownEventsDefinition)* ~ 
+    ">"
+}
+ProgressAttributes = @{ Id | ClassName | Value | Max | Visible | CommonAttributes }
+ProgressEvents = @{ !"__never__" }
+ProgressComponentNames = @{ "PROGRESS" | "Progress" | "progress" }
+
+ProgressAttributeDefinition = {
+    ProgressAttributes ~ "=" ~ attribute_value
+}
+ProgressEventsDefinition = {
+    "@" ~ ProgressEvents ~ "=>" ~ (action_with_handlers | action_list)
+}
+
+// Self-closing variant: <progress ... />
+ProgressSelfClosing = { 
+    "<" ~ 
+    ProgressComponentNames ~ 
+    (ProgressAttributeDefinition | ProgressEventsDefinition)* ~ 
+    "/>"
+}
+
+// Opening tag variant: <progress ... >
+ProgressOpening = { 
+    "<" ~ 
+    ProgressComponentNames ~ 
+    (ProgressAttributeDefinition | ProgressEventsDefinition)* ~ 
+    ">"
+}
+LoadingOverlayAttributes = @{ Id | ClassName | Message | Visible | CommonAttributes }
+LoadingOverlayEvents = @{ !"__never__" }
+LoadingOverlayComponentNames = @{ "LOADING-OVERLAY" | "LOADING_OVERLAY" | "Loading-Overlay" | "LoadingOverlay" | "loading-overlay" | "loadingOverlay" | "loading_overlay" }
+
+LoadingOverlayAttributeDefinition = {
+    LoadingOverlayAttributes ~ "=" ~ attribute_value
+}
+LoadingOverlayEventsDefinition = {
+    "@" ~ LoadingOverlayEvents ~ "=>" ~ (action_with_handlers | action_list)
+}
+
+// Self-closing variant: <loadingOverlay ... />
+LoadingOverlaySelfClosing = { 
+    "<" ~ 
+    LoadingOverlayComponentNames ~ 
+    (LoadingOverlayAttributeDefinition | LoadingOverlayEventsDefinition)* ~ 
+    "/>"
+}
+
+// Opening tag variant: <loadingOverlay ... >
+LoadingOverlayOpening = { 
+    "<" ~ 
+    LoadingOverlayComponentNames ~ 
+    (LoadingOverlayAttributeDefinition | LoadingOverlayEventsDefinition)* ~ 
+    ">"
+}
+SkeletonAttributes = @{ Id | ClassName | Variant | Visible | CommonAttributes }
+SkeletonEvents = @{ !"__never__" }
+SkeletonComponentNames = @{ "SKELETON" | "Skeleton" | "skeleton" }
+
+SkeletonAttributeDefinition = {
+    SkeletonAttributes ~ "=" ~ attribute_value
+}
+SkeletonEventsDefinition = {
+    "@" ~ SkeletonEvents ~ "=>" ~ (action_with_handlers | action_list)
+}
+
+// Self-closing variant: <skeleton ... />
+SkeletonSelfClosing = { 
+    "<" ~ 
+    SkeletonComponentNames ~ 
+    (SkeletonAttributeDefinition | SkeletonEventsDefinition)* ~ 
+    "/>"
+}
+
+// Opening tag variant: <skeleton ... >
+SkeletonOpening = { 
+    "<" ~ 
+    SkeletonComponentNames ~ 
+    (SkeletonAttributeDefinition | SkeletonEventsDefinition)* ~ 
+    ">"
+}
+EmptyStateAttributes = @{ Id | ClassName | Icon | Title | Description | Visible | CommonAttributes }
+EmptyStateEvents = @{ !"__never__" }
+EmptyStateComponentNames = @{ "EMPTY-STATE" | "EMPTY_STATE" | "Empty-State" | "EmptyState" | "empty-state" | "emptyState" | "empty_state" }
+
+EmptyStateAttributeDefinition = {
+    EmptyStateAttributes ~ "=" ~ attribute_value
+}
+EmptyStateEventsDefinition = {
+    "@" ~ EmptyStateEvents ~ "=>" ~ (action_with_handlers | action_list)
+}
+
+// Self-closing variant: <emptyState ... />
+EmptyStateSelfClosing = { 
+    "<" ~ 
+    EmptyStateComponentNames ~ 
+    (EmptyStateAttributeDefinition | EmptyStateEventsDefinition)* ~ 
+    "/>"
+}
+
+// Opening tag variant: <emptyState ... >
+EmptyStateOpening = { 
+    "<" ~ 
+    EmptyStateComponentNames ~ 
+    (EmptyStateAttributeDefinition | EmptyStateEventsDefinition)* ~ 
+    ">"
+}
+IconAttributes = @{ Id | ClassName | IconName | Size | Visible | CommonAttributes }
+IconEvents = @{ Click }
+IconComponentNames = @{ "ICON" | "Icon" | "icon" }
+
+IconAttributeDefinition = {
+    IconAttributes ~ "=" ~ attribute_value
+}
+IconEventsDefinition = {
+    "@" ~ IconEvents ~ "=>" ~ (action_with_handlers | action_list)
+}
+
+// Self-closing variant: <icon ... />
+IconSelfClosing = { 
+    "<" ~ 
+    IconComponentNames ~ 
+    (IconAttributeDefinition | IconEventsDefinition)* ~ 
+    "/>"
+}
+
+// Opening tag variant: <icon ... >
+IconOpening = { 
+    "<" ~ 
+    IconComponentNames ~ 
+    (IconAttributeDefinition | IconEventsDefinition)* ~ 
+    ">"
+}
+ModalAttributes = @{ Id | ClassName | Title | Open | Visible | CommonAttributes }
+ModalEvents = @{ Close }
+ModalComponentNames = @{ "MODAL" | "Modal" | "modal" }
+
+ModalAttributeDefinition = {
+    ModalAttributes ~ "=" ~ attribute_value
+}
+ModalEventsDefinition = {
+    "@" ~ ModalEvents ~ "=>" ~ (action_with_handlers | action_list)
+}
+
+// Self-closing variant: <modal ... />
+ModalSelfClosing = { 
+    "<" ~ 
+    ModalComponentNames ~ 
+    (ModalAttributeDefinition | ModalEventsDefinition)* ~ 
+    "/>"
+}
+
+// Opening tag variant: <modal ... >
+ModalOpening = { 
+    "<" ~ 
+    ModalComponentNames ~ 
+    (ModalAttributeDefinition | ModalEventsDefinition)* ~ 
+    ">"
+}
+TooltipAttributes = @{ Id | ClassName | Content | Position | Visible | CommonAttributes }
+TooltipEvents = @{ !"__never__" }
+TooltipComponentNames = @{ "TOOLTIP" | "Tooltip" | "tooltip" }
+
+TooltipAttributeDefinition = {
+    TooltipAttributes ~ "=" ~ attribute_value
+}
+TooltipEventsDefinition = {
+    "@" ~ TooltipEvents ~ "=>" ~ (action_with_handlers | action_list)
+}
+
+// Self-closing variant: <tooltip ... />
+TooltipSelfClosing = { 
+    "<" ~ 
+    TooltipComponentNames ~ 
+    (TooltipAttributeDefinition | TooltipEventsDefinition)* ~ 
+    "/>"
+}
+
+// Opening tag variant: <tooltip ... >
+TooltipOpening = { 
+    "<" ~ 
+    TooltipComponentNames ~ 
+    (TooltipAttributeDefinition | TooltipEventsDefinition)* ~ 
+    ">"
+}
+
+// Component types (union of all whitelisted components)
+SelfClosingComponents = { ContainerSelfClosing | GridSelfClosing | FlexSelfClosing | TextSelfClosing | HeadingSelfClosing | FieldSelfClosing | ButtonSelfClosing | FormSelfClosing | CardSelfClosing | TableSelfClosing | ListSelfClosing | BadgeSelfClosing | StatCardSelfClosing | AlertSelfClosing | LinkSelfClosing | DropdownSelfClosing | ProgressSelfClosing | LoadingOverlaySelfClosing | SkeletonSelfClosing | EmptyStateSelfClosing | IconSelfClosing | ModalSelfClosing | TooltipSelfClosing }
+OpeningComponents = { ContainerOpening | GridOpening | FlexOpening | TextOpening | HeadingOpening | FieldOpening | ButtonOpening | FormOpening | CardOpening | TableOpening | ListOpening | BadgeOpening | StatCardOpening | AlertOpening | LinkOpening | DropdownOpening | ProgressOpening | LoadingOverlayOpening | SkeletonOpening | EmptyStateOpening | IconOpening | ModalOpening | TooltipOpening }
+
 // Event rules
+Input = @{ ^"INPUT" | ^"Input" | ^"input" }
+Change = @{ ^"CHANGE" | ^"Change" | ^"change" }
+KeyDown = @{ ^"KEY-DOWN" | ^"KEY_DOWN" | ^"Key-Down" | ^"KeyDown" | ^"key-down" | ^"keyDown" | ^"key_down" }
+KeyUp = @{ ^"KEY-UP" | ^"KEY_UP" | ^"Key-Up" | ^"KeyUp" | ^"key-up" | ^"keyUp" | ^"key_up" }
+Submit = @{ ^"SUBMIT" | ^"Submit" | ^"submit" }
+RowClick = @{ ^"ROW-CLICK" | ^"ROW_CLICK" | ^"Row-Click" | ^"RowClick" | ^"row-click" | ^"rowClick" | ^"row_click" }
+CellClick = @{ ^"CELL-CLICK" | ^"CELL_CLICK" | ^"Cell-Click" | ^"CellClick" | ^"cell-click" | ^"cellClick" | ^"cell_click" }
+ItemClick = @{ ^"ITEM-CLICK" | ^"ITEM_CLICK" | ^"Item-Click" | ^"ItemClick" | ^"item-click" | ^"itemClick" | ^"item_click" }
+Close = @{ ^"CLOSE" | ^"Close" | ^"close" }
 
 // Attribute rules
+Cols = @{ ^"COLS" | ^"Cols" | ^"cols" }
+Gap = @{ ^"GAP" | ^"Gap" | ^"gap" }
+Direction = @{ ^"DIRECTION" | ^"Direction" | ^"direction" }
+Justify = @{ ^"JUSTIFY" | ^"Justify" | ^"justify" }
+Align = @{ ^"ALIGN" | ^"Align" | ^"align" }
+Content = @{ ^"CONTENT" | ^"Content" | ^"content" }
+Level = @{ ^"LEVEL" | ^"Level" | ^"level" }
+Type = @{ ^"TYPE" | ^"Type" | ^"type" }
+FieldName = @{ ^"FIELD-NAME" | ^"FIELD_NAME" | ^"Field-Name" | ^"FieldName" | ^"field-name" | ^"fieldName" | ^"field_name" }
+Bind = @{ ^"BIND" | ^"Bind" | ^"bind" }
+Value = @{ ^"VALUE" | ^"Value" | ^"value" }
+DefaultValue = @{ ^"DEFAULT-VALUE" | ^"DEFAULT_VALUE" | ^"Default-Value" | ^"DefaultValue" | ^"default-value" | ^"defaultValue" | ^"default_value" }
+Title = @{ ^"TITLE" | ^"Title" | ^"title" }
+Data = @{ ^"DATA" | ^"Data" | ^"data" }
+Columns = @{ ^"COLUMNS" | ^"Columns" | ^"columns" }
+Items = @{ ^"ITEMS" | ^"Items" | ^"items" }
+Variant = @{ ^"VARIANT" | ^"Variant" | ^"variant" }
+Icon = @{ ^"ICON" | ^"Icon" | ^"icon" }
+Trend = @{ ^"TREND" | ^"Trend" | ^"trend" }
+Href = @{ ^"HREF" | ^"Href" | ^"href" }
+Options = @{ ^"OPTIONS" | ^"Options" | ^"options" }
+Max = @{ ^"MAX" | ^"Max" | ^"max" }
+Description = @{ ^"DESCRIPTION" | ^"Description" | ^"description" }
+IconName = @{ ^"ICON-NAME" | ^"ICON_NAME" | ^"Icon-Name" | ^"IconName" | ^"icon-name" | ^"iconName" | ^"icon_name" }
+Size = @{ ^"SIZE" | ^"Size" | ^"size" }
+Open = @{ ^"OPEN" | ^"Open" | ^"open" }
+Position = @{ ^"POSITION" | ^"Position" | ^"position" }
 
 // @builder-insertion-end
+
+// Additional HTML attribute rules (manually added due to build script issue)
+Placeholder = @{ ^"PLACEHOLDER" | ^"Placeholder" | ^"placeholder" }
+Disabled = @{ ^"DISABLED" | ^"Disabled" | ^"disabled" }
+Required = @{ ^"REQUIRED" | ^"Required" | ^"required" }
+Label = @{ ^"LABEL" | ^"Label" | ^"label" }
+Message = @{ ^"MESSAGE" | ^"Message" | ^"message" }
 
 // ============================================================================
 // FILE STRUCTURE
@@ -152,57 +781,40 @@ hook_name = { Mount | Unmount }
 // ============================================================================
 // TEMPLATE BLOCK
 // ============================================================================
+// Components use generated component-specific rules with whitelisted attributes/events
 component = {
     self_closing_component | component_with_children
 }
 
-// Self-closing: <Component attr="value" />
+// Self-closing: <Component ... />
 self_closing_component = {
-    "<" ~ component_name ~ component_attrs* ~ "/>"
+    SelfClosingComponents
 }
 
-// With children: <Component>...</Component>
+// With children: <Component ...>...</Component>
 component_with_children = {
-    "<" ~ component_name ~ component_attrs* ~ ">" ~
-    (component | control_flow | text_content | line_comment)* ~
-    "</" ~ component_name ~ ">"
+    OpeningComponents ~ component_children ~ component_closing_tag
 }
 
-// Attributes and events combined (can mix)
-component_attrs = {
-    component_event | component_attribute
+component_children = {
+    (component | control_flow | text_content | line_comment)*
 }
 
-// Component names (PascalCase convention)
-component_name = @{
+component_closing_tag = {
+    "</" ~ closing_tag_name ~ ">"
+}
+
+closing_tag_name = @{
     ASCII_ALPHA_UPPER ~ (ASCII_ALPHANUMERIC)*
 }
 
-// Attributes (no @ prefix): attr="value" or attr={expression}
-component_attribute = {
-    attribute_name ~ "=" ~ attribute_value
-}
-
-attribute_name = @{
-    (ASCII_ALPHA | "_") ~ (ASCII_ALPHANUMERIC | "_" | "-")*
-}
-
+// Helper rules for generated component definitions
 attribute_value = {
     quoted_string | expression_value
 }
 
 expression_value = {
     "{" ~ expression ~ "}"
-}
-
-// Event handlers (@ prefix required): @click => [actions]
-// Events can have inline action list OR action with response handlers
-component_event = {
-    "@" ~ event_name ~ "=>" ~ (action_with_handlers | action_list)
-}
-
-event_name = @{ 
-    (ASCII_ALPHA | "_") ~ (ASCII_ALPHANUMERIC | "_")*
 }
 
 // Action list for simple cases: [action1, action2]

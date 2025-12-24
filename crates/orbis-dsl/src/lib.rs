@@ -133,9 +133,9 @@ pub mod page {
         fn parse_if_block() {
             let input = r#"template {
                 if state.loading {
-                    <Spinner />
+                    <LoadingOverlay />
                 } else {
-                    <Content />
+                    <Text content="Content loaded" />
                 }
             }"#;
             
@@ -184,7 +184,7 @@ template {
             <Text content="Clicks: {state.count}" />
             
             if state.loading {
-                <Spinner />
+                <LoadingOverlay />
             }
             
             for item in state.items {
@@ -231,12 +231,12 @@ template {
         fn parse_when_block() {
             let input = r#"template {
                 when state.status {
-                    "loading" => <Spinner />
+                    "loading" => <LoadingOverlay />
                     "error" => {
-                        <ErrorMessage />
+                        <Alert type="error" message="An error occurred" />
                     }
                     else => {
-                        <Content />
+                        <Text content="Content loaded" />
                     }
                 }
             }"#;
