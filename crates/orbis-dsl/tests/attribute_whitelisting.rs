@@ -12,14 +12,23 @@ fn test_attribute_whitelisting_valid() {
 }
 
 #[test]
-fn test_attribute_whitelisting_invalid() {
+fn test_builtin_component_with_invalid_attribute() {
     // Container with INVALID attribute (message is only for Alert)
+    // NOTE: With fragment support, the parser now accepts any attributes and
+    // falls back to fragment syntax. Semantic validation should catch invalid
+    // attributes on built-in components.
+    //
+    // This is by design: fragments allow any attributes, and distinguishing
+    // between built-in components and fragments at parse time would require
+    // complex negative lookaheads. Semantic analysis is the right place to
+    // validate built-in component attributes.
     let input = r#"template {
-        <Container message="This should fail" />
+        <Container message="This would fail at semantic validation" />
     }"#;
     
     let result = parse_file(input);
-    assert!(result.is_err(), "Should reject Container with 'message' attribute (not whitelisted)");
+    // Parser accepts it (as potential fragment usage), semantic validator would reject
+    assert!(result.is_ok(), "Parser accepts any attributes, semantic validation catches errors");
 }
 
 #[test]
@@ -45,14 +54,30 @@ fn test_component_specific_events() {
 }
 
 #[test]
-fn test_invalid_component_name() {
-    // NonExistentComponent is not in the whitelist
+fn test_fragment_usage_as_component() {
+    // User-defined fragments can be used like components
     let input = r#"template {
-        <NonExistentComponent id="test" />
+        <UserCard user={state.user} />
     }"#;
     
     let result = parse_file(input);
-    assert!(result.is_err(), "Should reject non-whitelisted component name");
+    assert!(result.is_ok(), "Should parse user-defined fragment usage");
+}
+
+#[test]
+fn test_fragment_with_slot_content() {
+    // Fragments can have slot content with named slots (Astro-like)
+    let input = r#"template {
+        <Modal title="Confirm">
+            <Text content="Main content" />
+            <Container slot="footer">
+                <Button label="OK" />
+            </Container>
+        </Modal>
+    }"#;
+    
+    let result = parse_file(input);
+    assert!(result.is_ok(), "Should parse fragment with slot content");
 }
 
 #[test]
