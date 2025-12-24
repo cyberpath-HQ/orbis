@@ -17,7 +17,7 @@ mod tests {
     #[test]
     fn grammar_is_included() {
         assert!(_GRAMMAR.contains("@builder-insertion-start"));
-        assert!(_GRAMMAR.contains("meta_fields"));
+        assert!(_GRAMMAR.contains("MetadataKeywords"));
     }
 
     #[test]
