@@ -14,12 +14,12 @@ state {
 }
 
 hooks {
-    @mount => [
+    @mount => {
         console.log("Page mounted")
-    ]
-    @unmount => [
+    }
+    @unmount => {
         console.log("Page unmounting")
-    ]
+    }
 }
 
 template {
@@ -38,7 +38,7 @@ template {
         </Flex>
         
         // Form with field inputs
-        <Form id="demo-form" @submit => [console.log("submitted")]>
+        <Form id="demo-form" @submit => { console.log("submitted") }>
             <Field 
                 type="text" 
                 fieldName="username" 
@@ -61,10 +61,10 @@ template {
             label="Click Me"
             type="button"
             variant="primary"
-            @click => [
+            @click => {
                 state.count = state.count + 1,
                 toast.show("Clicked!", level: success)
-            ]
+            }
         />
         
         // Alert component with type attribute
