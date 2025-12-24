@@ -1,0 +1,101 @@
+// Example demonstrating component attribute and event whitelisting
+// All attributes and events used here are whitelisted for their respective components
+
+page {
+    id: "whitelisting-demo"
+    title: "Component Whitelisting Example"
+    route: "/demo"
+}
+
+state {
+    message: string = "Hello World"
+    count = 0
+    loading = false
+}
+
+hooks {
+    @mount => [
+        console.log("Page mounted")
+    ]
+    @unmount => [
+        console.log("Page unmounting")
+    ]
+}
+
+template {
+    // Container with whitelisted attributes
+    <Container id="main" className="container" visible={true}>
+        
+        // Flex layout with specific attributes
+        <Flex direction="row" justify="center" align="center" gap="4">
+            
+            // Heading with level attribute
+            <Heading level="1" content="Whitelisting Demo" />
+            
+            // Text with content
+            <Text content={state.message} className="text-lg" />
+            
+        </Flex>
+        
+        // Form with field inputs
+        <Form id="demo-form" @submit => [console.log("submitted")]>
+            <Field 
+                type="text" 
+                fieldName="username" 
+                label="Username"
+                placeholder="Enter username"
+                required={true}
+                disabled={false}
+            />
+            
+            <Field 
+                type="email" 
+                fieldName="email" 
+                label="Email"
+                placeholder="user@example.com"
+            />
+        </Form>
+        
+        // Button with click event
+        <Button 
+            label="Click Me"
+            type="button"
+            variant="primary"
+            @click => [
+                state.count = state.count + 1,
+                toast.show("Clicked!", level: success)
+            ]
+        />
+        
+        // Alert component with type attribute
+        <Alert type="info" message="This is an info alert" />
+        <Alert type="warning" message="This is a warning" />
+        <Alert type="error" message="This is an error" />
+        <Alert type="success" message="Operation successful!" />
+        
+        // Badge with variant
+        <Badge content="New" variant="success" />
+        
+        // Icon with name and size
+        <Icon name="check" size="medium" />
+        
+        // Loading state
+        if state.loading {
+            <LoadingOverlay visible={true} />
+            <Skeleton variant="text" />
+            <Skeleton variant="circular" />
+            <Skeleton variant="rectangular" />
+        }
+        
+        // Modal example
+        <Modal id="demo-modal" title="Demo Modal" open={false}>
+            <Text content="Modal content here" />
+        </Modal>
+        
+        // Tooltip
+        <Tooltip content="Helpful tip" position="top">
+            <Text content="Hover me" />
+        </Tooltip>
+        
+    </Container>
+}
