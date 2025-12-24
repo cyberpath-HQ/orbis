@@ -66,20 +66,6 @@ mod tests {
     }
 
     #[test]
-    fn parse_standalone_hook() {
-        let input = r#"@mount => [
-                console.log("mounted")
-            ]"#;
-
-        let result = parse_file(input);
-        assert!(
-            result.is_ok(),
-            "Failed to parse standalone hook: {:?}",
-            result.err()
-        );
-    }
-
-    #[test]
     fn parse_hooks_block() {
         let input = r#"hooks {
                 @mount => [
@@ -181,9 +167,11 @@ state {
     items: Item[] = []
 }
 
-@mount => [
-    console.log("Page mounted")
-]
+hooks {
+    @mount => [
+        console.log("Page mounted")
+    ]
+}
 
 template {
     <Container className="flex items-center justify-center">
