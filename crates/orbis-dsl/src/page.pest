@@ -36,10 +36,13 @@ Array = @{ ^"ARRAY" | ^"Array" | ^"array" }
 As = @{ ^"AS" | ^"As" | ^"as" }
 BackLink = @{ ^"BACK-LINK" | ^"BACK_LINK" | ^"Back-Link" | ^"BackLink" | ^"back-link" | ^"backLink" | ^"back_link" }
 Base64 = @{ ^"BASE64" | ^"Base64" | ^"base64" }
+Base64url = @{ ^"BASE64URL" | ^"Base64url" | ^"base64url" }
 Bic = @{ ^"BIC" | ^"Bic" | ^"bic" }
+Bigint = @{ ^"BIGINT" | ^"Bigint" | ^"bigint" }
 BindTo = @{ ^"BIND-TO" | ^"BIND_TO" | ^"Bind-To" | ^"BindTo" | ^"bind-to" | ^"bindTo" | ^"bind_to" }
 Blur = @{ ^"BLUR" | ^"Blur" | ^"blur" }
 Bool = @{ ^"BOOL" | ^"Bool" | ^"bool" }
+Boolean = @{ ^"BOOLEAN" | ^"Boolean" | ^"boolean" }
 Brand = @{ ^"BRAND" | ^"Brand" | ^"brand" }
 Breadcrumb = @{ ^"BREADCRUMB" | ^"Breadcrumb" | ^"breadcrumb" }
 CancelLabel = @{ ^"CANCEL-LABEL" | ^"CANCEL_LABEL" | ^"Cancel-Label" | ^"CancelLabel" | ^"cancel-label" | ^"cancelLabel" | ^"cancel_label" }
@@ -50,10 +53,16 @@ ChangeType = @{ ^"CHANGE-TYPE" | ^"CHANGE_TYPE" | ^"Change-Type" | ^"ChangeType"
 ChartType = @{ ^"CHART-TYPE" | ^"CHART_TYPE" | ^"Chart-Type" | ^"ChartType" | ^"chart-type" | ^"chartType" | ^"chart_type" }
 Children = @{ ^"CHILDREN" | ^"Children" | ^"children" }
 Cidr = @{ ^"CIDR" | ^"Cidr" | ^"cidr" }
+Cidrv4 = @{ ^"CIDRV4" | ^"Cidrv4" | ^"cidrv4" }
+Cidrv6 = @{ ^"CIDRV6" | ^"Cidrv6" | ^"cidrv6" }
 ClassName = @{ ^"CLASS-NAME" | ^"CLASS_NAME" | ^"Class-Name" | ^"ClassName" | ^"class-name" | ^"className" | ^"class_name" }
 Click = @{ ^"CLICK" | ^"Click" | ^"click" }
 Closable = @{ ^"CLOSABLE" | ^"Closable" | ^"closable" }
 Close = @{ ^"CLOSE" | ^"Close" | ^"close" }
+CoerceBigint = @{ ^"COERCE-BIGINT" | ^"COERCE_BIGINT" | ^"Coerce-Bigint" | ^"CoerceBigint" | ^"coerce-bigint" | ^"coerceBigint" | ^"coerce_bigint" }
+CoerceBoolean = @{ ^"COERCE-BOOLEAN" | ^"COERCE_BOOLEAN" | ^"Coerce-Boolean" | ^"CoerceBoolean" | ^"coerce-boolean" | ^"coerceBoolean" | ^"coerce_boolean" }
+CoerceNumber = @{ ^"COERCE-NUMBER" | ^"COERCE_NUMBER" | ^"Coerce-Number" | ^"CoerceNumber" | ^"coerce-number" | ^"coerceNumber" | ^"coerce_number" }
+CoerceString = @{ ^"COERCE-STRING" | ^"COERCE_STRING" | ^"Coerce-String" | ^"CoerceString" | ^"coerce-string" | ^"coerceString" | ^"coerce_string" }
 Collapsible = @{ ^"COLLAPSIBLE" | ^"Collapsible" | ^"collapsible" }
 Color = @{ ^"COLOR" | ^"Color" | ^"color" }
 Columns = @{ ^"COLUMNS" | ^"Columns" | ^"columns" }
@@ -90,6 +99,7 @@ Emoji = @{ ^"EMOJI" | ^"Emoji" | ^"emoji" }
 EmptyTemplate = @{ ^"EMPTY-TEMPLATE" | ^"EMPTY_TEMPLATE" | ^"Empty-Template" | ^"EmptyTemplate" | ^"empty-template" | ^"emptyTemplate" | ^"empty_template" }
 EmptyText = @{ ^"EMPTY-TEXT" | ^"EMPTY_TEXT" | ^"Empty-Text" | ^"EmptyText" | ^"empty-text" | ^"emptyText" | ^"empty_text" }
 EndsWith = @{ ^"ENDS-WITH" | ^"ENDS_WITH" | ^"Ends-With" | ^"EndsWith" | ^"ends-with" | ^"endsWith" | ^"ends_with" }
+Enum = @{ ^"ENUM" | ^"Enum" | ^"enum" }
 ErrorMap = @{ ^"ERROR-MAP" | ^"ERROR_MAP" | ^"Error-Map" | ^"ErrorMap" | ^"error-map" | ^"errorMap" | ^"error_map" }
 Event = @{ ^"EVENT" | ^"Event" | ^"event" }
 Export = @{ ^"EXPORT" | ^"Export" | ^"export" }
@@ -97,6 +107,7 @@ External = @{ ^"EXTERNAL" | ^"External" | ^"external" }
 Fallback = @{ ^"FALLBACK" | ^"Fallback" | ^"fallback" }
 Fields = @{ ^"FIELDS" | ^"Fields" | ^"fields" }
 FieldType = @{ ^"FIELD-TYPE" | ^"FIELD_TYPE" | ^"Field-Type" | ^"FieldType" | ^"field-type" | ^"fieldType" | ^"field_type" }
+File = @{ ^"FILE" | ^"File" | ^"file" }
 Finite = @{ ^"FINITE" | ^"Finite" | ^"finite" }
 Fit = @{ ^"FIT" | ^"Fit" | ^"fit" }
 Focus = @{ ^"FOCUS" | ^"Focus" | ^"focus" }
@@ -108,11 +119,15 @@ Gap = @{ ^"GAP" | ^"Gap" | ^"gap" }
 Global = @{ ^"GLOBAL" | ^"Global" | ^"global" }
 Gt = @{ ^"GT" | ^"Gt" | ^"gt" }
 Gte = @{ ^"GTE" | ^"Gte" | ^"gte" }
+Hash = @{ ^"HASH" | ^"Hash" | ^"hash" }
 Header = @{ ^"HEADER" | ^"Header" | ^"header" }
 Height = @{ ^"HEIGHT" | ^"Height" | ^"height" }
+Hex = @{ ^"HEX" | ^"Hex" | ^"hex" }
 Hooks = @{ ^"HOOKS" | ^"Hooks" | ^"hooks" }
+Hostname = @{ ^"HOSTNAME" | ^"Hostname" | ^"hostname" }
 Hoverable = @{ ^"HOVERABLE" | ^"Hoverable" | ^"hoverable" }
 Href = @{ ^"HREF" | ^"Href" | ^"href" }
+HttpUrl = @{ ^"HTTP-URL" | ^"HTTP_URL" | ^"Http-Url" | ^"HttpUrl" | ^"http-url" | ^"httpUrl" | ^"http_url" }
 Iban = @{ ^"IBAN" | ^"Iban" | ^"iban" }
 Icon = @{ ^"ICON" | ^"Icon" | ^"icon" }
 IconPosition = @{ ^"ICON-POSITION" | ^"ICON_POSITION" | ^"Icon-Position" | ^"IconPosition" | ^"icon-position" | ^"iconPosition" | ^"icon_position" }
@@ -124,8 +139,16 @@ In = @{ ^"IN" | ^"In" | ^"in" }
 Includes = @{ ^"INCLUDES" | ^"Includes" | ^"includes" }
 IndexVar = @{ ^"INDEX-VAR" | ^"INDEX_VAR" | ^"Index-Var" | ^"IndexVar" | ^"index-var" | ^"indexVar" | ^"index_var" }
 Int = @{ ^"INT" | ^"Int" | ^"int" }
+Int32 = @{ ^"INT32" | ^"Int32" | ^"int32" }
 Interface = @{ ^"INTERFACE" | ^"Interface" | ^"interface" }
+Intersection = @{ ^"INTERSECTION" | ^"Intersection" | ^"intersection" }
 Ip = @{ ^"IP" | ^"Ip" | ^"ip" }
+Ipv4 = @{ ^"IPV4" | ^"Ipv4" | ^"ipv4" }
+Ipv6 = @{ ^"IPV6" | ^"Ipv6" | ^"ipv6" }
+IsoDate = @{ ^"ISO-DATE" | ^"ISO_DATE" | ^"Iso-Date" | ^"IsoDate" | ^"iso-date" | ^"isoDate" | ^"iso_date" }
+IsoDatetime = @{ ^"ISO-DATETIME" | ^"ISO_DATETIME" | ^"Iso-Datetime" | ^"IsoDatetime" | ^"iso-datetime" | ^"isoDatetime" | ^"iso_datetime" }
+IsoDuration = @{ ^"ISO-DURATION" | ^"ISO_DURATION" | ^"Iso-Duration" | ^"IsoDuration" | ^"iso-duration" | ^"isoDuration" | ^"iso_duration" }
+IsoTime = @{ ^"ISO-TIME" | ^"ISO_TIME" | ^"Iso-Time" | ^"IsoTime" | ^"iso-time" | ^"isoTime" | ^"iso_time" }
 Items = @{ ^"ITEMS" | ^"Items" | ^"items" }
 ItemTemplate = @{ ^"ITEM-TEMPLATE" | ^"ITEM_TEMPLATE" | ^"Item-Template" | ^"ItemTemplate" | ^"item-template" | ^"itemTemplate" | ^"item_template" }
 ItemVar = @{ ^"ITEM-VAR" | ^"ITEM_VAR" | ^"Item-Var" | ^"ItemVar" | ^"item-var" | ^"itemVar" | ^"item_var" }
@@ -137,12 +160,17 @@ Layer = @{ ^"LAYER" | ^"Layer" | ^"layer" }
 Layout = @{ ^"LAYOUT" | ^"Layout" | ^"layout" }
 Length = @{ ^"LENGTH" | ^"Length" | ^"length" }
 Level = @{ ^"LEVEL" | ^"Level" | ^"level" }
+Literal = @{ ^"LITERAL" | ^"Literal" | ^"literal" }
 Loading = @{ ^"LOADING" | ^"Loading" | ^"loading" }
+Lowercase = @{ ^"LOWERCASE" | ^"Lowercase" | ^"lowercase" }
 Lt = @{ ^"LT" | ^"Lt" | ^"lt" }
 Lte = @{ ^"LTE" | ^"Lte" | ^"lte" }
+Mac = @{ ^"MAC" | ^"Mac" | ^"mac" }
+Map = @{ ^"MAP" | ^"Map" | ^"map" }
 Max = @{ ^"MAX" | ^"Max" | ^"max" }
 Media = @{ ^"MEDIA" | ^"Media" | ^"media" }
 Message = @{ ^"MESSAGE" | ^"Message" | ^"message" }
+Mime = @{ ^"MIME" | ^"Mime" | ^"mime" }
 Min = @{ ^"MIN" | ^"Min" | ^"min" }
 Mod = @{ ^"MOD" | ^"Mod" | ^"mod" }
 Mount = @{ ^"MOUNT" | ^"Mount" | ^"mount" }
@@ -150,12 +178,16 @@ MouseEnter = @{ ^"MOUSE-ENTER" | ^"MOUSE_ENTER" | ^"Mouse-Enter" | ^"MouseEnter"
 MouseLeave = @{ ^"MOUSE-LEAVE" | ^"MOUSE_LEAVE" | ^"Mouse-Leave" | ^"MouseLeave" | ^"mouse-leave" | ^"mouseLeave" | ^"mouse_leave" }
 MultipleOf = @{ ^"MULTIPLE-OF" | ^"MULTIPLE_OF" | ^"Multiple-Of" | ^"MultipleOf" | ^"multiple-of" | ^"multipleOf" | ^"multiple_of" }
 Name = @{ ^"NAME" | ^"Name" | ^"name" }
+Nan = @{ ^"NAN" | ^"Nan" | ^"nan" }
 Nanoid = @{ ^"NANOID" | ^"Nanoid" | ^"nanoid" }
 Negative = @{ ^"NEGATIVE" | ^"Negative" | ^"negative" }
 Never = @{ ^"NEVER" | ^"Never" | ^"never" }
+NonNegative = @{ ^"NON-NEGATIVE" | ^"NON_NEGATIVE" | ^"Non-Negative" | ^"NonNegative" | ^"non-negative" | ^"nonNegative" | ^"non_negative" }
+NonPositive = @{ ^"NON-POSITIVE" | ^"NON_POSITIVE" | ^"Non-Positive" | ^"NonPositive" | ^"non-positive" | ^"nonPositive" | ^"non_positive" }
 Nonempty = @{ ^"NONEMPTY" | ^"Nonempty" | ^"nonempty" }
 Nonnegative = @{ ^"NONNEGATIVE" | ^"Nonnegative" | ^"nonnegative" }
 Nonpositive = @{ ^"NONPOSITIVE" | ^"Nonpositive" | ^"nonpositive" }
+Normalize = @{ ^"NORMALIZE" | ^"Normalize" | ^"normalize" }
 Null = @{ ^"NULL" | ^"Null" | ^"null" }
 Nullable = @{ ^"NULLABLE" | ^"Nullable" | ^"nullable" }
 Nullish = @{ ^"NULLISH" | ^"Nullish" | ^"nullish" }
@@ -168,6 +200,7 @@ Orientation = @{ ^"ORIENTATION" | ^"Orientation" | ^"orientation" }
 Page = @{ ^"PAGE" | ^"Page" | ^"page" }
 PageChange = @{ ^"PAGE-CHANGE" | ^"PAGE_CHANGE" | ^"Page-Change" | ^"PageChange" | ^"page-change" | ^"pageChange" | ^"page_change" }
 Pagination = @{ ^"PAGINATION" | ^"Pagination" | ^"pagination" }
+Partial = @{ ^"PARTIAL" | ^"Partial" | ^"partial" }
 Passthrough = @{ ^"PASSTHROUGH" | ^"Passthrough" | ^"passthrough" }
 Pattern = @{ ^"PATTERN" | ^"Pattern" | ^"pattern" }
 Pipe = @{ ^"PIPE" | ^"Pipe" | ^"pipe" }
@@ -179,6 +212,7 @@ Props = @{ ^"PROPS" | ^"Props" | ^"props" }
 Pub = @{ ^"PUB" | ^"Pub" | ^"pub" }
 Readonly = @{ ^"READONLY" | ^"Readonly" | ^"readonly" }
 ReadOnly = @{ ^"READ-ONLY" | ^"READ_ONLY" | ^"Read-Only" | ^"ReadOnly" | ^"read-only" | ^"readOnly" | ^"read_only" }
+Record = @{ ^"RECORD" | ^"Record" | ^"record" }
 Refine = @{ ^"REFINE" | ^"Refine" | ^"refine" }
 Regex = @{ ^"REGEX" | ^"Regex" | ^"regex" }
 Required = @{ ^"REQUIRED" | ^"Required" | ^"required" }
@@ -196,6 +230,7 @@ Searchable = @{ ^"SEARCHABLE" | ^"Searchable" | ^"searchable" }
 Select = @{ ^"SELECT" | ^"Select" | ^"select" }
 Selectable = @{ ^"SELECTABLE" | ^"Selectable" | ^"selectable" }
 Separator = @{ ^"SEPARATOR" | ^"Separator" | ^"separator" }
+Set = @{ ^"SET" | ^"Set" | ^"set" }
 ShowLabel = @{ ^"SHOW-LABEL" | ^"SHOW_LABEL" | ^"Show-Label" | ^"ShowLabel" | ^"show-label" | ^"showLabel" | ^"show_label" }
 ShowReset = @{ ^"SHOW-RESET" | ^"SHOW_RESET" | ^"Show-Reset" | ^"ShowReset" | ^"show-reset" | ^"showReset" | ^"show_reset" }
 Side = @{ ^"SIDE" | ^"Side" | ^"side" }
@@ -208,6 +243,8 @@ StartsWith = @{ ^"STARTS-WITH" | ^"STARTS_WITH" | ^"Starts-With" | ^"StartsWith"
 State = @{ ^"STATE" | ^"State" | ^"state" }
 Strict = @{ ^"STRICT" | ^"Strict" | ^"strict" }
 String = @{ ^"STRING" | ^"String" | ^"string" }
+StringBool = @{ ^"STRING-BOOL" | ^"STRING_BOOL" | ^"String-Bool" | ^"StringBool" | ^"string-bool" | ^"stringBool" | ^"string_bool" }
+StringBoolean = @{ ^"STRING-BOOLEAN" | ^"STRING_BOOLEAN" | ^"String-Boolean" | ^"StringBoolean" | ^"string-boolean" | ^"stringBoolean" | ^"string_boolean" }
 Strip = @{ ^"STRIP" | ^"Strip" | ^"strip" }
 Style = @{ ^"STYLE" | ^"Style" | ^"style" }
 Styles = @{ ^"STYLES" | ^"Styles" | ^"styles" }
@@ -217,6 +254,7 @@ Subtitle = @{ ^"SUBTITLE" | ^"Subtitle" | ^"subtitle" }
 Suffix = @{ ^"SUFFIX" | ^"Suffix" | ^"suffix" }
 SuperRefine = @{ ^"SUPER-REFINE" | ^"SUPER_REFINE" | ^"Super-Refine" | ^"SuperRefine" | ^"super-refine" | ^"superRefine" | ^"super_refine" }
 Supports = @{ ^"SUPPORTS" | ^"Supports" | ^"supports" }
+Symbol = @{ ^"SYMBOL" | ^"Symbol" | ^"symbol" }
 TabIndex = @{ ^"TAB-INDEX" | ^"TAB_INDEX" | ^"Tab-Index" | ^"TabIndex" | ^"tab-index" | ^"tabIndex" | ^"tab_index" }
 Template = @{ ^"TEMPLATE" | ^"Template" | ^"template" }
 Text = @{ ^"TEXT" | ^"Text" | ^"text" }
@@ -230,10 +268,14 @@ ToUpperCase = @{ ^"TO-UPPER-CASE" | ^"TO_UPPER_CASE" | ^"To-Upper-Case" | ^"ToUp
 Transform = @{ ^"TRANSFORM" | ^"Transform" | ^"transform" }
 Trigger = @{ ^"TRIGGER" | ^"Trigger" | ^"trigger" }
 Trim = @{ ^"TRIM" | ^"Trim" | ^"trim" }
+Tuple = @{ ^"TUPLE" | ^"Tuple" | ^"tuple" }
 Type = @{ ^"TYPE" | ^"Type" | ^"type" }
 Ulid = @{ ^"ULID" | ^"Ulid" | ^"ulid" }
+Union = @{ ^"UNION" | ^"Union" | ^"union" }
 Unique = @{ ^"UNIQUE" | ^"Unique" | ^"unique" }
+Unknown = @{ ^"UNKNOWN" | ^"Unknown" | ^"unknown" }
 Unmount = @{ ^"UNMOUNT" | ^"Unmount" | ^"unmount" }
+Uppercase = @{ ^"UPPERCASE" | ^"Uppercase" | ^"uppercase" }
 Url = @{ ^"URL" | ^"Url" | ^"url" }
 Use = @{ ^"USE" | ^"Use" | ^"use" }
 Uuid = @{ ^"UUID" | ^"Uuid" | ^"uuid" }
@@ -247,6 +289,7 @@ Watch = @{ ^"WATCH" | ^"Watch" | ^"watch" }
 When = @{ ^"WHEN" | ^"When" | ^"when" }
 Width = @{ ^"WIDTH" | ^"Width" | ^"width" }
 Wrap = @{ ^"WRAP" | ^"Wrap" | ^"wrap" }
+Xor = @{ ^"XOR" | ^"Xor" | ^"xor" }
 
 // Category rules
 ActionNamespaces = @{ Api | Toast | Router | Console | Event }
@@ -264,6 +307,15 @@ LifecycleHooks = @{ Mount | Unmount | Watch }
 PrimitiveTypes = @{ String | Number | Bool | Object | Array | Null | Any | Void | Never }
 SlotKeyword = @{ Slot }
 ValidationKeywords = @{ Min | Max | Length | Email | Url | Uuid | Cuid | Cuid2 | Ulid | Regex | Pattern | Includes | StartsWith | EndsWith | Trim | ToLowerCase | ToUpperCase | Datetime | Date | Time | Duration | Ip | Cidr | Base64 | Emoji | Nanoid | Jwt | CreditCard | Iban | Bic | PostalCode | Gt | Gte | Lt | Lte | Int | Positive | Nonnegative | Negative | Nonpositive | MultipleOf | Finite | Safe | Nonempty | Unique | Strict | Passthrough | Strip | Catchall | Required | Optional | Nullable | Nullish | Default | Catch | Transform | Refine | SuperRefine | Pipe | Brand | Readonly | Message | ErrorMap }
+ValidatorCoerceTypes = @{ CoerceString | CoerceNumber | CoerceBoolean | CoerceBigint }
+ValidatorFileSpecifics = @{ Min | Max | Mime }
+ValidatorFormats = @{ Email | Uuid | Url | HttpUrl | Hostname | Emoji | Base64 | Base64url | Hex | Jwt | Nanoid | Cuid | Cuid2 | Ulid | Ipv4 | Ipv6 | Mac | Cidrv4 | Cidrv6 | Hash | IsoDate | IsoTime | IsoDatetime | IsoDuration }
+ValidatorLiteralValues = @{ Literal }
+ValidatorMessageSpecifiers = @{ Message | ErrorMap }
+ValidatorNumberSpecifics = @{ Gt | Gte | Lt | Lte | Positive | NonNegative | Negative | NonPositive | MultipleOf | Nan | Int | Int32 }
+ValidatorObjectSpecifics = @{ Catchall | Partial | Required }
+ValidatorPrimitiveTypes = @{ String | Number | Boolean | Bigint | Symbol | Null | Date | Enum | StringBool | StringBoolean | Optional | Nullable | Nullish | Any | Unknown | Never | Object | Array | Tuple | Union | Xor | Intersection | Record | Map | Set | File }
+ValidatorStringSpecifics = @{ Max | Min | Length | Regex | StartsWith | EndsWith | Includes | Lowercase | Uppercase | Trim | ToLowerCase | ToUpperCase | Normalize }
 WatcherOptions = @{ Debounce | Immediate | Deep }
 
 // Strongly typed attribute values
@@ -1537,24 +1589,15 @@ validator = {
 
 // All Zod v4 validator names (case-insensitive via keyword rules)
 validator_name = @{
-    // String validators
-    ^"min" | ^"max" | ^"length" | ^"email" | ^"url" | ^"uuid" | ^"cuid" | ^"cuid2" |
-    ^"ulid" | ^"nanoid" | ^"regex" | ^"pattern" | ^"includes" | ^"startsWith" |
-    ^"endsWith" | ^"trim" | ^"toLowerCase" | ^"toUpperCase" | ^"datetime" |
-    ^"date" | ^"time" | ^"duration" | ^"ip" | ^"cidr" | ^"base64" | ^"emoji" |
-    ^"jwt" | ^"creditCard" | ^"iban" | ^"bic" | ^"postalCode" |
-    // Number validators
-    ^"gt" | ^"gte" | ^"lt" | ^"lte" | ^"int" | ^"positive" | ^"nonnegative" |
-    ^"negative" | ^"nonpositive" | ^"multipleOf" | ^"finite" | ^"safe" |
-    // Array validators
-    ^"nonempty" | ^"unique" |
-    // Object validators
-    ^"strict" | ^"passthrough" | ^"strip" | ^"catchall" |
-    // Common validators
-    ^"required" | ^"optional" | ^"nullable" | ^"nullish" | ^"default" | ^"catch" |
-    ^"transform" | ^"refine" | ^"superRefine" | ^"pipe" | ^"brand" | ^"readonly" |
-    // Messages
-    ^"message" | ^"errorMap"
+    ValidatorPrimitiveTypes |
+    ValidatorCoerceTypes |
+    ValidatorLiteralValues |
+    ValidatorFormats |
+    ValidatorStringSpecifics |
+    ValidatorNumberSpecifics |
+    ValidatorObjectSpecifics |
+    ValidatorFileSpecifics |
+    ValidatorMessageSpecifiers
 }
 
 // Validator arguments (optional, depends on validator)
