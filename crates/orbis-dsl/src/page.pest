@@ -169,6 +169,7 @@ Mac = @{ ^"MAC" | ^"Mac" | ^"mac" }
 Map = @{ ^"MAP" | ^"Map" | ^"map" }
 Max = @{ ^"MAX" | ^"Max" | ^"max" }
 Media = @{ ^"MEDIA" | ^"Media" | ^"media" }
+MenuOrder = @{ ^"MENU-ORDER" | ^"MENU_ORDER" | ^"Menu-Order" | ^"MenuOrder" | ^"menu-order" | ^"menuOrder" | ^"menu_order" }
 Message = @{ ^"MESSAGE" | ^"Message" | ^"message" }
 Mime = @{ ^"MIME" | ^"Mime" | ^"mime" }
 Min = @{ ^"MIN" | ^"Min" | ^"min" }
@@ -200,9 +201,11 @@ Orientation = @{ ^"ORIENTATION" | ^"Orientation" | ^"orientation" }
 Page = @{ ^"PAGE" | ^"Page" | ^"page" }
 PageChange = @{ ^"PAGE-CHANGE" | ^"PAGE_CHANGE" | ^"Page-Change" | ^"PageChange" | ^"page-change" | ^"pageChange" | ^"page_change" }
 Pagination = @{ ^"PAGINATION" | ^"Pagination" | ^"pagination" }
+ParentRoute = @{ ^"PARENT-ROUTE" | ^"PARENT_ROUTE" | ^"Parent-Route" | ^"ParentRoute" | ^"parent-route" | ^"parentRoute" | ^"parent_route" }
 Partial = @{ ^"PARTIAL" | ^"Partial" | ^"partial" }
 Passthrough = @{ ^"PASSTHROUGH" | ^"Passthrough" | ^"passthrough" }
 Pattern = @{ ^"PATTERN" | ^"Pattern" | ^"pattern" }
+Permissions = @{ ^"PERMISSIONS" | ^"Permissions" | ^"permissions" }
 Pipe = @{ ^"PIPE" | ^"Pipe" | ^"pipe" }
 Placeholder = @{ ^"PLACEHOLDER" | ^"Placeholder" | ^"placeholder" }
 Positive = @{ ^"POSITIVE" | ^"Positive" | ^"positive" }
@@ -216,8 +219,10 @@ Record = @{ ^"RECORD" | ^"Record" | ^"record" }
 Refine = @{ ^"REFINE" | ^"Refine" | ^"refine" }
 Regex = @{ ^"REGEX" | ^"Regex" | ^"regex" }
 Required = @{ ^"REQUIRED" | ^"Required" | ^"required" }
+RequiresAuth = @{ ^"REQUIRES-AUTH" | ^"REQUIRES_AUTH" | ^"Requires-Auth" | ^"RequiresAuth" | ^"requires-auth" | ^"requiresAuth" | ^"requires_auth" }
 Return = @{ ^"RETURN" | ^"Return" | ^"return" }
 Role = @{ ^"ROLE" | ^"Role" | ^"role" }
+Roles = @{ ^"ROLES" | ^"Roles" | ^"roles" }
 Router = @{ ^"ROUTER" | ^"Router" | ^"router" }
 RowClick = @{ ^"ROW-CLICK" | ^"ROW_CLICK" | ^"Row-Click" | ^"RowClick" | ^"row-click" | ^"rowClick" | ^"row_click" }
 RowDoubleClick = @{ ^"ROW-DOUBLE-CLICK" | ^"ROW_DOUBLE_CLICK" | ^"Row-Double-Click" | ^"RowDoubleClick" | ^"row-double-click" | ^"rowDoubleClick" | ^"row_double_click" }
@@ -231,6 +236,7 @@ Select = @{ ^"SELECT" | ^"Select" | ^"select" }
 Selectable = @{ ^"SELECTABLE" | ^"Selectable" | ^"selectable" }
 Separator = @{ ^"SEPARATOR" | ^"Separator" | ^"separator" }
 Set = @{ ^"SET" | ^"Set" | ^"set" }
+ShowInMenu = @{ ^"SHOW-IN-MENU" | ^"SHOW_IN_MENU" | ^"Show-In-Menu" | ^"ShowInMenu" | ^"show-in-menu" | ^"showInMenu" | ^"show_in_menu" }
 ShowLabel = @{ ^"SHOW-LABEL" | ^"SHOW_LABEL" | ^"Show-Label" | ^"ShowLabel" | ^"show-label" | ^"showLabel" | ^"show_label" }
 ShowReset = @{ ^"SHOW-RESET" | ^"SHOW_RESET" | ^"Show-Reset" | ^"ShowReset" | ^"show-reset" | ^"showReset" | ^"show_reset" }
 Side = @{ ^"SIDE" | ^"Side" | ^"side" }
@@ -304,6 +310,7 @@ ImportExportKeywords = @{ Import | Export | From | As | Default | Pub | Use | Mo
 InterfaceKeyword = @{ Interface }
 Keywords = @{ Page | State | Template | If | Else | For | In | When | Fragment | Interface | Styles }
 LifecycleHooks = @{ Mount | Unmount | Watch }
+PageAttributes = @{ Title | Description | Icon | ShowInMenu | MenuOrder | ParentRoute | RequiresAuth | Permissions | Roles | Layout }
 PrimitiveTypes = @{ String | Number | Bool | Object | Array | Null | Any | Void | Never }
 SlotKeyword = @{ Slot }
 ValidationKeywords = @{ Min | Max | Length | Email | Url | Uuid | Cuid | Cuid2 | Ulid | Regex | Pattern | Includes | StartsWith | EndsWith | Trim | ToLowerCase | ToUpperCase | Datetime | Date | Time | Duration | Ip | Cidr | Base64 | Emoji | Nanoid | Jwt | CreditCard | Iban | Bic | PostalCode | Gt | Gte | Lt | Lte | Int | Positive | Nonnegative | Negative | Nonpositive | MultipleOf | Finite | Safe | Nonempty | Unique | Strict | Passthrough | Strip | Catchall | Required | Optional | Nullable | Nullish | Default | Catch | Transform | Refine | SuperRefine | Pipe | Brand | Readonly | Message | ErrorMap }
@@ -1487,7 +1494,7 @@ const_declaration = {
 // PAGE BLOCK
 // ============================================================================
 page_property = { page_key ~ ":" ~ literal_value }
-page_key = @{ ^"id" | ^"title" | ^"description" | ^"route" | ^"icon" }
+page_key = @{ PageAttributes }
 
 // ============================================================================
 // STATE BLOCK WITH VALIDATION

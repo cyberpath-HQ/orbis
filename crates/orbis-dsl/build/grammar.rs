@@ -189,6 +189,12 @@ pub fn generate_page_grammar_keywords() -> HashMap<&'static str, Vec<&'static st
         "ValidatorMessageSpecifiers" => vec![
             "message", "errorMap"
         ],
+
+        // Page attributes
+        "PageAttributes" => vec![
+            "title", "description", "icon", "show_in_menu", "menu_order", "parent_route", "requires_auth",
+            "permissions", "roles", "layout"
+        ],
     }
 }
 
