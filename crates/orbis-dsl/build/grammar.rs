@@ -173,7 +173,7 @@ pub fn generate_page_grammar_keywords() -> HashMap<&'static str, Vec<&'static st
             "iso_datetime", "iso_duration",
         ],
         "ValidatorStringSpecifics" => vec![
-            "max", "min", "length", "regex", "startsWith", "endsWith", "includes", "lowercase", "uppercase", "trim",
+            "max", "min", "length", "regex", "pattern", "startsWith", "endsWith", "includes", "lowercase", "uppercase", "trim",
             "toLowerCase", "toUpperCase", "normalize"
         ],
         "ValidatorNumberSpecifics" => vec![
@@ -192,7 +192,7 @@ pub fn generate_page_grammar_keywords() -> HashMap<&'static str, Vec<&'static st
 
         // Page attributes
         "PageAttributes" => vec![
-            "title", "description", "icon", "show_in_menu", "menu_order", "parent_route", "requires_auth",
+            "id", "title", "description", "icon", "route", "show_in_menu", "menu_order", "parent_route", "requires_auth",
             "permissions", "roles", "layout"
         ],
     }

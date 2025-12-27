@@ -866,4 +866,245 @@ template {
             result.err()
         );
     }
+
+    // =========================================================================
+    // IMPROVED TEST COVERAGE
+    // =========================================================================
+
+    #[test]
+    fn parse_page_with_all_attributes() {
+        let input = r#"page {
+            id: "complete-page"
+            title: "Complete Page"
+            description: "A page with all attributes"
+            icon: "home"
+            route: "/complete"
+            show_in_menu: true
+            menu_order: 1
+            requires_auth: true
+            permissions: "admin,user"
+            roles: "admin,editor"
+        }
+        
+        template {
+            <Container><Text content="Test" /></Container>
+        }"#;
+
+        let result = parse_file(input);
+        assert!(
+            result.is_ok(),
+            "Failed to parse page with all attributes: {:?}",
+            result.err()
+        );
+    }
+
+    #[test]
+    fn parse_page_minimal() {
+        let input = r#"page {
+            id: "minimal"
+            title: "Minimal Page"
+        }
+        
+        template {
+            <Container><Text content="Minimal" /></Container>
+        }"#;
+
+        let result = parse_file(input);
+        assert!(
+            result.is_ok(),
+            "Failed to parse minimal page: {:?}",
+            result.err()
+        );
+    }
+
+    #[test]
+    fn parse_validators_pattern_various_formats() {
+        let input = r#"state {
+            email: string @pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/) @message("Invalid email")
+            phone: string @pattern(/^\+?[0-9\s\-()]{10,}$/)
+            zipcode: string @pattern(/^\d{5}(-\d{4})?$/)
+            username: string @pattern(/^[a-z][a-z0-9_]{2,31}$/) @min(3) @max(32)
+            slug: string @pattern(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
+        }"#;
+
+        let result = parse_file(input);
+        assert!(
+            result.is_ok(),
+            "Failed to parse validators with various pattern formats: {:?}",
+            result.err()
+        );
+    }
+
+    #[test]
+    fn parse_validators_regex_and_pattern_interchangeably() {
+        let input = r#"state {
+            password: string @regex(/[A-Z]/) @pattern(/[0-9]/) @min(8)
+            field1: string @regex(/test/)
+            field2: string @pattern(/test/)
+        }"#;
+
+        let result = parse_file(input);
+        assert!(
+            result.is_ok(),
+            "Failed to parse validators using both regex and pattern: {:?}",
+            result.err()
+        );
+    }
+
+    #[test]
+    fn parse_validators_with_multiple_messages() {
+        let input = r#"state {
+            password: string 
+                @min(8) @message("Too short")
+                @regex(/[A-Z]/) @message("Need uppercase")
+                @regex(/[0-9]/) @message("Need number")
+        }"#;
+
+        let result = parse_file(input);
+        assert!(
+            result.is_ok(),
+            "Failed to parse validators with multiple messages: {:?}",
+            result.err()
+        );
+    }
+
+    #[test]
+    fn parse_complex_validation_rules() {
+        let input = r#"state {
+            // String validations
+            name: string @min(1) @max(100) @trim
+            email: string @email @toLowerCase @trim
+            url: string @url @startsWith("https://")
+            
+            // Complex regex patterns
+            creditCard: string @pattern(/^\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}$/)
+            uuid: string @uuid
+            
+            // Combined
+            customId: string @min(5) @max(20) @pattern(/^[A-Z0-9_-]+$/)
+        }"#;
+
+        let result = parse_file(input);
+        assert!(
+            result.is_ok(),
+            "Failed to parse complex validation rules: {:?}",
+            result.err()
+        );
+    }
+
+    #[test]
+    fn parse_state_with_page_definition() {
+        let input = r#"page {
+            id: "form-page"
+            title: "Form Page"
+            route: "/form"
+        }
+        
+        state {
+            username: string @min(3) @max(20)
+            email: string @email
+            age: number
+        }
+        
+        template {
+            <Container><Text content="Form" /></Container>
+        }"#;
+
+        let result = parse_file(input);
+        assert!(
+            result.is_ok(),
+            "Failed to parse state with page definition: {:?}",
+            result.err()
+        );
+    }
+
+    #[test]
+    fn parse_page_with_computed_and_validators() {
+        let input = r#"page {
+            id: "form-page"
+            title: "Form Page"
+        }
+        
+        state {
+            email: string @email @toLowerCase
+            firstName: string @min(1)
+            lastName: string @min(1)
+        }
+        
+        template {
+            <Container><Text content={state.email} /></Container>
+        }"#;
+
+        let result = parse_file(input);
+        assert!(
+            result.is_ok(),
+            "Failed to parse page with computed and validators: {:?}",
+            result.err()
+        );
+    }
+
+    #[test]
+    fn parse_multiple_pages_in_file() {
+        let input = r#"page {
+            id: "home"
+            title: "Home"
+            route: "/"
+        }
+        
+        template {
+            <Container><Text content="Home" /></Container>
+        }"#;
+
+        let result = parse_file(input);
+        assert!(
+            result.is_ok(),
+            "Failed to parse page file: {:?}",
+            result.err()
+        );
+    }
+
+    #[test]
+    fn parse_page_metadata_with_special_characters() {
+        let input = r#"page {
+            id: "page-with-special-id"
+            title: "Page with Special Chars: @#$%"
+            description: "A description with 'quotes' and \"double quotes\""
+            route: "/special/path-here"
+        }
+        
+        template {
+            <Container><Text content="Test" /></Container>
+        }"#;
+
+        let result = parse_file(input);
+        assert!(
+            result.is_ok(),
+            "Failed to parse page with special characters: {:?}",
+            result.err()
+        );
+    }
+
+    #[test]
+    fn parse_validator_edge_cases() {
+        let input = r#"state {
+            // Regex with special characters
+            field1: string @pattern(/test/) 
+            
+            // Regex with escaped special characters
+            field2: string @pattern(/\(test\)/)
+            
+            // Multiple consecutive validators
+            field3: string @min(1) @max(10) @trim @toLowerCase @regex(/^[a-z]+$/)
+            
+            // URL pattern
+            field4: string @url @lowercase
+        }"#;
+
+        let result = parse_file(input);
+        assert!(
+            result.is_ok(),
+            "Failed to parse validator edge cases: {:?}",
+            result.err()
+        );
+    }
 }

@@ -223,6 +223,7 @@ RequiresAuth = @{ ^"REQUIRES-AUTH" | ^"REQUIRES_AUTH" | ^"Requires-Auth" | ^"Req
 Return = @{ ^"RETURN" | ^"Return" | ^"return" }
 Role = @{ ^"ROLE" | ^"Role" | ^"role" }
 Roles = @{ ^"ROLES" | ^"Roles" | ^"roles" }
+Route = @{ ^"ROUTE" | ^"Route" | ^"route" }
 Router = @{ ^"ROUTER" | ^"Router" | ^"router" }
 RowClick = @{ ^"ROW-CLICK" | ^"ROW_CLICK" | ^"Row-Click" | ^"RowClick" | ^"row-click" | ^"rowClick" | ^"row_click" }
 RowDoubleClick = @{ ^"ROW-DOUBLE-CLICK" | ^"ROW_DOUBLE_CLICK" | ^"Row-Double-Click" | ^"RowDoubleClick" | ^"row-double-click" | ^"rowDoubleClick" | ^"row_double_click" }
@@ -310,7 +311,7 @@ ImportExportKeywords = @{ Import | Export | From | As | Default | Pub | Use | Mo
 InterfaceKeyword = @{ Interface }
 Keywords = @{ Page | State | Template | If | Else | For | In | When | Fragment | Interface | Styles }
 LifecycleHooks = @{ Mount | Unmount | Watch }
-PageAttributes = @{ Title | Description | Icon | ShowInMenu | MenuOrder | ParentRoute | RequiresAuth | Permissions | Roles | Layout }
+PageAttributes = @{ Id | Title | Description | Icon | Route | ShowInMenu | MenuOrder | ParentRoute | RequiresAuth | Permissions | Roles | Layout }
 PrimitiveTypes = @{ String | Number | Bool | Object | Array | Null | Any | Void | Never }
 SlotKeyword = @{ Slot }
 ValidationKeywords = @{ Min | Max | Length | Email | Url | Uuid | Cuid | Cuid2 | Ulid | Regex | Pattern | Includes | StartsWith | EndsWith | Trim | ToLowerCase | ToUpperCase | Datetime | Date | Time | Duration | Ip | Cidr | Base64 | Emoji | Nanoid | Jwt | CreditCard | Iban | Bic | PostalCode | Gt | Gte | Lt | Lte | Int | Positive | Nonnegative | Negative | Nonpositive | MultipleOf | Finite | Safe | Nonempty | Unique | Strict | Passthrough | Strip | Catchall | Required | Optional | Nullable | Nullish | Default | Catch | Transform | Refine | SuperRefine | Pipe | Brand | Readonly | Message | ErrorMap }
@@ -322,7 +323,7 @@ ValidatorMessageSpecifiers = @{ Message | ErrorMap }
 ValidatorNumberSpecifics = @{ Gt | Gte | Lt | Lte | Positive | NonNegative | Negative | NonPositive | MultipleOf | Nan | Int | Int32 }
 ValidatorObjectSpecifics = @{ Catchall | Partial | Required }
 ValidatorPrimitiveTypes = @{ String | Number | Boolean | Bigint | Symbol | Null | Date | Enum | StringBool | StringBoolean | Optional | Nullable | Nullish | Any | Unknown | Never | Object | Array | Tuple | Union | Xor | Intersection | Record | Map | Set | File }
-ValidatorStringSpecifics = @{ Max | Min | Length | Regex | StartsWith | EndsWith | Includes | Lowercase | Uppercase | Trim | ToLowerCase | ToUpperCase | Normalize }
+ValidatorStringSpecifics = @{ Max | Min | Length | Regex | Pattern | StartsWith | EndsWith | Includes | Lowercase | Uppercase | Trim | ToLowerCase | ToUpperCase | Normalize }
 WatcherOptions = @{ Debounce | Immediate | Deep }
 
 // Strongly typed attribute values
