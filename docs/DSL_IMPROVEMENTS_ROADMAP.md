@@ -545,16 +545,16 @@ state {
 
 1. **No IDE support** - No LSP, syntax highlighting, or autocomplete
 2. **Basic error messages** - Pest errors are technical, not user-friendly
-3. ~~**No modularity** - Can't import/reuse page fragments or components~~ → ✅ **RESOLVED** - Fragments + Import/Export (Dec 26, 2025)
+3. ~~**No modularity** - Can't import/reuse page fragments or components~~ → ✅ **RESOLVED** - Fragments + Import/Export
 4. ~~**No custom components** - Limited to 23 built-in components~~ → Now 32 components
-5. ~~**No CSS integration** - Styling requires className strings~~ → ✅ **RESOLVED** - CSS-in-DSL (Dec 26, 2025)
+5. ~~**No CSS integration** - Styling requires className strings~~ → ✅ **RESOLVED** - CSS-in-DSL
 6. **No i18n support** - Hardcoded strings only
-7. ~~**No computed properties** - State is static declarations only~~ → ✅ **RESOLVED** (Dec 25, 2025)
-8. ~~**No validation rules** - Beyond schema, no custom validation~~ → ✅ **RESOLVED** - Zod v4 validation (Dec 26, 2025)
+7. ~~**No computed properties** - State is static declarations only~~ → ✅ **RESOLVED**
+8. ~~**No validation rules** - Beyond schema, no custom validation~~ → ✅ **RESOLVED** - Zod v4 validation
 9. **No debugging tools** - No dev mode, error boundaries, or tracing
 10. **No formatter** - Manual code formatting required
-11. ~~**Basic type system** - No unions, generics, interfaces~~ → ✅ **RESOLVED** - Enhanced types (Dec 26, 2025)
-12. ~~**No watchers** - Can't react to state changes~~ → ✅ **RESOLVED** - Watcher hooks (Dec 26, 2025)
+11. ~~**Basic type system** - No unions, generics, interfaces~~ → ✅ **RESOLVED** - Enhanced types
+12. ~~**No watchers** - Can't react to state changes~~ → ✅ **RESOLVED** - Watcher hooks
 
 ---
 
@@ -714,7 +714,7 @@ Error: Invalid attribute 'name' on <Field> component
 
 ---
 
-### 1.4 Component Fragments and Composition ✅ COMPLETED (Dec 26, 2025)
+### 1.4 Component Fragments and Composition ✅ COMPLETED
 **Impact**: 🔥 High | **Effort**: 🛠️ Medium | **Timeline**: 1 week
 
 > **Status**: ✅ Fully implemented with typed parameters, event passing, and named/unnamed slots.
@@ -771,7 +771,7 @@ Error: Invalid attribute 'name' on <Field> component
 
 ---
 
-### 1.5 Import System for Modularity ✅ COMPLETED (Dec 26, 2025)
+### 1.5 Import System for Modularity ✅ COMPLETED
 **Impact**: 🔥 High | **Effort**: 🏗️ High | **Timeline**: 2 weeks
 
 > **Status**: ✅ Fully implemented with TypeScript and Rust-style syntax.
@@ -858,7 +858,7 @@ template {
 
 ---
 
-### 2.2 Watchers for Side Effects ✅ COMPLETED (Dec 26, 2025)
+### 2.2 Watchers for Side Effects ✅ COMPLETED
 **Impact**: 🟡 Medium | **Effort**: 🛠️ Medium | **Timeline**: 3 days
 
 > **Status**: ✅ Fully implemented with debounce, immediate, deep options.
@@ -895,7 +895,7 @@ hooks {
 
 ---
 
-### 2.3 Validation Rules and Constraints ✅ COMPLETED (Dec 26, 2025)
+### 2.3 Validation Rules and Constraints ✅ COMPLETED
 **Impact**: 🟡 Medium | **Effort**: 🛠️ Medium | **Timeline**: 5 days
 
 > **Status**: ✅ Fully implemented with Zod v4-compatible syntax and all validators.
@@ -945,7 +945,7 @@ template {
 
 ---
 
-### 2.4 Type System Enhancements ✅ COMPLETED (Dec 26, 2025)
+### 2.4 Type System Enhancements ✅ COMPLETED
 **Impact**: 🟡 Medium | **Effort**: 🏗️ High | **Timeline**: 2 weeks
 
 > **Status**: ✅ Fully implemented with unions, optionals, interfaces, generics, and special types.
@@ -1002,7 +1002,7 @@ template {
 
 ---
 
-### 2.5 CSS-in-DSL Support ✅ COMPLETED (Dec 26, 2025)
+### 2.5 CSS-in-DSL Support ✅ COMPLETED
 **Impact**: 🟡 Medium | **Effort**: 🛠️ Medium | **Timeline**: 1 week
 
 > **Status**: ✅ Fully implemented with scoped/global styles, Tailwind integration, and all CSS at-rules.
