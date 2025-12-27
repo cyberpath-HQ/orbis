@@ -1,0 +1,6793 @@
+{
+  "path": "examples/comprehensive-grammar-test.orbis",
+  "imports": [
+    {
+      "style": "type_script",
+      "clause": {
+        "type": "default",
+        "name": "Button"
+      },
+      "path": "@components/Button",
+      "span": {
+        "start": 479,
+        "end": 518,
+        "start_line": 11,
+        "start_col": 1,
+        "end_line": 11,
+        "end_col": 40
+      }
+    },
+    {
+      "style": "type_script",
+      "clause": {
+        "type": "named",
+        "specifiers": [
+          {
+            "name": "Card",
+            "span": {
+              "start": 563,
+              "end": 567,
+              "start_line": 14,
+              "start_col": 10,
+              "end_line": 14,
+              "end_col": 14
+            }
+          },
+          {
+            "name": "Container",
+            "span": {
+              "start": 569,
+              "end": 578,
+              "start_line": 14,
+              "start_col": 16,
+              "end_line": 14,
+              "end_col": 25
+            }
+          },
+          {
+            "name": "Text",
+            "span": {
+              "start": 580,
+              "end": 585,
+              "start_line": 14,
+              "start_col": 27,
+              "end_line": 14,
+              "end_col": 32
+            }
+          }
+        ]
+      },
+      "path": "@orbis/ui",
+      "span": {
+        "start": 554,
+        "end": 603,
+        "start_line": 14,
+        "start_col": 1,
+        "end_line": 14,
+        "end_col": 50
+      }
+    },
+    {
+      "style": "type_script",
+      "clause": {
+        "type": "named",
+        "specifiers": [
+          {
+            "name": "Button",
+            "alias": "PrimaryButton",
+            "span": {
+              "start": 658,
+              "end": 681,
+              "start_line": 17,
+              "start_col": 10,
+              "end_line": 17,
+              "end_col": 33
+            }
+          },
+          {
+            "name": "Card",
+            "alias": "CardComponent",
+            "span": {
+              "start": 683,
+              "end": 704,
+              "start_line": 17,
+              "start_col": 35,
+              "end_line": 17,
+              "end_col": 56
+            }
+          }
+        ]
+      },
+      "path": "@orbis/ui-aliases",
+      "span": {
+        "start": 649,
+        "end": 731,
+        "start_line": 17,
+        "start_col": 1,
+        "end_line": 17,
+        "end_col": 83
+      }
+    },
+    {
+      "style": "type_script",
+      "clause": {
+        "type": "namespace",
+        "name": "Icons"
+      },
+      "path": "@orbis/icons",
+      "span": {
+        "start": 770,
+        "end": 807,
+        "start_line": 20,
+        "start_col": 1,
+        "end_line": 20,
+        "end_col": 38
+      }
+    },
+    {
+      "style": "type_script",
+      "clause": {
+        "type": "named",
+        "specifiers": [
+          {
+            "name": "User",
+            "is_type": true,
+            "span": {
+              "start": 850,
+              "end": 859,
+              "start_line": 23,
+              "start_col": 10,
+              "end_line": 23,
+              "end_col": 19
+            }
+          },
+          {
+            "name": "ApiResponse",
+            "is_type": true,
+            "span": {
+              "start": 861,
+              "end": 878,
+              "start_line": 23,
+              "start_col": 21,
+              "end_line": 23,
+              "end_col": 38
+            }
+          }
+        ]
+      },
+      "path": "@types/models",
+      "span": {
+        "start": 841,
+        "end": 900,
+        "start_line": 23,
+        "start_col": 1,
+        "end_line": 23,
+        "end_col": 60
+      }
+    },
+    {
+      "style": "rust",
+      "path": [
+        "crate",
+        "components",
+        "*"
+      ],
+      "alias": null,
+      "span": {
+        "start": 930,
+        "end": 955,
+        "start_line": 26,
+        "start_col": 1,
+        "end_line": 27,
+        "end_col": 1
+      }
+    },
+    {
+      "style": "rust",
+      "path": [
+        "super",
+        "utils",
+        "format"
+      ],
+      "alias": null,
+      "span": {
+        "start": 955,
+        "end": 980,
+        "start_line": 27,
+        "start_col": 1,
+        "end_line": 28,
+        "end_col": 1
+      }
+    },
+    {
+      "style": "rust",
+      "path": [
+        "external",
+        "library",
+        "Module"
+      ],
+      "alias": null,
+      "span": {
+        "start": 980,
+        "end": 1222,
+        "start_line": 28,
+        "start_col": 1,
+        "end_line": 34,
+        "end_col": 1
+      }
+    }
+  ],
+  "elements": [
+    {
+      "kind": "interface",
+      "name": "User",
+      "members": [
+        {
+          "name": "id",
+          "type_annotation": {
+            "type_kind": "primitive",
+            "kind": "string",
+            "span": {
+              "start": 1247,
+              "end": 1253,
+              "start_line": 35,
+              "start_col": 9,
+              "end_line": 35,
+              "end_col": 15
+            }
+          },
+          "span": {
+            "start": 1243,
+            "end": 1253,
+            "start_line": 35,
+            "start_col": 5,
+            "end_line": 35,
+            "end_col": 15
+          }
+        },
+        {
+          "name": "name",
+          "type_annotation": {
+            "type_kind": "primitive",
+            "kind": "string",
+            "span": {
+              "start": 1264,
+              "end": 1270,
+              "start_line": 36,
+              "start_col": 11,
+              "end_line": 36,
+              "end_col": 17
+            }
+          },
+          "span": {
+            "start": 1258,
+            "end": 1270,
+            "start_line": 36,
+            "start_col": 5,
+            "end_line": 36,
+            "end_col": 17
+          }
+        },
+        {
+          "name": "email",
+          "optional": true,
+          "type_annotation": {
+            "type_kind": "primitive",
+            "kind": "string",
+            "span": {
+              "start": 1283,
+              "end": 1289,
+              "start_line": 37,
+              "start_col": 13,
+              "end_line": 37,
+              "end_col": 19
+            }
+          },
+          "span": {
+            "start": 1275,
+            "end": 1289,
+            "start_line": 37,
+            "start_col": 5,
+            "end_line": 37,
+            "end_col": 19
+          }
+        },
+        {
+          "name": "age",
+          "type_annotation": {
+            "type_kind": "primitive",
+            "kind": "number",
+            "span": {
+              "start": 1318,
+              "end": 1324,
+              "start_line": 38,
+              "start_col": 10,
+              "end_line": 38,
+              "end_col": 16
+            }
+          },
+          "span": {
+            "start": 1313,
+            "end": 1324,
+            "start_line": 38,
+            "start_col": 5,
+            "end_line": 38,
+            "end_col": 16
+          }
+        },
+        {
+          "name": "roles",
+          "type_annotation": {
+            "type_kind": "array",
+            "element": {
+              "type_kind": "primitive",
+              "kind": "string",
+              "span": {
+                "start": 1336,
+                "end": 1342,
+                "start_line": 39,
+                "start_col": 12,
+                "end_line": 39,
+                "end_col": 18
+              }
+            },
+            "span": {
+              "start": 1336,
+              "end": 1344,
+              "start_line": 39,
+              "start_col": 12,
+              "end_line": 39,
+              "end_col": 20
+            }
+          },
+          "span": {
+            "start": 1329,
+            "end": 1344,
+            "start_line": 39,
+            "start_col": 5,
+            "end_line": 39,
+            "end_col": 20
+          }
+        },
+        {
+          "name": "metadata",
+          "type_annotation": {
+            "type_kind": "generic",
+            "name": "Record",
+            "args": [
+              {
+                "type_kind": "primitive",
+                "kind": "string",
+                "span": {
+                  "start": 1381,
+                  "end": 1387,
+                  "start_line": 40,
+                  "start_col": 22,
+                  "end_line": 40,
+                  "end_col": 28
+                }
+              },
+              {
+                "type_kind": "primitive",
+                "kind": "any",
+                "span": {
+                  "start": 1389,
+                  "end": 1392,
+                  "start_line": 40,
+                  "start_col": 30,
+                  "end_line": 40,
+                  "end_col": 33
+                }
+              }
+            ],
+            "span": {
+              "start": 1374,
+              "end": 1393,
+              "start_line": 40,
+              "start_col": 15,
+              "end_line": 40,
+              "end_col": 34
+            }
+          },
+          "span": {
+            "start": 1364,
+            "end": 1393,
+            "start_line": 40,
+            "start_col": 5,
+            "end_line": 40,
+            "end_col": 34
+          }
+        }
+      ],
+      "span": {
+        "start": 1222,
+        "end": 1412,
+        "start_line": 34,
+        "start_col": 1,
+        "end_line": 41,
+        "end_col": 2
+      }
+    },
+    {
+      "kind": "interface",
+      "name": "ApiResponse",
+      "generics": [
+        {
+          "name": "T",
+          "span": {
+            "start": 1436,
+            "end": 1437,
+            "start_line": 43,
+            "start_col": 23,
+            "end_line": 43,
+            "end_col": 24
+          }
+        }
+      ],
+      "members": [
+        {
+          "name": "data",
+          "type_annotation": {
+            "type_kind": "named",
+            "name": "T",
+            "span": {
+              "start": 1451,
+              "end": 1452,
+              "start_line": 44,
+              "start_col": 11,
+              "end_line": 44,
+              "end_col": 12
+            }
+          },
+          "span": {
+            "start": 1445,
+            "end": 1452,
+            "start_line": 44,
+            "start_col": 5,
+            "end_line": 44,
+            "end_col": 12
+          }
+        },
+        {
+          "name": "error",
+          "optional": true,
+          "type_annotation": {
+            "type_kind": "primitive",
+            "kind": "string",
+            "span": {
+              "start": 1465,
+              "end": 1471,
+              "start_line": 45,
+              "start_col": 13,
+              "end_line": 45,
+              "end_col": 19
+            }
+          },
+          "span": {
+            "start": 1457,
+            "end": 1471,
+            "start_line": 45,
+            "start_col": 5,
+            "end_line": 45,
+            "end_col": 19
+          }
+        },
+        {
+          "name": "status",
+          "type_annotation": {
+            "type_kind": "primitive",
+            "kind": "number",
+            "span": {
+              "start": 1484,
+              "end": 1490,
+              "start_line": 46,
+              "start_col": 13,
+              "end_line": 46,
+              "end_col": 19
+            }
+          },
+          "span": {
+            "start": 1476,
+            "end": 1490,
+            "start_line": 46,
+            "start_col": 5,
+            "end_line": 46,
+            "end_col": 19
+          }
+        }
+      ],
+      "span": {
+        "start": 1414,
+        "end": 1492,
+        "start_line": 43,
+        "start_col": 1,
+        "end_line": 47,
+        "end_col": 2
+      }
+    },
+    {
+      "kind": "interface",
+      "name": "PaginatedList",
+      "generics": [
+        {
+          "name": "T",
+          "span": {
+            "start": 1518,
+            "end": 1519,
+            "start_line": 49,
+            "start_col": 25,
+            "end_line": 49,
+            "end_col": 26
+          }
+        }
+      ],
+      "members": [
+        {
+          "name": "items",
+          "type_annotation": {
+            "type_kind": "array",
+            "element": {
+              "type_kind": "named",
+              "name": "T",
+              "span": {
+                "start": 1534,
+                "end": 1535,
+                "start_line": 50,
+                "start_col": 12,
+                "end_line": 50,
+                "end_col": 13
+              }
+            },
+            "span": {
+              "start": 1534,
+              "end": 1537,
+              "start_line": 50,
+              "start_col": 12,
+              "end_line": 50,
+              "end_col": 15
+            }
+          },
+          "span": {
+            "start": 1527,
+            "end": 1537,
+            "start_line": 50,
+            "start_col": 5,
+            "end_line": 50,
+            "end_col": 15
+          }
+        },
+        {
+          "name": "total",
+          "type_annotation": {
+            "type_kind": "primitive",
+            "kind": "number",
+            "span": {
+              "start": 1549,
+              "end": 1555,
+              "start_line": 51,
+              "start_col": 12,
+              "end_line": 51,
+              "end_col": 18
+            }
+          },
+          "span": {
+            "start": 1542,
+            "end": 1555,
+            "start_line": 51,
+            "start_col": 5,
+            "end_line": 51,
+            "end_col": 18
+          }
+        },
+        {
+          "name": "page",
+          "type_annotation": {
+            "type_kind": "primitive",
+            "kind": "number",
+            "span": {
+              "start": 1566,
+              "end": 1572,
+              "start_line": 52,
+              "start_col": 11,
+              "end_line": 52,
+              "end_col": 17
+            }
+          },
+          "span": {
+            "start": 1560,
+            "end": 1572,
+            "start_line": 52,
+            "start_col": 5,
+            "end_line": 52,
+            "end_col": 17
+          }
+        },
+        {
+          "name": "pageSize",
+          "type_annotation": {
+            "type_kind": "primitive",
+            "kind": "number",
+            "span": {
+              "start": 1587,
+              "end": 1593,
+              "start_line": 53,
+              "start_col": 15,
+              "end_line": 53,
+              "end_col": 21
+            }
+          },
+          "span": {
+            "start": 1577,
+            "end": 1593,
+            "start_line": 53,
+            "start_col": 5,
+            "end_line": 53,
+            "end_col": 21
+          }
+        }
+      ],
+      "span": {
+        "start": 1494,
+        "end": 1595,
+        "start_line": 49,
+        "start_col": 1,
+        "end_line": 54,
+        "end_col": 2
+      }
+    },
+    {
+      "kind": "page",
+      "id": "comprehensive-test",
+      "title": "Comprehensive Grammar Test Page",
+      "description": "Tests all grammar features",
+      "icon": "cog",
+      "route": "/test",
+      "show_in_menu": true,
+      "menu_order": 1,
+      "parent_route": "/admin",
+      "requires_auth": true,
+      "layout": "dashboard",
+      "span": {
+        "start": 1802,
+        "end": 2081,
+        "start_line": 60,
+        "start_col": 1,
+        "end_line": 71,
+        "end_col": 2
+      }
+    },
+    {
+      "kind": "state",
+      "declarations": [
+        {
+          "declaration_type": "regular",
+          "name": "count",
+          "value": {
+            "expr_type": "literal",
+            "value": {
+              "type": "integer",
+              "value": 0
+            },
+            "span": {
+              "start": 2373,
+              "end": 2374,
+              "start_line": 79,
+              "start_col": 13,
+              "end_line": 79,
+              "end_col": 14
+            }
+          },
+          "span": {
+            "start": 2365,
+            "end": 2374,
+            "start_line": 79,
+            "start_col": 5,
+            "end_line": 79,
+            "end_col": 14
+          }
+        },
+        {
+          "declaration_type": "regular",
+          "name": "message",
+          "value": {
+            "expr_type": "literal",
+            "value": {
+              "type": "string",
+              "value": "Hello World"
+            },
+            "span": {
+              "start": 2389,
+              "end": 2402,
+              "start_line": 80,
+              "start_col": 15,
+              "end_line": 80,
+              "end_col": 28
+            }
+          },
+          "span": {
+            "start": 2379,
+            "end": 2402,
+            "start_line": 80,
+            "start_col": 5,
+            "end_line": 80,
+            "end_col": 28
+          }
+        },
+        {
+          "declaration_type": "regular",
+          "name": "isLoading",
+          "value": {
+            "expr_type": "literal",
+            "value": {
+              "type": "boolean",
+              "value": true
+            },
+            "span": {
+              "start": 2419,
+              "end": 2423,
+              "start_line": 81,
+              "start_col": 17,
+              "end_line": 81,
+              "end_col": 21
+            }
+          },
+          "span": {
+            "start": 2407,
+            "end": 2423,
+            "start_line": 81,
+            "start_col": 5,
+            "end_line": 81,
+            "end_col": 21
+          }
+        },
+        {
+          "declaration_type": "regular",
+          "name": "price",
+          "value": {
+            "expr_type": "literal",
+            "value": {
+              "type": "number",
+              "value": 99.99
+            },
+            "span": {
+              "start": 2436,
+              "end": 2441,
+              "start_line": 82,
+              "start_col": 13,
+              "end_line": 82,
+              "end_col": 18
+            }
+          },
+          "span": {
+            "start": 2428,
+            "end": 2441,
+            "start_line": 82,
+            "start_col": 5,
+            "end_line": 82,
+            "end_col": 18
+          }
+        },
+        {
+          "declaration_type": "regular",
+          "name": "nullableValue",
+          "value": {
+            "expr_type": "literal",
+            "value": {
+              "type": "null"
+            },
+            "span": {
+              "start": 2462,
+              "end": 2466,
+              "start_line": 83,
+              "start_col": 21,
+              "end_line": 83,
+              "end_col": 25
+            }
+          },
+          "span": {
+            "start": 2446,
+            "end": 2466,
+            "start_line": 83,
+            "start_col": 5,
+            "end_line": 83,
+            "end_col": 25
+          }
+        },
+        {
+          "declaration_type": "regular",
+          "name": "name",
+          "type_annotation": {
+            "type_kind": "primitive",
+            "kind": "string",
+            "span": {
+              "start": 2516,
+              "end": 2522,
+              "start_line": 86,
+              "start_col": 11,
+              "end_line": 86,
+              "end_col": 17
+            }
+          },
+          "value": {
+            "expr_type": "literal",
+            "value": {
+              "type": "string",
+              "value": "John"
+            },
+            "span": {
+              "start": 2525,
+              "end": 2531,
+              "start_line": 86,
+              "start_col": 20,
+              "end_line": 86,
+              "end_col": 26
+            }
+          },
+          "span": {
+            "start": 2510,
+            "end": 2531,
+            "start_line": 86,
+            "start_col": 5,
+            "end_line": 86,
+            "end_col": 26
+          }
+        },
+        {
+          "declaration_type": "regular",
+          "name": "age",
+          "type_annotation": {
+            "type_kind": "primitive",
+            "kind": "number",
+            "span": {
+              "start": 2541,
+              "end": 2547,
+              "start_line": 87,
+              "start_col": 10,
+              "end_line": 87,
+              "end_col": 16
+            }
+          },
+          "value": {
+            "expr_type": "literal",
+            "value": {
+              "type": "integer",
+              "value": 25
+            },
+            "span": {
+              "start": 2550,
+              "end": 2552,
+              "start_line": 87,
+              "start_col": 19,
+              "end_line": 87,
+              "end_col": 21
+            }
+          },
+          "span": {
+            "start": 2536,
+            "end": 2552,
+            "start_line": 87,
+            "start_col": 5,
+            "end_line": 87,
+            "end_col": 21
+          }
+        },
+        {
+          "declaration_type": "regular",
+          "name": "active",
+          "type_annotation": {
+            "type_kind": "primitive",
+            "kind": "boolean",
+            "span": {
+              "start": 2565,
+              "end": 2569,
+              "start_line": 88,
+              "start_col": 13,
+              "end_line": 88,
+              "end_col": 17
+            }
+          },
+          "span": {
+            "start": 2557,
+            "end": 2569,
+            "start_line": 88,
+            "start_col": 5,
+            "end_line": 88,
+            "end_col": 17
+          }
+        },
+        {
+          "declaration_type": "regular",
+          "name": "ean",
+          "value": {
+            "expr_type": "literal",
+            "value": {
+              "type": "boolean",
+              "value": true
+            },
+            "span": {
+              "start": 2575,
+              "end": 2579,
+              "start_line": 88,
+              "start_col": 23,
+              "end_line": 88,
+              "end_col": 27
+            }
+          },
+          "span": {
+            "start": 2569,
+            "end": 2579,
+            "start_line": 88,
+            "start_col": 17,
+            "end_line": 88,
+            "end_col": 27
+          }
+        },
+        {
+          "declaration_type": "regular",
+          "name": "optionalField",
+          "type_annotation": {
+            "type_kind": "primitive",
+            "kind": "string",
+            "span": {
+              "start": 2636,
+              "end": 2642,
+              "start_line": 91,
+              "start_col": 21,
+              "end_line": 91,
+              "end_col": 27
+            }
+          },
+          "value": {
+            "expr_type": "literal",
+            "value": {
+              "type": "null"
+            },
+            "span": {
+              "start": 2645,
+              "end": 2649,
+              "start_line": 91,
+              "start_col": 30,
+              "end_line": 91,
+              "end_col": 34
+            }
+          },
+          "span": {
+            "start": 2620,
+            "end": 2649,
+            "start_line": 91,
+            "start_col": 5,
+            "end_line": 91,
+            "end_col": 34
+          }
+        },
+        {
+          "declaration_type": "regular",
+          "name": "user",
+          "value": {
+            "expr_type": "object",
+            "pairs": [
+              {
+                "key": "id",
+                "value": {
+                  "expr_type": "literal",
+                  "value": {
+                    "type": "string",
+                    "value": "user-1"
+                  },
+                  "span": {
+                    "start": 2708,
+                    "end": 2716,
+                    "start_line": 95,
+                    "start_col": 13,
+                    "end_line": 95,
+                    "end_col": 21
+                  }
+                },
+                "span": {
+                  "start": 2694,
+                  "end": 2838,
+                  "start_line": 94,
+                  "start_col": 12,
+                  "end_line": 101,
+                  "end_col": 6
+                }
+              },
+              {
+                "key": "name",
+                "value": {
+                  "expr_type": "literal",
+                  "value": {
+                    "type": "string",
+                    "value": "John Doe"
+                  },
+                  "span": {
+                    "start": 2732,
+                    "end": 2742,
+                    "start_line": 96,
+                    "start_col": 15,
+                    "end_line": 96,
+                    "end_col": 25
+                  }
+                },
+                "span": {
+                  "start": 2694,
+                  "end": 2838,
+                  "start_line": 94,
+                  "start_col": 12,
+                  "end_line": 101,
+                  "end_col": 6
+                }
+              },
+              {
+                "key": "settings",
+                "value": {
+                  "expr_type": "object",
+                  "pairs": [
+                    {
+                      "key": "theme",
+                      "value": {
+                        "expr_type": "literal",
+                        "value": {
+                          "type": "string",
+                          "value": "dark"
+                        },
+                        "span": {
+                          "start": 2783,
+                          "end": 2789,
+                          "start_line": 98,
+                          "start_col": 20,
+                          "end_line": 98,
+                          "end_col": 26
+                        }
+                      },
+                      "span": {
+                        "start": 2762,
+                        "end": 2832,
+                        "start_line": 97,
+                        "start_col": 19,
+                        "end_line": 100,
+                        "end_col": 10
+                      }
+                    },
+                    {
+                      "key": "notifications",
+                      "value": {
+                        "expr_type": "literal",
+                        "value": {
+                          "type": "boolean",
+                          "value": true
+                        },
+                        "span": {
+                          "start": 2818,
+                          "end": 2822,
+                          "start_line": 99,
+                          "start_col": 28,
+                          "end_line": 99,
+                          "end_col": 32
+                        }
+                      },
+                      "span": {
+                        "start": 2762,
+                        "end": 2832,
+                        "start_line": 97,
+                        "start_col": 19,
+                        "end_line": 100,
+                        "end_col": 10
+                      }
+                    }
+                  ],
+                  "span": {
+                    "start": 2762,
+                    "end": 2832,
+                    "start_line": 97,
+                    "start_col": 19,
+                    "end_line": 100,
+                    "end_col": 10
+                  }
+                },
+                "span": {
+                  "start": 2694,
+                  "end": 2838,
+                  "start_line": 94,
+                  "start_col": 12,
+                  "end_line": 101,
+                  "end_col": 6
+                }
+              }
+            ],
+            "span": {
+              "start": 2694,
+              "end": 2838,
+              "start_line": 94,
+              "start_col": 12,
+              "end_line": 101,
+              "end_col": 6
+            }
+          },
+          "span": {
+            "start": 2687,
+            "end": 2838,
+            "start_line": 94,
+            "start_col": 5,
+            "end_line": 101,
+            "end_col": 6
+          }
+        },
+        {
+          "declaration_type": "regular",
+          "name": "items",
+          "value": {
+            "expr_type": "array",
+            "elements": [
+              {
+                "expr_type": "literal",
+                "value": {
+                  "type": "integer",
+                  "value": 1
+                },
+                "span": {
+                  "start": 2884,
+                  "end": 2885,
+                  "start_line": 104,
+                  "start_col": 14,
+                  "end_line": 104,
+                  "end_col": 15
+                }
+              },
+              {
+                "expr_type": "literal",
+                "value": {
+                  "type": "integer",
+                  "value": 2
+                },
+                "span": {
+                  "start": 2887,
+                  "end": 2888,
+                  "start_line": 104,
+                  "start_col": 17,
+                  "end_line": 104,
+                  "end_col": 18
+                }
+              },
+              {
+                "expr_type": "literal",
+                "value": {
+                  "type": "integer",
+                  "value": 3
+                },
+                "span": {
+                  "start": 2890,
+                  "end": 2891,
+                  "start_line": 104,
+                  "start_col": 20,
+                  "end_line": 104,
+                  "end_col": 21
+                }
+              },
+              {
+                "expr_type": "literal",
+                "value": {
+                  "type": "integer",
+                  "value": 4
+                },
+                "span": {
+                  "start": 2893,
+                  "end": 2894,
+                  "start_line": 104,
+                  "start_col": 23,
+                  "end_line": 104,
+                  "end_col": 24
+                }
+              },
+              {
+                "expr_type": "literal",
+                "value": {
+                  "type": "integer",
+                  "value": 5
+                },
+                "span": {
+                  "start": 2896,
+                  "end": 2897,
+                  "start_line": 104,
+                  "start_col": 26,
+                  "end_line": 104,
+                  "end_col": 27
+                }
+              }
+            ],
+            "span": {
+              "start": 2883,
+              "end": 2898,
+              "start_line": 104,
+              "start_col": 13,
+              "end_line": 104,
+              "end_col": 28
+            }
+          },
+          "span": {
+            "start": 2875,
+            "end": 2898,
+            "start_line": 104,
+            "start_col": 5,
+            "end_line": 104,
+            "end_col": 28
+          }
+        },
+        {
+          "declaration_type": "regular",
+          "name": "tags",
+          "value": {
+            "expr_type": "array",
+            "elements": [
+              {
+                "expr_type": "literal",
+                "value": {
+                  "type": "string",
+                  "value": "important"
+                },
+                "span": {
+                  "start": 2911,
+                  "end": 2922,
+                  "start_line": 105,
+                  "start_col": 13,
+                  "end_line": 105,
+                  "end_col": 24
+                }
+              },
+              {
+                "expr_type": "literal",
+                "value": {
+                  "type": "string",
+                  "value": "urgent"
+                },
+                "span": {
+                  "start": 2924,
+                  "end": 2932,
+                  "start_line": 105,
+                  "start_col": 26,
+                  "end_line": 105,
+                  "end_col": 34
+                }
+              },
+              {
+                "expr_type": "literal",
+                "value": {
+                  "type": "string",
+                  "value": "reviewed"
+                },
+                "span": {
+                  "start": 2934,
+                  "end": 2944,
+                  "start_line": 105,
+                  "start_col": 36,
+                  "end_line": 105,
+                  "end_col": 46
+                }
+              }
+            ],
+            "span": {
+              "start": 2910,
+              "end": 2945,
+              "start_line": 105,
+              "start_col": 12,
+              "end_line": 105,
+              "end_col": 47
+            }
+          },
+          "span": {
+            "start": 2903,
+            "end": 2945,
+            "start_line": 105,
+            "start_col": 5,
+            "end_line": 105,
+            "end_col": 47
+          }
+        },
+        {
+          "declaration_type": "regular",
+          "name": "mixedArray",
+          "value": {
+            "expr_type": "array",
+            "elements": [
+              {
+                "expr_type": "literal",
+                "value": {
+                  "type": "integer",
+                  "value": 1
+                },
+                "span": {
+                  "start": 2964,
+                  "end": 2965,
+                  "start_line": 106,
+                  "start_col": 19,
+                  "end_line": 106,
+                  "end_col": 20
+                }
+              },
+              {
+                "expr_type": "literal",
+                "value": {
+                  "type": "string",
+                  "value": "two"
+                },
+                "span": {
+                  "start": 2967,
+                  "end": 2972,
+                  "start_line": 106,
+                  "start_col": 22,
+                  "end_line": 106,
+                  "end_col": 27
+                }
+              },
+              {
+                "expr_type": "literal",
+                "value": {
+                  "type": "boolean",
+                  "value": true
+                },
+                "span": {
+                  "start": 2974,
+                  "end": 2978,
+                  "start_line": 106,
+                  "start_col": 29,
+                  "end_line": 106,
+                  "end_col": 33
+                }
+              },
+              {
+                "expr_type": "literal",
+                "value": {
+                  "type": "null"
+                },
+                "span": {
+                  "start": 2980,
+                  "end": 2984,
+                  "start_line": 106,
+                  "start_col": 35,
+                  "end_line": 106,
+                  "end_col": 39
+                }
+              }
+            ],
+            "span": {
+              "start": 2963,
+              "end": 2985,
+              "start_line": 106,
+              "start_col": 18,
+              "end_line": 106,
+              "end_col": 40
+            }
+          },
+          "span": {
+            "start": 2950,
+            "end": 2985,
+            "start_line": 106,
+            "start_col": 5,
+            "end_line": 106,
+            "end_col": 40
+          }
+        },
+        {
+          "declaration_type": "computed",
+          "name": "doubleCount",
+          "type_annotation": {
+            "type_kind": "primitive",
+            "kind": "number",
+            "span": {
+              "start": 3050,
+              "end": 3056,
+              "start_line": 109,
+              "start_col": 18,
+              "end_line": 109,
+              "end_col": 24
+            }
+          },
+          "expression": {
+            "expr_type": "binary",
+            "left": {
+              "expr_type": "member_access",
+              "root": "state",
+              "path": [
+                "count"
+              ],
+              "span": {
+                "start": 3060,
+                "end": 3072,
+                "start_line": 109,
+                "start_col": 28,
+                "end_line": 109,
+                "end_col": 40
+              }
+            },
+            "op": "mul",
+            "right": {
+              "expr_type": "literal",
+              "value": {
+                "type": "integer",
+                "value": 2
+              },
+              "span": {
+                "start": 3074,
+                "end": 3075,
+                "start_line": 109,
+                "start_col": 42,
+                "end_line": 109,
+                "end_col": 43
+              }
+            },
+            "span": {
+              "start": 3060,
+              "end": 3075,
+              "start_line": 109,
+              "start_col": 28,
+              "end_line": 109,
+              "end_col": 43
+            }
+          },
+          "span": {
+            "start": 3037,
+            "end": 3075,
+            "start_line": 109,
+            "start_col": 5,
+            "end_line": 109,
+            "end_col": 43
+          }
+        },
+        {
+          "declaration_type": "computed",
+          "name": "fullName",
+          "type_annotation": {
+            "type_kind": "primitive",
+            "kind": "string",
+            "span": {
+              "start": 3090,
+              "end": 3096,
+              "start_line": 110,
+              "start_col": 15,
+              "end_line": 110,
+              "end_col": 21
+            }
+          },
+          "expression": {
+            "expr_type": "binary",
+            "left": {
+              "expr_type": "binary",
+              "left": {
+                "expr_type": "member_access",
+                "root": "state",
+                "path": [
+                  "firstName"
+                ],
+                "span": {
+                  "start": 3100,
+                  "end": 3116,
+                  "start_line": 110,
+                  "start_col": 25,
+                  "end_line": 110,
+                  "end_col": 41
+                }
+              },
+              "op": "add",
+              "right": {
+                "expr_type": "literal",
+                "value": {
+                  "type": "string",
+                  "value": " "
+                },
+                "span": {
+                  "start": 3118,
+                  "end": 3121,
+                  "start_line": 110,
+                  "start_col": 43,
+                  "end_line": 110,
+                  "end_col": 46
+                }
+              },
+              "span": {
+                "start": 3100,
+                "end": 3194,
+                "start_line": 110,
+                "start_col": 25,
+                "end_line": 113,
+                "end_col": 5
+              }
+            },
+            "op": "add",
+            "right": {
+              "expr_type": "member_access",
+              "root": "state",
+              "path": [
+                "lastName\n    \n    // Validated state with validation chains"
+              ],
+              "span": {
+                "start": 3124,
+                "end": 3194,
+                "start_line": 110,
+                "start_col": 49,
+                "end_line": 113,
+                "end_col": 5
+              }
+            },
+            "span": {
+              "start": 3100,
+              "end": 3194,
+              "start_line": 110,
+              "start_col": 25,
+              "end_line": 113,
+              "end_col": 5
+            }
+          },
+          "span": {
+            "start": 3080,
+            "end": 3194,
+            "start_line": 110,
+            "start_col": 5,
+            "end_line": 113,
+            "end_col": 5
+          }
+        },
+        {
+          "declaration_type": "validated",
+          "name": "email",
+          "value": {
+            "expr_type": "literal",
+            "value": {
+              "type": "string",
+              "value": ""
+            },
+            "span": {
+              "start": 3202,
+              "end": 3204,
+              "start_line": 113,
+              "start_col": 13,
+              "end_line": 113,
+              "end_col": 15
+            }
+          },
+          "validators": [
+            {
+              "name": "email",
+              "category": "format",
+              "span": {
+                "start": 3205,
+                "end": 3212,
+                "start_line": 113,
+                "start_col": 16,
+                "end_line": 113,
+                "end_col": 23
+              }
+            },
+            {
+              "name": "min",
+              "args": [
+                {
+                  "arg_type": "number",
+                  "value": 5.0
+                }
+              ],
+              "span": {
+                "start": 3212,
+                "end": 3219,
+                "start_line": 113,
+                "start_col": 23,
+                "end_line": 113,
+                "end_col": 30
+              }
+            }
+          ],
+          "span": {
+            "start": 3194,
+            "end": 3219,
+            "start_line": 113,
+            "start_col": 5,
+            "end_line": 113,
+            "end_col": 30
+          }
+        },
+        {
+          "declaration_type": "validated",
+          "name": "username",
+          "value": {
+            "expr_type": "literal",
+            "value": {
+              "type": "string",
+              "value": ""
+            },
+            "span": {
+              "start": 3235,
+              "end": 3237,
+              "start_line": 114,
+              "start_col": 16,
+              "end_line": 114,
+              "end_col": 18
+            }
+          },
+          "validators": [
+            {
+              "name": "min",
+              "args": [
+                {
+                  "arg_type": "number",
+                  "value": 3.0
+                }
+              ],
+              "span": {
+                "start": 3238,
+                "end": 3245,
+                "start_line": 114,
+                "start_col": 19,
+                "end_line": 114,
+                "end_col": 26
+              }
+            },
+            {
+              "name": "max",
+              "args": [
+                {
+                  "arg_type": "number",
+                  "value": 20.0
+                }
+              ],
+              "span": {
+                "start": 3246,
+                "end": 3254,
+                "start_line": 114,
+                "start_col": 27,
+                "end_line": 114,
+                "end_col": 35
+              }
+            }
+          ],
+          "span": {
+            "start": 3224,
+            "end": 3254,
+            "start_line": 114,
+            "start_col": 5,
+            "end_line": 114,
+            "end_col": 35
+          }
+        },
+        {
+          "declaration_type": "validated",
+          "name": "validatedAge",
+          "value": {
+            "expr_type": "literal",
+            "value": {
+              "type": "integer",
+              "value": 0
+            },
+            "span": {
+              "start": 3274,
+              "end": 3275,
+              "start_line": 115,
+              "start_col": 20,
+              "end_line": 115,
+              "end_col": 21
+            }
+          },
+          "validators": [
+            {
+              "name": "min",
+              "args": [
+                {
+                  "arg_type": "number",
+                  "value": 0.0
+                }
+              ],
+              "span": {
+                "start": 3276,
+                "end": 3283,
+                "start_line": 115,
+                "start_col": 22,
+                "end_line": 115,
+                "end_col": 29
+              }
+            },
+            {
+              "name": "max",
+              "args": [
+                {
+                  "arg_type": "number",
+                  "value": 150.0
+                }
+              ],
+              "span": {
+                "start": 3284,
+                "end": 3293,
+                "start_line": 115,
+                "start_col": 30,
+                "end_line": 115,
+                "end_col": 39
+              }
+            }
+          ],
+          "span": {
+            "start": 3259,
+            "end": 3293,
+            "start_line": 115,
+            "start_col": 5,
+            "end_line": 115,
+            "end_col": 39
+          }
+        }
+      ],
+      "span": {
+        "start": 2292,
+        "end": 3295,
+        "start_line": 77,
+        "start_col": 1,
+        "end_line": 116,
+        "end_col": 2
+      }
+    },
+    {
+      "kind": "hooks",
+      "entries": [
+        {
+          "hook_type": "lifecycle",
+          "kind": "mount",
+          "actions": [
+            {
+              "action_type": "simple",
+              "type": "method_call",
+              "namespace": "console",
+              "method": "log",
+              "arguments": [
+                {
+                  "value": {
+                    "expr_type": "literal",
+                    "value": {
+                      "type": "string",
+                      "value": "Component mounted"
+                    },
+                    "span": {
+                      "start": 3596,
+                      "end": 3615,
+                      "start_line": 125,
+                      "start_col": 21,
+                      "end_line": 125,
+                      "end_col": 40
+                    }
+                  }
+                }
+              ],
+              "span": {
+                "start": 3584,
+                "end": 3616,
+                "start_line": 125,
+                "start_col": 9,
+                "end_line": 125,
+                "end_col": 41
+              }
+            },
+            {
+              "action_type": "simple",
+              "type": "call",
+              "api": "call",
+              "args": [
+                {
+                  "expr_type": "literal",
+                  "value": {
+                    "type": "string",
+                    "value": "fetchData"
+                  },
+                  "span": {
+                    "start": 3635,
+                    "end": 3646,
+                    "start_line": 126,
+                    "start_col": 18,
+                    "end_line": 126,
+                    "end_col": 29
+                  }
+                }
+              ],
+              "span": {
+                "start": 3626,
+                "end": 3647,
+                "start_line": 126,
+                "start_col": 9,
+                "end_line": 126,
+                "end_col": 30
+              }
+            }
+          ],
+          "span": {
+            "start": 3564,
+            "end": 3653,
+            "start_line": 124,
+            "start_col": 5,
+            "end_line": 127,
+            "end_col": 6
+          }
+        },
+        {
+          "hook_type": "lifecycle",
+          "kind": "unmount",
+          "actions": [
+            {
+              "action_type": "simple",
+              "type": "method_call",
+              "namespace": "console",
+              "method": "log",
+              "arguments": [
+                {
+                  "value": {
+                    "expr_type": "literal",
+                    "value": {
+                      "type": "string",
+                      "value": "Component unmounting"
+                    },
+                    "span": {
+                      "start": 3697,
+                      "end": 3719,
+                      "start_line": 130,
+                      "start_col": 21,
+                      "end_line": 130,
+                      "end_col": 43
+                    }
+                  }
+                }
+              ],
+              "span": {
+                "start": 3685,
+                "end": 3720,
+                "start_line": 130,
+                "start_col": 9,
+                "end_line": 130,
+                "end_col": 44
+              }
+            },
+            {
+              "action_type": "simple",
+              "type": "method_call",
+              "namespace": "cleanup",
+              "method": "all",
+              "span": {
+                "start": 3730,
+                "end": 3743,
+                "start_line": 131,
+                "start_col": 9,
+                "end_line": 131,
+                "end_col": 22
+              }
+            }
+          ],
+          "span": {
+            "start": 3663,
+            "end": 3749,
+            "start_line": 129,
+            "start_col": 5,
+            "end_line": 132,
+            "end_col": 6
+          }
+        },
+        {
+          "hook_type": "watcher",
+          "targets": [
+            {
+              "expr_type": "literal",
+              "value": {
+                "type": "null"
+              },
+              "span": {
+                "start": 3806,
+                "end": 3817,
+                "start_line": 135,
+                "start_col": 12,
+                "end_line": 135,
+                "end_col": 23
+              }
+            }
+          ],
+          "actions": [
+            {
+              "action_type": "simple",
+              "type": "method_call",
+              "namespace": "console",
+              "method": "log",
+              "arguments": [
+                {
+                  "value": {
+                    "expr_type": "literal",
+                    "value": {
+                      "type": "string",
+                      "value": "Count changed"
+                    },
+                    "span": {
+                      "start": 3844,
+                      "end": 3859,
+                      "start_line": 136,
+                      "start_col": 21,
+                      "end_line": 136,
+                      "end_col": 36
+                    }
+                  }
+                }
+              ],
+              "span": {
+                "start": 3832,
+                "end": 3860,
+                "start_line": 136,
+                "start_col": 9,
+                "end_line": 136,
+                "end_col": 37
+              }
+            }
+          ],
+          "span": {
+            "start": 3799,
+            "end": 3866,
+            "start_line": 135,
+            "start_col": 5,
+            "end_line": 137,
+            "end_col": 6
+          }
+        },
+        {
+          "hook_type": "watcher",
+          "targets": [
+            {
+              "expr_type": "literal",
+              "value": {
+                "type": "null"
+              },
+              "span": {
+                "start": 3919,
+                "end": 3936,
+                "start_line": 140,
+                "start_col": 12,
+                "end_line": 140,
+                "end_col": 29
+              }
+            }
+          ],
+          "options": [
+            {
+              "name": "debounce",
+              "value": 300.0,
+              "span": {
+                "start": 3938,
+                "end": 3951,
+                "start_line": 140,
+                "start_col": 31,
+                "end_line": 140,
+                "end_col": 44
+              }
+            }
+          ],
+          "actions": [
+            {
+              "action_type": "simple",
+              "type": "call",
+              "api": "call",
+              "args": [
+                {
+                  "expr_type": "literal",
+                  "value": {
+                    "type": "string",
+                    "value": "search"
+                  },
+                  "span": {
+                    "start": 3975,
+                    "end": 3983,
+                    "start_line": 141,
+                    "start_col": 18,
+                    "end_line": 141,
+                    "end_col": 26
+                  }
+                },
+                {
+                  "expr_type": "member_access",
+                  "root": "state",
+                  "path": [
+                    "searchQuery"
+                  ],
+                  "span": {
+                    "start": 3992,
+                    "end": 4009,
+                    "start_line": 141,
+                    "start_col": 35,
+                    "end_line": 141,
+                    "end_col": 52
+                  }
+                }
+              ],
+              "span": {
+                "start": 3966,
+                "end": 4010,
+                "start_line": 141,
+                "start_col": 9,
+                "end_line": 141,
+                "end_col": 53
+              }
+            }
+          ],
+          "span": {
+            "start": 3912,
+            "end": 4016,
+            "start_line": 140,
+            "start_col": 5,
+            "end_line": 142,
+            "end_col": 6
+          }
+        }
+      ],
+      "span": {
+        "start": 3501,
+        "end": 4018,
+        "start_line": 122,
+        "start_col": 1,
+        "end_line": 143,
+        "end_col": 2
+      }
+    },
+    {
+      "kind": "fragment",
+      "name": "ProductCard",
+      "params": [
+        {
+          "name": "product",
+          "type_annotation": {
+            "type_kind": "named",
+            "name": "Product",
+            "span": {
+              "start": 4260,
+              "end": 4267,
+              "start_line": 149,
+              "start_col": 31,
+              "end_line": 149,
+              "end_col": 38
+            }
+          },
+          "required": true,
+          "span": {
+            "start": 4251,
+            "end": 4267,
+            "start_line": 149,
+            "start_col": 22,
+            "end_line": 149,
+            "end_col": 38
+          }
+        }
+      ],
+      "body": [
+        {
+          "content_type": "component",
+          "name": "Card",
+          "attributes": [
+            {
+              "name": "className",
+              "value": {
+                "value_type": "string",
+                "value": "product-card"
+              },
+              "span": {
+                "start": 4281,
+                "end": 4305,
+                "start_line": 150,
+                "start_col": 11,
+                "end_line": 150,
+                "end_col": 35
+              }
+            }
+          ],
+          "children": [
+            {
+              "content_type": "component",
+              "name": "CardHeader",
+              "children": [
+                {
+                  "content_type": "component",
+                  "name": "Text",
+                  "attributes": [
+                    {
+                      "name": "variant",
+                      "value": {
+                        "value_type": "string",
+                        "value": "h6"
+                      },
+                      "span": {
+                        "start": 4346,
+                        "end": 4358,
+                        "start_line": 152,
+                        "start_col": 19,
+                        "end_line": 152,
+                        "end_col": 31
+                      }
+                    }
+                  ],
+                  "children": [
+                    {
+                      "content_type": "text",
+                      "value": "{product.name}",
+                      "span": {
+                        "start": 4359,
+                        "end": 4373,
+                        "start_line": 152,
+                        "start_col": 32,
+                        "end_line": 152,
+                        "end_col": 46
+                      }
+                    }
+                  ],
+                  "span": {
+                    "start": 4340,
+                    "end": 4380,
+                    "start_line": 152,
+                    "start_col": 13,
+                    "end_line": 152,
+                    "end_col": 53
+                  }
+                }
+              ],
+              "span": {
+                "start": 4315,
+                "end": 4402,
+                "start_line": 151,
+                "start_col": 9,
+                "end_line": 153,
+                "end_col": 22
+              }
+            },
+            {
+              "content_type": "component",
+              "name": "CardContent",
+              "children": [
+                {
+                  "content_type": "component",
+                  "name": "Text",
+                  "attributes": [
+                    {
+                      "name": "variant",
+                      "value": {
+                        "value_type": "string",
+                        "value": "h5"
+                      },
+                      "span": {
+                        "start": 4490,
+                        "end": 4502,
+                        "start_line": 156,
+                        "start_col": 19,
+                        "end_line": 156,
+                        "end_col": 31
+                      }
+                    },
+                    {
+                      "name": "color",
+                      "value": {
+                        "value_type": "string",
+                        "value": "primary"
+                      },
+                      "span": {
+                        "start": 4503,
+                        "end": 4518,
+                        "start_line": 156,
+                        "start_col": 32,
+                        "end_line": 156,
+                        "end_col": 47
+                      }
+                    }
+                  ],
+                  "children": [
+                    {
+                      "content_type": "text",
+                      "value": "{product.price}",
+                      "span": {
+                        "start": 4519,
+                        "end": 4534,
+                        "start_line": 156,
+                        "start_col": 48,
+                        "end_line": 156,
+                        "end_col": 63
+                      }
+                    }
+                  ],
+                  "span": {
+                    "start": 4484,
+                    "end": 4541,
+                    "start_line": 156,
+                    "start_col": 13,
+                    "end_line": 156,
+                    "end_col": 70
+                  }
+                }
+              ],
+              "span": {
+                "start": 4411,
+                "end": 4564,
+                "start_line": 154,
+                "start_col": 9,
+                "end_line": 157,
+                "end_col": 23
+              }
+            },
+            {
+              "content_type": "component",
+              "name": "CardActions",
+              "children": [
+                {
+                  "content_type": "component",
+                  "name": "Button",
+                  "attributes": [
+                    {
+                      "name": "variant",
+                      "value": {
+                        "value_type": "string",
+                        "value": "contained"
+                      },
+                      "span": {
+                        "start": 4607,
+                        "end": 4626,
+                        "start_line": 159,
+                        "start_col": 21,
+                        "end_line": 159,
+                        "end_col": 40
+                      }
+                    }
+                  ],
+                  "children": [
+                    {
+                      "content_type": "text",
+                      "value": "Select",
+                      "span": {
+                        "start": 4644,
+                        "end": 4650,
+                        "start_line": 160,
+                        "start_col": 17,
+                        "end_line": 160,
+                        "end_col": 23
+                      }
+                    }
+                  ],
+                  "span": {
+                    "start": 4599,
+                    "end": 4672,
+                    "start_line": 159,
+                    "start_col": 13,
+                    "end_line": 161,
+                    "end_col": 22
+                  }
+                }
+              ],
+              "span": {
+                "start": 4573,
+                "end": 4695,
+                "start_line": 158,
+                "start_col": 9,
+                "end_line": 162,
+                "end_col": 23
+              }
+            }
+          ],
+          "span": {
+            "start": 4275,
+            "end": 4707,
+            "start_line": 150,
+            "start_col": 5,
+            "end_line": 163,
+            "end_col": 12
+          }
+        }
+      ],
+      "span": {
+        "start": 4230,
+        "end": 4709,
+        "start_line": 149,
+        "start_col": 1,
+        "end_line": 164,
+        "end_col": 2
+      }
+    },
+    {
+      "kind": "fragment",
+      "name": "UserAvatar",
+      "params": [
+        {
+          "name": "name",
+          "type_annotation": {
+            "type_kind": "primitive",
+            "kind": "string",
+            "span": {
+              "start": 4737,
+              "end": 4743,
+              "start_line": 166,
+              "start_col": 27,
+              "end_line": 166,
+              "end_col": 33
+            }
+          },
+          "required": true,
+          "span": {
+            "start": 4731,
+            "end": 4743,
+            "start_line": 166,
+            "start_col": 21,
+            "end_line": 166,
+            "end_col": 33
+          }
+        }
+      ],
+      "body": [
+        {
+          "content_type": "component",
+          "name": "Avatar",
+          "attributes": [
+            {
+              "name": "size",
+              "value": {
+                "value_type": "expression",
+                "value": {
+                  "expr_type": "literal",
+                  "value": {
+                    "type": "integer",
+                    "value": 40
+                  },
+                  "span": {
+                    "start": 4765,
+                    "end": 4767,
+                    "start_line": 167,
+                    "start_col": 19,
+                    "end_line": 167,
+                    "end_col": 21
+                  }
+                }
+              },
+              "span": {
+                "start": 4759,
+                "end": 4768,
+                "start_line": 167,
+                "start_col": 13,
+                "end_line": 167,
+                "end_col": 22
+              }
+            }
+          ],
+          "children": [
+            {
+              "content_type": "component",
+              "name": "AvatarFallback",
+              "children": [
+                {
+                  "content_type": "text",
+                  "value": "{name}",
+                  "span": {
+                    "start": 4794,
+                    "end": 4800,
+                    "start_line": 168,
+                    "start_col": 25,
+                    "end_line": 168,
+                    "end_col": 31
+                  }
+                }
+              ],
+              "span": {
+                "start": 4778,
+                "end": 4817,
+                "start_line": 168,
+                "start_col": 9,
+                "end_line": 168,
+                "end_col": 48
+              }
+            }
+          ],
+          "span": {
+            "start": 4751,
+            "end": 4831,
+            "start_line": 167,
+            "start_col": 5,
+            "end_line": 169,
+            "end_col": 14
+          }
+        }
+      ],
+      "span": {
+        "start": 4711,
+        "end": 4833,
+        "start_line": 166,
+        "start_col": 1,
+        "end_line": 170,
+        "end_col": 2
+      }
+    },
+    {
+      "kind": "fragment",
+      "name": "Modal",
+      "params": [
+        {
+          "name": "title",
+          "type_annotation": {
+            "type_kind": "primitive",
+            "kind": "string",
+            "span": {
+              "start": 4879,
+              "end": 4885,
+              "start_line": 173,
+              "start_col": 23,
+              "end_line": 173,
+              "end_col": 29
+            }
+          },
+          "required": true,
+          "span": {
+            "start": 4872,
+            "end": 4885,
+            "start_line": 173,
+            "start_col": 16,
+            "end_line": 173,
+            "end_col": 29
+          }
+        }
+      ],
+      "body": [
+        {
+          "content_type": "component",
+          "name": "Dialog",
+          "children": [
+            {
+              "content_type": "component",
+              "name": "DialogContent",
+              "children": [
+                {
+                  "content_type": "component",
+                  "name": "Slot",
+                  "self_closing": true,
+                  "span": {
+                    "start": 4981,
+                    "end": 4989,
+                    "start_line": 177,
+                    "start_col": 13,
+                    "end_line": 177,
+                    "end_col": 21
+                  }
+                }
+              ],
+              "span": {
+                "start": 4953,
+                "end": 5014,
+                "start_line": 176,
+                "start_col": 9,
+                "end_line": 178,
+                "end_col": 25
+              }
+            }
+          ],
+          "span": {
+            "start": 4893,
+            "end": 5028,
+            "start_line": 174,
+            "start_col": 5,
+            "end_line": 179,
+            "end_col": 14
+          }
+        }
+      ],
+      "span": {
+        "start": 4857,
+        "end": 5030,
+        "start_line": 173,
+        "start_col": 1,
+        "end_line": 180,
+        "end_col": 2
+      }
+    },
+    {
+      "kind": "fragment",
+      "name": "Layout",
+      "params": [
+        {
+          "name": "title",
+          "type_annotation": {
+            "type_kind": "primitive",
+            "kind": "string",
+            "span": {
+              "start": 5084,
+              "end": 5090,
+              "start_line": 183,
+              "start_col": 24,
+              "end_line": 183,
+              "end_col": 30
+            }
+          },
+          "required": true,
+          "span": {
+            "start": 5077,
+            "end": 5090,
+            "start_line": 183,
+            "start_col": 17,
+            "end_line": 183,
+            "end_col": 30
+          }
+        }
+      ],
+      "body": [
+        {
+          "content_type": "component",
+          "name": "Container",
+          "children": [
+            {
+              "content_type": "component",
+              "name": "Slot",
+              "attributes": [
+                {
+                  "name": "name",
+                  "value": {
+                    "value_type": "string",
+                    "value": "header"
+                  },
+                  "span": {
+                    "start": 5124,
+                    "end": 5137,
+                    "start_line": 185,
+                    "start_col": 15,
+                    "end_line": 185,
+                    "end_col": 28
+                  }
+                }
+              ],
+              "children": [
+                {
+                  "content_type": "component",
+                  "name": "Text",
+                  "children": [
+                    {
+                      "content_type": "text",
+                      "value": "Default Header",
+                      "span": {
+                        "start": 5157,
+                        "end": 5171,
+                        "start_line": 186,
+                        "start_col": 19,
+                        "end_line": 186,
+                        "end_col": 33
+                      }
+                    }
+                  ],
+                  "span": {
+                    "start": 5151,
+                    "end": 5178,
+                    "start_line": 186,
+                    "start_col": 13,
+                    "end_line": 186,
+                    "end_col": 40
+                  }
+                }
+              ],
+              "span": {
+                "start": 5118,
+                "end": 5194,
+                "start_line": 185,
+                "start_col": 9,
+                "end_line": 187,
+                "end_col": 16
+              }
+            },
+            {
+              "content_type": "component",
+              "name": "Slot",
+              "self_closing": true,
+              "span": {
+                "start": 5203,
+                "end": 5211,
+                "start_line": 188,
+                "start_col": 9,
+                "end_line": 188,
+                "end_col": 17
+              }
+            },
+            {
+              "content_type": "component",
+              "name": "Slot",
+              "self_closing": true,
+              "attributes": [
+                {
+                  "name": "name",
+                  "value": {
+                    "value_type": "string",
+                    "value": "footer"
+                  },
+                  "span": {
+                    "start": 5226,
+                    "end": 5239,
+                    "start_line": 189,
+                    "start_col": 15,
+                    "end_line": 189,
+                    "end_col": 28
+                  }
+                }
+              ],
+              "span": {
+                "start": 5220,
+                "end": 5242,
+                "start_line": 189,
+                "start_col": 9,
+                "end_line": 189,
+                "end_col": 31
+              }
+            }
+          ],
+          "span": {
+            "start": 5098,
+            "end": 5259,
+            "start_line": 184,
+            "start_col": 5,
+            "end_line": 190,
+            "end_col": 17
+          }
+        }
+      ],
+      "span": {
+        "start": 5061,
+        "end": 5261,
+        "start_line": 183,
+        "start_col": 1,
+        "end_line": 191,
+        "end_col": 2
+      }
+    },
+    {
+      "kind": "template",
+      "content": [
+        {
+          "content_type": "component",
+          "name": "Text",
+          "self_closing": true,
+          "attributes": [
+            {
+              "name": "content",
+              "value": {
+                "value_type": "string",
+                "value": "Static text"
+              },
+              "span": {
+                "start": 5630,
+                "end": 5651,
+                "start_line": 202,
+                "start_col": 11,
+                "end_line": 202,
+                "end_col": 32
+              }
+            }
+          ],
+          "span": {
+            "start": 5624,
+            "end": 5654,
+            "start_line": 202,
+            "start_col": 5,
+            "end_line": 202,
+            "end_col": 35
+          }
+        },
+        {
+          "content_type": "component",
+          "name": "Text",
+          "self_closing": true,
+          "attributes": [
+            {
+              "name": "content",
+              "value": {
+                "value_type": "expression",
+                "value": {
+                  "expr_type": "member_access",
+                  "root": "state",
+                  "path": [
+                    "message"
+                  ],
+                  "span": {
+                    "start": 5674,
+                    "end": 5687,
+                    "start_line": 203,
+                    "start_col": 20,
+                    "end_line": 203,
+                    "end_col": 33
+                  }
+                }
+              },
+              "span": {
+                "start": 5665,
+                "end": 5688,
+                "start_line": 203,
+                "start_col": 11,
+                "end_line": 203,
+                "end_col": 34
+              }
+            }
+          ],
+          "span": {
+            "start": 5659,
+            "end": 5691,
+            "start_line": 203,
+            "start_col": 5,
+            "end_line": 203,
+            "end_col": 37
+          }
+        },
+        {
+          "content_type": "component",
+          "name": "Button",
+          "self_closing": true,
+          "attributes": [
+            {
+              "name": "variant",
+              "value": {
+                "value_type": "string",
+                "value": "contained"
+              },
+              "span": {
+                "start": 5713,
+                "end": 5732,
+                "start_line": 205,
+                "start_col": 9,
+                "end_line": 205,
+                "end_col": 28
+              }
+            },
+            {
+              "name": "color",
+              "value": {
+                "value_type": "string",
+                "value": "primary"
+              },
+              "span": {
+                "start": 5742,
+                "end": 5757,
+                "start_line": 206,
+                "start_col": 9,
+                "end_line": 206,
+                "end_col": 24
+              }
+            },
+            {
+              "name": "disabled",
+              "value": {
+                "value_type": "expression",
+                "value": {
+                  "expr_type": "member_access",
+                  "root": "state",
+                  "path": [
+                    "isLoading"
+                  ],
+                  "span": {
+                    "start": 5776,
+                    "end": 5791,
+                    "start_line": 207,
+                    "start_col": 19,
+                    "end_line": 207,
+                    "end_col": 34
+                  }
+                }
+              },
+              "span": {
+                "start": 5766,
+                "end": 5792,
+                "start_line": 207,
+                "start_col": 9,
+                "end_line": 207,
+                "end_col": 35
+              }
+            },
+            {
+              "name": "size",
+              "value": {
+                "value_type": "string",
+                "value": "large"
+              },
+              "span": {
+                "start": 5801,
+                "end": 5813,
+                "start_line": 208,
+                "start_col": 9,
+                "end_line": 208,
+                "end_col": 21
+              }
+            },
+            {
+              "name": "fullWidth",
+              "value": {
+                "value_type": "expression",
+                "value": {
+                  "expr_type": "literal",
+                  "value": {
+                    "type": "boolean",
+                    "value": true
+                  },
+                  "span": {
+                    "start": 5833,
+                    "end": 5837,
+                    "start_line": 209,
+                    "start_col": 20,
+                    "end_line": 209,
+                    "end_col": 24
+                  }
+                }
+              },
+              "span": {
+                "start": 5822,
+                "end": 5838,
+                "start_line": 209,
+                "start_col": 9,
+                "end_line": 209,
+                "end_col": 25
+              }
+            }
+          ],
+          "span": {
+            "start": 5696,
+            "end": 5845,
+            "start_line": 204,
+            "start_col": 5,
+            "end_line": 210,
+            "end_col": 7
+          }
+        },
+        {
+          "content_type": "component",
+          "name": "Button",
+          "attributes": [
+            {
+              "name": "variant",
+              "value": {
+                "value_type": "string",
+                "value": "outlined"
+              },
+              "span": {
+                "start": 5925,
+                "end": 5943,
+                "start_line": 214,
+                "start_col": 9,
+                "end_line": 214,
+                "end_col": 27
+              }
+            }
+          ],
+          "events": [
+            {
+              "event": "click",
+              "handler": {
+                "handler_type": {
+                  "type": "arrow",
+                  "value": {
+                    "params": [],
+                    "body": {
+                      "body_type": "block",
+                      "content": [
+                        {
+                          "stmt_type": "expression",
+                          "expr_type": "assignment",
+                          "target": {
+                            "expr_type": "member_access",
+                            "root": "state",
+                            "path": [
+                              "count"
+                            ],
+                            "span": {
+                              "start": 5963,
+                              "end": 5992,
+                              "start_line": 215,
+                              "start_col": 20,
+                              "end_line": 215,
+                              "end_col": 49
+                            }
+                          },
+                          "value": {
+                            "expr_type": "member_access",
+                            "root": "state",
+                            "path": [
+                              "count + 1"
+                            ],
+                            "span": {
+                              "start": 5963,
+                              "end": 5992,
+                              "start_line": 215,
+                              "start_col": 20,
+                              "end_line": 215,
+                              "end_col": 49
+                            }
+                          },
+                          "span": {
+                            "start": 5963,
+                            "end": 5992,
+                            "start_line": 215,
+                            "start_col": 20,
+                            "end_line": 215,
+                            "end_col": 49
+                          }
+                        }
+                      ]
+                    },
+                    "span": {
+                      "start": 5952,
+                      "end": 5993,
+                      "start_line": 215,
+                      "start_col": 9,
+                      "end_line": 215,
+                      "end_col": 50
+                    }
+                  }
+                }
+              },
+              "span": {
+                "start": 5952,
+                "end": 5993,
+                "start_line": 215,
+                "start_col": 9,
+                "end_line": 215,
+                "end_col": 50
+              }
+            }
+          ],
+          "children": [
+            {
+              "content_type": "text",
+              "value": "Increment",
+              "span": {
+                "start": 6008,
+                "end": 6017,
+                "start_line": 217,
+                "start_col": 9,
+                "end_line": 217,
+                "end_col": 18
+              }
+            }
+          ],
+          "span": {
+            "start": 5908,
+            "end": 6031,
+            "start_line": 213,
+            "start_col": 5,
+            "end_line": 218,
+            "end_col": 14
+          }
+        },
+        {
+          "content_type": "component",
+          "name": "Button",
+          "events": [
+            {
+              "event": "click",
+              "handler": {
+                "handler_type": {
+                  "type": "arrow",
+                  "value": {
+                    "params": [],
+                    "body": {
+                      "body_type": "block",
+                      "content": [
+                        {
+                          "stmt_type": "expression",
+                          "expr_type": "assignment",
+                          "target": {
+                            "expr_type": "member_access",
+                            "root": "state",
+                            "path": [
+                              "isLoading"
+                            ],
+                            "span": {
+                              "start": 6123,
+                              "end": 6145,
+                              "start_line": 223,
+                              "start_col": 13,
+                              "end_line": 223,
+                              "end_col": 35
+                            }
+                          },
+                          "value": {
+                            "expr_type": "literal",
+                            "value": {
+                              "type": "boolean",
+                              "value": true
+                            },
+                            "span": {
+                              "start": 6123,
+                              "end": 6145,
+                              "start_line": 223,
+                              "start_col": 13,
+                              "end_line": 223,
+                              "end_col": 35
+                            }
+                          },
+                          "span": {
+                            "start": 6123,
+                            "end": 6145,
+                            "start_line": 223,
+                            "start_col": 13,
+                            "end_line": 223,
+                            "end_col": 35
+                          }
+                        },
+                        {
+                          "stmt_type": "expression",
+                          "expr_type": "method_call",
+                          "namespace": "api",
+                          "method": "call",
+                          "arguments": [
+                            {
+                              "value": {
+                                "expr_type": "literal",
+                                "value": {
+                                  "type": "string",
+                                  "value": "submit"
+                                },
+                                "span": {
+                                  "start": 6168,
+                                  "end": 6176,
+                                  "start_line": 224,
+                                  "start_col": 22,
+                                  "end_line": 224,
+                                  "end_col": 30
+                                }
+                              }
+                            }
+                          ],
+                          "span": {
+                            "start": 6159,
+                            "end": 6177,
+                            "start_line": 224,
+                            "start_col": 13,
+                            "end_line": 224,
+                            "end_col": 31
+                          }
+                        },
+                        {
+                          "stmt_type": "expression",
+                          "expr_type": "method_call",
+                          "namespace": "toast",
+                          "method": "show",
+                          "arguments": [
+                            {
+                              "value": {
+                                "expr_type": "literal",
+                                "value": {
+                                  "type": "string",
+                                  "value": "Submitted!"
+                                },
+                                "span": {
+                                  "start": 6202,
+                                  "end": 6214,
+                                  "start_line": 225,
+                                  "start_col": 24,
+                                  "end_line": 225,
+                                  "end_col": 36
+                                }
+                              }
+                            }
+                          ],
+                          "span": {
+                            "start": 6191,
+                            "end": 6215,
+                            "start_line": 225,
+                            "start_col": 13,
+                            "end_line": 225,
+                            "end_col": 37
+                          }
+                        }
+                      ]
+                    },
+                    "span": {
+                      "start": 6099,
+                      "end": 6225,
+                      "start_line": 222,
+                      "start_col": 9,
+                      "end_line": 226,
+                      "end_col": 10
+                    }
+                  }
+                }
+              },
+              "span": {
+                "start": 6099,
+                "end": 6225,
+                "start_line": 222,
+                "start_col": 9,
+                "end_line": 226,
+                "end_col": 10
+              }
+            }
+          ],
+          "children": [
+            {
+              "content_type": "text",
+              "value": "Submit",
+              "span": {
+                "start": 6240,
+                "end": 6246,
+                "start_line": 228,
+                "start_col": 9,
+                "end_line": 228,
+                "end_col": 15
+              }
+            }
+          ],
+          "span": {
+            "start": 6082,
+            "end": 6260,
+            "start_line": 221,
+            "start_col": 5,
+            "end_line": 229,
+            "end_col": 14
+          }
+        },
+        {
+          "content_type": "component",
+          "name": "Container",
+          "attributes": [
+            {
+              "name": "maxWidth",
+              "value": {
+                "value_type": "string",
+                "value": "lg"
+              },
+              "span": {
+                "start": 6306,
+                "end": 6319,
+                "start_line": 232,
+                "start_col": 16,
+                "end_line": 232,
+                "end_col": 29
+              }
+            }
+          ],
+          "children": [
+            {
+              "content_type": "component",
+              "name": "Card",
+              "attributes": [
+                {
+                  "name": "elevation",
+                  "value": {
+                    "value_type": "expression",
+                    "value": {
+                      "expr_type": "literal",
+                      "value": {
+                        "type": "integer",
+                        "value": 2
+                      },
+                      "span": {
+                        "start": 6346,
+                        "end": 6347,
+                        "start_line": 233,
+                        "start_col": 26,
+                        "end_line": 233,
+                        "end_col": 27
+                      }
+                    }
+                  },
+                  "span": {
+                    "start": 6335,
+                    "end": 6348,
+                    "start_line": 233,
+                    "start_col": 15,
+                    "end_line": 233,
+                    "end_col": 28
+                  }
+                }
+              ],
+              "children": [
+                {
+                  "content_type": "component",
+                  "name": "CardContent",
+                  "children": [
+                    {
+                      "content_type": "component",
+                      "name": "Text",
+                      "children": [
+                        {
+                          "content_type": "text",
+                          "value": "Content here",
+                          "span": {
+                            "start": 6443,
+                            "end": 6455,
+                            "start_line": 236,
+                            "start_col": 23,
+                            "end_line": 236,
+                            "end_col": 35
+                          }
+                        }
+                      ],
+                      "span": {
+                        "start": 6437,
+                        "end": 6462,
+                        "start_line": 236,
+                        "start_col": 17,
+                        "end_line": 236,
+                        "end_col": 42
+                      }
+                    }
+                  ],
+                  "span": {
+                    "start": 6407,
+                    "end": 6489,
+                    "start_line": 235,
+                    "start_col": 13,
+                    "end_line": 237,
+                    "end_col": 27
+                  }
+                }
+              ],
+              "span": {
+                "start": 6329,
+                "end": 6505,
+                "start_line": 233,
+                "start_col": 9,
+                "end_line": 238,
+                "end_col": 16
+              }
+            }
+          ],
+          "span": {
+            "start": 6295,
+            "end": 6522,
+            "start_line": 232,
+            "start_col": 5,
+            "end_line": 239,
+            "end_col": 17
+          }
+        },
+        {
+          "content_type": "control_flow",
+          "flow_type": "if",
+          "condition": {
+            "expr_type": "member_access",
+            "root": "state",
+            "path": [
+              "isLoading"
+            ],
+            "span": {
+              "start": 6747,
+              "end": 6763,
+              "start_line": 246,
+              "start_col": 8,
+              "end_line": 246,
+              "end_col": 24
+            }
+          },
+          "then_branch": [
+            {
+              "content_type": "component",
+              "name": "Skeleton",
+              "self_closing": true,
+              "attributes": [
+                {
+                  "name": "variant",
+                  "value": {
+                    "value_type": "string",
+                    "value": "rectangular"
+                  },
+                  "span": {
+                    "start": 6783,
+                    "end": 6804,
+                    "start_line": 247,
+                    "start_col": 19,
+                    "end_line": 247,
+                    "end_col": 40
+                  }
+                },
+                {
+                  "name": "height",
+                  "value": {
+                    "value_type": "expression",
+                    "value": {
+                      "expr_type": "literal",
+                      "value": {
+                        "type": "integer",
+                        "value": 200
+                      },
+                      "span": {
+                        "start": 6813,
+                        "end": 6816,
+                        "start_line": 247,
+                        "start_col": 49,
+                        "end_line": 247,
+                        "end_col": 52
+                      }
+                    }
+                  },
+                  "span": {
+                    "start": 6805,
+                    "end": 6817,
+                    "start_line": 247,
+                    "start_col": 41,
+                    "end_line": 247,
+                    "end_col": 53
+                  }
+                }
+              ],
+              "span": {
+                "start": 6773,
+                "end": 6820,
+                "start_line": 247,
+                "start_col": 9,
+                "end_line": 247,
+                "end_col": 56
+              }
+            }
+          ],
+          "span": {
+            "start": 6744,
+            "end": 6851,
+            "start_line": 246,
+            "start_col": 5,
+            "end_line": 251,
+            "end_col": 5
+          }
+        },
+        {
+          "content_type": "control_flow",
+          "flow_type": "if",
+          "condition": {
+            "expr_type": "member_access",
+            "root": "state",
+            "path": [
+              "user"
+            ],
+            "span": {
+              "start": 6854,
+              "end": 6865,
+              "start_line": 251,
+              "start_col": 8,
+              "end_line": 251,
+              "end_col": 19
+            }
+          },
+          "then_branch": [
+            {
+              "content_type": "component",
+              "name": "Text",
+              "children": [
+                {
+                  "content_type": "text",
+                  "value": "Welcome back!",
+                  "span": {
+                    "start": 6881,
+                    "end": 6894,
+                    "start_line": 252,
+                    "start_col": 15,
+                    "end_line": 252,
+                    "end_col": 28
+                  }
+                }
+              ],
+              "span": {
+                "start": 6875,
+                "end": 6901,
+                "start_line": 252,
+                "start_col": 9,
+                "end_line": 252,
+                "end_col": 35
+              }
+            }
+          ],
+          "else_branch": [
+            {
+              "content_type": "component",
+              "name": "Text",
+              "children": [
+                {
+                  "content_type": "text",
+                  "value": "Please log in",
+                  "span": {
+                    "start": 6929,
+                    "end": 6942,
+                    "start_line": 254,
+                    "start_col": 15,
+                    "end_line": 254,
+                    "end_col": 28
+                  }
+                }
+              ],
+              "span": {
+                "start": 6923,
+                "end": 6949,
+                "start_line": 254,
+                "start_col": 9,
+                "end_line": 254,
+                "end_col": 35
+              }
+            }
+          ],
+          "span": {
+            "start": 6851,
+            "end": 6955,
+            "start_line": 251,
+            "start_col": 5,
+            "end_line": 255,
+            "end_col": 6
+          }
+        },
+        {
+          "content_type": "control_flow",
+          "flow_type": "if",
+          "condition": {
+            "expr_type": "binary",
+            "left": {
+              "expr_type": "member_access",
+              "root": "state",
+              "path": [
+                "status"
+              ],
+              "span": {
+                "start": 6997,
+                "end": 7010,
+                "start_line": 258,
+                "start_col": 8,
+                "end_line": 258,
+                "end_col": 21
+              }
+            },
+            "op": "eq",
+            "right": {
+              "expr_type": "literal",
+              "value": {
+                "type": "string",
+                "value": "loading"
+              },
+              "span": {
+                "start": 7013,
+                "end": 7022,
+                "start_line": 258,
+                "start_col": 24,
+                "end_line": 258,
+                "end_col": 33
+              }
+            },
+            "span": {
+              "start": 6997,
+              "end": 7022,
+              "start_line": 258,
+              "start_col": 8,
+              "end_line": 258,
+              "end_col": 33
+            }
+          },
+          "then_branch": [
+            {
+              "content_type": "component",
+              "name": "CircularProgress",
+              "self_closing": true,
+              "span": {
+                "start": 7033,
+                "end": 7053,
+                "start_line": 259,
+                "start_col": 9,
+                "end_line": 259,
+                "end_col": 29
+              }
+            }
+          ],
+          "else_if_branches": [
+            {
+              "condition": {
+                "expr_type": "binary",
+                "left": {
+                  "expr_type": "member_access",
+                  "root": "state",
+                  "path": [
+                    "status"
+                  ],
+                  "span": {
+                    "start": 7068,
+                    "end": 7081,
+                    "start_line": 260,
+                    "start_col": 15,
+                    "end_line": 260,
+                    "end_col": 28
+                  }
+                },
+                "op": "eq",
+                "right": {
+                  "expr_type": "literal",
+                  "value": {
+                    "type": "string",
+                    "value": "error"
+                  },
+                  "span": {
+                    "start": 7084,
+                    "end": 7091,
+                    "start_line": 260,
+                    "start_col": 31,
+                    "end_line": 260,
+                    "end_col": 38
+                  }
+                },
+                "span": {
+                  "start": 7068,
+                  "end": 7091,
+                  "start_line": 260,
+                  "start_col": 15,
+                  "end_line": 260,
+                  "end_col": 38
+                }
+              },
+              "body": [
+                {
+                  "content_type": "component",
+                  "name": "Alert",
+                  "attributes": [
+                    {
+                      "name": "severity",
+                      "value": {
+                        "value_type": "string",
+                        "value": "error"
+                      },
+                      "span": {
+                        "start": 7109,
+                        "end": 7125,
+                        "start_line": 261,
+                        "start_col": 16,
+                        "end_line": 261,
+                        "end_col": 32
+                      }
+                    }
+                  ],
+                  "children": [
+                    {
+                      "content_type": "text",
+                      "value": "{state.errorMessage}",
+                      "span": {
+                        "start": 7126,
+                        "end": 7146,
+                        "start_line": 261,
+                        "start_col": 33,
+                        "end_line": 261,
+                        "end_col": 53
+                      }
+                    }
+                  ],
+                  "span": {
+                    "start": 7102,
+                    "end": 7154,
+                    "start_line": 261,
+                    "start_col": 9,
+                    "end_line": 261,
+                    "end_col": 61
+                  }
+                }
+              ],
+              "span": {
+                "start": 6994,
+                "end": 7214,
+                "start_line": 258,
+                "start_col": 5,
+                "end_line": 264,
+                "end_col": 6
+              }
+            }
+          ],
+          "else_branch": [
+            {
+              "content_type": "component",
+              "name": "DataTable",
+              "self_closing": true,
+              "attributes": [
+                {
+                  "name": "data",
+                  "value": {
+                    "value_type": "expression",
+                    "value": {
+                      "expr_type": "member_access",
+                      "root": "state",
+                      "path": [
+                        "items"
+                      ],
+                      "span": {
+                        "start": 7193,
+                        "end": 7204,
+                        "start_line": 263,
+                        "start_col": 26,
+                        "end_line": 263,
+                        "end_col": 37
+                      }
+                    }
+                  },
+                  "span": {
+                    "start": 7187,
+                    "end": 7205,
+                    "start_line": 263,
+                    "start_col": 20,
+                    "end_line": 263,
+                    "end_col": 38
+                  }
+                }
+              ],
+              "span": {
+                "start": 7176,
+                "end": 7208,
+                "start_line": 263,
+                "start_col": 9,
+                "end_line": 263,
+                "end_col": 41
+              }
+            }
+          ],
+          "span": {
+            "start": 6994,
+            "end": 7214,
+            "start_line": 258,
+            "start_col": 5,
+            "end_line": 264,
+            "end_col": 6
+          }
+        },
+        {
+          "content_type": "control_flow",
+          "flow_type": "if",
+          "condition": {
+            "expr_type": "binary",
+            "left": {
+              "expr_type": "binary",
+              "left": {
+                "expr_type": "member_access",
+                "root": "state",
+                "path": [
+                  "count"
+                ],
+                "span": {
+                  "start": 7264,
+                  "end": 7276,
+                  "start_line": 267,
+                  "start_col": 8,
+                  "end_line": 267,
+                  "end_col": 20
+                }
+              },
+              "op": "gt",
+              "right": {
+                "expr_type": "literal",
+                "value": {
+                  "type": "integer",
+                  "value": 0
+                },
+                "span": {
+                  "start": 7278,
+                  "end": 7279,
+                  "start_line": 267,
+                  "start_col": 22,
+                  "end_line": 267,
+                  "end_col": 23
+                }
+              },
+              "span": {
+                "start": 7264,
+                "end": 7300,
+                "start_line": 267,
+                "start_col": 8,
+                "end_line": 267,
+                "end_col": 44
+              }
+            },
+            "op": "and",
+            "right": {
+              "expr_type": "binary",
+              "left": {
+                "expr_type": "member_access",
+                "root": "state",
+                "path": [
+                  "count"
+                ],
+                "span": {
+                  "start": 7283,
+                  "end": 7295,
+                  "start_line": 267,
+                  "start_col": 27,
+                  "end_line": 267,
+                  "end_col": 39
+                }
+              },
+              "op": "lt",
+              "right": {
+                "expr_type": "literal",
+                "value": {
+                  "type": "integer",
+                  "value": 100
+                },
+                "span": {
+                  "start": 7297,
+                  "end": 7300,
+                  "start_line": 267,
+                  "start_col": 41,
+                  "end_line": 267,
+                  "end_col": 44
+                }
+              },
+              "span": {
+                "start": 7264,
+                "end": 7300,
+                "start_line": 267,
+                "start_col": 8,
+                "end_line": 267,
+                "end_col": 44
+              }
+            },
+            "span": {
+              "start": 7264,
+              "end": 7300,
+              "start_line": 267,
+              "start_col": 8,
+              "end_line": 267,
+              "end_col": 44
+            }
+          },
+          "then_branch": [
+            {
+              "content_type": "component",
+              "name": "Text",
+              "children": [
+                {
+                  "content_type": "text",
+                  "value": "Count is between 1 and 99",
+                  "span": {
+                    "start": 7317,
+                    "end": 7342,
+                    "start_line": 268,
+                    "start_col": 15,
+                    "end_line": 268,
+                    "end_col": 40
+                  }
+                }
+              ],
+              "span": {
+                "start": 7311,
+                "end": 7349,
+                "start_line": 268,
+                "start_col": 9,
+                "end_line": 268,
+                "end_col": 47
+              }
+            }
+          ],
+          "span": {
+            "start": 7261,
+            "end": 7585,
+            "start_line": 267,
+            "start_col": 5,
+            "end_line": 276,
+            "end_col": 5
+          }
+        },
+        {
+          "content_type": "control_flow",
+          "flow_type": "for",
+          "binding": {
+            "item": {
+              "name": "item",
+              "span": {
+                "start": 7589,
+                "end": 7593,
+                "start_line": 276,
+                "start_col": 9,
+                "end_line": 276,
+                "end_col": 13
+              }
+            },
+            "span": {
+              "start": 7589,
+              "end": 7593,
+              "start_line": 276,
+              "start_col": 9,
+              "end_line": 276,
+              "end_col": 13
+            }
+          },
+          "iterable": {
+            "expr_type": "member_access",
+            "root": "state",
+            "path": [
+              "items"
+            ],
+            "span": {
+              "start": 7597,
+              "end": 7609,
+              "start_line": 276,
+              "start_col": 17,
+              "end_line": 276,
+              "end_col": 29
+            }
+          },
+          "body": [
+            {
+              "content_type": "component",
+              "name": "ListItem",
+              "attributes": [
+                {
+                  "name": "key",
+                  "value": {
+                    "value_type": "expression",
+                    "value": {
+                      "expr_type": "member_access",
+                      "root": "item",
+                      "path": [
+                        "id"
+                      ],
+                      "span": {
+                        "start": 7634,
+                        "end": 7641,
+                        "start_line": 277,
+                        "start_col": 24,
+                        "end_line": 277,
+                        "end_col": 31
+                      }
+                    }
+                  },
+                  "span": {
+                    "start": 7629,
+                    "end": 7642,
+                    "start_line": 277,
+                    "start_col": 19,
+                    "end_line": 277,
+                    "end_col": 32
+                  }
+                }
+              ],
+              "children": [
+                {
+                  "content_type": "text",
+                  "value": "{item.name}",
+                  "span": {
+                    "start": 7643,
+                    "end": 7654,
+                    "start_line": 277,
+                    "start_col": 33,
+                    "end_line": 277,
+                    "end_col": 44
+                  }
+                }
+              ],
+              "span": {
+                "start": 7619,
+                "end": 7665,
+                "start_line": 277,
+                "start_col": 9,
+                "end_line": 277,
+                "end_col": 55
+              }
+            }
+          ],
+          "span": {
+            "start": 7585,
+            "end": 7671,
+            "start_line": 276,
+            "start_col": 5,
+            "end_line": 278,
+            "end_col": 6
+          }
+        },
+        {
+          "content_type": "control_flow",
+          "flow_type": "for",
+          "binding": {
+            "item": {
+              "name": "index",
+              "span": {
+                "start": 7719,
+                "end": 7724,
+                "start_line": 281,
+                "start_col": 16,
+                "end_line": 281,
+                "end_col": 21
+              }
+            },
+            "span": {
+              "start": 7712,
+              "end": 7725,
+              "start_line": 281,
+              "start_col": 9,
+              "end_line": 281,
+              "end_col": 22
+            }
+          },
+          "iterable": {
+            "expr_type": "member_access",
+            "root": "state",
+            "path": [
+              "items"
+            ],
+            "span": {
+              "start": 7729,
+              "end": 7741,
+              "start_line": 281,
+              "start_col": 26,
+              "end_line": 281,
+              "end_col": 38
+            }
+          },
+          "body": [
+            {
+              "content_type": "component",
+              "name": "ListItem",
+              "attributes": [
+                {
+                  "name": "key",
+                  "value": {
+                    "value_type": "expression",
+                    "value": {
+                      "expr_type": "identifier",
+                      "name": "index",
+                      "span": {
+                        "start": 7766,
+                        "end": 7771,
+                        "start_line": 282,
+                        "start_col": 24,
+                        "end_line": 282,
+                        "end_col": 29
+                      }
+                    }
+                  },
+                  "span": {
+                    "start": 7761,
+                    "end": 7772,
+                    "start_line": 282,
+                    "start_col": 19,
+                    "end_line": 282,
+                    "end_col": 30
+                  }
+                }
+              ],
+              "children": [
+                {
+                  "content_type": "component",
+                  "name": "Text",
+                  "children": [
+                    {
+                      "content_type": "text",
+                      "value": "{item.name}",
+                      "span": {
+                        "start": 7792,
+                        "end": 7803,
+                        "start_line": 283,
+                        "start_col": 19,
+                        "end_line": 283,
+                        "end_col": 30
+                      }
+                    }
+                  ],
+                  "span": {
+                    "start": 7786,
+                    "end": 7810,
+                    "start_line": 283,
+                    "start_col": 13,
+                    "end_line": 283,
+                    "end_col": 37
+                  }
+                }
+              ],
+              "span": {
+                "start": 7751,
+                "end": 7830,
+                "start_line": 282,
+                "start_col": 9,
+                "end_line": 284,
+                "end_col": 20
+              }
+            }
+          ],
+          "span": {
+            "start": 7708,
+            "end": 7836,
+            "start_line": 281,
+            "start_col": 5,
+            "end_line": 285,
+            "end_col": 6
+          }
+        },
+        {
+          "content_type": "control_flow",
+          "flow_type": "for",
+          "binding": {
+            "item": {
+              "name": "category",
+              "span": {
+                "start": 7874,
+                "end": 7882,
+                "start_line": 288,
+                "start_col": 9,
+                "end_line": 288,
+                "end_col": 17
+              }
+            },
+            "span": {
+              "start": 7874,
+              "end": 7882,
+              "start_line": 288,
+              "start_col": 9,
+              "end_line": 288,
+              "end_col": 17
+            }
+          },
+          "iterable": {
+            "expr_type": "member_access",
+            "root": "state",
+            "path": [
+              "categories"
+            ],
+            "span": {
+              "start": 7886,
+              "end": 7903,
+              "start_line": 288,
+              "start_col": 21,
+              "end_line": 288,
+              "end_col": 38
+            }
+          },
+          "body": [
+            {
+              "content_type": "component",
+              "name": "Accordion",
+              "attributes": [
+                {
+                  "name": "key",
+                  "value": {
+                    "value_type": "expression",
+                    "value": {
+                      "expr_type": "member_access",
+                      "root": "category",
+                      "path": [
+                        "id"
+                      ],
+                      "span": {
+                        "start": 7929,
+                        "end": 7940,
+                        "start_line": 289,
+                        "start_col": 25,
+                        "end_line": 289,
+                        "end_col": 36
+                      }
+                    }
+                  },
+                  "span": {
+                    "start": 7924,
+                    "end": 7941,
+                    "start_line": 289,
+                    "start_col": 20,
+                    "end_line": 289,
+                    "end_col": 37
+                  }
+                }
+              ],
+              "children": [
+                {
+                  "content_type": "component",
+                  "name": "AccordionDetails",
+                  "children": [
+                    {
+                      "content_type": "control_flow",
+                      "flow_type": "for",
+                      "binding": {
+                        "item": {
+                          "name": "product",
+                          "span": {
+                            "start": 8059,
+                            "end": 8066,
+                            "start_line": 292,
+                            "start_col": 21,
+                            "end_line": 292,
+                            "end_col": 28
+                          }
+                        },
+                        "span": {
+                          "start": 8059,
+                          "end": 8066,
+                          "start_line": 292,
+                          "start_col": 21,
+                          "end_line": 292,
+                          "end_col": 28
+                        }
+                      },
+                      "iterable": {
+                        "expr_type": "member_access",
+                        "root": "category",
+                        "path": [
+                          "products"
+                        ],
+                        "span": {
+                          "start": 8070,
+                          "end": 8088,
+                          "start_line": 292,
+                          "start_col": 32,
+                          "end_line": 292,
+                          "end_col": 50
+                        }
+                      },
+                      "body": [
+                        {
+                          "content_type": "component",
+                          "name": "ProductCard",
+                          "self_closing": true,
+                          "attributes": [
+                            {
+                              "name": "product",
+                              "value": {
+                                "value_type": "expression",
+                                "value": {
+                                  "expr_type": "identifier",
+                                  "name": "product",
+                                  "span": {
+                                    "start": 8132,
+                                    "end": 8139,
+                                    "start_line": 293,
+                                    "start_col": 43,
+                                    "end_line": 293,
+                                    "end_col": 50
+                                  }
+                                }
+                              },
+                              "span": {
+                                "start": 8123,
+                                "end": 8140,
+                                "start_line": 293,
+                                "start_col": 34,
+                                "end_line": 293,
+                                "end_col": 51
+                              }
+                            }
+                          ],
+                          "span": {
+                            "start": 8110,
+                            "end": 8143,
+                            "start_line": 293,
+                            "start_col": 21,
+                            "end_line": 293,
+                            "end_col": 54
+                          }
+                        }
+                      ],
+                      "span": {
+                        "start": 8055,
+                        "end": 8161,
+                        "start_line": 292,
+                        "start_col": 17,
+                        "end_line": 294,
+                        "end_col": 18
+                      }
+                    }
+                  ],
+                  "span": {
+                    "start": 8020,
+                    "end": 8193,
+                    "start_line": 291,
+                    "start_col": 13,
+                    "end_line": 295,
+                    "end_col": 32
+                  }
+                }
+              ],
+              "span": {
+                "start": 7913,
+                "end": 8214,
+                "start_line": 289,
+                "start_col": 9,
+                "end_line": 296,
+                "end_col": 21
+              }
+            }
+          ],
+          "span": {
+            "start": 7870,
+            "end": 8220,
+            "start_line": 288,
+            "start_col": 5,
+            "end_line": 297,
+            "end_col": 6
+          }
+        },
+        {
+          "content_type": "control_flow",
+          "flow_type": "when",
+          "subject": {
+            "expr_type": "member_access",
+            "root": "state",
+            "path": [
+              "viewMode"
+            ],
+            "span": {
+              "start": 8446,
+              "end": 8461,
+              "start_line": 303,
+              "start_col": 10,
+              "end_line": 303,
+              "end_col": 25
+            }
+          },
+          "arms": [
+            {
+              "pattern": {
+                "pattern_type": "literal",
+                "value": {
+                  "expr_type": "literal",
+                  "value": {
+                    "type": "string",
+                    "value": "grid"
+                  },
+                  "span": {
+                    "start": 8471,
+                    "end": 8477,
+                    "start_line": 304,
+                    "start_col": 9,
+                    "end_line": 304,
+                    "end_col": 15
+                  }
+                },
+                "span": {
+                  "start": 8471,
+                  "end": 8477,
+                  "start_line": 304,
+                  "start_col": 9,
+                  "end_line": 304,
+                  "end_col": 15
+                }
+              },
+              "body": [
+                {
+                  "content_type": "component",
+                  "name": "GridView",
+                  "self_closing": true,
+                  "attributes": [
+                    {
+                      "name": "items",
+                      "value": {
+                        "value_type": "expression",
+                        "value": {
+                          "expr_type": "member_access",
+                          "root": "state",
+                          "path": [
+                            "items"
+                          ],
+                          "span": {
+                            "start": 8512,
+                            "end": 8523,
+                            "start_line": 305,
+                            "start_col": 30,
+                            "end_line": 305,
+                            "end_col": 41
+                          }
+                        }
+                      },
+                      "span": {
+                        "start": 8505,
+                        "end": 8524,
+                        "start_line": 305,
+                        "start_col": 23,
+                        "end_line": 305,
+                        "end_col": 42
+                      }
+                    }
+                  ],
+                  "span": {
+                    "start": 8495,
+                    "end": 8527,
+                    "start_line": 305,
+                    "start_col": 13,
+                    "end_line": 305,
+                    "end_col": 45
+                  }
+                }
+              ],
+              "span": {
+                "start": 8471,
+                "end": 8537,
+                "start_line": 304,
+                "start_col": 9,
+                "end_line": 306,
+                "end_col": 10
+              }
+            },
+            {
+              "pattern": {
+                "pattern_type": "literal",
+                "value": {
+                  "expr_type": "literal",
+                  "value": {
+                    "type": "string",
+                    "value": "list"
+                  },
+                  "span": {
+                    "start": 8546,
+                    "end": 8552,
+                    "start_line": 307,
+                    "start_col": 9,
+                    "end_line": 307,
+                    "end_col": 15
+                  }
+                },
+                "span": {
+                  "start": 8546,
+                  "end": 8552,
+                  "start_line": 307,
+                  "start_col": 9,
+                  "end_line": 307,
+                  "end_col": 15
+                }
+              },
+              "body": [
+                {
+                  "content_type": "component",
+                  "name": "ListView",
+                  "self_closing": true,
+                  "attributes": [
+                    {
+                      "name": "items",
+                      "value": {
+                        "value_type": "expression",
+                        "value": {
+                          "expr_type": "member_access",
+                          "root": "state",
+                          "path": [
+                            "items"
+                          ],
+                          "span": {
+                            "start": 8587,
+                            "end": 8598,
+                            "start_line": 308,
+                            "start_col": 30,
+                            "end_line": 308,
+                            "end_col": 41
+                          }
+                        }
+                      },
+                      "span": {
+                        "start": 8580,
+                        "end": 8599,
+                        "start_line": 308,
+                        "start_col": 23,
+                        "end_line": 308,
+                        "end_col": 42
+                      }
+                    }
+                  ],
+                  "span": {
+                    "start": 8570,
+                    "end": 8602,
+                    "start_line": 308,
+                    "start_col": 13,
+                    "end_line": 308,
+                    "end_col": 45
+                  }
+                }
+              ],
+              "span": {
+                "start": 8546,
+                "end": 8612,
+                "start_line": 307,
+                "start_col": 9,
+                "end_line": 309,
+                "end_col": 10
+              }
+            },
+            {
+              "pattern": {
+                "pattern_type": "wildcard",
+                "span": {
+                  "start": 8621,
+                  "end": 8688,
+                  "start_line": 310,
+                  "start_col": 9,
+                  "end_line": 312,
+                  "end_col": 10
+                }
+              },
+              "body": [
+                {
+                  "content_type": "component",
+                  "name": "DefaultView",
+                  "self_closing": true,
+                  "attributes": [
+                    {
+                      "name": "items",
+                      "value": {
+                        "value_type": "expression",
+                        "value": {
+                          "expr_type": "member_access",
+                          "root": "state",
+                          "path": [
+                            "items"
+                          ],
+                          "span": {
+                            "start": 8663,
+                            "end": 8674,
+                            "start_line": 311,
+                            "start_col": 33,
+                            "end_line": 311,
+                            "end_col": 44
+                          }
+                        }
+                      },
+                      "span": {
+                        "start": 8656,
+                        "end": 8675,
+                        "start_line": 311,
+                        "start_col": 26,
+                        "end_line": 311,
+                        "end_col": 45
+                      }
+                    }
+                  ],
+                  "span": {
+                    "start": 8643,
+                    "end": 8678,
+                    "start_line": 311,
+                    "start_col": 13,
+                    "end_line": 311,
+                    "end_col": 48
+                  }
+                }
+              ],
+              "span": {
+                "start": 8621,
+                "end": 8688,
+                "start_line": 310,
+                "start_col": 9,
+                "end_line": 312,
+                "end_col": 10
+              }
+            }
+          ],
+          "span": {
+            "start": 8441,
+            "end": 8694,
+            "start_line": 303,
+            "start_col": 5,
+            "end_line": 313,
+            "end_col": 6
+          }
+        },
+        {
+          "content_type": "component",
+          "name": "ProductCard",
+          "self_closing": true,
+          "attributes": [
+            {
+              "name": "product",
+              "value": {
+                "value_type": "expression",
+                "value": {
+                  "expr_type": "member_access",
+                  "root": "state",
+                  "path": [
+                    "selectedProduct"
+                  ],
+                  "span": {
+                    "start": 8951,
+                    "end": 8972,
+                    "start_line": 320,
+                    "start_col": 27,
+                    "end_line": 320,
+                    "end_col": 48
+                  }
+                }
+              },
+              "span": {
+                "start": 8942,
+                "end": 8973,
+                "start_line": 320,
+                "start_col": 18,
+                "end_line": 320,
+                "end_col": 49
+              }
+            }
+          ],
+          "span": {
+            "start": 8929,
+            "end": 8976,
+            "start_line": 320,
+            "start_col": 5,
+            "end_line": 320,
+            "end_col": 52
+          }
+        },
+        {
+          "content_type": "component",
+          "name": "Modal",
+          "attributes": [
+            {
+              "name": "title",
+              "value": {
+                "value_type": "string",
+                "value": "Confirm Action"
+              },
+              "span": {
+                "start": 9027,
+                "end": 9049,
+                "start_line": 323,
+                "start_col": 12,
+                "end_line": 323,
+                "end_col": 34
+              }
+            }
+          ],
+          "children": [
+            {
+              "content_type": "component",
+              "name": "Text",
+              "children": [
+                {
+                  "content_type": "text",
+                  "value": "Are you sure you want to proceed?",
+                  "span": {
+                    "start": 9065,
+                    "end": 9098,
+                    "start_line": 324,
+                    "start_col": 15,
+                    "end_line": 324,
+                    "end_col": 48
+                  }
+                }
+              ],
+              "span": {
+                "start": 9059,
+                "end": 9105,
+                "start_line": 324,
+                "start_col": 9,
+                "end_line": 324,
+                "end_col": 55
+              }
+            },
+            {
+              "content_type": "component",
+              "name": "Button",
+              "events": [
+                {
+                  "event": "click",
+                  "handler": {
+                    "handler_type": {
+                      "type": "arrow",
+                      "value": {
+                        "params": [],
+                        "body": {
+                          "body_type": "block",
+                          "content": [
+                            {
+                              "stmt_type": "expression",
+                              "expr_type": "assignment",
+                              "target": {
+                                "expr_type": "member_access",
+                                "root": "state",
+                                "path": [
+                                  "showModal"
+                                ],
+                                "span": {
+                                  "start": 9133,
+                                  "end": 9156,
+                                  "start_line": 325,
+                                  "start_col": 28,
+                                  "end_line": 325,
+                                  "end_col": 51
+                                }
+                              },
+                              "value": {
+                                "expr_type": "literal",
+                                "value": {
+                                  "type": "boolean",
+                                  "value": false
+                                },
+                                "span": {
+                                  "start": 9133,
+                                  "end": 9156,
+                                  "start_line": 325,
+                                  "start_col": 28,
+                                  "end_line": 325,
+                                  "end_col": 51
+                                }
+                              },
+                              "span": {
+                                "start": 9133,
+                                "end": 9156,
+                                "start_line": 325,
+                                "start_col": 28,
+                                "end_line": 325,
+                                "end_col": 51
+                              }
+                            }
+                          ]
+                        },
+                        "span": {
+                          "start": 9122,
+                          "end": 9157,
+                          "start_line": 325,
+                          "start_col": 17,
+                          "end_line": 325,
+                          "end_col": 52
+                        }
+                      }
+                    }
+                  },
+                  "span": {
+                    "start": 9122,
+                    "end": 9157,
+                    "start_line": 325,
+                    "start_col": 17,
+                    "end_line": 325,
+                    "end_col": 52
+                  }
+                }
+              ],
+              "children": [
+                {
+                  "content_type": "text",
+                  "value": "Cancel",
+                  "span": {
+                    "start": 9158,
+                    "end": 9164,
+                    "start_line": 325,
+                    "start_col": 53,
+                    "end_line": 325,
+                    "end_col": 59
+                  }
+                }
+              ],
+              "span": {
+                "start": 9114,
+                "end": 9173,
+                "start_line": 325,
+                "start_col": 9,
+                "end_line": 325,
+                "end_col": 68
+              }
+            }
+          ],
+          "span": {
+            "start": 9020,
+            "end": 9186,
+            "start_line": 323,
+            "start_col": 5,
+            "end_line": 326,
+            "end_col": 13
+          }
+        },
+        {
+          "content_type": "component",
+          "name": "Text",
+          "self_closing": true,
+          "attributes": [
+            {
+              "name": "content",
+              "value": {
+                "value_type": "string",
+                "value": "String literal"
+              },
+              "span": {
+                "start": 9425,
+                "end": 9449,
+                "start_line": 333,
+                "start_col": 11,
+                "end_line": 333,
+                "end_col": 35
+              }
+            }
+          ],
+          "span": {
+            "start": 9419,
+            "end": 9452,
+            "start_line": 333,
+            "start_col": 5,
+            "end_line": 333,
+            "end_col": 38
+          }
+        },
+        {
+          "content_type": "component",
+          "name": "Text",
+          "self_closing": true,
+          "attributes": [
+            {
+              "name": "content",
+              "value": {
+                "value_type": "expression",
+                "value": {
+                  "expr_type": "literal",
+                  "value": {
+                    "type": "integer",
+                    "value": 123
+                  },
+                  "span": {
+                    "start": 9472,
+                    "end": 9475,
+                    "start_line": 334,
+                    "start_col": 20,
+                    "end_line": 334,
+                    "end_col": 23
+                  }
+                }
+              },
+              "span": {
+                "start": 9463,
+                "end": 9476,
+                "start_line": 334,
+                "start_col": 11,
+                "end_line": 334,
+                "end_col": 24
+              }
+            }
+          ],
+          "span": {
+            "start": 9457,
+            "end": 9479,
+            "start_line": 334,
+            "start_col": 5,
+            "end_line": 334,
+            "end_col": 27
+          }
+        },
+        {
+          "content_type": "component",
+          "name": "Text",
+          "self_closing": true,
+          "attributes": [
+            {
+              "name": "content",
+              "value": {
+                "value_type": "expression",
+                "value": {
+                  "expr_type": "literal",
+                  "value": {
+                    "type": "number",
+                    "value": 45.67
+                  },
+                  "span": {
+                    "start": 9499,
+                    "end": 9504,
+                    "start_line": 335,
+                    "start_col": 20,
+                    "end_line": 335,
+                    "end_col": 25
+                  }
+                }
+              },
+              "span": {
+                "start": 9490,
+                "end": 9505,
+                "start_line": 335,
+                "start_col": 11,
+                "end_line": 335,
+                "end_col": 26
+              }
+            }
+          ],
+          "span": {
+            "start": 9484,
+            "end": 9508,
+            "start_line": 335,
+            "start_col": 5,
+            "end_line": 335,
+            "end_col": 29
+          }
+        },
+        {
+          "content_type": "component",
+          "name": "Text",
+          "self_closing": true,
+          "attributes": [
+            {
+              "name": "content",
+              "value": {
+                "value_type": "expression",
+                "value": {
+                  "expr_type": "literal",
+                  "value": {
+                    "type": "boolean",
+                    "value": true
+                  },
+                  "span": {
+                    "start": 9528,
+                    "end": 9532,
+                    "start_line": 336,
+                    "start_col": 20,
+                    "end_line": 336,
+                    "end_col": 24
+                  }
+                }
+              },
+              "span": {
+                "start": 9519,
+                "end": 9533,
+                "start_line": 336,
+                "start_col": 11,
+                "end_line": 336,
+                "end_col": 25
+              }
+            }
+          ],
+          "span": {
+            "start": 9513,
+            "end": 9536,
+            "start_line": 336,
+            "start_col": 5,
+            "end_line": 336,
+            "end_col": 28
+          }
+        },
+        {
+          "content_type": "component",
+          "name": "Text",
+          "self_closing": true,
+          "attributes": [
+            {
+              "name": "content",
+              "value": {
+                "value_type": "expression",
+                "value": {
+                  "expr_type": "literal",
+                  "value": {
+                    "type": "null"
+                  },
+                  "span": {
+                    "start": 9556,
+                    "end": 9560,
+                    "start_line": 337,
+                    "start_col": 20,
+                    "end_line": 337,
+                    "end_col": 24
+                  }
+                }
+              },
+              "span": {
+                "start": 9547,
+                "end": 9561,
+                "start_line": 337,
+                "start_col": 11,
+                "end_line": 337,
+                "end_col": 25
+              }
+            }
+          ],
+          "span": {
+            "start": 9541,
+            "end": 9564,
+            "start_line": 337,
+            "start_col": 5,
+            "end_line": 337,
+            "end_col": 28
+          }
+        },
+        {
+          "content_type": "component",
+          "name": "Text",
+          "self_closing": true,
+          "attributes": [
+            {
+              "name": "content",
+              "value": {
+                "value_type": "expression",
+                "value": {
+                  "expr_type": "member_access",
+                  "root": "state",
+                  "path": [
+                    "user",
+                    "name"
+                  ],
+                  "span": {
+                    "start": 9610,
+                    "end": 9625,
+                    "start_line": 340,
+                    "start_col": 20,
+                    "end_line": 340,
+                    "end_col": 35
+                  }
+                }
+              },
+              "span": {
+                "start": 9601,
+                "end": 9626,
+                "start_line": 340,
+                "start_col": 11,
+                "end_line": 340,
+                "end_col": 36
+              }
+            }
+          ],
+          "span": {
+            "start": 9595,
+            "end": 9629,
+            "start_line": 340,
+            "start_col": 5,
+            "end_line": 340,
+            "end_col": 39
+          }
+        },
+        {
+          "content_type": "component",
+          "name": "Text",
+          "self_closing": true,
+          "attributes": [
+            {
+              "name": "content",
+              "value": {
+                "value_type": "expression",
+                "value": {
+                  "expr_type": "member_access",
+                  "root": "state",
+                  "path": [
+                    "settings",
+                    "theme",
+                    "primary"
+                  ],
+                  "span": {
+                    "start": 9649,
+                    "end": 9677,
+                    "start_line": 341,
+                    "start_col": 20,
+                    "end_line": 341,
+                    "end_col": 48
+                  }
+                }
+              },
+              "span": {
+                "start": 9640,
+                "end": 9678,
+                "start_line": 341,
+                "start_col": 11,
+                "end_line": 341,
+                "end_col": 49
+              }
+            }
+          ],
+          "span": {
+            "start": 9634,
+            "end": 9681,
+            "start_line": 341,
+            "start_col": 5,
+            "end_line": 341,
+            "end_col": 52
+          }
+        },
+        {
+          "content_type": "component",
+          "name": "Text",
+          "self_closing": true,
+          "attributes": [
+            {
+              "name": "content",
+              "value": {
+                "value_type": "expression",
+                "value": {
+                  "expr_type": "binary",
+                  "left": {
+                    "expr_type": "member_access",
+                    "root": "state",
+                    "path": [
+                      "count"
+                    ],
+                    "span": {
+                      "start": 9732,
+                      "end": 9744,
+                      "start_line": 344,
+                      "start_col": 20,
+                      "end_line": 344,
+                      "end_col": 32
+                    }
+                  },
+                  "op": "add",
+                  "right": {
+                    "expr_type": "literal",
+                    "value": {
+                      "type": "integer",
+                      "value": 1
+                    },
+                    "span": {
+                      "start": 9746,
+                      "end": 9747,
+                      "start_line": 344,
+                      "start_col": 34,
+                      "end_line": 344,
+                      "end_col": 35
+                    }
+                  },
+                  "span": {
+                    "start": 9732,
+                    "end": 9747,
+                    "start_line": 344,
+                    "start_col": 20,
+                    "end_line": 344,
+                    "end_col": 35
+                  }
+                }
+              },
+              "span": {
+                "start": 9723,
+                "end": 9748,
+                "start_line": 344,
+                "start_col": 11,
+                "end_line": 344,
+                "end_col": 36
+              }
+            }
+          ],
+          "span": {
+            "start": 9717,
+            "end": 9751,
+            "start_line": 344,
+            "start_col": 5,
+            "end_line": 344,
+            "end_col": 39
+          }
+        },
+        {
+          "content_type": "component",
+          "name": "Text",
+          "self_closing": true,
+          "attributes": [
+            {
+              "name": "content",
+              "value": {
+                "value_type": "expression",
+                "value": {
+                  "expr_type": "binary",
+                  "left": {
+                    "expr_type": "member_access",
+                    "root": "state",
+                    "path": [
+                      "price"
+                    ],
+                    "span": {
+                      "start": 9771,
+                      "end": 9783,
+                      "start_line": 345,
+                      "start_col": 20,
+                      "end_line": 345,
+                      "end_col": 32
+                    }
+                  },
+                  "op": "mul",
+                  "right": {
+                    "expr_type": "member_access",
+                    "root": "state",
+                    "path": [
+                      "quantity"
+                    ],
+                    "span": {
+                      "start": 9785,
+                      "end": 9799,
+                      "start_line": 345,
+                      "start_col": 34,
+                      "end_line": 345,
+                      "end_col": 48
+                    }
+                  },
+                  "span": {
+                    "start": 9771,
+                    "end": 9799,
+                    "start_line": 345,
+                    "start_col": 20,
+                    "end_line": 345,
+                    "end_col": 48
+                  }
+                }
+              },
+              "span": {
+                "start": 9762,
+                "end": 9800,
+                "start_line": 345,
+                "start_col": 11,
+                "end_line": 345,
+                "end_col": 49
+              }
+            }
+          ],
+          "span": {
+            "start": 9756,
+            "end": 9803,
+            "start_line": 345,
+            "start_col": 5,
+            "end_line": 345,
+            "end_col": 52
+          }
+        },
+        {
+          "content_type": "component",
+          "name": "Text",
+          "self_closing": true,
+          "attributes": [
+            {
+              "name": "content",
+              "value": {
+                "value_type": "expression",
+                "value": {
+                  "expr_type": "binary",
+                  "left": {
+                    "expr_type": "member_access",
+                    "root": "state",
+                    "path": [
+                      "total"
+                    ],
+                    "span": {
+                      "start": 9823,
+                      "end": 9835,
+                      "start_line": 346,
+                      "start_col": 20,
+                      "end_line": 346,
+                      "end_col": 32
+                    }
+                  },
+                  "op": "sub",
+                  "right": {
+                    "expr_type": "member_access",
+                    "root": "state",
+                    "path": [
+                      "discount"
+                    ],
+                    "span": {
+                      "start": 9837,
+                      "end": 9851,
+                      "start_line": 346,
+                      "start_col": 34,
+                      "end_line": 346,
+                      "end_col": 48
+                    }
+                  },
+                  "span": {
+                    "start": 9823,
+                    "end": 9851,
+                    "start_line": 346,
+                    "start_col": 20,
+                    "end_line": 346,
+                    "end_col": 48
+                  }
+                }
+              },
+              "span": {
+                "start": 9814,
+                "end": 9852,
+                "start_line": 346,
+                "start_col": 11,
+                "end_line": 346,
+                "end_col": 49
+              }
+            }
+          ],
+          "span": {
+            "start": 9808,
+            "end": 9855,
+            "start_line": 346,
+            "start_col": 5,
+            "end_line": 346,
+            "end_col": 52
+          }
+        },
+        {
+          "content_type": "component",
+          "name": "Text",
+          "self_closing": true,
+          "attributes": [
+            {
+              "name": "visible",
+              "value": {
+                "value_type": "expression",
+                "value": {
+                  "expr_type": "binary",
+                  "left": {
+                    "expr_type": "member_access",
+                    "root": "state",
+                    "path": [
+                      "count"
+                    ],
+                    "span": {
+                      "start": 9910,
+                      "end": 9922,
+                      "start_line": 349,
+                      "start_col": 20,
+                      "end_line": 349,
+                      "end_col": 32
+                    }
+                  },
+                  "op": "gt",
+                  "right": {
+                    "expr_type": "literal",
+                    "value": {
+                      "type": "integer",
+                      "value": 0
+                    },
+                    "span": {
+                      "start": 9924,
+                      "end": 9925,
+                      "start_line": 349,
+                      "start_col": 34,
+                      "end_line": 349,
+                      "end_col": 35
+                    }
+                  },
+                  "span": {
+                    "start": 9910,
+                    "end": 9925,
+                    "start_line": 349,
+                    "start_col": 20,
+                    "end_line": 349,
+                    "end_col": 35
+                  }
+                }
+              },
+              "span": {
+                "start": 9901,
+                "end": 9926,
+                "start_line": 349,
+                "start_col": 11,
+                "end_line": 349,
+                "end_col": 36
+              }
+            },
+            {
+              "name": "content",
+              "value": {
+                "value_type": "string",
+                "value": "Has items"
+              },
+              "span": {
+                "start": 9927,
+                "end": 9946,
+                "start_line": 349,
+                "start_col": 37,
+                "end_line": 349,
+                "end_col": 56
+              }
+            }
+          ],
+          "span": {
+            "start": 9895,
+            "end": 9949,
+            "start_line": 349,
+            "start_col": 5,
+            "end_line": 349,
+            "end_col": 59
+          }
+        },
+        {
+          "content_type": "component",
+          "name": "Text",
+          "self_closing": true,
+          "attributes": [
+            {
+              "name": "visible",
+              "value": {
+                "value_type": "expression",
+                "value": {
+                  "expr_type": "binary",
+                  "left": {
+                    "expr_type": "member_access",
+                    "root": "state",
+                    "path": [
+                      "count"
+                    ],
+                    "span": {
+                      "start": 9969,
+                      "end": 9981,
+                      "start_line": 350,
+                      "start_col": 20,
+                      "end_line": 350,
+                      "end_col": 32
+                    }
+                  },
+                  "op": "gt_eq",
+                  "right": {
+                    "expr_type": "literal",
+                    "value": {
+                      "type": "integer",
+                      "value": 10
+                    },
+                    "span": {
+                      "start": 9984,
+                      "end": 9986,
+                      "start_line": 350,
+                      "start_col": 35,
+                      "end_line": 350,
+                      "end_col": 37
+                    }
+                  },
+                  "span": {
+                    "start": 9969,
+                    "end": 9986,
+                    "start_line": 350,
+                    "start_col": 20,
+                    "end_line": 350,
+                    "end_col": 37
+                  }
+                }
+              },
+              "span": {
+                "start": 9960,
+                "end": 9987,
+                "start_line": 350,
+                "start_col": 11,
+                "end_line": 350,
+                "end_col": 38
+              }
+            },
+            {
+              "name": "content",
+              "value": {
+                "value_type": "string",
+                "value": "Many items"
+              },
+              "span": {
+                "start": 9988,
+                "end": 10008,
+                "start_line": 350,
+                "start_col": 39,
+                "end_line": 350,
+                "end_col": 59
+              }
+            }
+          ],
+          "span": {
+            "start": 9954,
+            "end": 10011,
+            "start_line": 350,
+            "start_col": 5,
+            "end_line": 350,
+            "end_col": 62
+          }
+        },
+        {
+          "content_type": "component",
+          "name": "Text",
+          "self_closing": true,
+          "attributes": [
+            {
+              "name": "visible",
+              "value": {
+                "value_type": "expression",
+                "value": {
+                  "expr_type": "binary",
+                  "left": {
+                    "expr_type": "member_access",
+                    "root": "state",
+                    "path": [
+                      "status"
+                    ],
+                    "span": {
+                      "start": 10031,
+                      "end": 10044,
+                      "start_line": 351,
+                      "start_col": 20,
+                      "end_line": 351,
+                      "end_col": 33
+                    }
+                  },
+                  "op": "eq",
+                  "right": {
+                    "expr_type": "literal",
+                    "value": {
+                      "type": "string",
+                      "value": "active"
+                    },
+                    "span": {
+                      "start": 10047,
+                      "end": 10055,
+                      "start_line": 351,
+                      "start_col": 36,
+                      "end_line": 351,
+                      "end_col": 44
+                    }
+                  },
+                  "span": {
+                    "start": 10031,
+                    "end": 10055,
+                    "start_line": 351,
+                    "start_col": 20,
+                    "end_line": 351,
+                    "end_col": 44
+                  }
+                }
+              },
+              "span": {
+                "start": 10022,
+                "end": 10056,
+                "start_line": 351,
+                "start_col": 11,
+                "end_line": 351,
+                "end_col": 45
+              }
+            },
+            {
+              "name": "content",
+              "value": {
+                "value_type": "string",
+                "value": "Active"
+              },
+              "span": {
+                "start": 10057,
+                "end": 10073,
+                "start_line": 351,
+                "start_col": 46,
+                "end_line": 351,
+                "end_col": 62
+              }
+            }
+          ],
+          "span": {
+            "start": 10016,
+            "end": 10076,
+            "start_line": 351,
+            "start_col": 5,
+            "end_line": 351,
+            "end_col": 65
+          }
+        },
+        {
+          "content_type": "component",
+          "name": "Text",
+          "self_closing": true,
+          "attributes": [
+            {
+              "name": "visible",
+              "value": {
+                "value_type": "expression",
+                "value": {
+                  "expr_type": "binary",
+                  "left": {
+                    "expr_type": "member_access",
+                    "root": "state",
+                    "path": [
+                      "status"
+                    ],
+                    "span": {
+                      "start": 10096,
+                      "end": 10109,
+                      "start_line": 352,
+                      "start_col": 20,
+                      "end_line": 352,
+                      "end_col": 33
+                    }
+                  },
+                  "op": "not_eq",
+                  "right": {
+                    "expr_type": "literal",
+                    "value": {
+                      "type": "string",
+                      "value": "deleted"
+                    },
+                    "span": {
+                      "start": 10112,
+                      "end": 10121,
+                      "start_line": 352,
+                      "start_col": 36,
+                      "end_line": 352,
+                      "end_col": 45
+                    }
+                  },
+                  "span": {
+                    "start": 10096,
+                    "end": 10121,
+                    "start_line": 352,
+                    "start_col": 20,
+                    "end_line": 352,
+                    "end_col": 45
+                  }
+                }
+              },
+              "span": {
+                "start": 10087,
+                "end": 10122,
+                "start_line": 352,
+                "start_col": 11,
+                "end_line": 352,
+                "end_col": 46
+              }
+            },
+            {
+              "name": "content",
+              "value": {
+                "value_type": "string",
+                "value": "Not deleted"
+              },
+              "span": {
+                "start": 10123,
+                "end": 10144,
+                "start_line": 352,
+                "start_col": 47,
+                "end_line": 352,
+                "end_col": 68
+              }
+            }
+          ],
+          "span": {
+            "start": 10081,
+            "end": 10147,
+            "start_line": 352,
+            "start_col": 5,
+            "end_line": 352,
+            "end_col": 71
+          }
+        },
+        {
+          "content_type": "component",
+          "name": "Button",
+          "self_closing": true,
+          "attributes": [
+            {
+              "name": "disabled",
+              "value": {
+                "value_type": "expression",
+                "value": {
+                  "expr_type": "binary",
+                  "left": {
+                    "expr_type": "member_access",
+                    "root": "state",
+                    "path": [
+                      "isLoading"
+                    ],
+                    "span": {
+                      "start": 10202,
+                      "end": 10218,
+                      "start_line": 355,
+                      "start_col": 23,
+                      "end_line": 355,
+                      "end_col": 39
+                    }
+                  },
+                  "op": "or",
+                  "right": {
+                    "expr_type": "member_access",
+                    "root": "state",
+                    "path": [
+                      "isDisabled"
+                    ],
+                    "span": {
+                      "start": 10221,
+                      "end": 10237,
+                      "start_line": 355,
+                      "start_col": 42,
+                      "end_line": 355,
+                      "end_col": 58
+                    }
+                  },
+                  "span": {
+                    "start": 10202,
+                    "end": 10237,
+                    "start_line": 355,
+                    "start_col": 23,
+                    "end_line": 355,
+                    "end_col": 58
+                  }
+                }
+              },
+              "span": {
+                "start": 10192,
+                "end": 10238,
+                "start_line": 355,
+                "start_col": 13,
+                "end_line": 355,
+                "end_col": 59
+              }
+            }
+          ],
+          "span": {
+            "start": 10184,
+            "end": 10241,
+            "start_line": 355,
+            "start_col": 5,
+            "end_line": 355,
+            "end_col": 62
+          }
+        },
+        {
+          "content_type": "component",
+          "name": "Button",
+          "self_closing": true,
+          "attributes": [
+            {
+              "name": "visible",
+              "value": {
+                "value_type": "expression",
+                "value": {
+                  "expr_type": "binary",
+                  "left": {
+                    "expr_type": "member_access",
+                    "root": "state",
+                    "path": [
+                      "isAdmin"
+                    ],
+                    "span": {
+                      "start": 10263,
+                      "end": 10277,
+                      "start_line": 356,
+                      "start_col": 22,
+                      "end_line": 356,
+                      "end_col": 36
+                    }
+                  },
+                  "op": "and",
+                  "right": {
+                    "expr_type": "member_access",
+                    "root": "state",
+                    "path": [
+                      "hasAccess"
+                    ],
+                    "span": {
+                      "start": 10280,
+                      "end": 10295,
+                      "start_line": 356,
+                      "start_col": 39,
+                      "end_line": 356,
+                      "end_col": 54
+                    }
+                  },
+                  "span": {
+                    "start": 10263,
+                    "end": 10295,
+                    "start_line": 356,
+                    "start_col": 22,
+                    "end_line": 356,
+                    "end_col": 54
+                  }
+                }
+              },
+              "span": {
+                "start": 10254,
+                "end": 10296,
+                "start_line": 356,
+                "start_col": 13,
+                "end_line": 356,
+                "end_col": 55
+              }
+            }
+          ],
+          "span": {
+            "start": 10246,
+            "end": 10299,
+            "start_line": 356,
+            "start_col": 5,
+            "end_line": 356,
+            "end_col": 58
+          }
+        },
+        {
+          "content_type": "component",
+          "name": "Button",
+          "self_closing": true,
+          "attributes": [
+            {
+              "name": "visible",
+              "value": {
+                "value_type": "expression",
+                "value": {
+                  "expr_type": "unary",
+                  "op": "not",
+                  "operand": {
+                    "expr_type": "member_access",
+                    "root": "state",
+                    "path": [
+                      "isReadOnly"
+                    ],
+                    "span": {
+                      "start": 10322,
+                      "end": 10338,
+                      "start_line": 357,
+                      "start_col": 23,
+                      "end_line": 357,
+                      "end_col": 39
+                    }
+                  },
+                  "span": {
+                    "start": 10321,
+                    "end": 10338,
+                    "start_line": 357,
+                    "start_col": 22,
+                    "end_line": 357,
+                    "end_col": 39
+                  }
+                }
+              },
+              "span": {
+                "start": 10312,
+                "end": 10339,
+                "start_line": 357,
+                "start_col": 13,
+                "end_line": 357,
+                "end_col": 40
+              }
+            }
+          ],
+          "span": {
+            "start": 10304,
+            "end": 10342,
+            "start_line": 357,
+            "start_col": 5,
+            "end_line": 357,
+            "end_col": 43
+          }
+        }
+      ],
+      "span": {
+        "start": 5487,
+        "end": 10344,
+        "start_line": 197,
+        "start_col": 1,
+        "end_line": 358,
+        "end_col": 2
+      }
+    },
+    {
+      "kind": "styles",
+      "scoped": true,
+      "modifiers": [
+        "scoped"
+      ],
+      "rules": [
+        {
+          "content_type": "rule",
+          "selectors": [
+            ".container"
+          ],
+          "declarations": [
+            {
+              "property": "padding",
+              "value": {
+                "value_type": "plain",
+                "value": "24px"
+              },
+              "span": {
+                "start": 10606,
+                "end": 10620,
+                "start_line": 367,
+                "start_col": 9,
+                "end_line": 367,
+                "end_col": 23
+              }
+            },
+            {
+              "property": "margin",
+              "value": {
+                "value_type": "plain",
+                "value": "0 auto"
+              },
+              "span": {
+                "start": 10629,
+                "end": 10644,
+                "start_line": 368,
+                "start_col": 9,
+                "end_line": 368,
+                "end_col": 24
+              }
+            },
+            {
+              "property": "max-width",
+              "value": {
+                "value_type": "plain",
+                "value": "1200px"
+              },
+              "span": {
+                "start": 10653,
+                "end": 10671,
+                "start_line": 369,
+                "start_col": 9,
+                "end_line": 369,
+                "end_col": 27
+              }
+            }
+          ],
+          "span": {
+            "start": 10585,
+            "end": 10677,
+            "start_line": 366,
+            "start_col": 5,
+            "end_line": 370,
+            "end_col": 6
+          }
+        },
+        {
+          "content_type": "rule",
+          "selectors": [
+            ".card",
+            ".panel",
+            ".box"
+          ],
+          "declarations": [
+            {
+              "property": "background",
+              "value": {
+                "value_type": "plain",
+                "value": "var(--card-bg)"
+              },
+              "span": {
+                "start": 10743,
+                "end": 10770,
+                "start_line": 374,
+                "start_col": 9,
+                "end_line": 374,
+                "end_col": 36
+              }
+            },
+            {
+              "property": "border-radius",
+              "value": {
+                "value_type": "plain",
+                "value": "var(--radius)"
+              },
+              "span": {
+                "start": 10779,
+                "end": 10808,
+                "start_line": 375,
+                "start_col": 9,
+                "end_line": 375,
+                "end_col": 38
+              }
+            },
+            {
+              "property": "box-shadow",
+              "value": {
+                "value_type": "plain",
+                "value": "var(--shadow-md)"
+              },
+              "span": {
+                "start": 10817,
+                "end": 10846,
+                "start_line": 376,
+                "start_col": 9,
+                "end_line": 376,
+                "end_col": 38
+              }
+            }
+          ],
+          "span": {
+            "start": 10713,
+            "end": 10852,
+            "start_line": 373,
+            "start_col": 5,
+            "end_line": 377,
+            "end_col": 6
+          }
+        },
+        {
+          "content_type": "rule",
+          "selectors": [
+            ".button"
+          ],
+          "declarations": [
+            {
+              "property": "padding",
+              "value": {
+                "value_type": "plain",
+                "value": "8px 16px"
+              },
+              "span": {
+                "start": 10919,
+                "end": 10937,
+                "start_line": 381,
+                "start_col": 9,
+                "end_line": 381,
+                "end_col": 27
+              }
+            }
+          ],
+          "span": {
+            "start": 10901,
+            "end": 10943,
+            "start_line": 380,
+            "start_col": 5,
+            "end_line": 382,
+            "end_col": 6
+          }
+        },
+        {
+          "content_type": "rule",
+          "selectors": [
+            ".link:hover"
+          ],
+          "declarations": [
+            {
+              "property": "text-decoration",
+              "value": {
+                "value_type": "plain",
+                "value": "underline"
+              },
+              "span": {
+                "start": 11017,
+                "end": 11044,
+                "start_line": 386,
+                "start_col": 9,
+                "end_line": 386,
+                "end_col": 36
+              }
+            }
+          ],
+          "span": {
+            "start": 10995,
+            "end": 11050,
+            "start_line": 385,
+            "start_col": 5,
+            "end_line": 387,
+            "end_col": 6
+          }
+        },
+        {
+          "content_type": "rule",
+          "selectors": [
+            ".input:focus"
+          ],
+          "declarations": [
+            {
+              "property": "outline",
+              "value": {
+                "value_type": "plain",
+                "value": "2px solid var(--primary)"
+              },
+              "span": {
+                "start": 11083,
+                "end": 11117,
+                "start_line": 390,
+                "start_col": 9,
+                "end_line": 390,
+                "end_col": 43
+              }
+            }
+          ],
+          "span": {
+            "start": 11060,
+            "end": 11123,
+            "start_line": 389,
+            "start_col": 5,
+            "end_line": 391,
+            "end_col": 6
+          }
+        },
+        {
+          "content_type": "rule",
+          "selectors": [
+            ".item:first-child"
+          ],
+          "declarations": [
+            {
+              "property": "margin-top",
+              "value": {
+                "value_type": "plain",
+                "value": "0"
+              },
+              "span": {
+                "start": 11161,
+                "end": 11175,
+                "start_line": 394,
+                "start_col": 9,
+                "end_line": 394,
+                "end_col": 23
+              }
+            }
+          ],
+          "span": {
+            "start": 11133,
+            "end": 11181,
+            "start_line": 393,
+            "start_col": 5,
+            "end_line": 395,
+            "end_col": 6
+          }
+        },
+        {
+          "content_type": "rule",
+          "selectors": [
+            "[data-theme=\"dark\"]"
+          ],
+          "declarations": [
+            {
+              "property": "background",
+              "value": {
+                "value_type": "plain",
+                "value": "#1a1a1a"
+              },
+              "span": {
+                "start": 11248,
+                "end": 11268,
+                "start_line": 399,
+                "start_col": 9,
+                "end_line": 399,
+                "end_col": 29
+              }
+            }
+          ],
+          "span": {
+            "start": 11218,
+            "end": 11274,
+            "start_line": 398,
+            "start_col": 5,
+            "end_line": 400,
+            "end_col": 6
+          }
+        },
+        {
+          "content_type": "rule",
+          "selectors": [
+            "#main-content"
+          ],
+          "declarations": [
+            {
+              "property": "flex",
+              "value": {
+                "value_type": "plain",
+                "value": "1"
+              },
+              "span": {
+                "start": 11328,
+                "end": 11336,
+                "start_line": 404,
+                "start_col": 9,
+                "end_line": 404,
+                "end_col": 17
+              }
+            }
+          ],
+          "span": {
+            "start": 11304,
+            "end": 11342,
+            "start_line": 403,
+            "start_col": 5,
+            "end_line": 405,
+            "end_col": 6
+          }
+        },
+        {
+          "content_type": "rule",
+          "selectors": [
+            ".card-header"
+          ],
+          "declarations": [
+            {
+              "property": "border-bottom",
+              "value": {
+                "value_type": "plain",
+                "value": "1px solid var(--border)"
+              },
+              "span": {
+                "start": 11375,
+                "end": 11414,
+                "start_line": 408,
+                "start_col": 9,
+                "end_line": 408,
+                "end_col": 48
+              }
+            }
+          ],
+          "span": {
+            "start": 11352,
+            "end": 11420,
+            "start_line": 407,
+            "start_col": 5,
+            "end_line": 409,
+            "end_col": 6
+          }
+        },
+        {
+          "content_type": "rule",
+          "selectors": [
+            ".item.active"
+          ],
+          "declarations": [
+            {
+              "property": "margin-top",
+              "value": {
+                "value_type": "plain",
+                "value": "8px"
+              },
+              "span": {
+                "start": 11453,
+                "end": 11469,
+                "start_line": 412,
+                "start_col": 9,
+                "end_line": 412,
+                "end_col": 25
+              }
+            }
+          ],
+          "span": {
+            "start": 11430,
+            "end": 11475,
+            "start_line": 411,
+            "start_col": 5,
+            "end_line": 413,
+            "end_col": 6
+          }
+        },
+        {
+          "content_type": "at_rule",
+          "at_rule_type": "media",
+          "query": "(min-width: 768px)",
+          "content": [
+            {
+              "content_type": "rule",
+              "selectors": [
+                ".container"
+              ],
+              "declarations": [
+                {
+                  "property": "padding",
+                  "value": {
+                    "value_type": "plain",
+                    "value": "32px"
+                  },
+                  "span": {
+                    "start": 11568,
+                    "end": 11582,
+                    "start_line": 418,
+                    "start_col": 13,
+                    "end_line": 418,
+                    "end_col": 27
+                  }
+                }
+              ],
+              "span": {
+                "start": 11543,
+                "end": 11592,
+                "start_line": 417,
+                "start_col": 9,
+                "end_line": 419,
+                "end_col": 10
+              }
+            },
+            {
+              "content_type": "rule",
+              "selectors": [
+                ".grid"
+              ],
+              "declarations": [
+                {
+                  "property": "grid-template-columns",
+                  "value": {
+                    "value_type": "plain",
+                    "value": "repeat(2, 1fr)"
+                  },
+                  "span": {
+                    "start": 11630,
+                    "end": 11668,
+                    "start_line": 422,
+                    "start_col": 13,
+                    "end_line": 422,
+                    "end_col": 51
+                  }
+                }
+              ],
+              "span": {
+                "start": 11610,
+                "end": 11678,
+                "start_line": 421,
+                "start_col": 9,
+                "end_line": 423,
+                "end_col": 10
+              }
+            }
+          ],
+          "span": {
+            "start": 11507,
+            "end": 11684,
+            "start_line": 416,
+            "start_col": 5,
+            "end_line": 424,
+            "end_col": 6
+          }
+        },
+        {
+          "content_type": "at_rule",
+          "at_rule_type": "media",
+          "query": "(min-width: 1024px)",
+          "content": [
+            {
+              "content_type": "rule",
+              "selectors": [
+                ".grid"
+              ],
+              "declarations": [
+                {
+                  "property": "grid-template-columns",
+                  "value": {
+                    "value_type": "plain",
+                    "value": "repeat(3, 1fr)"
+                  },
+                  "span": {
+                    "start": 11751,
+                    "end": 11789,
+                    "start_line": 428,
+                    "start_col": 13,
+                    "end_line": 428,
+                    "end_col": 51
+                  }
+                }
+              ],
+              "span": {
+                "start": 11731,
+                "end": 11799,
+                "start_line": 427,
+                "start_col": 9,
+                "end_line": 429,
+                "end_col": 10
+              }
+            }
+          ],
+          "span": {
+            "start": 11694,
+            "end": 11805,
+            "start_line": 426,
+            "start_col": 5,
+            "end_line": 430,
+            "end_col": 6
+          }
+        },
+        {
+          "content_type": "at_rule",
+          "at_rule_type": "keyframes",
+          "name": "fadeIn",
+          "blocks": [
+            {
+              "selector": "from",
+              "declarations": [
+                {
+                  "property": "opacity",
+                  "value": {
+                    "value_type": "plain",
+                    "value": "0"
+                  },
+                  "span": {
+                    "start": 11891,
+                    "end": 11902,
+                    "start_line": 435,
+                    "start_col": 13,
+                    "end_line": 435,
+                    "end_col": 24
+                  }
+                }
+              ],
+              "span": {
+                "start": 11872,
+                "end": 11912,
+                "start_line": 434,
+                "start_col": 9,
+                "end_line": 436,
+                "end_col": 10
+              }
+            },
+            {
+              "selector": "to",
+              "declarations": [
+                {
+                  "property": "opacity",
+                  "value": {
+                    "value_type": "plain",
+                    "value": "1"
+                  },
+                  "span": {
+                    "start": 11938,
+                    "end": 11949,
+                    "start_line": 438,
+                    "start_col": 13,
+                    "end_line": 438,
+                    "end_col": 24
+                  }
+                }
+              ],
+              "span": {
+                "start": 11921,
+                "end": 11959,
+                "start_line": 437,
+                "start_col": 9,
+                "end_line": 439,
+                "end_col": 10
+              }
+            }
+          ],
+          "span": {
+            "start": 11844,
+            "end": 11965,
+            "start_line": 433,
+            "start_col": 5,
+            "end_line": 440,
+            "end_col": 6
+          }
+        },
+        {
+          "content_type": "at_rule",
+          "at_rule_type": "keyframes",
+          "name": "slideUp",
+          "blocks": [
+            {
+              "selector": "0%",
+              "declarations": [
+                {
+                  "property": "transform",
+                  "value": {
+                    "value_type": "plain",
+                    "value": "translateY(20px)"
+                  },
+                  "span": {
+                    "start": 12021,
+                    "end": 12049,
+                    "start_line": 444,
+                    "start_col": 13,
+                    "end_line": 444,
+                    "end_col": 41
+                  }
+                },
+                {
+                  "property": "opacity",
+                  "value": {
+                    "value_type": "plain",
+                    "value": "0"
+                  },
+                  "span": {
+                    "start": 12062,
+                    "end": 12073,
+                    "start_line": 445,
+                    "start_col": 13,
+                    "end_line": 445,
+                    "end_col": 24
+                  }
+                }
+              ],
+              "span": {
+                "start": 12004,
+                "end": 12083,
+                "start_line": 443,
+                "start_col": 9,
+                "end_line": 446,
+                "end_col": 10
+              }
+            },
+            {
+              "selector": "100%",
+              "declarations": [
+                {
+                  "property": "transform",
+                  "value": {
+                    "value_type": "plain",
+                    "value": "translateY(0)"
+                  },
+                  "span": {
+                    "start": 12111,
+                    "end": 12136,
+                    "start_line": 448,
+                    "start_col": 13,
+                    "end_line": 448,
+                    "end_col": 38
+                  }
+                },
+                {
+                  "property": "opacity",
+                  "value": {
+                    "value_type": "plain",
+                    "value": "1"
+                  },
+                  "span": {
+                    "start": 12149,
+                    "end": 12160,
+                    "start_line": 449,
+                    "start_col": 13,
+                    "end_line": 449,
+                    "end_col": 24
+                  }
+                }
+              ],
+              "span": {
+                "start": 12092,
+                "end": 12170,
+                "start_line": 447,
+                "start_col": 9,
+                "end_line": 450,
+                "end_col": 10
+              }
+            }
+          ],
+          "span": {
+            "start": 11975,
+            "end": 12176,
+            "start_line": 442,
+            "start_col": 5,
+            "end_line": 451,
+            "end_col": 6
+          }
+        },
+        {
+          "content_type": "at_rule",
+          "at_rule_type": "layer",
+          "names": [
+            "base",
+            "components",
+            "utilities"
+          ],
+          "content": [
+            {
+              "content_type": "rule",
+              "selectors": [
+                ".reset"
+              ],
+              "declarations": [
+                {
+                  "property": "margin",
+                  "value": {
+                    "value_type": "plain",
+                    "value": "0"
+                  },
+                  "span": {
+                    "start": 12289,
+                    "end": 12299,
+                    "start_line": 456,
+                    "start_col": 13,
+                    "end_line": 456,
+                    "end_col": 23
+                  }
+                },
+                {
+                  "property": "padding",
+                  "value": {
+                    "value_type": "plain",
+                    "value": "0"
+                  },
+                  "span": {
+                    "start": 12312,
+                    "end": 12323,
+                    "start_line": 457,
+                    "start_col": 13,
+                    "end_line": 457,
+                    "end_col": 24
+                  }
+                }
+              ],
+              "span": {
+                "start": 12268,
+                "end": 12333,
+                "start_line": 455,
+                "start_col": 9,
+                "end_line": 458,
+                "end_col": 10
+              }
+            }
+          ],
+          "span": {
+            "start": 12223,
+            "end": 12339,
+            "start_line": 454,
+            "start_col": 5,
+            "end_line": 459,
+            "end_col": 6
+          }
+        },
+        {
+          "content_type": "at_rule",
+          "at_rule_type": "supports",
+          "condition": "(display: grid)",
+          "content": [
+            {
+              "content_type": "rule",
+              "selectors": [
+                ".layout"
+              ],
+              "declarations": [
+                {
+                  "property": "display",
+                  "value": {
+                    "value_type": "plain",
+                    "value": "grid"
+                  },
+                  "span": {
+                    "start": 12446,
+                    "end": 12460,
+                    "start_line": 464,
+                    "start_col": 13,
+                    "end_line": 464,
+                    "end_col": 27
+                  }
+                }
+              ],
+              "span": {
+                "start": 12424,
+                "end": 12470,
+                "start_line": 463,
+                "start_col": 9,
+                "end_line": 465,
+                "end_col": 10
+              }
+            }
+          ],
+          "span": {
+            "start": 12388,
+            "end": 12476,
+            "start_line": 462,
+            "start_col": 5,
+            "end_line": 466,
+            "end_col": 6
+          }
+        },
+        {
+          "content_type": "at_rule",
+          "at_rule_type": "container",
+          "query": "(min-width: 400px)",
+          "content": [
+            {
+              "content_type": "rule",
+              "selectors": [
+                ".card-content"
+              ],
+              "declarations": [
+                {
+                  "property": "padding",
+                  "value": {
+                    "value_type": "plain",
+                    "value": "24px"
+                  },
+                  "span": {
+                    "start": 12580,
+                    "end": 12594,
+                    "start_line": 471,
+                    "start_col": 13,
+                    "end_line": 471,
+                    "end_col": 27
+                  }
+                }
+              ],
+              "span": {
+                "start": 12552,
+                "end": 12604,
+                "start_line": 470,
+                "start_col": 9,
+                "end_line": 472,
+                "end_col": 10
+              }
+            }
+          ],
+          "span": {
+            "start": 12512,
+            "end": 12610,
+            "start_line": 469,
+            "start_col": 5,
+            "end_line": 473,
+            "end_col": 6
+          }
+        },
+        {
+          "content_type": "rule",
+          "selectors": [
+            ".themed"
+          ],
+          "declarations": [
+            {
+              "property": "color",
+              "value": {
+                "value_type": "plain",
+                "value": "var(--text-primary)"
+              },
+              "span": {
+                "start": 12669,
+                "end": 12696,
+                "start_line": 477,
+                "start_col": 9,
+                "end_line": 477,
+                "end_col": 36
+              }
+            },
+            {
+              "property": "background",
+              "value": {
+                "value_type": "plain",
+                "value": "var(--bg-secondary)"
+              },
+              "span": {
+                "start": 12705,
+                "end": 12737,
+                "start_line": 478,
+                "start_col": 9,
+                "end_line": 478,
+                "end_col": 41
+              }
+            },
+            {
+              "property": "border-color",
+              "value": {
+                "value_type": "plain",
+                "value": "var(--border-color)"
+              },
+              "span": {
+                "start": 12746,
+                "end": 12780,
+                "start_line": 479,
+                "start_col": 9,
+                "end_line": 479,
+                "end_col": 43
+              }
+            }
+          ],
+          "span": {
+            "start": 12651,
+            "end": 12786,
+            "start_line": 476,
+            "start_col": 5,
+            "end_line": 480,
+            "end_col": 6
+          }
+        },
+        {
+          "content_type": "rule",
+          "selectors": [
+            ".computed"
+          ],
+          "declarations": [
+            {
+              "property": "width",
+              "value": {
+                "value_type": "plain",
+                "value": "calc(100% - 32px)"
+              },
+              "span": {
+                "start": 12837,
+                "end": 12862,
+                "start_line": 484,
+                "start_col": 9,
+                "end_line": 484,
+                "end_col": 34
+              }
+            },
+            {
+              "property": "height",
+              "value": {
+                "value_type": "plain",
+                "value": "min(100vh, 800px)"
+              },
+              "span": {
+                "start": 12871,
+                "end": 12897,
+                "start_line": 485,
+                "start_col": 9,
+                "end_line": 485,
+                "end_col": 35
+              }
+            },
+            {
+              "property": "font-size",
+              "value": {
+                "value_type": "plain",
+                "value": "clamp(14px, 2vw, 18px)"
+              },
+              "span": {
+                "start": 12906,
+                "end": 12940,
+                "start_line": 486,
+                "start_col": 9,
+                "end_line": 486,
+                "end_col": 43
+              }
+            }
+          ],
+          "span": {
+            "start": 12817,
+            "end": 12946,
+            "start_line": 483,
+            "start_col": 5,
+            "end_line": 487,
+            "end_col": 6
+          }
+        }
+      ],
+      "raw_css": "styles\n.container {\n        padding: 24px;\n        margin: 0 auto;\n        max-width: 1200px;\n    }\n.card, .panel, .box {\n        background: var(--card-bg);\n        border-radius: var(--radius);\n        box-shadow: var(--shadow-md);\n    }\n.button {\n        padding: 8px 16px;\n    }\n.link:hover {\n        text-decoration: underline;\n    }\n.input:focus {\n        outline: 2px solid var(--primary);\n    }\n.item:first-child {\n        margin-top: 0;\n    }\n[data-theme=\"dark\"] {\n        background: #1a1a1a;\n    }\n#main-content {\n        flex: 1;\n    }\n.card-header {\n        border-bottom: 1px solid var(--border);\n    }\n.item.active {\n        margin-top: 8px;\n    }\n@media (min-width: 768px) {\n        .container {\n            padding: 32px;\n        }\n        \n        .grid {\n            grid-template-columns: repeat(2, 1fr);\n        }\n    }\n@media (min-width: 1024px) {\n        .grid {\n            grid-template-columns: repeat(3, 1fr);\n        }\n    }\n@keyframes fadeIn {\n        from {\n            opacity: 0;\n        }\n        to {\n            opacity: 1;\n        }\n    }\n@keyframes slideUp {\n        0% {\n            transform: translateY(20px);\n            opacity: 0;\n        }\n        100% {\n            transform: translateY(0);\n            opacity: 1;\n        }\n    }\n@layer base, components, utilities {\n        .reset {\n            margin: 0;\n            padding: 0;\n        }\n    }\n@supports (display: grid) {\n        .layout {\n            display: grid;\n        }\n    }\n@container (min-width: 400px) {\n        .card-content {\n            padding: 24px;\n        }\n    }\n.themed {\n        color: var(--text-primary);\n        background: var(--bg-secondary);\n        border-color: var(--border-color);\n    }\n.computed {\n        width: calc(100% - 32px);\n        height: min(100vh, 800px);\n        font-size: clamp(14px, 2vw, 18px);\n    }",
+      "span": {
+        "start": 10545,
+        "end": 12948,
+        "start_line": 364,
+        "start_col": 1,
+        "end_line": 488,
+        "end_col": 2
+      }
+    },
+    {
+      "kind": "styles",
+      "modifiers": [
+        "global"
+      ],
+      "rules": [
+        {
+          "content_type": "rule",
+          "selectors": [
+            "*"
+          ],
+          "declarations": [
+            {
+              "property": "box-sizing",
+              "value": {
+                "value_type": "plain",
+                "value": "border-box"
+              },
+              "span": {
+                "start": 12999,
+                "end": 13022,
+                "start_line": 493,
+                "start_col": 9,
+                "end_line": 493,
+                "end_col": 32
+              }
+            }
+          ],
+          "span": {
+            "start": 12987,
+            "end": 13028,
+            "start_line": 492,
+            "start_col": 5,
+            "end_line": 494,
+            "end_col": 6
+          }
+        },
+        {
+          "content_type": "rule",
+          "selectors": [
+            "html"
+          ],
+          "declarations": [
+            {
+              "property": "font-size",
+              "value": {
+                "value_type": "plain",
+                "value": "16px"
+              },
+              "span": {
+                "start": 13053,
+                "end": 13069,
+                "start_line": 497,
+                "start_col": 9,
+                "end_line": 497,
+                "end_col": 25
+              }
+            }
+          ],
+          "span": {
+            "start": 13038,
+            "end": 13075,
+            "start_line": 496,
+            "start_col": 5,
+            "end_line": 498,
+            "end_col": 6
+          }
+        },
+        {
+          "content_type": "rule",
+          "selectors": [
+            "body"
+          ],
+          "declarations": [
+            {
+              "property": "margin",
+              "value": {
+                "value_type": "plain",
+                "value": "0"
+              },
+              "span": {
+                "start": 13100,
+                "end": 13110,
+                "start_line": 501,
+                "start_col": 9,
+                "end_line": 501,
+                "end_col": 19
+              }
+            },
+            {
+              "property": "font-family",
+              "value": {
+                "value_type": "plain",
+                "value": "system-ui, sans-serif"
+              },
+              "span": {
+                "start": 13119,
+                "end": 13154,
+                "start_line": 502,
+                "start_col": 9,
+                "end_line": 502,
+                "end_col": 44
+              }
+            }
+          ],
+          "span": {
+            "start": 13085,
+            "end": 13160,
+            "start_line": 500,
+            "start_col": 5,
+            "end_line": 503,
+            "end_col": 6
+          }
+        }
+      ],
+      "raw_css": "styles\n* {\n        box-sizing: border-box;\n    }\nhtml {\n        font-size: 16px;\n    }\nbody {\n        margin: 0;\n        font-family: system-ui, sans-serif;\n    }",
+      "span": {
+        "start": 12967,
+        "end": 13162,
+        "start_line": 491,
+        "start_col": 1,
+        "end_line": 504,
+        "end_col": 2
+      }
+    }
+  ],
+  "span": {
+    "start": 0,
+    "end": 13491,
+    "start_line": 1,
+    "start_col": 1,
+    "end_line": 513,
+    "end_col": 1
+  }
+}

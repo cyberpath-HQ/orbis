@@ -1,0 +1,2746 @@
+{
+  "path": "/home/ebalo/Desktop/projects/rust/orbis-assets/crates/orbis-dsl/examples/pages/dashboard.orbis",
+  "imports": [
+    {
+      "style": "type_script",
+      "clause": {
+        "type": "named",
+        "specifiers": [
+          {
+            "name": "Card",
+            "span": {
+              "start": 118,
+              "end": 122,
+              "start_line": 4,
+              "start_col": 10,
+              "end_line": 4,
+              "end_col": 14
+            }
+          },
+          {
+            "name": "CardHeader",
+            "span": {
+              "start": 124,
+              "end": 134,
+              "start_line": 4,
+              "start_col": 16,
+              "end_line": 4,
+              "end_col": 26
+            }
+          },
+          {
+            "name": "CardContent",
+            "span": {
+              "start": 136,
+              "end": 148,
+              "start_line": 4,
+              "start_col": 28,
+              "end_line": 4,
+              "end_col": 40
+            }
+          }
+        ]
+      },
+      "path": "@ui/card",
+      "span": {
+        "start": 109,
+        "end": 165,
+        "start_line": 4,
+        "start_col": 1,
+        "end_line": 4,
+        "end_col": 57
+      }
+    },
+    {
+      "style": "type_script",
+      "clause": {
+        "type": "named",
+        "specifiers": [
+          {
+            "name": "DataTable",
+            "span": {
+              "start": 175,
+              "end": 184,
+              "start_line": 5,
+              "start_col": 10,
+              "end_line": 5,
+              "end_col": 19
+            }
+          },
+          {
+            "name": "TableColumn",
+            "span": {
+              "start": 186,
+              "end": 198,
+              "start_line": 5,
+              "start_col": 21,
+              "end_line": 5,
+              "end_col": 33
+            }
+          }
+        ]
+      },
+      "path": "@ui/table",
+      "span": {
+        "start": 166,
+        "end": 216,
+        "start_line": 5,
+        "start_col": 1,
+        "end_line": 5,
+        "end_col": 51
+      }
+    },
+    {
+      "style": "type_script",
+      "clause": {
+        "type": "named",
+        "specifiers": [
+          {
+            "name": "User",
+            "is_type": true,
+            "span": {
+              "start": 226,
+              "end": 235,
+              "start_line": 6,
+              "start_col": 10,
+              "end_line": 6,
+              "end_col": 19
+            }
+          },
+          {
+            "name": "Transaction",
+            "is_type": true,
+            "span": {
+              "start": 237,
+              "end": 254,
+              "start_line": 6,
+              "start_col": 21,
+              "end_line": 6,
+              "end_col": 38
+            }
+          }
+        ]
+      },
+      "path": "@types/dashboard",
+      "span": {
+        "start": 217,
+        "end": 279,
+        "start_line": 6,
+        "start_col": 1,
+        "end_line": 6,
+        "end_col": 63
+      }
+    }
+  ],
+  "elements": [
+    {
+      "kind": "page",
+      "id": "dashboard",
+      "title": "Dashboard Overview",
+      "description": "Main dashboard with key performance indicators",
+      "route": "/dashboard",
+      "requires_auth": true,
+      "layout": "admin",
+      "span": {
+        "start": 281,
+        "end": 475,
+        "start_line": 8,
+        "start_col": 1,
+        "end_line": 15,
+        "end_col": 2
+      }
+    },
+    {
+      "kind": "interface",
+      "name": "DashboardMetric",
+      "members": [
+        {
+          "name": "name",
+          "type_annotation": {
+            "type_kind": "primitive",
+            "kind": "string",
+            "span": {
+              "start": 535,
+              "end": 541,
+              "start_line": 19,
+              "start_col": 11,
+              "end_line": 19,
+              "end_col": 17
+            }
+          },
+          "span": {
+            "start": 529,
+            "end": 541,
+            "start_line": 19,
+            "start_col": 5,
+            "end_line": 19,
+            "end_col": 17
+          }
+        },
+        {
+          "name": "value",
+          "type_annotation": {
+            "type_kind": "primitive",
+            "kind": "number",
+            "span": {
+              "start": 553,
+              "end": 559,
+              "start_line": 20,
+              "start_col": 12,
+              "end_line": 20,
+              "end_col": 18
+            }
+          },
+          "span": {
+            "start": 546,
+            "end": 559,
+            "start_line": 20,
+            "start_col": 5,
+            "end_line": 20,
+            "end_col": 18
+          }
+        },
+        {
+          "name": "change",
+          "type_annotation": {
+            "type_kind": "primitive",
+            "kind": "number",
+            "span": {
+              "start": 572,
+              "end": 578,
+              "start_line": 21,
+              "start_col": 13,
+              "end_line": 21,
+              "end_col": 19
+            }
+          },
+          "span": {
+            "start": 564,
+            "end": 578,
+            "start_line": 21,
+            "start_col": 5,
+            "end_line": 21,
+            "end_col": 19
+          }
+        }
+      ],
+      "span": {
+        "start": 497,
+        "end": 580,
+        "start_line": 18,
+        "start_col": 1,
+        "end_line": 22,
+        "end_col": 2
+      }
+    },
+    {
+      "kind": "state",
+      "declarations": [
+        {
+          "declaration_type": "regular",
+          "name": "userName",
+          "value": {
+            "expr_type": "literal",
+            "value": {
+              "type": "string",
+              "value": "Admin User"
+            },
+            "span": {
+              "start": 622,
+              "end": 634,
+              "start_line": 26,
+              "start_col": 16,
+              "end_line": 26,
+              "end_col": 28
+            }
+          },
+          "span": {
+            "start": 611,
+            "end": 634,
+            "start_line": 26,
+            "start_col": 5,
+            "end_line": 26,
+            "end_col": 28
+          }
+        },
+        {
+          "declaration_type": "regular",
+          "name": "userRole",
+          "value": {
+            "expr_type": "literal",
+            "value": {
+              "type": "string",
+              "value": "administrator"
+            },
+            "span": {
+              "start": 650,
+              "end": 665,
+              "start_line": 27,
+              "start_col": 16,
+              "end_line": 27,
+              "end_col": 31
+            }
+          },
+          "span": {
+            "start": 639,
+            "end": 665,
+            "start_line": 27,
+            "start_col": 5,
+            "end_line": 27,
+            "end_col": 31
+          }
+        },
+        {
+          "declaration_type": "regular",
+          "name": "isLoading",
+          "value": {
+            "expr_type": "literal",
+            "value": {
+              "type": "boolean",
+              "value": true
+            },
+            "span": {
+              "start": 709,
+              "end": 713,
+              "start_line": 30,
+              "start_col": 17,
+              "end_line": 30,
+              "end_col": 21
+            }
+          },
+          "span": {
+            "start": 697,
+            "end": 713,
+            "start_line": 30,
+            "start_col": 5,
+            "end_line": 30,
+            "end_col": 21
+          }
+        },
+        {
+          "declaration_type": "regular",
+          "name": "isRefreshing",
+          "value": {
+            "expr_type": "literal",
+            "value": {
+              "type": "boolean",
+              "value": false
+            },
+            "span": {
+              "start": 733,
+              "end": 738,
+              "start_line": 31,
+              "start_col": 20,
+              "end_line": 31,
+              "end_col": 25
+            }
+          },
+          "span": {
+            "start": 718,
+            "end": 738,
+            "start_line": 31,
+            "start_col": 5,
+            "end_line": 31,
+            "end_col": 25
+          }
+        },
+        {
+          "declaration_type": "regular",
+          "name": "totalRevenue",
+          "value": {
+            "expr_type": "literal",
+            "value": {
+              "type": "integer",
+              "value": 125000
+            },
+            "span": {
+              "start": 783,
+              "end": 789,
+              "start_line": 34,
+              "start_col": 20,
+              "end_line": 34,
+              "end_col": 26
+            }
+          },
+          "span": {
+            "start": 768,
+            "end": 789,
+            "start_line": 34,
+            "start_col": 5,
+            "end_line": 34,
+            "end_col": 26
+          }
+        },
+        {
+          "declaration_type": "regular",
+          "name": "totalUsers",
+          "value": {
+            "expr_type": "literal",
+            "value": {
+              "type": "integer",
+              "value": 8450
+            },
+            "span": {
+              "start": 807,
+              "end": 811,
+              "start_line": 35,
+              "start_col": 18,
+              "end_line": 35,
+              "end_col": 22
+            }
+          },
+          "span": {
+            "start": 794,
+            "end": 811,
+            "start_line": 35,
+            "start_col": 5,
+            "end_line": 35,
+            "end_col": 22
+          }
+        },
+        {
+          "declaration_type": "regular",
+          "name": "conversionRate",
+          "value": {
+            "expr_type": "literal",
+            "value": {
+              "type": "number",
+              "value": 3.2
+            },
+            "span": {
+              "start": 833,
+              "end": 836,
+              "start_line": 36,
+              "start_col": 22,
+              "end_line": 36,
+              "end_col": 25
+            }
+          },
+          "span": {
+            "start": 816,
+            "end": 836,
+            "start_line": 36,
+            "start_col": 5,
+            "end_line": 36,
+            "end_col": 25
+          }
+        },
+        {
+          "declaration_type": "regular",
+          "name": "recentTransactions",
+          "type_annotation": {
+            "type_kind": "primitive",
+            "kind": "array",
+            "span": {
+              "start": 884,
+              "end": 889,
+              "start_line": 39,
+              "start_col": 25,
+              "end_line": 39,
+              "end_col": 30
+            }
+          },
+          "value": {
+            "expr_type": "array",
+            "elements": [],
+            "span": {
+              "start": 892,
+              "end": 894,
+              "start_line": 39,
+              "start_col": 33,
+              "end_line": 39,
+              "end_col": 35
+            }
+          },
+          "span": {
+            "start": 864,
+            "end": 894,
+            "start_line": 39,
+            "start_col": 5,
+            "end_line": 39,
+            "end_col": 35
+          }
+        },
+        {
+          "declaration_type": "regular",
+          "name": "selectedTransactionId",
+          "value": {
+            "expr_type": "literal",
+            "value": {
+              "type": "null"
+            },
+            "span": {
+              "start": 923,
+              "end": 927,
+              "start_line": 40,
+              "start_col": 29,
+              "end_line": 40,
+              "end_col": 33
+            }
+          },
+          "span": {
+            "start": 899,
+            "end": 927,
+            "start_line": 40,
+            "start_col": 5,
+            "end_line": 40,
+            "end_col": 33
+          }
+        },
+        {
+          "declaration_type": "regular",
+          "name": "showExportModal",
+          "value": {
+            "expr_type": "literal",
+            "value": {
+              "type": "boolean",
+              "value": false
+            },
+            "span": {
+              "start": 971,
+              "end": 976,
+              "start_line": 43,
+              "start_col": 23,
+              "end_line": 43,
+              "end_col": 28
+            }
+          },
+          "span": {
+            "start": 953,
+            "end": 976,
+            "start_line": 43,
+            "start_col": 5,
+            "end_line": 43,
+            "end_col": 28
+          }
+        },
+        {
+          "declaration_type": "regular",
+          "name": "activeTab",
+          "value": {
+            "expr_type": "literal",
+            "value": {
+              "type": "string",
+              "value": "overview"
+            },
+            "span": {
+              "start": 993,
+              "end": 1003,
+              "start_line": 44,
+              "start_col": 17,
+              "end_line": 44,
+              "end_col": 27
+            }
+          },
+          "span": {
+            "start": 981,
+            "end": 1003,
+            "start_line": 44,
+            "start_col": 5,
+            "end_line": 44,
+            "end_col": 27
+          }
+        },
+        {
+          "declaration_type": "computed",
+          "name": "revenueFormatted",
+          "explicit_computed": true,
+          "expression": {
+            "expr_type": "binary",
+            "left": {
+              "expr_type": "literal",
+              "value": {
+                "type": "string",
+                "value": "$"
+              },
+              "span": {
+                "start": 1066,
+                "end": 1069,
+                "start_line": 47,
+                "start_col": 35,
+                "end_line": 47,
+                "end_col": 38
+              }
+            },
+            "op": "add",
+            "right": {
+              "expr_type": "identifier",
+              "name": "totalRevenue",
+              "span": {
+                "start": 1072,
+                "end": 1084,
+                "start_line": 47,
+                "start_col": 41,
+                "end_line": 47,
+                "end_col": 53
+              }
+            },
+            "span": {
+              "start": 1066,
+              "end": 1084,
+              "start_line": 47,
+              "start_col": 35,
+              "end_line": 47,
+              "end_col": 53
+            }
+          },
+          "span": {
+            "start": 1036,
+            "end": 1084,
+            "start_line": 47,
+            "start_col": 5,
+            "end_line": 47,
+            "end_col": 53
+          }
+        },
+        {
+          "declaration_type": "computed",
+          "name": "usersFormatted",
+          "explicit_computed": true,
+          "expression": {
+            "expr_type": "identifier",
+            "name": "totalUsers",
+            "span": {
+              "start": 1117,
+              "end": 1127,
+              "start_line": 48,
+              "start_col": 33,
+              "end_line": 48,
+              "end_col": 43
+            }
+          },
+          "span": {
+            "start": 1089,
+            "end": 1128,
+            "start_line": 48,
+            "start_col": 5,
+            "end_line": 49,
+            "end_col": 1
+          }
+        }
+      ],
+      "span": {
+        "start": 582,
+        "end": 1129,
+        "start_line": 24,
+        "start_col": 1,
+        "end_line": 49,
+        "end_col": 2
+      }
+    },
+    {
+      "kind": "hooks",
+      "entries": [
+        {
+          "hook_type": "lifecycle",
+          "kind": "mount",
+          "actions": [
+            {
+              "action_type": "simple",
+              "type": "method_call",
+              "namespace": "console",
+              "method": "log",
+              "arguments": [
+                {
+                  "value": {
+                    "expr_type": "literal",
+                    "value": {
+                      "type": "string",
+                      "value": "Dashboard mounted"
+                    },
+                    "span": {
+                      "start": 1175,
+                      "end": 1194,
+                      "start_line": 53,
+                      "start_col": 21,
+                      "end_line": 53,
+                      "end_col": 40
+                    }
+                  }
+                }
+              ],
+              "span": {
+                "start": 1163,
+                "end": 1195,
+                "start_line": 53,
+                "start_col": 9,
+                "end_line": 53,
+                "end_col": 41
+              }
+            },
+            {
+              "action_type": "simple",
+              "type": "state_assignment",
+              "target": {
+                "root": "state",
+                "path": [
+                  "isLoading"
+                ],
+                "span": {
+                  "start": 1205,
+                  "end": 1233,
+                  "start_line": 54,
+                  "start_col": 9,
+                  "end_line": 55,
+                  "end_col": 5
+                }
+              },
+              "value": {
+                "expr_type": "literal",
+                "value": {
+                  "type": "boolean",
+                  "value": false
+                },
+                "span": {
+                  "start": 1205,
+                  "end": 1233,
+                  "start_line": 54,
+                  "start_col": 9,
+                  "end_line": 55,
+                  "end_col": 5
+                }
+              },
+              "span": {
+                "start": 1205,
+                "end": 1233,
+                "start_line": 54,
+                "start_col": 9,
+                "end_line": 55,
+                "end_col": 5
+              }
+            }
+          ],
+          "span": {
+            "start": 1143,
+            "end": 1234,
+            "start_line": 52,
+            "start_col": 5,
+            "end_line": 55,
+            "end_col": 6
+          }
+        },
+        {
+          "hook_type": "lifecycle",
+          "kind": "unmount",
+          "actions": [
+            {
+              "action_type": "simple",
+              "type": "method_call",
+              "namespace": "console",
+              "method": "log",
+              "arguments": [
+                {
+                  "value": {
+                    "expr_type": "literal",
+                    "value": {
+                      "type": "string",
+                      "value": "Dashboard unmounting"
+                    },
+                    "span": {
+                      "start": 1278,
+                      "end": 1300,
+                      "start_line": 58,
+                      "start_col": 21,
+                      "end_line": 58,
+                      "end_col": 43
+                    }
+                  }
+                }
+              ],
+              "span": {
+                "start": 1266,
+                "end": 1301,
+                "start_line": 58,
+                "start_col": 9,
+                "end_line": 58,
+                "end_col": 44
+              }
+            }
+          ],
+          "span": {
+            "start": 1244,
+            "end": 1307,
+            "start_line": 57,
+            "start_col": 5,
+            "end_line": 59,
+            "end_col": 6
+          }
+        }
+      ],
+      "span": {
+        "start": 1131,
+        "end": 1309,
+        "start_line": 51,
+        "start_col": 1,
+        "end_line": 60,
+        "end_col": 2
+      }
+    },
+    {
+      "kind": "fragment",
+      "name": "MetricCard",
+      "params": [
+        {
+          "name": "title",
+          "type_annotation": {
+            "type_kind": "primitive",
+            "kind": "string",
+            "span": {
+              "start": 1362,
+              "end": 1368,
+              "start_line": 63,
+              "start_col": 28,
+              "end_line": 63,
+              "end_col": 34
+            }
+          },
+          "required": true,
+          "span": {
+            "start": 1355,
+            "end": 1368,
+            "start_line": 63,
+            "start_col": 21,
+            "end_line": 63,
+            "end_col": 34
+          }
+        },
+        {
+          "name": "value",
+          "type_annotation": {
+            "type_kind": "primitive",
+            "kind": "string",
+            "span": {
+              "start": 1377,
+              "end": 1383,
+              "start_line": 63,
+              "start_col": 43,
+              "end_line": 63,
+              "end_col": 49
+            }
+          },
+          "required": true,
+          "span": {
+            "start": 1370,
+            "end": 1383,
+            "start_line": 63,
+            "start_col": 36,
+            "end_line": 63,
+            "end_col": 49
+          }
+        },
+        {
+          "name": "icon",
+          "type_annotation": {
+            "type_kind": "primitive",
+            "kind": "string",
+            "span": {
+              "start": 1391,
+              "end": 1397,
+              "start_line": 63,
+              "start_col": 57,
+              "end_line": 63,
+              "end_col": 63
+            }
+          },
+          "required": true,
+          "span": {
+            "start": 1385,
+            "end": 1397,
+            "start_line": 63,
+            "start_col": 51,
+            "end_line": 63,
+            "end_col": 63
+          }
+        }
+      ],
+      "body": [
+        {
+          "content_type": "component",
+          "name": "Card",
+          "attributes": [
+            {
+              "name": "className",
+              "value": {
+                "value_type": "string",
+                "value": "metric-card"
+              },
+              "span": {
+                "start": 1411,
+                "end": 1434,
+                "start_line": 64,
+                "start_col": 11,
+                "end_line": 64,
+                "end_col": 34
+              }
+            }
+          ],
+          "children": [
+            {
+              "content_type": "component",
+              "name": "CardHeader",
+              "children": [
+                {
+                  "content_type": "component",
+                  "name": "Flex",
+                  "attributes": [
+                    {
+                      "name": "direction",
+                      "value": {
+                        "value_type": "string",
+                        "value": "row"
+                      },
+                      "span": {
+                        "start": 1475,
+                        "end": 1490,
+                        "start_line": 66,
+                        "start_col": 19,
+                        "end_line": 66,
+                        "end_col": 34
+                      }
+                    },
+                    {
+                      "name": "align",
+                      "value": {
+                        "value_type": "string",
+                        "value": "center"
+                      },
+                      "span": {
+                        "start": 1491,
+                        "end": 1505,
+                        "start_line": 66,
+                        "start_col": 35,
+                        "end_line": 66,
+                        "end_col": 49
+                      }
+                    },
+                    {
+                      "name": "gap",
+                      "value": {
+                        "value_type": "string",
+                        "value": "2"
+                      },
+                      "span": {
+                        "start": 1506,
+                        "end": 1513,
+                        "start_line": 66,
+                        "start_col": 50,
+                        "end_line": 66,
+                        "end_col": 57
+                      }
+                    }
+                  ],
+                  "children": [
+                    {
+                      "content_type": "component",
+                      "name": "Icon",
+                      "self_closing": true,
+                      "attributes": [
+                        {
+                          "name": "name",
+                          "value": {
+                            "value_type": "expression",
+                            "value": {
+                              "expr_type": "identifier",
+                              "name": "icon",
+                              "span": {
+                                "start": 1543,
+                                "end": 1547,
+                                "start_line": 67,
+                                "start_col": 29,
+                                "end_line": 67,
+                                "end_col": 33
+                              }
+                            }
+                          },
+                          "span": {
+                            "start": 1537,
+                            "end": 1548,
+                            "start_line": 67,
+                            "start_col": 23,
+                            "end_line": 67,
+                            "end_col": 34
+                          }
+                        },
+                        {
+                          "name": "size",
+                          "value": {
+                            "value_type": "string",
+                            "value": "lg"
+                          },
+                          "span": {
+                            "start": 1549,
+                            "end": 1558,
+                            "start_line": 67,
+                            "start_col": 35,
+                            "end_line": 67,
+                            "end_col": 44
+                          }
+                        },
+                        {
+                          "name": "className",
+                          "value": {
+                            "value_type": "string",
+                            "value": "metric-icon"
+                          },
+                          "span": {
+                            "start": 1559,
+                            "end": 1582,
+                            "start_line": 67,
+                            "start_col": 45,
+                            "end_line": 67,
+                            "end_col": 68
+                          }
+                        }
+                      ],
+                      "span": {
+                        "start": 1531,
+                        "end": 1585,
+                        "start_line": 67,
+                        "start_col": 17,
+                        "end_line": 67,
+                        "end_col": 71
+                      }
+                    },
+                    {
+                      "content_type": "component",
+                      "name": "Text",
+                      "self_closing": true,
+                      "attributes": [
+                        {
+                          "name": "variant",
+                          "value": {
+                            "value_type": "string",
+                            "value": "caption"
+                          },
+                          "span": {
+                            "start": 1608,
+                            "end": 1625,
+                            "start_line": 68,
+                            "start_col": 23,
+                            "end_line": 68,
+                            "end_col": 40
+                          }
+                        },
+                        {
+                          "name": "content",
+                          "value": {
+                            "value_type": "expression",
+                            "value": {
+                              "expr_type": "identifier",
+                              "name": "title",
+                              "span": {
+                                "start": 1635,
+                                "end": 1640,
+                                "start_line": 68,
+                                "start_col": 50,
+                                "end_line": 68,
+                                "end_col": 55
+                              }
+                            }
+                          },
+                          "span": {
+                            "start": 1626,
+                            "end": 1641,
+                            "start_line": 68,
+                            "start_col": 41,
+                            "end_line": 68,
+                            "end_col": 56
+                          }
+                        }
+                      ],
+                      "span": {
+                        "start": 1602,
+                        "end": 1644,
+                        "start_line": 68,
+                        "start_col": 17,
+                        "end_line": 68,
+                        "end_col": 59
+                      }
+                    }
+                  ],
+                  "span": {
+                    "start": 1469,
+                    "end": 1664,
+                    "start_line": 66,
+                    "start_col": 13,
+                    "end_line": 69,
+                    "end_col": 20
+                  }
+                }
+              ],
+              "span": {
+                "start": 1444,
+                "end": 1686,
+                "start_line": 65,
+                "start_col": 9,
+                "end_line": 70,
+                "end_col": 22
+              }
+            },
+            {
+              "content_type": "component",
+              "name": "CardContent",
+              "children": [
+                {
+                  "content_type": "component",
+                  "name": "Heading",
+                  "self_closing": true,
+                  "attributes": [
+                    {
+                      "name": "level",
+                      "value": {
+                        "value_type": "string",
+                        "value": "2"
+                      },
+                      "span": {
+                        "start": 1730,
+                        "end": 1739,
+                        "start_line": 72,
+                        "start_col": 22,
+                        "end_line": 72,
+                        "end_col": 31
+                      }
+                    },
+                    {
+                      "name": "text",
+                      "value": {
+                        "value_type": "expression",
+                        "value": {
+                          "expr_type": "identifier",
+                          "name": "value",
+                          "span": {
+                            "start": 1746,
+                            "end": 1751,
+                            "start_line": 72,
+                            "start_col": 38,
+                            "end_line": 72,
+                            "end_col": 43
+                          }
+                        }
+                      },
+                      "span": {
+                        "start": 1740,
+                        "end": 1752,
+                        "start_line": 72,
+                        "start_col": 32,
+                        "end_line": 72,
+                        "end_col": 44
+                      }
+                    }
+                  ],
+                  "span": {
+                    "start": 1721,
+                    "end": 1755,
+                    "start_line": 72,
+                    "start_col": 13,
+                    "end_line": 72,
+                    "end_col": 47
+                  }
+                }
+              ],
+              "span": {
+                "start": 1695,
+                "end": 1778,
+                "start_line": 71,
+                "start_col": 9,
+                "end_line": 73,
+                "end_col": 23
+              }
+            }
+          ],
+          "span": {
+            "start": 1405,
+            "end": 1790,
+            "start_line": 64,
+            "start_col": 5,
+            "end_line": 74,
+            "end_col": 12
+          }
+        }
+      ],
+      "span": {
+        "start": 1335,
+        "end": 1792,
+        "start_line": 63,
+        "start_col": 1,
+        "end_line": 75,
+        "end_col": 2
+      }
+    },
+    {
+      "kind": "template",
+      "content": [
+        {
+          "content_type": "component",
+          "name": "Container",
+          "attributes": [
+            {
+              "name": "id",
+              "value": {
+                "value_type": "string",
+                "value": "dashboard-page"
+              },
+              "span": {
+                "start": 1820,
+                "end": 1839,
+                "start_line": 78,
+                "start_col": 16,
+                "end_line": 78,
+                "end_col": 35
+              }
+            },
+            {
+              "name": "className",
+              "value": {
+                "value_type": "string",
+                "value": "dashboard-layout"
+              },
+              "span": {
+                "start": 1840,
+                "end": 1868,
+                "start_line": 78,
+                "start_col": 36,
+                "end_line": 78,
+                "end_col": 64
+              }
+            }
+          ],
+          "children": [
+            {
+              "content_type": "component",
+              "name": "Flex",
+              "attributes": [
+                {
+                  "name": "direction",
+                  "value": {
+                    "value_type": "string",
+                    "value": "row"
+                  },
+                  "span": {
+                    "start": 1907,
+                    "end": 1922,
+                    "start_line": 80,
+                    "start_col": 15,
+                    "end_line": 80,
+                    "end_col": 30
+                  }
+                },
+                {
+                  "name": "justify",
+                  "value": {
+                    "value_type": "string",
+                    "value": "between"
+                  },
+                  "span": {
+                    "start": 1923,
+                    "end": 1940,
+                    "start_line": 80,
+                    "start_col": 31,
+                    "end_line": 80,
+                    "end_col": 48
+                  }
+                },
+                {
+                  "name": "align",
+                  "value": {
+                    "value_type": "string",
+                    "value": "center"
+                  },
+                  "span": {
+                    "start": 1941,
+                    "end": 1955,
+                    "start_line": 80,
+                    "start_col": 49,
+                    "end_line": 80,
+                    "end_col": 63
+                  }
+                }
+              ],
+              "children": [
+                {
+                  "content_type": "component",
+                  "name": "Heading",
+                  "self_closing": true,
+                  "attributes": [
+                    {
+                      "name": "level",
+                      "value": {
+                        "value_type": "string",
+                        "value": "1"
+                      },
+                      "span": {
+                        "start": 1978,
+                        "end": 1987,
+                        "start_line": 81,
+                        "start_col": 22,
+                        "end_line": 81,
+                        "end_col": 31
+                      }
+                    },
+                    {
+                      "name": "text",
+                      "value": {
+                        "value_type": "string",
+                        "value": "Dashboard"
+                      },
+                      "span": {
+                        "start": 1988,
+                        "end": 2004,
+                        "start_line": 81,
+                        "start_col": 32,
+                        "end_line": 81,
+                        "end_col": 48
+                      }
+                    }
+                  ],
+                  "span": {
+                    "start": 1969,
+                    "end": 2007,
+                    "start_line": 81,
+                    "start_col": 13,
+                    "end_line": 81,
+                    "end_col": 51
+                  }
+                },
+                {
+                  "content_type": "component",
+                  "name": "Flex",
+                  "attributes": [
+                    {
+                      "name": "direction",
+                      "value": {
+                        "value_type": "string",
+                        "value": "row"
+                      },
+                      "span": {
+                        "start": 2026,
+                        "end": 2041,
+                        "start_line": 82,
+                        "start_col": 19,
+                        "end_line": 82,
+                        "end_col": 34
+                      }
+                    },
+                    {
+                      "name": "gap",
+                      "value": {
+                        "value_type": "string",
+                        "value": "2"
+                      },
+                      "span": {
+                        "start": 2042,
+                        "end": 2049,
+                        "start_line": 82,
+                        "start_col": 35,
+                        "end_line": 82,
+                        "end_col": 42
+                      }
+                    }
+                  ],
+                  "children": [
+                    {
+                      "content_type": "component",
+                      "name": "Button",
+                      "self_closing": true,
+                      "attributes": [
+                        {
+                          "name": "label",
+                          "value": {
+                            "value_type": "string",
+                            "value": "Export"
+                          },
+                          "span": {
+                            "start": 2096,
+                            "end": 2110,
+                            "start_line": 84,
+                            "start_col": 21,
+                            "end_line": 84,
+                            "end_col": 35
+                          }
+                        },
+                        {
+                          "name": "variant",
+                          "value": {
+                            "value_type": "string",
+                            "value": "secondary"
+                          },
+                          "span": {
+                            "start": 2132,
+                            "end": 2151,
+                            "start_line": 85,
+                            "start_col": 21,
+                            "end_line": 85,
+                            "end_col": 40
+                          }
+                        }
+                      ],
+                      "events": [
+                        {
+                          "event": "click",
+                          "handler": {
+                            "handler_type": {
+                              "type": "arrow",
+                              "value": {
+                                "params": [],
+                                "body": {
+                                  "body_type": "block",
+                                  "content": [
+                                    {
+                                      "stmt_type": "expression",
+                                      "expr_type": "assignment",
+                                      "target": {
+                                        "expr_type": "member_access",
+                                        "root": "state",
+                                        "path": [
+                                          "showExportModal"
+                                        ],
+                                        "span": {
+                                          "start": 2184,
+                                          "end": 2213,
+                                          "start_line": 86,
+                                          "start_col": 33,
+                                          "end_line": 86,
+                                          "end_col": 62
+                                        }
+                                      },
+                                      "value": {
+                                        "expr_type": "literal",
+                                        "value": {
+                                          "type": "boolean",
+                                          "value": true
+                                        },
+                                        "span": {
+                                          "start": 2184,
+                                          "end": 2213,
+                                          "start_line": 86,
+                                          "start_col": 33,
+                                          "end_line": 86,
+                                          "end_col": 62
+                                        }
+                                      },
+                                      "span": {
+                                        "start": 2184,
+                                        "end": 2213,
+                                        "start_line": 86,
+                                        "start_col": 33,
+                                        "end_line": 86,
+                                        "end_col": 62
+                                      }
+                                    }
+                                  ]
+                                },
+                                "span": {
+                                  "start": 2172,
+                                  "end": 2214,
+                                  "start_line": 86,
+                                  "start_col": 21,
+                                  "end_line": 86,
+                                  "end_col": 63
+                                }
+                              }
+                            }
+                          },
+                          "span": {
+                            "start": 2172,
+                            "end": 2214,
+                            "start_line": 86,
+                            "start_col": 21,
+                            "end_line": 86,
+                            "end_col": 63
+                          }
+                        }
+                      ],
+                      "span": {
+                        "start": 2067,
+                        "end": 2233,
+                        "start_line": 83,
+                        "start_col": 17,
+                        "end_line": 87,
+                        "end_col": 19
+                      }
+                    },
+                    {
+                      "content_type": "component",
+                      "name": "Button",
+                      "self_closing": true,
+                      "attributes": [
+                        {
+                          "name": "label",
+                          "value": {
+                            "value_type": "string",
+                            "value": "Refresh"
+                          },
+                          "span": {
+                            "start": 2279,
+                            "end": 2294,
+                            "start_line": 89,
+                            "start_col": 21,
+                            "end_line": 89,
+                            "end_col": 36
+                          }
+                        },
+                        {
+                          "name": "variant",
+                          "value": {
+                            "value_type": "string",
+                            "value": "primary"
+                          },
+                          "span": {
+                            "start": 2316,
+                            "end": 2333,
+                            "start_line": 90,
+                            "start_col": 21,
+                            "end_line": 90,
+                            "end_col": 38
+                          }
+                        }
+                      ],
+                      "events": [
+                        {
+                          "event": "click",
+                          "handler": {
+                            "handler_type": {
+                              "type": "arrow",
+                              "value": {
+                                "params": [],
+                                "body": {
+                                  "body_type": "block",
+                                  "content": [
+                                    {
+                                      "stmt_type": "expression",
+                                      "expr_type": "assignment",
+                                      "target": {
+                                        "expr_type": "member_access",
+                                        "root": "state",
+                                        "path": [
+                                          "isRefreshing"
+                                        ],
+                                        "span": {
+                                          "start": 2366,
+                                          "end": 2392,
+                                          "start_line": 91,
+                                          "start_col": 33,
+                                          "end_line": 91,
+                                          "end_col": 59
+                                        }
+                                      },
+                                      "value": {
+                                        "expr_type": "literal",
+                                        "value": {
+                                          "type": "boolean",
+                                          "value": true
+                                        },
+                                        "span": {
+                                          "start": 2366,
+                                          "end": 2392,
+                                          "start_line": 91,
+                                          "start_col": 33,
+                                          "end_line": 91,
+                                          "end_col": 59
+                                        }
+                                      },
+                                      "span": {
+                                        "start": 2366,
+                                        "end": 2392,
+                                        "start_line": 91,
+                                        "start_col": 33,
+                                        "end_line": 91,
+                                        "end_col": 59
+                                      }
+                                    }
+                                  ]
+                                },
+                                "span": {
+                                  "start": 2354,
+                                  "end": 2393,
+                                  "start_line": 91,
+                                  "start_col": 21,
+                                  "end_line": 91,
+                                  "end_col": 60
+                                }
+                              }
+                            }
+                          },
+                          "span": {
+                            "start": 2354,
+                            "end": 2393,
+                            "start_line": 91,
+                            "start_col": 21,
+                            "end_line": 91,
+                            "end_col": 60
+                          }
+                        }
+                      ],
+                      "span": {
+                        "start": 2250,
+                        "end": 2412,
+                        "start_line": 88,
+                        "start_col": 17,
+                        "end_line": 92,
+                        "end_col": 19
+                      }
+                    }
+                  ],
+                  "span": {
+                    "start": 2020,
+                    "end": 2432,
+                    "start_line": 82,
+                    "start_col": 13,
+                    "end_line": 93,
+                    "end_col": 20
+                  }
+                }
+              ],
+              "span": {
+                "start": 1901,
+                "end": 2448,
+                "start_line": 80,
+                "start_col": 9,
+                "end_line": 94,
+                "end_col": 16
+              }
+            },
+            {
+              "content_type": "component",
+              "name": "Spacer",
+              "self_closing": true,
+              "attributes": [
+                {
+                  "name": "size",
+                  "value": {
+                    "value_type": "string",
+                    "value": "lg"
+                  },
+                  "span": {
+                    "start": 2474,
+                    "end": 2483,
+                    "start_line": 96,
+                    "start_col": 17,
+                    "end_line": 96,
+                    "end_col": 26
+                  }
+                }
+              ],
+              "span": {
+                "start": 2466,
+                "end": 2486,
+                "start_line": 96,
+                "start_col": 9,
+                "end_line": 96,
+                "end_col": 29
+              }
+            },
+            {
+              "content_type": "component",
+              "name": "Grid",
+              "attributes": [
+                {
+                  "name": "columns",
+                  "value": {
+                    "value_type": "string",
+                    "value": "3"
+                  },
+                  "span": {
+                    "start": 2533,
+                    "end": 2544,
+                    "start_line": 99,
+                    "start_col": 15,
+                    "end_line": 99,
+                    "end_col": 26
+                  }
+                },
+                {
+                  "name": "gap",
+                  "value": {
+                    "value_type": "string",
+                    "value": "4"
+                  },
+                  "span": {
+                    "start": 2545,
+                    "end": 2552,
+                    "start_line": 99,
+                    "start_col": 27,
+                    "end_line": 99,
+                    "end_col": 34
+                  }
+                }
+              ],
+              "children": [
+                {
+                  "content_type": "component",
+                  "name": "MetricCard",
+                  "self_closing": true,
+                  "attributes": [
+                    {
+                      "name": "title",
+                      "value": {
+                        "value_type": "string",
+                        "value": "Total Revenue"
+                      },
+                      "span": {
+                        "start": 2594,
+                        "end": 2615,
+                        "start_line": 101,
+                        "start_col": 17,
+                        "end_line": 101,
+                        "end_col": 38
+                      }
+                    },
+                    {
+                      "name": "value",
+                      "value": {
+                        "value_type": "expression",
+                        "value": {
+                          "expr_type": "member_access",
+                          "root": "state",
+                          "path": [
+                            "revenueFormatted"
+                          ],
+                          "span": {
+                            "start": 2639,
+                            "end": 2661,
+                            "start_line": 102,
+                            "start_col": 24,
+                            "end_line": 102,
+                            "end_col": 46
+                          }
+                        }
+                      },
+                      "span": {
+                        "start": 2632,
+                        "end": 2662,
+                        "start_line": 102,
+                        "start_col": 17,
+                        "end_line": 102,
+                        "end_col": 47
+                      }
+                    },
+                    {
+                      "name": "icon",
+                      "value": {
+                        "value_type": "string",
+                        "value": "dollar-sign"
+                      },
+                      "span": {
+                        "start": 2679,
+                        "end": 2697,
+                        "start_line": 103,
+                        "start_col": 17,
+                        "end_line": 103,
+                        "end_col": 35
+                      }
+                    }
+                  ],
+                  "span": {
+                    "start": 2566,
+                    "end": 2712,
+                    "start_line": 100,
+                    "start_col": 13,
+                    "end_line": 104,
+                    "end_col": 15
+                  }
+                },
+                {
+                  "content_type": "component",
+                  "name": "MetricCard",
+                  "self_closing": true,
+                  "attributes": [
+                    {
+                      "name": "title",
+                      "value": {
+                        "value_type": "string",
+                        "value": "Total Users"
+                      },
+                      "span": {
+                        "start": 2753,
+                        "end": 2772,
+                        "start_line": 106,
+                        "start_col": 17,
+                        "end_line": 106,
+                        "end_col": 36
+                      }
+                    },
+                    {
+                      "name": "value",
+                      "value": {
+                        "value_type": "expression",
+                        "value": {
+                          "expr_type": "member_access",
+                          "root": "state",
+                          "path": [
+                            "usersFormatted"
+                          ],
+                          "span": {
+                            "start": 2796,
+                            "end": 2816,
+                            "start_line": 107,
+                            "start_col": 24,
+                            "end_line": 107,
+                            "end_col": 44
+                          }
+                        }
+                      },
+                      "span": {
+                        "start": 2789,
+                        "end": 2817,
+                        "start_line": 107,
+                        "start_col": 17,
+                        "end_line": 107,
+                        "end_col": 45
+                      }
+                    },
+                    {
+                      "name": "icon",
+                      "value": {
+                        "value_type": "string",
+                        "value": "users"
+                      },
+                      "span": {
+                        "start": 2834,
+                        "end": 2846,
+                        "start_line": 108,
+                        "start_col": 17,
+                        "end_line": 108,
+                        "end_col": 29
+                      }
+                    }
+                  ],
+                  "span": {
+                    "start": 2725,
+                    "end": 2861,
+                    "start_line": 105,
+                    "start_col": 13,
+                    "end_line": 109,
+                    "end_col": 15
+                  }
+                },
+                {
+                  "content_type": "component",
+                  "name": "MetricCard",
+                  "self_closing": true,
+                  "attributes": [
+                    {
+                      "name": "title",
+                      "value": {
+                        "value_type": "string",
+                        "value": "Conversion Rate"
+                      },
+                      "span": {
+                        "start": 2902,
+                        "end": 2925,
+                        "start_line": 111,
+                        "start_col": 17,
+                        "end_line": 111,
+                        "end_col": 40
+                      }
+                    },
+                    {
+                      "name": "value",
+                      "value": {
+                        "value_type": "expression",
+                        "value": {
+                          "expr_type": "binary",
+                          "left": {
+                            "expr_type": "member_access",
+                            "root": "state",
+                            "path": [
+                              "conversionRate"
+                            ],
+                            "span": {
+                              "start": 2949,
+                              "end": 2970,
+                              "start_line": 112,
+                              "start_col": 24,
+                              "end_line": 112,
+                              "end_col": 45
+                            }
+                          },
+                          "op": "add",
+                          "right": {
+                            "expr_type": "literal",
+                            "value": {
+                              "type": "string",
+                              "value": " percent"
+                            },
+                            "span": {
+                              "start": 2972,
+                              "end": 2982,
+                              "start_line": 112,
+                              "start_col": 47,
+                              "end_line": 112,
+                              "end_col": 57
+                            }
+                          },
+                          "span": {
+                            "start": 2949,
+                            "end": 2982,
+                            "start_line": 112,
+                            "start_col": 24,
+                            "end_line": 112,
+                            "end_col": 57
+                          }
+                        }
+                      },
+                      "span": {
+                        "start": 2942,
+                        "end": 2983,
+                        "start_line": 112,
+                        "start_col": 17,
+                        "end_line": 112,
+                        "end_col": 58
+                      }
+                    },
+                    {
+                      "name": "icon",
+                      "value": {
+                        "value_type": "string",
+                        "value": "percent"
+                      },
+                      "span": {
+                        "start": 3000,
+                        "end": 3014,
+                        "start_line": 113,
+                        "start_col": 17,
+                        "end_line": 113,
+                        "end_col": 31
+                      }
+                    }
+                  ],
+                  "span": {
+                    "start": 2874,
+                    "end": 3029,
+                    "start_line": 110,
+                    "start_col": 13,
+                    "end_line": 114,
+                    "end_col": 15
+                  }
+                }
+              ],
+              "span": {
+                "start": 2527,
+                "end": 3045,
+                "start_line": 99,
+                "start_col": 9,
+                "end_line": 115,
+                "end_col": 16
+              }
+            },
+            {
+              "content_type": "component",
+              "name": "Spacer",
+              "self_closing": true,
+              "attributes": [
+                {
+                  "name": "size",
+                  "value": {
+                    "value_type": "string",
+                    "value": "lg"
+                  },
+                  "span": {
+                    "start": 3071,
+                    "end": 3080,
+                    "start_line": 117,
+                    "start_col": 17,
+                    "end_line": 117,
+                    "end_col": 26
+                  }
+                }
+              ],
+              "span": {
+                "start": 3063,
+                "end": 3083,
+                "start_line": 117,
+                "start_col": 9,
+                "end_line": 117,
+                "end_col": 29
+              }
+            },
+            {
+              "content_type": "component",
+              "name": "Card",
+              "attributes": [
+                {
+                  "name": "className",
+                  "value": {
+                    "value_type": "string",
+                    "value": "transactions-card"
+                  },
+                  "span": {
+                    "start": 3137,
+                    "end": 3166,
+                    "start_line": 120,
+                    "start_col": 15,
+                    "end_line": 120,
+                    "end_col": 44
+                  }
+                }
+              ],
+              "children": [
+                {
+                  "content_type": "component",
+                  "name": "CardHeader",
+                  "children": [
+                    {
+                      "content_type": "component",
+                      "name": "Flex",
+                      "attributes": [
+                        {
+                          "name": "direction",
+                          "value": {
+                            "value_type": "string",
+                            "value": "row"
+                          },
+                          "span": {
+                            "start": 3215,
+                            "end": 3230,
+                            "start_line": 122,
+                            "start_col": 23,
+                            "end_line": 122,
+                            "end_col": 38
+                          }
+                        },
+                        {
+                          "name": "justify",
+                          "value": {
+                            "value_type": "string",
+                            "value": "between"
+                          },
+                          "span": {
+                            "start": 3231,
+                            "end": 3248,
+                            "start_line": 122,
+                            "start_col": 39,
+                            "end_line": 122,
+                            "end_col": 56
+                          }
+                        },
+                        {
+                          "name": "align",
+                          "value": {
+                            "value_type": "string",
+                            "value": "center"
+                          },
+                          "span": {
+                            "start": 3249,
+                            "end": 3263,
+                            "start_line": 122,
+                            "start_col": 57,
+                            "end_line": 122,
+                            "end_col": 71
+                          }
+                        }
+                      ],
+                      "children": [
+                        {
+                          "content_type": "component",
+                          "name": "Heading",
+                          "self_closing": true,
+                          "attributes": [
+                            {
+                              "name": "level",
+                              "value": {
+                                "value_type": "string",
+                                "value": "4"
+                              },
+                              "span": {
+                                "start": 3294,
+                                "end": 3303,
+                                "start_line": 123,
+                                "start_col": 30,
+                                "end_line": 123,
+                                "end_col": 39
+                              }
+                            },
+                            {
+                              "name": "text",
+                              "value": {
+                                "value_type": "string",
+                                "value": "Recent Transactions"
+                              },
+                              "span": {
+                                "start": 3304,
+                                "end": 3330,
+                                "start_line": 123,
+                                "start_col": 40,
+                                "end_line": 123,
+                                "end_col": 66
+                              }
+                            }
+                          ],
+                          "span": {
+                            "start": 3285,
+                            "end": 3333,
+                            "start_line": 123,
+                            "start_col": 21,
+                            "end_line": 123,
+                            "end_col": 69
+                          }
+                        },
+                        {
+                          "content_type": "component",
+                          "name": "Button",
+                          "self_closing": true,
+                          "attributes": [
+                            {
+                              "name": "label",
+                              "value": {
+                                "value_type": "string",
+                                "value": "View All"
+                              },
+                              "span": {
+                                "start": 3362,
+                                "end": 3378,
+                                "start_line": 124,
+                                "start_col": 29,
+                                "end_line": 124,
+                                "end_col": 45
+                              }
+                            },
+                            {
+                              "name": "variant",
+                              "value": {
+                                "value_type": "string",
+                                "value": "ghost"
+                              },
+                              "span": {
+                                "start": 3379,
+                                "end": 3394,
+                                "start_line": 124,
+                                "start_col": 46,
+                                "end_line": 124,
+                                "end_col": 61
+                              }
+                            }
+                          ],
+                          "span": {
+                            "start": 3354,
+                            "end": 3397,
+                            "start_line": 124,
+                            "start_col": 21,
+                            "end_line": 124,
+                            "end_col": 64
+                          }
+                        }
+                      ],
+                      "span": {
+                        "start": 3209,
+                        "end": 3421,
+                        "start_line": 122,
+                        "start_col": 17,
+                        "end_line": 125,
+                        "end_col": 24
+                      }
+                    }
+                  ],
+                  "span": {
+                    "start": 3180,
+                    "end": 3447,
+                    "start_line": 121,
+                    "start_col": 13,
+                    "end_line": 126,
+                    "end_col": 26
+                  }
+                },
+                {
+                  "content_type": "component",
+                  "name": "CardContent",
+                  "children": [
+                    {
+                      "content_type": "control_flow",
+                      "flow_type": "if",
+                      "condition": {
+                        "expr_type": "member_access",
+                        "root": "state",
+                        "path": [
+                          "isLoading"
+                        ],
+                        "span": {
+                          "start": 3493,
+                          "end": 3509,
+                          "start_line": 128,
+                          "start_col": 20,
+                          "end_line": 128,
+                          "end_col": 36
+                        }
+                      },
+                      "then_branch": [
+                        {
+                          "content_type": "component",
+                          "name": "Skeleton",
+                          "self_closing": true,
+                          "attributes": [
+                            {
+                              "name": "variant",
+                              "value": {
+                                "value_type": "string",
+                                "value": "rectangular"
+                              },
+                              "span": {
+                                "start": 3541,
+                                "end": 3562,
+                                "start_line": 129,
+                                "start_col": 31,
+                                "end_line": 129,
+                                "end_col": 52
+                              }
+                            }
+                          ],
+                          "span": {
+                            "start": 3531,
+                            "end": 3565,
+                            "start_line": 129,
+                            "start_col": 21,
+                            "end_line": 129,
+                            "end_col": 55
+                          }
+                        }
+                      ],
+                      "else_branch": [
+                        {
+                          "content_type": "component",
+                          "name": "Table",
+                          "attributes": [
+                            {
+                              "name": "data",
+                              "value": {
+                                "value_type": "expression",
+                                "value": {
+                                  "expr_type": "member_access",
+                                  "root": "state",
+                                  "path": [
+                                    "recentTransactions"
+                                  ],
+                                  "span": {
+                                    "start": 3624,
+                                    "end": 3648,
+                                    "start_line": 131,
+                                    "start_col": 34,
+                                    "end_line": 131,
+                                    "end_col": 58
+                                  }
+                                }
+                              },
+                              "span": {
+                                "start": 3618,
+                                "end": 3649,
+                                "start_line": 131,
+                                "start_col": 28,
+                                "end_line": 131,
+                                "end_col": 59
+                              }
+                            }
+                          ],
+                          "children": [
+                            {
+                              "content_type": "component",
+                              "name": "TableColumn",
+                              "self_closing": true,
+                              "attributes": [
+                                {
+                                  "name": "field",
+                                  "value": {
+                                    "value_type": "string",
+                                    "value": "status"
+                                  },
+                                  "span": {
+                                    "start": 3897,
+                                    "end": 3911,
+                                    "start_line": 135,
+                                    "start_col": 38,
+                                    "end_line": 135,
+                                    "end_col": 52
+                                  }
+                                },
+                                {
+                                  "name": "header",
+                                  "value": {
+                                    "value_type": "string",
+                                    "value": "Status"
+                                  },
+                                  "span": {
+                                    "start": 3912,
+                                    "end": 3927,
+                                    "start_line": 135,
+                                    "start_col": 53,
+                                    "end_line": 135,
+                                    "end_col": 68
+                                  }
+                                }
+                              ],
+                              "span": {
+                                "start": 3884,
+                                "end": 3930,
+                                "start_line": 135,
+                                "start_col": 25,
+                                "end_line": 135,
+                                "end_col": 71
+                              }
+                            }
+                          ],
+                          "span": {
+                            "start": 3611,
+                            "end": 3959,
+                            "start_line": 131,
+                            "start_col": 21,
+                            "end_line": 136,
+                            "end_col": 29
+                          }
+                        }
+                      ],
+                      "span": {
+                        "start": 3490,
+                        "end": 3977,
+                        "start_line": 128,
+                        "start_col": 17,
+                        "end_line": 137,
+                        "end_col": 18
+                      }
+                    }
+                  ],
+                  "span": {
+                    "start": 3460,
+                    "end": 4004,
+                    "start_line": 127,
+                    "start_col": 13,
+                    "end_line": 138,
+                    "end_col": 27
+                  }
+                }
+              ],
+              "span": {
+                "start": 3131,
+                "end": 4020,
+                "start_line": 120,
+                "start_col": 9,
+                "end_line": 139,
+                "end_col": 16
+              }
+            },
+            {
+              "content_type": "component",
+              "name": "Modal",
+              "attributes": [
+                {
+                  "name": "id",
+                  "value": {
+                    "value_type": "string",
+                    "value": "export-modal"
+                  },
+                  "span": {
+                    "start": 4069,
+                    "end": 4086,
+                    "start_line": 142,
+                    "start_col": 16,
+                    "end_line": 142,
+                    "end_col": 33
+                  }
+                },
+                {
+                  "name": "title",
+                  "value": {
+                    "value_type": "string",
+                    "value": "Export Data"
+                  },
+                  "span": {
+                    "start": 4087,
+                    "end": 4106,
+                    "start_line": 142,
+                    "start_col": 34,
+                    "end_line": 142,
+                    "end_col": 53
+                  }
+                },
+                {
+                  "name": "open",
+                  "value": {
+                    "value_type": "expression",
+                    "value": {
+                      "expr_type": "member_access",
+                      "root": "state",
+                      "path": [
+                        "showExportModal"
+                      ],
+                      "span": {
+                        "start": 4113,
+                        "end": 4134,
+                        "start_line": 142,
+                        "start_col": 60,
+                        "end_line": 142,
+                        "end_col": 81
+                      }
+                    }
+                  },
+                  "span": {
+                    "start": 4107,
+                    "end": 4135,
+                    "start_line": 142,
+                    "start_col": 54,
+                    "end_line": 142,
+                    "end_col": 82
+                  }
+                }
+              ],
+              "children": [
+                {
+                  "content_type": "component",
+                  "name": "Button",
+                  "self_closing": true,
+                  "attributes": [
+                    {
+                      "name": "label",
+                      "value": {
+                        "value_type": "string",
+                        "value": "Cancel"
+                      },
+                      "span": {
+                        "start": 4544,
+                        "end": 4558,
+                        "start_line": 150,
+                        "start_col": 21,
+                        "end_line": 150,
+                        "end_col": 35
+                      }
+                    },
+                    {
+                      "name": "variant",
+                      "value": {
+                        "value_type": "string",
+                        "value": "ghost"
+                      },
+                      "span": {
+                        "start": 4559,
+                        "end": 4574,
+                        "start_line": 150,
+                        "start_col": 36,
+                        "end_line": 150,
+                        "end_col": 51
+                      }
+                    }
+                  ],
+                  "events": [
+                    {
+                      "event": "click",
+                      "handler": {
+                        "handler_type": {
+                          "type": "arrow",
+                          "value": {
+                            "params": [],
+                            "body": {
+                              "body_type": "block",
+                              "content": [
+                                {
+                                  "stmt_type": "expression",
+                                  "expr_type": "assignment",
+                                  "target": {
+                                    "expr_type": "member_access",
+                                    "root": "state",
+                                    "path": [
+                                      "showExportModal"
+                                    ],
+                                    "span": {
+                                      "start": 4587,
+                                      "end": 4617,
+                                      "start_line": 150,
+                                      "start_col": 64,
+                                      "end_line": 150,
+                                      "end_col": 94
+                                    }
+                                  },
+                                  "value": {
+                                    "expr_type": "literal",
+                                    "value": {
+                                      "type": "boolean",
+                                      "value": false
+                                    },
+                                    "span": {
+                                      "start": 4587,
+                                      "end": 4617,
+                                      "start_line": 150,
+                                      "start_col": 64,
+                                      "end_line": 150,
+                                      "end_col": 94
+                                    }
+                                  },
+                                  "span": {
+                                    "start": 4587,
+                                    "end": 4617,
+                                    "start_line": 150,
+                                    "start_col": 64,
+                                    "end_line": 150,
+                                    "end_col": 94
+                                  }
+                                }
+                              ]
+                            },
+                            "span": {
+                              "start": 4575,
+                              "end": 4618,
+                              "start_line": 150,
+                              "start_col": 52,
+                              "end_line": 150,
+                              "end_col": 95
+                            }
+                          }
+                        }
+                      },
+                      "span": {
+                        "start": 4575,
+                        "end": 4618,
+                        "start_line": 150,
+                        "start_col": 52,
+                        "end_line": 150,
+                        "end_col": 95
+                      }
+                    }
+                  ],
+                  "span": {
+                    "start": 4536,
+                    "end": 4621,
+                    "start_line": 150,
+                    "start_col": 13,
+                    "end_line": 150,
+                    "end_col": 98
+                  }
+                }
+              ],
+              "span": {
+                "start": 4062,
+                "end": 4638,
+                "start_line": 142,
+                "start_col": 9,
+                "end_line": 151,
+                "end_col": 17
+              }
+            }
+          ],
+          "span": {
+            "start": 1809,
+            "end": 4655,
+            "start_line": 78,
+            "start_col": 5,
+            "end_line": 152,
+            "end_col": 17
+          }
+        }
+      ],
+      "span": {
+        "start": 1794,
+        "end": 4657,
+        "start_line": 77,
+        "start_col": 1,
+        "end_line": 153,
+        "end_col": 2
+      }
+    },
+    {
+      "kind": "styles",
+      "scoped": true,
+      "modifiers": [
+        "scoped"
+      ],
+      "rules": [
+        {
+          "content_type": "rule",
+          "selectors": [
+            ".dashboard-layout"
+          ],
+          "declarations": [
+            {
+              "property": "padding",
+              "value": {
+                "value_type": "plain",
+                "value": "24px"
+              },
+              "span": {
+                "start": 4707,
+                "end": 4721,
+                "start_line": 157,
+                "start_col": 9,
+                "end_line": 157,
+                "end_col": 23
+              }
+            },
+            {
+              "property": "max-width",
+              "value": {
+                "value_type": "plain",
+                "value": "1200px"
+              },
+              "span": {
+                "start": 4730,
+                "end": 4748,
+                "start_line": 158,
+                "start_col": 9,
+                "end_line": 158,
+                "end_col": 27
+              }
+            },
+            {
+              "property": "margin",
+              "value": {
+                "value_type": "plain",
+                "value": "0 auto"
+              },
+              "span": {
+                "start": 4757,
+                "end": 4772,
+                "start_line": 159,
+                "start_col": 9,
+                "end_line": 159,
+                "end_col": 24
+              }
+            }
+          ],
+          "span": {
+            "start": 4679,
+            "end": 4778,
+            "start_line": 156,
+            "start_col": 5,
+            "end_line": 160,
+            "end_col": 6
+          }
+        },
+        {
+          "content_type": "rule",
+          "selectors": [
+            ".metric-card"
+          ],
+          "declarations": [
+            {
+              "property": "background",
+              "value": {
+                "value_type": "plain",
+                "value": "var(--card-bg)"
+              },
+              "span": {
+                "start": 4811,
+                "end": 4838,
+                "start_line": 163,
+                "start_col": 9,
+                "end_line": 163,
+                "end_col": 36
+              }
+            },
+            {
+              "property": "border-radius",
+              "value": {
+                "value_type": "plain",
+                "value": "var(--radius)"
+              },
+              "span": {
+                "start": 4847,
+                "end": 4876,
+                "start_line": 164,
+                "start_col": 9,
+                "end_line": 164,
+                "end_col": 38
+              }
+            },
+            {
+              "property": "padding",
+              "value": {
+                "value_type": "plain",
+                "value": "20px"
+              },
+              "span": {
+                "start": 4885,
+                "end": 4899,
+                "start_line": 165,
+                "start_col": 9,
+                "end_line": 165,
+                "end_col": 23
+              }
+            }
+          ],
+          "span": {
+            "start": 4788,
+            "end": 4905,
+            "start_line": 162,
+            "start_col": 5,
+            "end_line": 166,
+            "end_col": 6
+          }
+        },
+        {
+          "content_type": "rule",
+          "selectors": [
+            ".metric-icon"
+          ],
+          "declarations": [
+            {
+              "property": "color",
+              "value": {
+                "value_type": "plain",
+                "value": "var(--primary)"
+              },
+              "span": {
+                "start": 4938,
+                "end": 4960,
+                "start_line": 169,
+                "start_col": 9,
+                "end_line": 169,
+                "end_col": 31
+              }
+            }
+          ],
+          "span": {
+            "start": 4915,
+            "end": 4966,
+            "start_line": 168,
+            "start_col": 5,
+            "end_line": 170,
+            "end_col": 6
+          }
+        },
+        {
+          "content_type": "rule",
+          "selectors": [
+            ".transactions-card"
+          ],
+          "declarations": [
+            {
+              "property": "margin-top",
+              "value": {
+                "value_type": "plain",
+                "value": "16px"
+              },
+              "span": {
+                "start": 5005,
+                "end": 5022,
+                "start_line": 173,
+                "start_col": 9,
+                "end_line": 173,
+                "end_col": 26
+              }
+            }
+          ],
+          "span": {
+            "start": 4976,
+            "end": 5028,
+            "start_line": 172,
+            "start_col": 5,
+            "end_line": 174,
+            "end_col": 6
+          }
+        }
+      ],
+      "raw_css": "styles\n.dashboard-layout {\n        padding: 24px;\n        max-width: 1200px;\n        margin: 0 auto;\n    }\n.metric-card {\n        background: var(--card-bg);\n        border-radius: var(--radius);\n        padding: 20px;\n    }\n.metric-icon {\n        color: var(--primary);\n    }\n.transactions-card {\n        margin-top: 16px;\n    }",
+      "span": {
+        "start": 4659,
+        "end": 5030,
+        "start_line": 155,
+        "start_col": 1,
+        "end_line": 175,
+        "end_col": 2
+      }
+    }
+  ],
+  "span": {
+    "start": 0,
+    "end": 5031,
+    "start_line": 1,
+    "start_col": 1,
+    "end_line": 176,
+    "end_col": 1
+  }
+}

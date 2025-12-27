@@ -1,0 +1,175 @@
+// Example Page 1: Dashboard Overview
+// This example demonstrates a dashboard with metrics and data tables
+
+import { Card, CardHeader, CardContent } from "@ui/card"
+import { DataTable, TableColumn } from "@ui/table"
+import { type User, type Transaction } from "@types/dashboard"
+
+page {
+    id: "dashboard"
+    title: "Dashboard Overview"
+    description: "Main dashboard with key performance indicators"
+    route: "/dashboard"
+    requires_auth: true
+    layout: "admin"
+}
+
+// Type definitions
+interface DashboardMetric {
+    name: string
+    value: number
+    change: number
+}
+
+state {
+    // User info
+    userName = "Admin User"
+    userRole = "administrator"
+    
+    // Loading states
+    isLoading = true
+    isRefreshing = false
+    
+    // Metrics data
+    totalRevenue = 125000
+    totalUsers = 8450
+    conversionRate = 3.2
+    
+    // Table data
+    recentTransactions: array = []
+    selectedTransactionId = null
+    
+    // UI state
+    showExportModal = false
+    activeTab = "overview"
+    
+    // Computed values
+    @computed revenueFormatted => "$" + totalRevenue
+    @computed usersFormatted => totalUsers
+}
+
+hooks {
+    @mount => {
+        console.log("Dashboard mounted"),
+        state.isLoading = false
+    }
+    
+    @unmount => {
+        console.log("Dashboard unmounting")
+    }
+}
+
+// Metric card fragment
+fragment MetricCard(title: string, value: string, icon: string) {
+    <Card className="metric-card">
+        <CardHeader>
+            <Flex direction="row" align="center" gap="2">
+                <Icon name={icon} size="lg" className="metric-icon" />
+                <Text variant="caption" content={title} />
+            </Flex>
+        </CardHeader>
+        <CardContent>
+            <Heading level="2" text={value} />
+        </CardContent>
+    </Card>
+}
+
+template {
+    <Container id="dashboard-page" className="dashboard-layout">
+        // Page header
+        <Flex direction="row" justify="between" align="center">
+            <Heading level="1" text="Dashboard" />
+            <Flex direction="row" gap="2">
+                <Button 
+                    label="Export" 
+                    variant="secondary"
+                    @click => { state.showExportModal = true }
+                />
+                <Button 
+                    label="Refresh" 
+                    variant="primary"
+                    @click => { state.isRefreshing = true }
+                />
+            </Flex>
+        </Flex>
+        
+        <Spacer size="lg" />
+        
+        // Metrics row
+        <Grid columns="3" gap="4">
+            <MetricCard
+                title="Total Revenue"
+                value={state.revenueFormatted}
+                icon="dollar-sign"
+            />
+            <MetricCard
+                title="Total Users"
+                value={state.usersFormatted}
+                icon="users"
+            />
+            <MetricCard
+                title="Conversion Rate"
+                value={state.conversionRate + " percent"}
+                icon="percent"
+            />
+        </Grid>
+        
+        <Spacer size="lg" />
+        
+        // Transactions table
+        <Card className="transactions-card">
+            <CardHeader>
+                <Flex direction="row" justify="between" align="center">
+                    <Heading level="4" text="Recent Transactions" />
+                    <Button label="View All" variant="ghost" />
+                </Flex>
+            </CardHeader>
+            <CardContent>
+                if state.isLoading {
+                    <Skeleton variant="rectangular" />
+                } else {
+                    <Table data={state.recentTransactions}>
+                        <TableColumn field="id" header="ID" />
+                        <TableColumn field="customer" header="Customer" />
+                        <TableColumn field="amount" header="Amount" />
+                        <TableColumn field="status" header="Status" />
+                    </Table>
+                }
+            </CardContent>
+        </Card>
+        
+        // Export modal
+        <Modal id="export-modal" title="Export Data" open={state.showExportModal}>
+            <Text content="Select export format:" />
+            <Spacer size="md" />
+            <Flex direction="column" gap="2">
+                <Button label="CSV" variant="secondary" @click => { console.log("Export CSV") } />
+                <Button label="Excel" variant="secondary" @click => { console.log("Export Excel") } />
+            </Flex>
+            <Spacer size="md" />
+            <Button label="Cancel" variant="ghost" @click => { state.showExportModal = false } />
+        </Modal>
+    </Container>
+}
+
+styles scoped {
+    .dashboard-layout {
+        padding: 24px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .metric-card {
+        background: var(--card-bg);
+        border-radius: var(--radius);
+        padding: 20px;
+    }
+    
+    .metric-icon {
+        color: var(--primary);
+    }
+    
+    .transactions-card {
+        margin-top: 16px;
+    }
+}

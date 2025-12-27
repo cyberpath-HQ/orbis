@@ -1,0 +1,512 @@
+// ============================================================================
+// COMPREHENSIVE GRAMMAR TEST FILE
+// Tests ALL grammar features defined in page.pest
+// ============================================================================
+
+// ============================================================================
+// 1. IMPORTS - All import syntaxes
+// ============================================================================
+
+// TypeScript-style default import
+import Button from "@components/Button"
+
+// TypeScript-style named imports
+import { Card, Container, Text } from "@orbis/ui"
+
+// TypeScript-style named import with alias
+import { Button as PrimaryButton, Card as CardComponent } from "@orbis/ui-aliases"
+
+// TypeScript-style namespace import
+import * as Icons from "@orbis/icons"
+
+// TypeScript-style type import
+import { type User, type ApiResponse } from "@types/models"
+
+// Rust-style use statement
+use crate::components::*
+use super::utils::format
+use external::library::Module
+
+// ============================================================================
+// 2. INTERFACES - Type definitions with generics
+// ============================================================================
+
+interface User {
+    id: string
+    name: string
+    email?: string  // Optional field
+    age: number
+    roles: string[]  // Array type
+    metadata: Record<string, any>  // Generic type
+}
+
+interface ApiResponse<T> {
+    data: T
+    error?: string
+    status: number
+}
+
+interface PaginatedList<T> {
+    items: T[]
+    total: number
+    page: number
+    pageSize: number
+}
+
+// ============================================================================
+// 3. PAGE DEFINITION - All page properties
+// ============================================================================
+
+page {
+    id: "comprehensive-test"
+    title: "Comprehensive Grammar Test Page"
+    description: "Tests all grammar features"
+    layout: "dashboard"
+    icon: "cog"
+    route: "/test"
+    show-in-menu: true
+    menu-order: 1
+    parent-route: "/admin"
+    requires-auth: true
+}
+
+// ============================================================================
+// 4. STATE BLOCK - All state declaration types
+// ============================================================================
+
+state {
+    // Regular state declarations with different value types
+    count = 0
+    message = "Hello World"
+    isLoading = true
+    price = 99.99
+    nullableValue = null
+    
+    // State with type annotation
+    name: string = "John"
+    age: number = 25
+    active: boolean = true
+    
+    // Optional state (with ?)
+    optionalField?: string = null
+    
+    // Object literal state
+    user = {
+        id: "user-1",
+        name: "John Doe",
+        settings: {
+            theme: "dark",
+            notifications: true
+        }
+    }
+    
+    // Array literal state
+    items = [1, 2, 3, 4, 5]
+    tags = ["important", "urgent", "reviewed"]
+    mixedArray = [1, "two", true, null]
+    
+    // Computed state with arrow function
+    doubleCount: number => state.count * 2
+    fullName: string => state.firstName + " " + state.lastName
+    
+    // Validated state with validation chains
+    email = "" @email @min(5)
+    username = "" @min(3) @max(20)
+    validatedAge = 0 @min(0) @max(150)
+}
+
+// ============================================================================
+// 5. HOOKS BLOCK - Lifecycle and watchers
+// ============================================================================
+
+hooks {
+    // Lifecycle hooks with different action types
+    @mount => {
+        console.log("Component mounted"),
+        api.call("fetchData")
+    }
+    
+    @unmount => {
+        console.log("Component unmounting"),
+        cleanup.all()
+    }
+    
+    // Watcher hooks with single target
+    @watch(state.count) => {
+        console.log("Count changed")
+    }
+    
+    // Watcher with debounce option
+    @watch(state.searchQuery, debounce: 300) => {
+        api.call("search", query: state.searchQuery)
+    }
+}
+
+// ============================================================================
+// 6. FRAGMENT DEFINITIONS - Reusable components
+// ============================================================================
+
+fragment ProductCard(product: Product) {
+    <Card className="product-card">
+        <CardHeader>
+            <Text variant="h6">{product.name}</Text>
+        </CardHeader>
+        <CardContent>
+            <Text>{product.description}</Text>
+            <Text variant="h5" color="primary">{product.price}</Text>
+        </CardContent>
+        <CardActions>
+            <Button variant="contained">
+                Select
+            </Button>
+        </CardActions>
+    </Card>
+}
+
+fragment UserAvatar(name: string) {
+    <Avatar size={40}>
+        <AvatarFallback>{name}</AvatarFallback>
+    </Avatar>
+}
+
+// Fragment with slot
+fragment Modal(title: string) {
+    <Dialog>
+        <DialogTitle>{title}</DialogTitle>
+        <DialogContent>
+            <Slot />
+        </DialogContent>
+    </Dialog>
+}
+
+// Fragment with named slots
+fragment Layout(title: string) {
+    <Container>
+        <Slot name="header">
+            <Text>Default Header</Text>
+        </Slot>
+        <Slot />
+        <Slot name="footer" />
+    </Container>
+}
+
+// ============================================================================
+// 7. TEMPLATE BLOCK - All component and control flow features
+// ============================================================================
+
+template {
+    // Comment in template
+    // This is a line comment
+    
+    // Self-closing components with various attribute types
+    <Text content="Static text" />
+    <Text content={state.message} />
+    <Button 
+        variant="contained" 
+        color="primary"
+        disabled={state.isLoading}
+        size="large"
+        fullWidth={true}
+    />
+    
+    // Component with event handlers using => syntax
+    <Button 
+        variant="outlined"
+        @click => {state.count = state.count + 1}
+    >
+        Increment
+    </Button>
+    
+    // Multiple actions in event handler
+    <Button 
+        @click => {
+            state.isLoading = true,
+            api.call("submit"),
+            toast.show("Submitted!")
+        }
+    >
+        Submit
+    </Button>
+    
+    // Nested components
+    <Container maxWidth="lg">
+        <Card elevation={2}>
+            <CardHeader title="Dashboard" />
+            <CardContent>
+                <Text>Content here</Text>
+            </CardContent>
+        </Card>
+    </Container>
+    
+    // ========================================================================
+    // CONTROL FLOW - if/else
+    // ========================================================================
+    
+    // Simple if
+    if state.isLoading {
+        <Skeleton variant="rectangular" height={200} />
+    }
+    
+    // If-else
+    if state.user {
+        <Text>Welcome back!</Text>
+    } else {
+        <Text>Please log in</Text>
+    }
+    
+    // If-else if-else chain
+    if state.status == "loading" {
+        <CircularProgress />
+    } else if state.status == "error" {
+        <Alert severity="error">{state.errorMessage}</Alert>
+    } else {
+        <DataTable data={state.items} />
+    }
+    
+    // Complex condition expressions
+    if state.count > 0 && state.count < 100 {
+        <Text>Count is between 1 and 99</Text>
+    }
+    
+    // ========================================================================
+    // CONTROL FLOW - for loops
+    // ========================================================================
+    
+    // Simple for loop
+    for item in state.items {
+        <ListItem key={item.id}>{item.name}</ListItem>
+    }
+    
+    // For loop with index
+    for (item, index) in state.items {
+        <ListItem key={index}>
+            <Text>{item.name}</Text>
+        </ListItem>
+    }
+    
+    // Nested for loops
+    for category in state.categories {
+        <Accordion key={category.id}>
+            <AccordionSummary>{category.name}</AccordionSummary>
+            <AccordionDetails>
+                for product in category.products {
+                    <ProductCard product={product} />
+                }
+            </AccordionDetails>
+        </Accordion>
+    }
+    
+    // ========================================================================
+    // CONTROL FLOW - when (pattern matching)
+    // ========================================================================
+    
+    when state.viewMode {
+        "grid" => {
+            <GridView items={state.items} />
+        }
+        "list" => {
+            <ListView items={state.items} />
+        }
+        else => {
+            <DefaultView items={state.items} />
+        }
+    }
+    
+    // ========================================================================
+    // FRAGMENT USAGE
+    // ========================================================================
+    
+    // Fragment with property binding
+    <ProductCard product={state.selectedProduct} />
+    
+    // Fragment with slot content
+    <Modal title="Confirm Action">
+        <Text>Are you sure you want to proceed?</Text>
+        <Button @click => {state.showModal = false}>Cancel</Button>
+    </Modal>
+    
+    // ========================================================================
+    // EXPRESSIONS - All expression types
+    // ========================================================================
+    
+    // Literals
+    <Text content="String literal" />
+    <Text content={123} />
+    <Text content={45.67} />
+    <Text content={true} />
+    <Text content={null} />
+    
+    // Member access
+    <Text content={state.user.name} />
+    <Text content={state.settings.theme.primary} />
+    
+    // Binary expressions
+    <Text content={state.count + 1} />
+    <Text content={state.price * state.quantity} />
+    <Text content={state.total - state.discount} />
+    
+    // Comparison expressions
+    <Text visible={state.count > 0} content="Has items" />
+    <Text visible={state.count >= 10} content="Many items" />
+    <Text visible={state.status == "active"} content="Active" />
+    <Text visible={state.status != "deleted"} content="Not deleted" />
+    
+    // Logical expressions
+    <Button disabled={state.isLoading || state.isDisabled} />
+    <Button visible={state.isAdmin && state.hasAccess} />
+    <Button visible={!state.isReadOnly} />
+}
+
+// ============================================================================
+// 8. STYLES BLOCK - All CSS features
+// ============================================================================
+
+styles scoped {
+    // Simple rules
+    .container {
+        padding: 24px;
+        margin: 0 auto;
+        max-width: 1200px;
+    }
+    
+    // Multiple selectors
+    .card, .panel, .box {
+        background: var(--card-bg);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-md);
+    }
+    
+    // Nested-like selectors (using &)
+    .button {
+        padding: 8px 16px;
+    }
+    
+    // Pseudo-classes and pseudo-elements
+    .link:hover {
+        text-decoration: underline;
+    }
+    
+    .input:focus {
+        outline: 2px solid var(--primary);
+    }
+    
+    .item:first-child {
+        margin-top: 0;
+    }
+    
+    // Attribute selectors
+    [data-theme="dark"] {
+        background: #1a1a1a;
+    }
+    
+    // ID selectors
+    #main-content {
+        flex: 1;
+    }
+    
+    .card-header {
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .item.active {
+        margin-top: 8px;
+    }
+    
+    // @media queries
+    @media (min-width: 768px) {
+        .container {
+            padding: 32px;
+        }
+        
+        .grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    @media (min-width: 1024px) {
+        .grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+    
+    // @keyframes animations
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideUp {
+        0% {
+            transform: translateY(20px);
+            opacity: 0;
+        }
+        100% {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+    
+    // @layer for CSS Cascade Layers
+    @layer base, components, utilities {
+        .reset {
+            margin: 0;
+            padding: 0;
+        }
+    }
+    
+    // @supports for feature detection
+    @supports (display: grid) {
+        .layout {
+            display: grid;
+        }
+    }
+    
+    // @container queries
+    @container (min-width: 400px) {
+        .card-content {
+            padding: 24px;
+        }
+    }
+    
+    // CSS variables in values
+    .themed {
+        color: var(--text-primary);
+        background: var(--bg-secondary);
+        border-color: var(--border-color);
+    }
+    
+    // CSS functions
+    .computed {
+        width: calc(100% - 32px);
+        height: min(100vh, 800px);
+        font-size: clamp(14px, 2vw, 18px);
+    }
+}
+
+// Global styles
+styles global {
+    * {
+        box-sizing: border-box;
+    }
+    
+    html {
+        font-size: 16px;
+    }
+    
+    body {
+        margin: 0;
+        font-family: system-ui, sans-serif;
+    }
+}
+
+// ============================================================================
+// 9. EXPORTS - Export statements
+// ============================================================================
+
+// Export const (the supported export syntax)
+export const API_URL = "https://api.example.com"
+export const DEFAULT_LIMIT: Int = 20
