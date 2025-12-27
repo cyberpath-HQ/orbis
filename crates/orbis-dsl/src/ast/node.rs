@@ -353,6 +353,7 @@ pub struct WatcherOption {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum WatcherOptionValue {
+    String(String),
     Number(f64),
     Boolean(bool),
 }
@@ -418,13 +419,73 @@ pub enum Action {
     StateAssignment(StateAssignment),
     /// Method call
     MethodCall(MethodCall),
+    /// Fetch action (HTTP request)
+    Fetch(FetchAction),
+    /// Submit action (form submission)
+    Submit(SubmitAction),
+    /// Call action (API call)
+    Call(CallAction),
+    /// Custom action
+    Custom(CustomAction),
+}
+
+/// Fetch action (HTTP request)
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FetchAction {
+    /// URL expression
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub url: Option<Expression>,
+    /// HTTP method (GET, POST, etc.)
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub method: Option<String>,
+    /// Request body
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub body: Option<Expression>,
+    /// Request headers
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub headers: Option<Expression>,
+    pub span: Span,
+}
+
+/// Submit action (form submission)
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SubmitAction {
+    /// Target (form name or URL)
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub target: Option<Expression>,
+    /// Form data
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub data: Option<Expression>,
+    pub span: Span,
+}
+
+/// Call action (API call)
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CallAction {
+    /// API name
+    pub api: String,
+    /// Arguments
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub args: Vec<Expression>,
+    pub span: Span,
+}
+
+/// Custom action
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CustomAction {
+    /// Action name
+    pub name: String,
+    /// Parameters
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub params: Vec<Expression>,
+    pub span: Span,
 }
 
 /// Action with response handlers (success, error, finally)
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ActionWithHandlers {
     /// The action being called
-    pub call: MethodCall,
+    pub action: Action,
     /// Response handlers
     pub handlers: Vec<ResponseHandler>,
     pub span: Span,
@@ -434,19 +495,76 @@ pub struct ActionWithHandlers {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ResponseHandler {
     /// Handler type
-    pub handler_type: HandlerType,
+    pub handler_type: ResponseHandlerType,
     /// Actions to execute
     pub actions: Vec<ActionItem>,
     pub span: Span,
 }
 
-/// Handler type
+/// Response handler type (success, error, finally)
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-pub enum HandlerType {
+pub enum ResponseHandlerType {
     Success,
     Error,
     Finally,
+}
+
+impl Action {
+    /// Convert an action to an expression (for use in arrow function bodies)
+    pub fn to_expression(&self) -> Expression {
+        match self {
+            Action::StateAssignment(sa) => {
+                // Represent state assignment as an assignment expression
+                Expression::Assignment(super::expr::Assignment {
+                    target: Box::new(Expression::MemberAccess(sa.target.clone())),
+                    value: Box::new(sa.value.clone()),
+                    span: sa.span.clone(),
+                })
+            }
+            Action::MethodCall(mc) => Expression::MethodCall(mc.clone()),
+            Action::Fetch(fa) => Expression::MethodCall(super::expr::MethodCall {
+                namespace: "fetch".to_string(),
+                method: "request".to_string(),
+                arguments: vec![],
+                span: fa.span.clone(),
+            }),
+            Action::Submit(sa) => Expression::MethodCall(super::expr::MethodCall {
+                namespace: "form".to_string(),
+                method: "submit".to_string(),
+                arguments: vec![],
+                span: sa.span.clone(),
+            }),
+            Action::Call(ca) => Expression::MethodCall(super::expr::MethodCall {
+                namespace: "api".to_string(),
+                method: ca.api.clone(),
+                arguments: ca
+                    .args
+                    .iter()
+                    .map(|e| super::expr::Argument {
+                        name: None,
+                        value: e.clone(),
+                        spread: false,
+                    })
+                    .collect(),
+                span: ca.span.clone(),
+            }),
+            Action::Custom(ca) => Expression::MethodCall(super::expr::MethodCall {
+                namespace: "custom".to_string(),
+                method: ca.name.clone(),
+                arguments: ca
+                    .params
+                    .iter()
+                    .map(|e| super::expr::Argument {
+                        name: None,
+                        value: e.clone(),
+                        spread: false,
+                    })
+                    .collect(),
+                span: ca.span.clone(),
+            }),
+        }
+    }
 }
 
 // ============================================================================
@@ -486,19 +604,162 @@ pub struct InterfaceMember {
 /// Styles block (CSS-in-DSL)
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct StylesBlock {
-    /// Style modifier (scoped/global)
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub modifier: Option<StyleModifier>,
-    /// Raw CSS content (preserved as-is for now)
-    /// TODO: Parse CSS into structured form if needed
-    pub content: String,
+    /// Whether styles are scoped
+    #[serde(skip_serializing_if = "std::ops::Not::not", default)]
+    pub scoped: bool,
+    /// Style modifiers (scoped, global, module, etc.)
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub modifiers: Vec<StyleModifier>,
+    /// Parsed CSS rules and at-rules
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub rules: Vec<StyleContent>,
+    /// Raw CSS content (preserved as-is for frontend processing)
+    /// Note: CSS is kept as raw string to allow frontend frameworks to handle
+    /// CSS-in-JS, scoped styles, or other processing as needed.
+    pub raw_css: String,
     pub span: Span,
 }
 
 /// Style modifier
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum StyleModifier {
     Scoped,
     Global,
+    Module,
+    Critical,
+    Inline,
+    Custom(String),
+}
+/// Parsed CSS content
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(tag = "content_type", rename_all = "snake_case")]
+pub enum StyleContent {
+    /// CSS rule with selector and declarations
+    Rule(StyleRule),
+    /// CSS at-rule (@media, @keyframes, etc.)
+    AtRule(StyleAtRule),
+    /// Comment
+    Comment { value: String, span: Span },
+}
+
+/// CSS rule: selector { declarations }
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct StyleRule {
+    /// CSS selectors
+    pub selectors: Vec<String>,
+    /// CSS property declarations
+    pub declarations: Vec<StyleDeclaration>,
+    pub span: Span,
+}
+
+/// CSS property declaration: property: value;
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct StyleDeclaration {
+    /// CSS property name
+    pub property: String,
+    /// CSS value (may contain interpolations)
+    pub value: CssValue,
+    pub span: Span,
+}
+
+/// CSS value with optional interpolation support
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(tag = "value_type", rename_all = "snake_case")]
+pub enum CssValue {
+    /// Plain CSS value
+    Plain { value: String },
+    /// Value with interpolated expressions
+    Interpolated { parts: Vec<CssValuePart> },
+}
+
+/// Part of an interpolated CSS value
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(tag = "part_type", rename_all = "snake_case")]
+pub enum CssValuePart {
+    /// Plain text
+    Text { value: String },
+    /// Expression interpolation (e.g., {state.color})
+    Expression { expr: Expression },
+}
+
+/// CSS at-rule
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(tag = "at_rule_type", rename_all = "snake_case")]
+pub enum StyleAtRule {
+    /// @media rule
+    Media {
+        query: String,
+        content: Vec<StyleContent>,
+        span: Span,
+    },
+    /// @keyframes rule
+    Keyframes {
+        name: String,
+        blocks: Vec<KeyframeBlock>,
+        span: Span,
+    },
+    /// @layer rule
+    Layer {
+        names: Vec<String>,
+        content: Vec<StyleContent>,
+        span: Span,
+    },
+    /// @supports rule
+    Supports {
+        condition: String,
+        content: Vec<StyleContent>,
+        span: Span,
+    },
+    /// @container rule
+    Container {
+        query: String,
+        content: Vec<StyleContent>,
+        span: Span,
+    },
+    /// @scope rule
+    Scope {
+        selector: String,
+        content: Vec<StyleContent>,
+        span: Span,
+    },
+    /// @apply rule (Tailwind)
+    Apply { classes: String, span: Span },
+    /// @screen rule (Tailwind)
+    Screen {
+        name: String,
+        content: Vec<StyleContent>,
+        span: Span,
+    },
+    /// @theme rule
+    Theme {
+        variables: Vec<ThemeVariable>,
+        span: Span,
+    },
+    /// @variants rule
+    Variants {
+        names: Vec<String>,
+        content: Vec<StyleContent>,
+        span: Span,
+    },
+}
+
+/// Keyframe block (from/to/percentage)
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct KeyframeBlock {
+    /// Keyframe selector (from, to, or percentage)
+    pub selector: String,
+    /// Declarations
+    pub declarations: Vec<StyleDeclaration>,
+    pub span: Span,
+}
+
+/// Theme variable definition
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ThemeVariable {
+    /// CSS variable name (e.g., --primary)
+    pub name: String,
+    /// Value
+    pub value: String,
+    pub span: Span,
 }

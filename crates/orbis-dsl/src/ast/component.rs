@@ -5,8 +5,8 @@
 
 use serde::{Deserialize, Serialize};
 
-use super::expr::Expression;
-use super::node::{ActionItem, Span, TemplateContent};
+use super::expr::{ArrowFunction, Expression};
+use super::node::{Span, TemplateContent};
 use super::types::TypeAnnotation;
 
 // ============================================================================
@@ -50,7 +50,7 @@ impl Component {
 
     /// Get an event binding by name
     pub fn get_event(&self, name: &str) -> Option<&EventBinding> {
-        self.events.iter().find(|e| e.name.eq_ignore_ascii_case(name))
+        self.events.iter().find(|e| e.event.eq_ignore_ascii_case(name))
     }
 
     /// Check if this component has children
@@ -114,7 +114,7 @@ impl AttributeValue {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EventBinding {
     /// Event name (e.g., "click", "submit", "change")
-    pub name: String,
+    pub event: String,
     /// Event handler
     pub handler: EventHandler,
     pub span: Span,
@@ -122,35 +122,24 @@ pub struct EventBinding {
 
 /// Event handler
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(tag = "handler_type", rename_all = "snake_case")]
-pub enum EventHandler {
-    /// Action block: @click => { action1, action2 }
-    Actions { actions: Vec<ActionItem> },
-    /// Expression reference: @click={handler}
-    Expression { value: Expression },
-    /// Event parameter reference (in fragments): @click={@onClick}
-    EventRef { name: String },
+pub struct EventHandler {
+    /// Handler type (expression, identifier, or arrow function)
+    pub handler_type: HandlerType,
+    /// Event modifiers (e.g., stop, prevent, once)
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub modifiers: Vec<String>,
 }
 
-/// Handler type for action response handling
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
+/// Handler type
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(tag = "type", content = "value", rename_all = "snake_case")]
 pub enum HandlerType {
-    Success,
-    Error,
-    Finally,
-}
-
-impl HandlerType {
-    /// Parse from string
-    pub fn from_str(s: &str) -> Option<Self> {
-        match s.to_lowercase().as_str() {
-            "success" => Some(HandlerType::Success),
-            "error" => Some(HandlerType::Error),
-            "finally" => Some(HandlerType::Finally),
-            _ => None,
-        }
-    }
+    /// Expression reference: @click={handler}
+    Expression(Expression),
+    /// Identifier reference: @click={handleClick}
+    Identifier(String),
+    /// Arrow function: @click={() => doSomething()}
+    Arrow(ArrowFunction),
 }
 
 // ============================================================================
@@ -184,45 +173,35 @@ pub struct FragmentDefinition {
 impl FragmentDefinition {
     /// Get a parameter by name
     pub fn get_param(&self, name: &str) -> Option<&FragmentParam> {
-        self.params.iter().find(|p| match p {
-            FragmentParam::Property { name: n, .. } => n == name,
-            FragmentParam::Event { name: n, .. } => n == name,
-        })
+        self.params.iter().find(|p| p.name == name)
     }
 
-    /// Get all property parameters
-    pub fn property_params(&self) -> impl Iterator<Item = &FragmentParam> {
-        self.params.iter().filter(|p| matches!(p, FragmentParam::Property { .. }))
+    /// Get all required parameters
+    pub fn required_params(&self) -> impl Iterator<Item = &FragmentParam> {
+        self.params.iter().filter(|p| p.required)
     }
 
-    /// Get all event parameters
-    pub fn event_params(&self) -> impl Iterator<Item = &FragmentParam> {
-        self.params.iter().filter(|p| matches!(p, FragmentParam::Event { .. }))
+    /// Get all optional parameters
+    pub fn optional_params(&self) -> impl Iterator<Item = &FragmentParam> {
+        self.params.iter().filter(|p| !p.required)
     }
 }
 
 /// Fragment parameter
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(tag = "param_type", rename_all = "snake_case")]
-pub enum FragmentParam {
-    /// Property parameter: name: Type, name?: Type = default
-    Property {
-        name: String,
-        #[serde(skip_serializing_if = "std::ops::Not::not", default)]
-        optional: bool,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        type_annotation: Option<TypeAnnotation>,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        default_value: Option<Expression>,
-        span: Span,
-    },
-    /// Event parameter: @onClick, @onSubmit?
-    Event {
-        name: String,
-        #[serde(skip_serializing_if = "std::ops::Not::not", default)]
-        optional: bool,
-        span: Span,
-    },
+pub struct FragmentParam {
+    /// Parameter name
+    pub name: String,
+    /// Type annotation
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub type_annotation: Option<TypeAnnotation>,
+    /// Default value
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub default: Option<Expression>,
+    /// Whether this parameter is required
+    #[serde(skip_serializing_if = "std::ops::Not::not", default)]
+    pub required: bool,
+    pub span: Span,
 }
 
 // ============================================================================

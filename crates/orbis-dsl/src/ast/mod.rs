@@ -69,29 +69,36 @@ mod control;
 mod expr;
 mod filter;
 mod node;
+mod parser;
 mod state;
 mod types;
 mod visitor;
 
 // Re-export core types
-pub use builder::{parse_to_ast, AstBuilder, BuildError};
+pub use builder::{parse_to_ast, parse_to_ast_with_path, AstBuilder, BuildError, BuildErrorKind, BuildResult};
 pub use component::{
     Attribute, AttributeValue, Component, EventBinding, EventHandler, FragmentDefinition,
     FragmentParam, FragmentUsage, HandlerType, SlotContent, SlotDefinition,
 };
-pub use control::{ForBinding, ForBlock, IfBlock, WhenArm, WhenBlock, WhenPattern};
+pub use control::{ElseIfBranch, ForBinding, ForBlock, IfBlock, WhenArm, WhenBlock, WhenPattern};
 pub use expr::{
-    BinaryOp, Expression, Literal, MemberAccess, MethodCall, SpecialVariable, StateAssignment,
-    UnaryOp,
+    Argument, ArrayLiteral, ArrowBody, ArrowFunction, ArrowStatement, BinaryExpr, BinaryOp,
+    Expression, Identifier, InterpolatedString, Literal, LiteralValue, MemberAccess, MethodCall,
+    ObjectLiteral, ObjectPair, SpecialVariable, SpecialVariableKind, StateAssignment, StringPart,
+    UnaryExpr, UnaryOp,
 };
 pub use filter::{AstFilter, NodeKind};
 pub use node::{
-    Action, ActionItem, ActionWithHandlers, AstFile, ExportStatement, ExportableItem,
+    Action, ActionItem, ActionWithHandlers, AstFile, ControlFlow, ExportStatement, ExportableItem,
     HookEntry, HooksBlock, ImportClause, ImportSpecifier, ImportStatement, InterfaceDefinition,
-    InterfaceMember, LifecycleHook, LifecycleHookKind, PageBlock, PageProperty, ResponseHandler,
-    Span, StateBlock, StylesBlock, TemplateBlock, TemplateContent, TopLevelElement, WatcherHook,
-    WatcherOption,
+    InterfaceMember, LifecycleHook, LifecycleHookKind, PageBlock, PageProperties, PageProperty,
+    ResponseHandler, Span, StateBlock, StyleModifier, StylesBlock, TemplateBlock, TemplateContent,
+    TopLevelElement, WatcherHook, WatcherOption, WatcherOptionValue,
 };
-pub use state::{ComputedState, RegularState, StateDeclaration, ValidatedState, Validator};
-pub use types::{GenericParam, TypeAnnotation};
+pub use parser::{
+    parse, parse_file, parse_file_only, parse_with_path, ImportGraph, OrbisParser, ParseOptions,
+    ParseResult, ParseWarning,
+};
+pub use state::{ComputedState, RegularState, StateDeclaration, ValidatedState, Validator, ValidatorArg};
+pub use types::{GenericParam, LiteralType, PrimitiveKind, PrimitiveType, TypeAnnotation};
 pub use visitor::{MutVisitor, Visitor, Walkable};

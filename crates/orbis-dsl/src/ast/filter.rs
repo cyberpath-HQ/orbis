@@ -7,8 +7,8 @@ use super::component::{Component, FragmentDefinition, FragmentUsage};
 use super::control::{ForBlock, IfBlock, WhenBlock};
 use super::expr::{Expression, MemberAccess, MethodCall};
 use super::node::{
-    AstFile, ControlFlow, HookEntry, InterfaceDefinition, LifecycleHookKind, PageBlock, StateBlock,
-    TemplateContent, TopLevelElement,
+    AstFile, HookEntry, InterfaceDefinition, LifecycleHookKind, PageBlock, StateBlock,
+    TopLevelElement,
 };
 use super::state::StateDeclaration;
 use super::visitor::Visitor;

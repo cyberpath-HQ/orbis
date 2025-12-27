@@ -5,7 +5,7 @@
 
 use serde::{Deserialize, Serialize};
 
-use super::expr::Expression;
+use super::expr::{Expression, Identifier};
 use super::node::{Span, TemplateContent};
 
 /// If block with optional else-if and else branches
@@ -15,7 +15,7 @@ pub struct IfBlock {
     pub condition: Expression,
 
     /// Content if condition is true
-    pub then_content: Vec<TemplateContent>,
+    pub then_branch: Vec<TemplateContent>,
 
     /// Else-if branches
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
@@ -23,7 +23,7 @@ pub struct IfBlock {
 
     /// Else content (optional)
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub else_content: Option<Vec<TemplateContent>>,
+    pub else_branch: Option<Vec<TemplateContent>>,
 
     pub span: Span,
 }
@@ -31,7 +31,7 @@ pub struct IfBlock {
 impl IfBlock {
     /// Check if this if block has an else branch
     pub fn has_else(&self) -> bool {
-        self.else_content.is_some()
+        self.else_branch.is_some()
     }
 
     /// Check if this if block has else-if branches
@@ -56,7 +56,7 @@ pub struct ElseIfBranch {
     /// Condition for this branch
     pub condition: Expression,
     /// Content if condition is true
-    pub content: Vec<TemplateContent>,
+    pub body: Vec<TemplateContent>,
     pub span: Span,
 }
 
@@ -67,7 +67,7 @@ pub struct ForBlock {
     pub binding: ForBinding,
 
     /// Collection expression
-    pub collection: Expression,
+    pub iterable: Expression,
 
     /// Loop body content
     pub body: Vec<TemplateContent>,
@@ -78,36 +78,31 @@ pub struct ForBlock {
 impl ForBlock {
     /// Get the item variable name
     pub fn item_var(&self) -> &str {
-        match &self.binding {
-            ForBinding::Simple { item } => item,
-            ForBinding::WithIndex { item, .. } => item,
-        }
+        &self.binding.item.name
     }
 
     /// Get the index variable name if present
     pub fn index_var(&self) -> Option<&str> {
-        match &self.binding {
-            ForBinding::Simple { .. } => None,
-            ForBinding::WithIndex { index, .. } => Some(index),
-        }
+        self.binding.index.as_ref().map(|i| i.name.as_str())
     }
 }
 
 /// For loop binding
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(tag = "binding_type", rename_all = "snake_case")]
-pub enum ForBinding {
-    /// Simple binding: for item in collection
-    Simple { item: String },
-    /// Tuple binding: for (index, item) in collection
-    WithIndex { index: String, item: String },
+pub struct ForBinding {
+    /// Item variable
+    pub item: Identifier,
+    /// Optional index variable
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub index: Option<Identifier>,
+    pub span: Span,
 }
 
 /// When block (pattern matching)
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct WhenBlock {
     /// Expression to match against
-    pub expression: Expression,
+    pub subject: Expression,
 
     /// Match arms
     pub arms: Vec<WhenArm>,
@@ -116,35 +111,34 @@ pub struct WhenBlock {
 }
 
 impl WhenBlock {
-    /// Check if this when block has an else arm
-    pub fn has_else_arm(&self) -> bool {
-        self.arms.iter().any(|arm| arm.is_else)
+    /// Check if this when block has a wildcard arm
+    pub fn has_wildcard_arm(&self) -> bool {
+        self.arms.iter().any(|arm| matches!(&arm.pattern, WhenPattern::Wildcard { .. }))
     }
 
-    /// Get the else arm if present
-    pub fn else_arm(&self) -> Option<&WhenArm> {
-        self.arms.iter().find(|arm| arm.is_else)
+    /// Get the wildcard arm if present
+    pub fn wildcard_arm(&self) -> Option<&WhenArm> {
+        self.arms.iter().find(|arm| matches!(&arm.pattern, WhenPattern::Wildcard { .. }))
     }
 
-    /// Get all pattern arms (excluding else)
+    /// Get all non-wildcard pattern arms
     pub fn pattern_arms(&self) -> impl Iterator<Item = &WhenArm> {
-        self.arms.iter().filter(|arm| !arm.is_else)
+        self.arms.iter().filter(|arm| !matches!(&arm.pattern, WhenPattern::Wildcard { .. }))
     }
 }
 
 /// When arm (pattern match case)
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct WhenArm {
-    /// Pattern to match (None for else arm)
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub pattern: Option<WhenPattern>,
+    /// Pattern to match
+    pub pattern: WhenPattern,
 
-    /// Whether this is the else arm
-    #[serde(skip_serializing_if = "std::ops::Not::not", default)]
-    pub is_else: bool,
+    /// Optional guard condition
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub guard: Option<Expression>,
 
     /// Content for this arm
-    pub content: Vec<TemplateContent>,
+    pub body: Vec<TemplateContent>,
 
     pub span: Span,
 }
@@ -153,21 +147,32 @@ pub struct WhenArm {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "pattern_type", rename_all = "snake_case")]
 pub enum WhenPattern {
-    /// String literal pattern
-    String { value: String },
-    /// Number literal pattern
-    Number { value: f64 },
-    /// Boolean literal pattern
-    Boolean { value: bool },
+    /// Literal pattern (string, number, boolean)
+    Literal { value: Expression, span: Span },
+    /// Binding pattern (captures value into variable)
+    Binding { name: String, span: Span },
+    /// Range pattern (start..end)
+    Range { start: Box<Expression>, end: Box<Expression>, span: Span },
+    /// Or pattern (pattern1 | pattern2)
+    Or { patterns: Vec<WhenPattern>, span: Span },
+    /// Wildcard/else pattern (_)
+    Wildcard { span: Span },
 }
 
 impl WhenPattern {
-    /// Check if this pattern matches a given expression
-    pub fn matches_literal(&self, value: &str) -> bool {
+    /// Check if this is a wildcard pattern
+    pub fn is_wildcard(&self) -> bool {
+        matches!(self, WhenPattern::Wildcard { .. })
+    }
+    
+    /// Get the span of this pattern
+    pub fn span(&self) -> &Span {
         match self {
-            WhenPattern::String { value: v } => v == value,
-            WhenPattern::Number { value: v } => value.parse::<f64>().map(|n| n == *v).unwrap_or(false),
-            WhenPattern::Boolean { value: v } => value.parse::<bool>().map(|b| b == *v).unwrap_or(false),
+            WhenPattern::Literal { span, .. } => span,
+            WhenPattern::Binding { span, .. } => span,
+            WhenPattern::Range { span, .. } => span,
+            WhenPattern::Or { span, .. } => span,
+            WhenPattern::Wildcard { span } => span,
         }
     }
 }
@@ -195,15 +200,15 @@ mod tests {
     fn test_if_block_branches() {
         let if_block = IfBlock {
             condition: make_bool_expr(true),
-            then_content: vec![],
+            then_branch: vec![],
             else_if_branches: vec![
                 ElseIfBranch {
                     condition: make_bool_expr(false),
-                    content: vec![],
+                    body: vec![],
                     span: Span::default(),
                 },
             ],
-            else_content: Some(vec![]),
+            else_branch: Some(vec![]),
             span: Span::default(),
         };
 
@@ -215,22 +220,27 @@ mod tests {
 
     #[test]
     fn test_for_binding() {
-        let simple = ForBinding::Simple { item: "user".to_string() };
-        let with_index = ForBinding::WithIndex {
-            index: "i".to_string(),
-            item: "user".to_string(),
+        let simple = ForBinding {
+            item: Identifier { name: "user".to_string(), span: Span::default() },
+            index: None,
+            span: Span::default(),
+        };
+        let with_index = ForBinding {
+            item: Identifier { name: "user".to_string(), span: Span::default() },
+            index: Some(Identifier { name: "i".to_string(), span: Span::default() }),
+            span: Span::default(),
         };
 
         let for_simple = ForBlock {
             binding: simple,
-            collection: make_ident_expr("users"),
+            iterable: make_ident_expr("users"),
             body: vec![],
             span: Span::default(),
         };
 
         let for_indexed = ForBlock {
             binding: with_index,
-            collection: make_ident_expr("users"),
+            iterable: make_ident_expr("users"),
             body: vec![],
             span: Span::default(),
         };
@@ -244,12 +254,16 @@ mod tests {
 
     #[test]
     fn test_when_pattern() {
-        let pattern = WhenPattern::String { value: "loading".to_string() };
-        assert!(pattern.matches_literal("loading"));
-        assert!(!pattern.matches_literal("success"));
+        let pattern = WhenPattern::Literal { 
+            value: Expression::Literal(Literal {
+                value: LiteralValue::String("loading".to_string()),
+                span: Span::default(),
+            }),
+            span: Span::default(),
+        };
+        assert!(!pattern.is_wildcard());
 
-        let num_pattern = WhenPattern::Number { value: 42.0 };
-        assert!(num_pattern.matches_literal("42"));
-        assert!(!num_pattern.matches_literal("43"));
+        let wildcard = WhenPattern::Wildcard { span: Span::default() };
+        assert!(wildcard.is_wildcard());
     }
 }

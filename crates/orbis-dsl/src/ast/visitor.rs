@@ -9,8 +9,9 @@ use super::component::{
 };
 use super::control::{ForBlock, IfBlock, WhenArm, WhenBlock};
 use super::expr::{
-    ArrayLiteral, ArrowFunction, BinaryExpr, Expression, Identifier, Literal, MemberAccess,
-    MethodCall, ObjectLiteral, SpecialVariable, StateAssignment, UnaryExpr,
+    ArrayLiteral, ArrowFunction, BinaryExpr, Expression, Identifier, InterpolatedString, Literal,
+    MemberAccess, MethodCall, ObjectLiteral, SpecialVariable, StateAssignment, StringPart,
+    UnaryExpr,
 };
 use super::node::{
     Action, ActionItem, ActionWithHandlers, AstFile, ControlFlow, ExportStatement, HookEntry,
@@ -242,6 +243,14 @@ pub trait Visitor: Sized {
 
     fn visit_arrow_function(&mut self, func: &ArrowFunction) {}
 
+    fn visit_interpolated_string(&mut self, s: &InterpolatedString) {
+        walk_interpolated_string(self, s);
+    }
+
+    fn visit_assignment(&mut self, a: &super::expr::Assignment) {
+        walk_assignment(self, a);
+    }
+
     // ========================================================================
     // Types
     // ========================================================================
@@ -417,16 +426,14 @@ pub fn walk_component<V: Visitor>(visitor: &mut V, component: &Component) {
 }
 
 pub fn walk_event_binding<V: Visitor>(visitor: &mut V, event: &EventBinding) {
-    match &event.handler {
-        super::component::EventHandler::Actions { actions } => {
-            for action in actions {
-                visitor.visit_action_item(action);
-            }
+    match &event.handler.handler_type {
+        super::component::HandlerType::Expression(expr) => {
+            visitor.visit_expression(expr);
         }
-        super::component::EventHandler::Expression { value } => {
-            visitor.visit_expression(value);
+        super::component::HandlerType::Arrow(arrow) => {
+            visitor.visit_arrow_function(arrow);
         }
-        super::component::EventHandler::EventRef { .. } => {}
+        super::component::HandlerType::Identifier(_) => {}
     }
 }
 
@@ -440,38 +447,38 @@ pub fn walk_control_flow<V: Visitor>(visitor: &mut V, flow: &ControlFlow) {
 
 pub fn walk_if_block<V: Visitor>(visitor: &mut V, if_block: &IfBlock) {
     visitor.visit_expression(&if_block.condition);
-    for content in &if_block.then_content {
+    for content in &if_block.then_branch {
         visitor.visit_template_content(content);
     }
     for branch in &if_block.else_if_branches {
         visitor.visit_expression(&branch.condition);
-        for content in &branch.content {
+        for content in &branch.body {
             visitor.visit_template_content(content);
         }
     }
-    if let Some(else_content) = &if_block.else_content {
-        for content in else_content {
+    if let Some(else_branch) = &if_block.else_branch {
+        for content in else_branch {
             visitor.visit_template_content(content);
         }
     }
 }
 
 pub fn walk_for_block<V: Visitor>(visitor: &mut V, for_block: &ForBlock) {
-    visitor.visit_expression(&for_block.collection);
+    visitor.visit_expression(&for_block.iterable);
     for content in &for_block.body {
         visitor.visit_template_content(content);
     }
 }
 
 pub fn walk_when_block<V: Visitor>(visitor: &mut V, when_block: &WhenBlock) {
-    visitor.visit_expression(&when_block.expression);
+    visitor.visit_expression(&when_block.subject);
     for arm in &when_block.arms {
         visitor.visit_when_arm(arm);
     }
 }
 
 pub fn walk_when_arm<V: Visitor>(visitor: &mut V, arm: &WhenArm) {
-    for content in &arm.content {
+    for content in &arm.body {
         visitor.visit_template_content(content);
     }
 }
@@ -520,11 +527,40 @@ pub fn walk_action<V: Visitor>(visitor: &mut V, action: &Action) {
     match action {
         Action::StateAssignment(a) => visitor.visit_state_assignment(a),
         Action::MethodCall(m) => visitor.visit_method_call(m),
+        Action::Fetch(f) => {
+            if let Some(url) = &f.url {
+                visitor.visit_expression(url);
+            }
+            if let Some(body) = &f.body {
+                visitor.visit_expression(body);
+            }
+            if let Some(headers) = &f.headers {
+                visitor.visit_expression(headers);
+            }
+        }
+        Action::Submit(s) => {
+            if let Some(target) = &s.target {
+                visitor.visit_expression(target);
+            }
+            if let Some(data) = &s.data {
+                visitor.visit_expression(data);
+            }
+        }
+        Action::Call(c) => {
+            for arg in &c.args {
+                visitor.visit_expression(arg);
+            }
+        }
+        Action::Custom(c) => {
+            for param in &c.params {
+                visitor.visit_expression(param);
+            }
+        }
     }
 }
 
 pub fn walk_action_with_handlers<V: Visitor>(visitor: &mut V, action: &ActionWithHandlers) {
-    visitor.visit_method_call(&action.call);
+    visitor.visit_action(&action.action);
     for handler in &action.handlers {
         visitor.visit_response_handler(handler);
     }
@@ -560,7 +596,8 @@ pub fn walk_expression<V: Visitor>(visitor: &mut V, expr: &Expression) {
         Expression::Array(a) => visitor.visit_array_literal(a),
         Expression::Grouped { inner, .. } => visitor.visit_expression(inner),
         Expression::ArrowFunction(f) => visitor.visit_arrow_function(f),
-        Expression::InterpolatedString(_) => {} // TODO: walk interpolations
+        Expression::InterpolatedString(s) => visitor.visit_interpolated_string(s),
+        Expression::Assignment(a) => visitor.visit_assignment(a),
     }
 }
 
@@ -583,6 +620,19 @@ pub fn walk_array_literal<V: Visitor>(visitor: &mut V, arr: &ArrayLiteral) {
     for element in &arr.elements {
         visitor.visit_expression(element);
     }
+}
+
+pub fn walk_interpolated_string<V: Visitor>(visitor: &mut V, s: &InterpolatedString) {
+    for part in &s.parts {
+        if let StringPart::Expression { value } = part {
+            visitor.visit_expression(value);
+        }
+    }
+}
+
+pub fn walk_assignment<V: Visitor>(visitor: &mut V, a: &super::expr::Assignment) {
+    visitor.visit_expression(&a.target);
+    visitor.visit_expression(&a.value);
 }
 
 pub fn walk_interface<V: Visitor>(visitor: &mut V, interface: &InterfaceDefinition) {

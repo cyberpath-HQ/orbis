@@ -44,6 +44,8 @@ pub enum Expression {
     ArrowFunction(ArrowFunction),
     /// Interpolated string "Hello, {name}!"
     InterpolatedString(InterpolatedString),
+    /// Assignment expression (target = value)
+    Assignment(Assignment),
 }
 
 impl Expression {
@@ -62,6 +64,7 @@ impl Expression {
             Expression::Grouped { span, .. } => span,
             Expression::ArrowFunction(e) => &e.span,
             Expression::InterpolatedString(e) => &e.span,
+            Expression::Assignment(e) => &e.span,
         }
     }
 
@@ -292,21 +295,26 @@ pub struct MethodCall {
 
 /// Method argument
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(tag = "arg_type", rename_all = "snake_case")]
-pub enum Argument {
-    /// Positional argument
-    Positional { value: Expression },
-    /// Named argument (key: value)
-    Named { name: String, value: Expression },
+pub struct Argument {
+    /// Argument name (for named arguments)
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+    /// Argument value
+    pub value: Expression,
+    /// Whether this is a spread argument (...expr)
+    #[serde(skip_serializing_if = "std::ops::Not::not", default)]
+    pub spread: bool,
 }
 
 impl Argument {
     /// Get the expression value
     pub fn value(&self) -> &Expression {
-        match self {
-            Argument::Positional { value } => value,
-            Argument::Named { value, .. } => value,
-        }
+        &self.value
+    }
+    
+    /// Check if this is a named argument
+    pub fn is_named(&self) -> bool {
+        self.name.is_some()
     }
 }
 
@@ -382,12 +390,12 @@ pub struct ArrowFunction {
 
 /// Arrow function body
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(tag = "body_type", rename_all = "snake_case")]
+#[serde(tag = "body_type", content = "content", rename_all = "snake_case")]
 pub enum ArrowBody {
     /// Expression body (implicit return)
     Expression(Box<Expression>),
     /// Block body with statements
-    Block { statements: Vec<ArrowStatement> },
+    Block(Vec<ArrowStatement>),
 }
 
 /// Arrow function statement
@@ -395,7 +403,13 @@ pub enum ArrowBody {
 #[serde(tag = "stmt_type", rename_all = "snake_case")]
 pub enum ArrowStatement {
     /// Return statement
-    Return { value: Expression, span: Span },
+    Return(Option<Expression>),
+    /// Expression statement
+    Expression(Expression),
+    /// Variable declaration
+    Let { name: String, value: Expression },
+    /// Const declaration
+    Const { name: String, value: Expression },
 }
 
 /// Interpolated string with embedded expressions
@@ -414,6 +428,20 @@ pub enum StringPart {
     Literal { value: String },
     /// Interpolated expression
     Expression { value: Expression },
+}
+
+// ============================================================================
+// ASSIGNMENT EXPRESSION
+// ============================================================================
+
+/// Assignment expression (target = value)
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Assignment {
+    /// Target of the assignment (member access or identifier)
+    pub target: Box<Expression>,
+    /// Value being assigned
+    pub value: Box<Expression>,
+    pub span: Span,
 }
 
 // ============================================================================
