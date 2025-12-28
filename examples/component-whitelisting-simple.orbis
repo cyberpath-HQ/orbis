@@ -8,6 +8,13 @@ page {
 }
 
 state {
+    /**
+    # Hello
+    ## world
+    ```
+    world
+    ```
+     */
     message: string = "Hello World"
     count = 0
     loading = false
@@ -25,6 +32,8 @@ hooks {
 template {
     // Container with whitelisted attributes
     <Container id="main" className="container" visible={true}>
+        <NonExisting>
+        </NonExisting>
         
         // Flex layout with specific attributes
         <Flex direction="row" justify="center" align="center" gap="4">
