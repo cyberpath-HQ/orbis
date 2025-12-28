@@ -303,6 +303,9 @@ pub fn walk_file<V: Visitor>(visitor: &mut V, file: &AstFile) {
 
 pub fn walk_top_level<V: Visitor>(visitor: &mut V, element: &TopLevelElement) {
     match element {
+        TopLevelElement::Comment { .. } => {
+            // Comments don't need to be visited - they're just metadata
+        }
         TopLevelElement::Export(e) => visitor.visit_export(e),
         TopLevelElement::Page(p) => visitor.visit_page(p),
         TopLevelElement::State(s) => visitor.visit_state_block(s),

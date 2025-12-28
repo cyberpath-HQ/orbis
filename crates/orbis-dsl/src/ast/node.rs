@@ -102,6 +102,8 @@ pub struct AstFile {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum TopLevelElement {
+    /// Comment (line or block)
+    Comment { value: String, span: Span },
     /// Export statement wrapping other items
     Export(ExportStatement),
     /// Page definition block
@@ -124,6 +126,7 @@ impl TopLevelElement {
     /// Get the span of this element
     pub fn span(&self) -> &Span {
         match self {
+            TopLevelElement::Comment { span, .. } => span,
             TopLevelElement::Export(e) => &e.span,
             TopLevelElement::Page(p) => &p.span,
             TopLevelElement::State(s) => &s.span,

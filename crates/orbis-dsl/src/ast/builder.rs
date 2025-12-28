@@ -3,6 +3,7 @@
 //! This module provides the `AstBuilder` which converts pest `Pairs` into
 //! the structured AST representation.
 
+use heck::ToSnakeCase;
 use pest::iterators::{Pair, Pairs};
 use std::fmt;
 
@@ -33,6 +34,11 @@ use super::types::{GenericParam, TypeAnnotation};
 // ============================================================================
 // HELPER TYPES
 // ============================================================================
+
+/// Normalize component name to lower_snake_case
+fn normalize_component_name(name: &str) -> String {
+    name.to_snake_case()
+}
 
 /// Helper enum for tracking state while parsing if blocks
 #[allow(dead_code)]
@@ -257,8 +263,14 @@ impl AstBuilder {
     fn build_import_section(&self, pair: Pair<'_, Rule>) -> BuildResult<Vec<ImportStatement>> {
         let mut imports = Vec::new();
         for inner in pair.into_inner() {
-            if inner.as_rule() == Rule::import_statement {
-                imports.push(self.build_import_statement(inner)?);
+            match inner.as_rule() {
+                Rule::import_statement => {
+                    imports.push(self.build_import_statement(inner)?);
+                }
+                Rule::line_comment | Rule::block_comment => {
+                    // Comments in import section are ignored
+                }
+                _ => {}
             }
         }
         Ok(imports)
@@ -396,6 +408,20 @@ impl AstBuilder {
         };
 
         match inner.as_rule() {
+            Rule::line_comment => {
+                let span = span_from_pair(&inner);
+                let value = inner.as_str().trim_start_matches("//").trim().to_string();
+                Ok(Some(TopLevelElement::Comment { value, span }))
+            }
+            Rule::block_comment => {
+                let span = span_from_pair(&inner);
+                let value = inner.as_str()
+                    .trim_start_matches("/*")
+                    .trim_end_matches("*/")
+                    .trim()
+                    .to_string();
+                Ok(Some(TopLevelElement::Comment { value, span }))
+            }
             Rule::page_block => Ok(Some(TopLevelElement::Page(self.build_page_block(inner)?))),
             Rule::state_block => Ok(Some(TopLevelElement::State(self.build_state_block(inner)?))),
             Rule::hooks_block => Ok(Some(TopLevelElement::Hooks(self.build_hooks_block(inner)?))),
@@ -523,9 +549,15 @@ impl AstBuilder {
         let mut properties = std::collections::HashMap::new();
 
         for inner in pair.into_inner() {
-            if inner.as_rule() == Rule::page_property {
-                let (key, value) = self.build_page_property(inner)?;
-                properties.insert(key, value);
+            match inner.as_rule() {
+                Rule::page_property => {
+                    let (key, value) = self.build_page_property(inner)?;
+                    properties.insert(key, value);
+                }
+                Rule::line_comment | Rule::block_comment => {
+                    // Comments in page block are ignored
+                }
+                _ => {}
             }
         }
 
@@ -605,8 +637,15 @@ impl AstBuilder {
         let mut declarations = Vec::new();
 
         for inner in pair.into_inner() {
-            if inner.as_rule() == Rule::state_declaration {
-                declarations.push(self.build_state_declaration(inner)?);
+            match inner.as_rule() {
+                Rule::state_declaration => {
+                    declarations.push(self.build_state_declaration(inner)?);
+                }
+                Rule::line_comment | Rule::block_comment => {
+                    // Comments in state blocks are ignored for now
+                    // Could be added to StateBlock if we want to preserve them
+                }
+                _ => {}
             }
         }
 
@@ -1442,6 +1481,9 @@ impl AstBuilder {
                 Rule::hook_entry => {
                     entries.push(self.build_hook_entry(inner)?);
                 }
+                Rule::line_comment | Rule::block_comment => {
+                    // Comments in hooks blocks are ignored for now
+                }
                 _ => {}
             }
         }
@@ -2033,6 +2075,18 @@ impl AstBuilder {
                         span: comment_span,
                     });
                 }
+                Rule::block_comment => {
+                    let comment_span = span_from_pair(&inner);
+                    let value = inner.as_str()
+                        .trim_start_matches("/*")
+                        .trim_end_matches("*/")
+                        .trim()
+                        .to_string();
+                    content.push(TemplateContent::Comment {
+                        value,
+                        span: comment_span,
+                    });
+                }
                 Rule::text_content => {
                     // text_content can be plain_component_text or interpolated_text
                     if let Some(text_inner) = inner.clone().into_inner().next() {
@@ -2068,14 +2122,6 @@ impl AstBuilder {
                     content.push(TemplateContent::Text {
                         value,
                         span: text_span,
-                    });
-                }
-                Rule::line_comment => {
-                    let comment_span = span_from_pair(&inner);
-                    let value = inner.as_str().trim_start_matches("//").trim().to_string();
-                    content.push(TemplateContent::Comment {
-                        value,
-                        span: comment_span,
                     });
                 }
                 _ => {}
@@ -2140,6 +2186,9 @@ impl AstBuilder {
         
         // Deduplicate attributes (keep last occurrence)
         attributes = self.dedupe_attributes(attributes);
+        
+        // Normalize component name to lower_snake_case
+        name = normalize_component_name(&name);
 
         Ok(Component {
             name,
@@ -2196,6 +2245,9 @@ impl AstBuilder {
         
         // Deduplicate attributes (keep last occurrence)
         attributes = self.dedupe_attributes(attributes);
+        
+        // Normalize component name to lower_snake_case
+        name = normalize_component_name(&name);
 
         Ok(Component {
             name,
@@ -2306,6 +2358,9 @@ impl AstBuilder {
         
         // Deduplicate attributes (keep last occurrence)
         attributes = self.dedupe_attributes(attributes);
+        
+        // Normalize component name to lower_snake_case
+        name = normalize_component_name(&name);
 
         Ok(Component {
             name,
@@ -3197,6 +3252,18 @@ impl AstBuilder {
                         span: comment_span,
                     });
                 }
+                Rule::block_comment => {
+                    let comment_span = span_from_pair(&inner);
+                    let value = inner.as_str()
+                        .trim_start_matches("/*")
+                        .trim_end_matches("*/")
+                        .trim()
+                        .to_string();
+                    content.push(TemplateContent::Comment {
+                        value,
+                        span: comment_span,
+                    });
+                }
                 _ => {}
             }
         }
@@ -3243,8 +3310,14 @@ impl AstBuilder {
         let mut params = Vec::new();
 
         for inner in pair.into_inner() {
-            if inner.as_rule() == Rule::fragment_param {
-                params.push(self.build_fragment_param(inner)?);
+            match inner.as_rule() {
+                Rule::fragment_param => {
+                    params.push(self.build_fragment_param(inner)?);
+                }
+                Rule::line_comment | Rule::block_comment => {
+                    // Comments in fragment params are ignored
+                }
+                _ => {}
             }
         }
 
@@ -3564,6 +3637,9 @@ impl AstBuilder {
                 Rule::interface_member => {
                     members.push(self.build_interface_member(inner)?);
                 }
+                Rule::line_comment | Rule::block_comment => {
+                    // Comments in interface definitions are ignored
+                }
                 _ => {}
             }
         }
@@ -3754,6 +3830,9 @@ impl AstBuilder {
                     // Style rule content can be either a declaration or a nested rule
                     for content_inner in inner.into_inner() {
                         match content_inner.as_rule() {
+                            Rule::line_comment | Rule::block_comment => {
+                                // Comments in style rules are ignored
+                            }
                             Rule::style_declaration => {
                                 if let Ok(decl) = self.build_style_declaration(content_inner) {
                                     declarations.push(decl);

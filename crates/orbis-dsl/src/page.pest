@@ -1381,23 +1381,23 @@ OpeningComponents = { ContainerOpening | GridOpening | FlexOpening | SpacerOpeni
 // FILE STRUCTURE
 // ============================================================================
 // Top-level elements include imports, blocks, fragments, interfaces, and styles
-file = { SOI ~ WHITESPACE* ~ import_section? ~ top_level_element* ~ WHITESPACE* ~ EOI }
+file = { SOI ~ WHITESPACE* ~ top_level_element* ~ WHITESPACE* ~ EOI }
 
 // Import section must come first (like TypeScript/Rust)
 import_section = {
-    import_statement+
+    (line_comment | block_comment | import_statement)+
 }
 
 top_level_element = {
-    export_statement | page_block | state_block | hooks_block | template_block | 
-    fragment_definition | interface_definition | styles_block
+    line_comment | block_comment | export_statement | page_block | state_block | hooks_block | template_block | 
+    fragment_definition | interface_definition | styles_block | import_section
 }
 
 // Top-level blocks
-page_block = { Page ~ "{" ~ page_property* ~ "}" }
-state_block = { State ~ "{" ~ state_declaration* ~ "}" }
-hooks_block = { Hook ~ "{" ~ hook_entry* ~ "}" }
-template_block = { Template ~ "{" ~ (component | control_flow | fragment_usage | line_comment)* ~ "}" }
+page_block = { Page ~ "{" ~ (line_comment | block_comment | page_property)* ~ "}" }
+state_block = { State ~ "{" ~ (line_comment | block_comment | state_declaration)* ~ "}" }
+hooks_block = { Hook ~ "{" ~ (line_comment | block_comment | hook_entry)* ~ "}" }
+template_block = { Template ~ "{" ~ (line_comment | block_comment | component | control_flow | fragment_usage)* ~ "}" }
 
 // ============================================================================
 // IMPORT/EXPORT SYSTEM
@@ -1723,7 +1723,7 @@ simple_type = {
 // ============================================================================
 
 interface_definition = {
-    Interface ~ identifier ~ generic_params? ~ "{" ~ interface_member* ~ "}"
+    Interface ~ identifier ~ generic_params? ~ "{" ~ (line_comment | block_comment | interface_member)* ~ "}"
 }
 
 // Generic parameters: <T>, <T, U>, <T extends Base>
@@ -1808,7 +1808,7 @@ style_modifier = @{
 }
 
 style_content = {
-    style_at_rule | style_rule | line_comment
+    line_comment | block_comment | style_at_rule | style_rule
 }
 
 // CSS at-rules: @media, @keyframes, @layer, @supports, @container, @scope
@@ -1927,7 +1927,7 @@ style_rule = {
 
 // Style rule content can be either declarations or nested rules
 style_rule_content = {
-    style_declaration | style_rule
+    line_comment | block_comment | style_declaration | style_rule
 }
 
 style_selector_list = {
@@ -2076,7 +2076,7 @@ fragment_name = @{
 }
 
 fragment_params = {
-    fragment_param ~ ("," ~ fragment_param)*
+    fragment_param ~ ("," ~ (line_comment | block_comment | fragment_param))*
 }
 
 // Fragment parameter: property or event
@@ -2296,7 +2296,7 @@ when_pattern = {
 
 // Template content (used in control flow blocks)
 template_content = {
-    component | control_flow | line_comment
+    line_comment | block_comment | component | control_flow
 }
 
 // ============================================================================
@@ -2432,8 +2432,9 @@ identifier = @{
     (ASCII_ALPHA | "_") ~ (ASCII_ALPHANUMERIC | "_")*
 }
 
-// Line comments inside template (not COMMENT which is silent)
-line_comment = @{ "//" ~ (!NEWLINE ~ ANY)* }
+// Comments - both line and block comments are captured in AST
+line_comment = @{ "//" ~ (!("\n") ~ ANY)* }
+block_comment = @{ "/*" ~ (!"*/" ~ ANY)* ~ "*/" }
 
 WHITESPACE = _{ " " | "\t" | "\r" | "\n" }
-COMMENT = _{ "//" ~ (!"\n" ~ ANY)* ~ "\n"? | "/*" ~ (!"*/" ~ ANY)* ~ "*/" }
+// No implicit COMMENT rule - we handle comments explicitly
