@@ -9,6 +9,7 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
+use heck::ToSnakeCase;
 use orbis_dsl::ast::{
     self, AstFile, Component, Expression, FragmentDefinition, MemberAccess, Span, StateBlock,
     StateDeclaration, TemplateContent, TopLevelElement,
@@ -284,10 +285,13 @@ impl Analyzer {
     }
 
     fn process_fragment(frag: &FragmentDefinition, symbols: &mut SymbolTable) {
+        // Normalize fragment name to snake_case to match component name normalization
+        let normalized_name = frag.name.to_snake_case();
+        
         symbols.fragments.insert(
-            frag.name.clone(),
+            normalized_name.clone(),
             FragmentSymbol {
-                name: frag.name.clone(),
+                name: frag.name.clone(), // Keep original name for display
                 params: frag
                     .params
                     .iter()

@@ -36,6 +36,7 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 dashmap = "6.0"
 ropey = "1.6"
 lsp-types = "0.97"
+heck = "0.5"
 
 [lints]
 workspace = true

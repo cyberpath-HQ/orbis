@@ -8,6 +8,7 @@
 
 use tower_lsp::lsp_types::{Hover, HoverContents, MarkupContent, MarkupKind, Position, Range};
 
+use heck::ToSnakeCase;
 use crate::analysis::{span_to_range, AnalysisResult, SymbolKind, SymbolTable};
 use crate::document::Document;
 
@@ -675,8 +676,12 @@ struct ComponentInfo {
 
 /// Get component info for hover
 fn get_component_info(name: &str) -> Option<ComponentInfo> {
-    match name {
-        "Container" => Some(ComponentInfo {
+    // Convert to PascalCase for matching (component names in source are PascalCase)
+    // but AST normalizes them to snake_case
+    let normalized = name.to_snake_case();
+    
+    match normalized.as_str() {
+        "container" => Some(ComponentInfo {
             description: "A generic container element for grouping and layout purposes. Renders as a `<div>` with optional styling.".to_string(),
             category: "Layout".to_string(),
             attributes: vec![
@@ -691,7 +696,7 @@ fn get_component_info(name: &str) -> Option<ComponentInfo> {
                 ("mouseLeave", "Triggered on mouse leave"),
             ],
         }),
-        "Button" => Some(ComponentInfo {
+        "button" => Some(ComponentInfo {
             description: "A clickable button component with multiple variants and states.".to_string(),
             category: "Forms".to_string(),
             attributes: vec![
@@ -707,7 +712,7 @@ fn get_component_info(name: &str) -> Option<ComponentInfo> {
                 ("click", "Triggered when clicked"),
             ],
         }),
-        "Text" => Some(ComponentInfo {
+        "text" => Some(ComponentInfo {
             description: "A text display component for paragraphs and inline text. Supports `{expression}` interpolation in content.".to_string(),
             category: "Typography".to_string(),
             attributes: vec![
@@ -719,7 +724,7 @@ fn get_component_info(name: &str) -> Option<ComponentInfo> {
                 ("click", "Triggered when clicked"),
             ],
         }),
-        "Heading" => Some(ComponentInfo {
+        "heading" => Some(ComponentInfo {
             description: "A heading component for titles and section headers (h1-h6).".to_string(),
             category: "Typography".to_string(),
             attributes: vec![
@@ -731,7 +736,7 @@ fn get_component_info(name: &str) -> Option<ComponentInfo> {
                 ("click", "Triggered when clicked"),
             ],
         }),
-        "Field" => Some(ComponentInfo {
+        "field" => Some(ComponentInfo {
             description: "A form input field supporting various input types. Use `bindTo` for two-way data binding.".to_string(),
             category: "Forms".to_string(),
             attributes: vec![
@@ -749,7 +754,7 @@ fn get_component_info(name: &str) -> Option<ComponentInfo> {
                 ("blur", "Triggered on blur"),
             ],
         }),
-        "Card" => Some(ComponentInfo {
+        "card" => Some(ComponentInfo {
             description: "A card container for grouping related content with optional header and footer.".to_string(),
             category: "Data Display".to_string(),
             attributes: vec![
@@ -762,7 +767,7 @@ fn get_component_info(name: &str) -> Option<ComponentInfo> {
                 ("click", "Triggered when clicked"),
             ],
         }),
-        "Table" => Some(ComponentInfo {
+        "table" => Some(ComponentInfo {
             description: "A data table component for displaying tabular data with sorting, pagination, and row selection.".to_string(),
             category: "Data Display".to_string(),
             attributes: vec![
@@ -779,7 +784,7 @@ fn get_component_info(name: &str) -> Option<ComponentInfo> {
                 ("pageChange", "Triggered on page change"),
             ],
         }),
-        "Modal" => Some(ComponentInfo {
+        "modal" => Some(ComponentInfo {
             description: "A modal dialog overlay for displaying focused content.".to_string(),
             category: "Overlays".to_string(),
             attributes: vec![
@@ -792,7 +797,7 @@ fn get_component_info(name: &str) -> Option<ComponentInfo> {
                 ("close", "Triggered when closed"),
             ],
         }),
-        "Flex" => Some(ComponentInfo {
+        "flex" => Some(ComponentInfo {
             description: "A Flexbox-based layout component for flexible, responsive layouts.".to_string(),
             category: "Layout".to_string(),
             attributes: vec![
@@ -804,7 +809,7 @@ fn get_component_info(name: &str) -> Option<ComponentInfo> {
             ],
             events: vec![],
         }),
-        "Grid" => Some(ComponentInfo {
+        "grid" => Some(ComponentInfo {
             description: "A CSS Grid-based layout component for creating responsive grid layouts.".to_string(),
             category: "Layout".to_string(),
             attributes: vec![
@@ -813,7 +818,7 @@ fn get_component_info(name: &str) -> Option<ComponentInfo> {
             ],
             events: vec![],
         }),
-        "Alert" => Some(ComponentInfo {
+        "alert" => Some(ComponentInfo {
             description: "An alert message component for displaying important information.".to_string(),
             category: "Feedback".to_string(),
             attributes: vec![
@@ -823,7 +828,7 @@ fn get_component_info(name: &str) -> Option<ComponentInfo> {
             ],
             events: vec![],
         }),
-        "Image" => Some(ComponentInfo {
+        "image" => Some(ComponentInfo {
             description: "An image display component with lazy loading support.".to_string(),
             category: "Media".to_string(),
             attributes: vec![
@@ -835,6 +840,67 @@ fn get_component_info(name: &str) -> Option<ComponentInfo> {
                 ("loading", "Loading strategy", Some(vec!["lazy", "eager"])),
             ],
             events: vec![],
+        }),
+        "loading_overlay" => Some(ComponentInfo {
+            description: "A full-screen loading overlay with spinner.".to_string(),
+            category: "Feedback".to_string(),
+            attributes: vec![
+                ("visible", "Show overlay", None),
+                ("message", "Loading message", None),
+            ],
+            events: vec![],
+        }),
+        "skeleton" => Some(ComponentInfo {
+            description: "A skeleton loading placeholder component.".to_string(),
+            category: "Feedback".to_string(),
+            attributes: vec![
+                ("variant", "Skeleton variant", Some(vec!["text", "circular", "rectangular"])),
+                ("width", "Width", None),
+                ("height", "Height", None),
+                ("count", "Number of lines (for text)", None),
+            ],
+            events: vec![],
+        }),
+        "badge" => Some(ComponentInfo {
+            description: "A small badge component for labels and counts.".to_string(),
+            category: "Data Display".to_string(),
+            attributes: vec![
+                ("content", "Badge content", None),
+                ("variant", "Badge variant", Some(vec!["default", "secondary", "destructive", "outline", "success"])),
+            ],
+            events: vec![],
+        }),
+        "icon" => Some(ComponentInfo {
+            description: "An icon component using Lucide icons.".to_string(),
+            category: "Media".to_string(),
+            attributes: vec![
+                ("name", "Icon name (required)", None),
+                ("size", "Icon size", Some(vec!["xs", "sm", "md", "lg", "xl"])),
+                ("color", "Icon color", None),
+            ],
+            events: vec![],
+        }),
+        "tooltip" => Some(ComponentInfo {
+            description: "A tooltip component for showing additional information on hover.".to_string(),
+            category: "Overlays".to_string(),
+            attributes: vec![
+                ("content", "Tooltip content (required)", None),
+                ("position", "Tooltip position", Some(vec!["top", "bottom", "left", "right"])),
+                ("trigger", "Trigger event", Some(vec!["hover", "click", "focus"])),
+            ],
+            events: vec![],
+        }),
+        "form" => Some(ComponentInfo {
+            description: "A form container component for handling form submissions.".to_string(),
+            category: "Forms".to_string(),
+            attributes: vec![
+                ("id", "Form identifier", None),
+                ("method", "HTTP method", Some(vec!["get", "post"])),
+            ],
+            events: vec![
+                ("submit", "Triggered on form submission"),
+                ("reset", "Triggered on form reset"),
+            ],
         }),
         _ => None,
     }

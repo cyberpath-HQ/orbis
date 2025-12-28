@@ -207,7 +207,7 @@ fn visit_element(element: &TopLevelElement, builder: &mut SemanticTokenBuilder, 
                         // Highlight the => arrow by reading from source
                         if let Some(line_text) = document.get_line(line as usize) {
                             let start = (col as usize).min(line_text.len());
-                            if let Some(arrow_pos) = line_text[start..].find(">>") {
+                            if let Some(arrow_pos) = line_text[start..].find("=>") {
                                 let arrow_col = col + arrow_pos as u32;
                                 builder.push(line, arrow_col, 2, token_types::OPERATOR, 0);
                             }
@@ -226,7 +226,7 @@ fn visit_element(element: &TopLevelElement, builder: &mut SemanticTokenBuilder, 
                         // Highlight => arrow by reading from source
                         if let Some(line_text) = document.get_line(line as usize) {
                             let start = (col as usize).min(line_text.len());
-                            if let Some(arrow_pos) = line_text[start..].find(">>") {
+                            if let Some(arrow_pos) = line_text[start..].find("=>") {
                                 let arrow_col = col + arrow_pos as u32;
                                 builder.push(line, arrow_col, 2, token_types::OPERATOR, 0);
                             }
@@ -556,17 +556,36 @@ fn visit_template_content(content: &TemplateContent, builder: &mut SemanticToken
                 let event_col = (event.span.start_col.saturating_sub(1)) as u32;
                 // Event names start with @ (included in length)
                 builder.push(event_line, event_col, event.event.len() as u32 + 1, token_types::EVENT, 0);
+                
+                // Highlight => arrow for event handlers
+                if let Some(line_text) = document.get_line(event_line as usize) {
+                    let start = (event_col as usize).min(line_text.len());
+                    if let Some(arrow_pos) = line_text[start..].find("=>") {
+                        let arrow_col = event_col + arrow_pos as u32;
+                        builder.push(event_line, arrow_col, 2, token_types::OPERATOR, 0);
+                    }
+                }
             }
 
             // Highlight closing syntax
             if comp.self_closing {
-                // Find /> in source - scan from end of span backwards
+                // Find /> in source - may span multiple lines
                 let end_line = (comp.span.end_line.saturating_sub(1)) as u32;
-                if let Some(line_text) = document.get_line(end_line as usize) {
-                    let search_end = (comp.span.end_col as usize).min(line_text.len());
-                    if let Some(slash_pos) = line_text[..search_end].rfind("/>") {
-                        // Emit token for />
-                        builder.push(end_line, slash_pos as u32, 2, token_types::OPERATOR, 0);
+                let start_line = (comp.span.start_line.saturating_sub(1)) as u32;
+                
+                // Search backwards from end_line to start_line
+                for search_line in (start_line..=end_line).rev() {
+                    if let Some(line_text) = document.get_line(search_line as usize) {
+                        let search_end = if search_line == end_line {
+                            (comp.span.end_col as usize).min(line_text.len())
+                        } else {
+                            line_text.len()
+                        };
+                        if let Some(slash_pos) = line_text[..search_end].rfind("/>") {
+                            // Emit token for />
+                            builder.push(search_line, slash_pos as u32, 2, token_types::OPERATOR, 0);
+                            break;
+                        }
                     }
                 }
             } else if !comp.children.is_empty() {
