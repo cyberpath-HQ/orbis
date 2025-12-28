@@ -98,6 +98,7 @@ hooks {
             .collect();
         
         assert!(!arrow_tokens.is_empty(), "Arrow operator => should be highlighted");
+        assert_eq!(arrow_tokens.len(), 1, "Should have exactly 1 arrow operator in @mount hook");
     }
 
     #[test]
@@ -116,6 +117,7 @@ hooks {
             .collect();
         
         assert!(!arrow_tokens.is_empty(), "Arrow operator => should be highlighted for @unmount");
+        assert_eq!(arrow_tokens.len(), 1, "Should have exactly 1 arrow operator in @unmount hook");
     }
 
     #[test]
@@ -137,6 +139,7 @@ hooks {
             .collect();
         
         assert!(!arrow_tokens.is_empty(), "Arrow operator => should be highlighted for @watch");
+        assert_eq!(arrow_tokens.len(), 1, "Should have exactly 1 arrow operator in @watch hook");
     }
 
     #[test]
@@ -148,12 +151,57 @@ template {
 "#;
         let tokens = get_tokens_for_content(content);
         
-        // Find arrow tokens on the same line as @click
-        let arrow_tokens: Vec<_> = tokens.iter()
+        // Find all OPERATOR tokens with length 2
+        let operator_2_tokens: Vec<_> = tokens.iter()
             .filter(|t| t.3 == 10 && t.2 == 2)
             .collect();
         
-        assert!(!arrow_tokens.is_empty(), "Arrow operator => should be highlighted in event handlers");
+        // Should have 2: one for =>, one for />
+        assert_eq!(operator_2_tokens.len(), 2, "Should have 2 OPERATOR tokens with length 2: => and />");
+        
+        // Verify both are OPERATOR type
+        for token in &operator_2_tokens {
+            assert_eq!(token.3, 10, "All length-2 operators must be OPERATOR type");
+        }
+    }
+    
+    #[test]
+    fn test_all_arrows_consistent_in_complex_file() {
+        let content = r#"
+hooks {
+    @mount => {
+        console.log("mounted")
+    }
+    @unmount => {
+        console.log("unmounting")
+    }
+    @watch(state.count) => {
+        console.log("count changed")
+    }
+}
+
+template {
+    <Button @click => { state.count = state.count + 1 } />
+    <Input @change => { console.log("changed") } />
+}
+"#;
+        let tokens = get_tokens_for_content(content);
+        
+        // All operators with length 2 should be OPERATOR tokens
+        // This includes both => arrows and /> self-closing tags
+        let operator_2_tokens: Vec<_> = tokens.iter()
+            .filter(|t| t.3 == 10 && t.2 == 2)
+            .collect();
+        
+        // 3 => in hooks + 2 => in event handlers + 2 /> for self-closing = 7 total
+        assert_eq!(operator_2_tokens.len(), 7, "Should have 7 length-2 operators: 5 arrows (=>) + 2 self-closing (/>), found: {}", operator_2_tokens.len());
+        
+        // Verify all have the same token type and modifiers
+        for token in &operator_2_tokens {
+            assert_eq!(token.3, 10, "All length-2 operators must be OPERATOR type");
+            assert_eq!(token.2, 2, "All must have length 2");
+            assert_eq!(token.4, 0, "All should have the same modifiers (0)");
+        }
     }
 }
 
@@ -235,13 +283,72 @@ template {
 "#;
         let tokens = get_tokens_for_content(content);
         
-        // Find OPERATOR token for />
-        let slash_gt_tokens: Vec<_> = tokens.iter()
+        // Find OPERATOR tokens - should include both => and />
+        let operator_tokens: Vec<_> = tokens.iter()
+            .filter(|t| t.3 == 10) // OPERATOR
+            .collect();
+        
+        println!("OPERATOR tokens found: {}", operator_tokens.len());
+        for (i, token) in operator_tokens.iter().enumerate() {
+            println!("Token {}: Line {}, Col {}, Len {}", i, token.0, token.1, token.2);
+        }
+        
+        // Should have at least 2: one for =>, one for />
+        assert!(operator_tokens.len() >= 2, "Multi-line self-closing /> should be highlighted as OPERATOR, found {} operators", operator_tokens.len());
+        
+        // Check that there is a token with length 2 for />
+        let slash_gt_tokens: Vec<_> = operator_tokens.iter()
+            .filter(|t| t.2 == 2) // length 2
+            .collect();
+        assert_eq!(slash_gt_tokens.len(), 2, "Should have 2 OPERATOR tokens with length 2: one for =>, one for />");
+    }
+    
+    #[test]
+    fn test_single_line_self_closing_highlighted() {
+        let content = r#"
+template {
+    <Button label="Click" />
+}
+"#;
+        let tokens = get_tokens_for_content(content);
+        
+        // Find OPERATOR tokens - should include />
+        let operator_tokens: Vec<_> = tokens.iter()
             .filter(|t| t.3 == 10 && t.2 == 2) // OPERATOR with length 2
             .collect();
         
-        // Should have at least 2: one for =>, one for />
-        assert!(slash_gt_tokens.len() >= 2, "Multi-line self-closing /> should be highlighted");
+        assert_eq!(operator_tokens.len(), 1, "Single-line self-closing /> should be highlighted as OPERATOR");
+    }
+    
+    #[test]
+    fn test_closing_tag_gt_symbol_consistent() {
+        let content = r#"
+template {
+    <Container id="main">
+        <Text content="Hello" />
+        <Button label="Click" />
+    </Container>
+}
+"#;
+        let tokens = get_tokens_for_content(content);
+        
+        // Find all OPERATOR tokens
+        let operator_tokens: Vec<_> = tokens.iter()
+            .filter(|t| t.3 == 10)
+            .collect();
+        
+        println!("All OPERATOR tokens: {}", operator_tokens.len());
+        for (i, token) in operator_tokens.iter().enumerate() {
+            println!("Token {}: Line {}, Col {}, Len {}, Modifiers {}", i, token.0, token.1, token.2, token.4);
+        }
+        
+        // Should have OPERATOR tokens for the tag terminators
+        // Opening tag > for Container: 1
+        // Self-closing /> for Text: 1
+        // Self-closing /> for Button: 1
+        // Closing tag </Container>: already covered by CLASS token
+        // Total: at least 3 OPERATOR tokens for tag terminators
+        assert!(operator_tokens.len() >= 3, "All tag terminators (> and />) should be OPERATOR tokens, found {}", operator_tokens.len());
     }
 }
 

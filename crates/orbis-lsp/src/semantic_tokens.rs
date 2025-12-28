@@ -589,6 +589,9 @@ fn visit_template_content(content: &TemplateContent, builder: &mut SemanticToken
                 let search_limit = (start_col as usize).min(line_text.len());
                 let search_slice = if search_limit == 0 { line_text.as_str() } else { &line_text[..=search_limit] };
                 if let Some(bracket_pos) = search_slice.rfind('<') {
+                    // Emit token for opening < bracket
+                    builder.push(line, bracket_pos as u32, 1, token_types::OPERATOR, 0);
+                    
                     let after_bracket = &line_text[bracket_pos + 1..];
                     let name_offset = after_bracket.chars().take_while(|c| c.is_whitespace()).count();
                     let name_col = bracket_pos + 1 + name_offset;
@@ -636,11 +639,13 @@ fn visit_template_content(content: &TemplateContent, builder: &mut SemanticToken
             }
 
             // Highlight closing syntax
-            if comp.self_closing {
+            // Attempt to highlight self-closing "/>" even if parser didn't mark self_closing (best-effort)
+            let mut self_close_emitted = false;
+            if comp.self_closing || comp.children.is_empty() {
                 // Find /> in source - may span multiple lines
                 let end_line = (comp.span.end_line.saturating_sub(1)) as u32;
                 let start_line = (comp.span.start_line.saturating_sub(1)) as u32;
-                
+
                 // Search backwards from end_line to start_line
                 for search_line in (start_line..=end_line).rev() {
                     if let Some(line_text) = document.get_line(search_line as usize) {
@@ -652,15 +657,56 @@ fn visit_template_content(content: &TemplateContent, builder: &mut SemanticToken
                         if let Some(slash_pos) = line_text[..search_end].rfind("/>") {
                             // Emit token for />
                             builder.push(search_line, slash_pos as u32, 2, token_types::OPERATOR, 0);
+                            self_close_emitted = true;
                             break;
                         }
                     }
                 }
-            } else if !comp.children.is_empty() {
-                // Has closing tag </Component>
+            }
+
+            if !self_close_emitted {
+                // Has closing tag </Component> or opening tag with >
+                // First, find and highlight the opening tag's > terminator
+                let start_line = (comp.span.start_line.saturating_sub(1)) as u32;
+                
+                // Search for the > that closes the opening tag (before children or closing tag)
+                let mut found_opening_gt = false;
+                for search_line in start_line.. {
+                    if let Some(line_text) = document.get_line(search_line as usize) {
+                        // Look for > that's not part of => or />
+                        let mut search_pos = if search_line == start_line {
+                            (start_col as usize).min(line_text.len())
+                        } else {
+                            0
+                        };
+                        
+                        while search_pos < line_text.len() {
+                            if let Some(gt_pos) = line_text[search_pos..].find('>') {
+                                let actual_pos = search_pos + gt_pos;
+                                // Check if it's not part of => or />
+                                let is_arrow = actual_pos > 0 && line_text.as_bytes().get(actual_pos - 1) == Some(&b'=');
+                                let is_self_close = actual_pos > 0 && line_text.as_bytes().get(actual_pos - 1) == Some(&b'/');
+                                
+                                if !is_arrow && !is_self_close {
+                                    // Found opening tag terminator >
+                                    builder.push(search_line, actual_pos as u32, 1, token_types::OPERATOR, 0);
+                                    found_opening_gt = true;
+                                    break;
+                                }
+                                search_pos = actual_pos + 1;
+                            } else {
+                                break;
+                            }
+                        }
+                        
+                        if found_opening_gt {
+                            break;
+                        }
+                    }
+                }
+                
                 // comp.name is lowercase, but source may have Capital - search case-insensitively
                 let end_line = (comp.span.end_line.saturating_sub(1)) as u32;
-                let start_line = (comp.span.start_line.saturating_sub(1)) as u32;
                 
                 // Search backwards from end_line to start_line for </
                 for search_line in (start_line..=end_line).rev() {
@@ -669,11 +715,21 @@ fn visit_template_content(content: &TemplateContent, builder: &mut SemanticToken
                         let line_lower = line_text.to_lowercase();
                         let pattern = format!("</{}", comp.name); // comp.name is already lowercase
                         if let Some(close_pos) = line_lower.find(&pattern) {
+                            // Emit token for </ bracket
+                            builder.push(search_line, close_pos as u32, 2, token_types::OPERATOR, 0);
+                            
                             // Found closing tag - highlight component name (use actual case from source)
                             // Extract the actual component name from source (after </)
                             let name_start = close_pos + 2;
                             let name_len = comp.name.len();
                             builder.push(search_line, name_start as u32, name_len as u32, token_types::CLASS, 0);
+                            
+                            // Emit token for closing > bracket
+                            let closing_gt_pos = name_start + name_len;
+                            // Search for > after the component name
+                            if let Some(gt_offset) = line_text[closing_gt_pos..].find('>') {
+                                builder.push(search_line, (closing_gt_pos + gt_offset) as u32, 1, token_types::OPERATOR, 0);
+                            }
                             break;
                         }
                     }
@@ -695,6 +751,9 @@ fn visit_template_content(content: &TemplateContent, builder: &mut SemanticToken
                 let search_limit = (start_col as usize).min(line_text.len());
                 let search_slice = if search_limit == 0 { line_text.as_str() } else { &line_text[..=search_limit] };
                 if let Some(bracket_pos) = search_slice.rfind('<') {
+                    // Emit token for opening < bracket
+                    builder.push(line, bracket_pos as u32, 1, token_types::OPERATOR, 0);
+                    
                     let after_bracket = &line_text[bracket_pos + 1..];
                     let name_offset = after_bracket.chars().take_while(|c| c.is_whitespace()).count();
                     let name_col = bracket_pos + 1 + name_offset;
@@ -719,6 +778,7 @@ fn visit_template_content(content: &TemplateContent, builder: &mut SemanticToken
                 let event_col = (event.span.start_col.saturating_sub(1)) as u32;
                 builder.push(event_line, event_col, event.event.len() as u32 + 1, token_types::EVENT, 0);
 
+                // Highlight => arrow for event handlers
                 if let Some(line_text) = document.get_line(event_line as usize) {
                     let start = (event_col as usize).min(line_text.len());
                     if let Some(arrow_pos) = line_text[start..].find("=>") {
@@ -746,14 +806,63 @@ fn visit_template_content(content: &TemplateContent, builder: &mut SemanticToken
                     }
                 }
             } else {
-                let end_line = (frag.span.end_line.saturating_sub(1)) as u32;
+                // Has closing tag or opening tag with >
+                // First, find and highlight the opening tag's > terminator
                 let start_line = (frag.span.start_line.saturating_sub(1)) as u32;
+                
+                // Search for the > that closes the opening tag
+                let mut found_opening_gt = false;
+                for search_line in start_line.. {
+                    if let Some(line_text) = document.get_line(search_line as usize) {
+                        let mut search_pos = if search_line == start_line {
+                            (start_col as usize).min(line_text.len())
+                        } else {
+                            0
+                        };
+                        
+                        while search_pos < line_text.len() {
+                            if let Some(gt_pos) = line_text[search_pos..].find('>') {
+                                let actual_pos = search_pos + gt_pos;
+                                // Check if it's not part of => or />
+                                let is_arrow = actual_pos > 0 && line_text.as_bytes().get(actual_pos - 1) == Some(&b'=');
+                                let is_self_close = actual_pos > 0 && line_text.as_bytes().get(actual_pos - 1) == Some(&b'/');
+                                
+                                if !is_arrow && !is_self_close {
+                                    // Found opening tag terminator >
+                                    builder.push(search_line, actual_pos as u32, 1, token_types::OPERATOR, 0);
+                                    found_opening_gt = true;
+                                    break;
+                                }
+                                search_pos = actual_pos + 1;
+                            } else {
+                                break;
+                            }
+                        }
+                        
+                        if found_opening_gt {
+                            break;
+                        }
+                    }
+                }
+                
+                // Search for closing tag
+                let end_line = (frag.span.end_line.saturating_sub(1)) as u32;
                 for search_line in (start_line..=end_line).rev() {
                     if let Some(line_text) = document.get_line(search_line as usize) {
                         let line_lower = line_text.to_lowercase();
-                        let pattern = format!("</{}", frag.name);
+                        let pattern = format!("</{}", frag.name.to_lowercase());
                         if let Some(close_pos) = line_lower.find(&pattern) {
+                            // Emit token for </ bracket
+                            builder.push(search_line, close_pos as u32, 2, token_types::OPERATOR, 0);
+                            
+                            // Highlight fragment name
                             builder.push(search_line, (close_pos + 2) as u32, frag.name.len() as u32, token_types::CLASS, 0);
+                            
+                            // Emit token for closing > bracket
+                            let closing_gt_pos = close_pos + 2 + frag.name.len();
+                            if let Some(gt_offset) = line_text[closing_gt_pos..].find('>') {
+                                builder.push(search_line, (closing_gt_pos + gt_offset) as u32, 1, token_types::OPERATOR, 0);
+                            }
                             break;
                         }
                     }

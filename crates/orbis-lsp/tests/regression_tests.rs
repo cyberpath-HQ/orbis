@@ -232,3 +232,103 @@ fn test_all_template_comment_lengths() {
         assert!(comment.2 >= 40, "Comment should include all characters, got {}", comment.2);
     }
 }
+
+#[test]
+fn test_all_self_closing_tokens_in_example_file() {
+    let content = std::fs::read_to_string(
+        "/home/ebalo/Desktop/projects/rust/orbis-assets/examples/component-whitelisting-simple.orbis"
+    ).expect("Failed to read file");
+
+    let tokens = get_tokens_for_content(&content);
+
+    // Collect operator tokens of length 2 (used for "/>" and "=>")
+    let op_tokens: Vec<_> = tokens
+        .iter()
+        .filter(|t| t.3 == 10 && t.2 == 2)
+        .cloned()
+        .collect();
+
+    // For every "/>" occurrence in the source, ensure there is a matching OPERATOR token
+    for (line_idx, line) in content.lines().enumerate() {
+        let mut search_start = 0;
+        while let Some(pos) = line[search_start..].find("/>") {
+            let col = search_start + pos;
+            let has_token = op_tokens.iter().any(|t| t.0 as usize == line_idx && t.1 as usize == col);
+            assert!(
+                has_token,
+                "Expected operator token for '/>' at line {}, col {} but none found. Tokens: {:?}",
+                line_idx + 1,
+                col,
+                op_tokens
+            );
+            search_start = col + 2;
+        }
+    }
+}
+
+#[test]
+fn test_field_after_event_handler_highlighted_in_example() {
+    let content = std::fs::read_to_string(
+        "/home/ebalo/Desktop/projects/rust/orbis-assets/examples/component-whitelisting-simple.orbis"
+    ).expect("Failed to read file");
+
+    let tokens = get_tokens_for_content(&content);
+
+    let mut field_line: Option<(usize, usize)> = None;
+    let mut saw_submit_line = false;
+
+    for (idx, line) in content.lines().enumerate() {
+        if line.contains("@submit") {
+            saw_submit_line = true;
+        }
+        if saw_submit_line && line.contains("<Field") {
+            let col = line.find("Field").unwrap();
+            field_line = Some((idx, col));
+            break;
+        }
+    }
+
+    let (target_line, target_col) = field_line.expect("Could not find Field after submit");
+
+    let matches: Vec<_> = tokens
+        .iter()
+        .filter(|t| t.0 as usize == target_line && t.1 as usize == target_col && t.3 == 2)
+        .collect();
+
+    assert!(
+        !matches.is_empty(),
+        "Field opening tag after @submit should be highlighted as CLASS (green). Tokens: {:?}",
+        tokens
+    );
+}
+
+#[test]
+fn test_closing_example_tag_green_in_example_file() {
+    let content = std::fs::read_to_string(
+        "/home/ebalo/Desktop/projects/rust/orbis-assets/examples/component-whitelisting-simple.orbis"
+    ).expect("Failed to read file");
+
+    let tokens = get_tokens_for_content(&content);
+
+    let mut closing_line: Option<(usize, usize)> = None;
+    for (idx, line) in content.lines().enumerate() {
+        if line.contains("</Example>") {
+            let col = line.find("Example").unwrap();
+            closing_line = Some((idx, col));
+            break;
+        }
+    }
+
+    let (target_line, target_col) = closing_line.expect("Could not find </Example> in file");
+
+    let matches: Vec<_> = tokens
+        .iter()
+        .filter(|t| t.0 as usize == target_line && t.1 as usize == target_col && t.3 == 2)
+        .collect();
+
+    assert!(
+        !matches.is_empty(),
+        "Closing </Example> should be highlighted as CLASS (green). Tokens: {:?}",
+        tokens
+    );
+}
