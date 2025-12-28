@@ -27,6 +27,13 @@ hooks {
     @unmount => {
         console.log("Page unmounting")
     }
+    @watch(state.count) => {
+        console.log(state.count)
+    }
+}
+
+fragment NonExisting() {
+    <Text id=""/>
 }
 
 template {
@@ -37,13 +44,10 @@ template {
         
         // Flex layout with specific attributes
         <Flex direction="row" justify="center" align="center" gap="4">
-            
             // Heading with level attribute
             <Heading level="1" content="Whitelisting Demo" />
-            
             // Text with content
             <Text content={state.message} className="text-lg" />
-            
         </Flex>
         
         // Form with field inputs

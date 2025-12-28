@@ -382,7 +382,11 @@ impl LanguageServer for OrbisBackend {
             return Ok(None);
         };
 
-        Ok(semantic_tokens::get_semantic_tokens(&analysis))
+        let Some(document) = self.get_document(uri) else {
+            return Ok(None);
+        };
+
+        Ok(semantic_tokens::get_semantic_tokens(&analysis, &document))
     }
 
     async fn semantic_tokens_range(
@@ -396,7 +400,11 @@ impl LanguageServer for OrbisBackend {
             return Ok(None);
         };
 
-        if let Some(result) = semantic_tokens::get_semantic_tokens(&analysis) {
+        let Some(document) = self.get_document(uri) else {
+            return Ok(None);
+        };
+
+        if let Some(result) = semantic_tokens::get_semantic_tokens(&analysis, &document) {
             match result {
                 SemanticTokensResult::Tokens(tokens) => {
                     Ok(Some(SemanticTokensRangeResult::Tokens(tokens)))

@@ -9,6 +9,7 @@ use tower_lsp::lsp_types::{
 };
 
 use crate::analysis::AnalysisResult;
+use crate::document::Document;
 use orbis_dsl::ast::{
     AstFile, TopLevelElement, TemplateContent, ControlFlow, Expression,
     StateDeclaration, ActionItem, Action, Span, HookEntry,
@@ -115,17 +116,17 @@ impl Default for SemanticTokenBuilder {
 }
 
 /// Get semantic tokens for the entire document
-pub fn get_semantic_tokens(result: &AnalysisResult) -> Option<SemanticTokensResult> {
+pub fn get_semantic_tokens(result: &AnalysisResult, document: &Document) -> Option<SemanticTokensResult> {
     let ast = result.ast.as_ref()?;
     let mut builder = SemanticTokenBuilder::new();
 
-    visit_ast(ast, &mut builder);
+    visit_ast(ast, &mut builder, document);
 
     Some(builder.build())
 }
 
 /// Visit AST and emit semantic tokens
-fn visit_ast(ast: &AstFile, builder: &mut SemanticTokenBuilder) {
+fn visit_ast(ast: &AstFile, builder: &mut SemanticTokenBuilder, document: &Document) {
     // Process imports
     for import in &ast.imports {
         visit_import(import, builder);
@@ -133,7 +134,7 @@ fn visit_ast(ast: &AstFile, builder: &mut SemanticTokenBuilder) {
 
     // Process top-level elements
     for element in &ast.elements {
-        visit_element(element, builder);
+        visit_element(element, builder, document);
     }
 }
 
@@ -172,7 +173,7 @@ fn visit_import(import: &orbis_dsl::ast::ImportStatement, builder: &mut Semantic
 }
 
 /// Visit top-level element
-fn visit_element(element: &TopLevelElement, builder: &mut SemanticTokenBuilder) {
+fn visit_element(element: &TopLevelElement, builder: &mut SemanticTokenBuilder, document: &Document) {
     match element {
         TopLevelElement::Page(page) => {
             // "page" keyword
@@ -203,9 +204,14 @@ fn visit_element(element: &TopLevelElement, builder: &mut SemanticTokenBuilder) 
                         let col = (hook.span.start_col.saturating_sub(1)) as u32;
                         builder.push(line, col, decorator.len() as u32, token_types::DECORATOR, 0);
                         
-                        // Highlight the => arrow (it's after the decorator, typically with space)
-                        // Approximate position: decorator length + 1 space
-                        builder.push(line, col + decorator.len() as u32 + 1, 2, token_types::OPERATOR, 0);
+                        // Highlight the => arrow by reading from source
+                        if let Some(line_text) = document.get_line(line as usize) {
+                            let start = (col as usize).min(line_text.len());
+                            if let Some(arrow_pos) = line_text[start..].find(">>") {
+                                let arrow_col = col + arrow_pos as u32;
+                                builder.push(line, arrow_col, 2, token_types::OPERATOR, 0);
+                            }
+                        }
 
                         for action in &hook.actions {
                             visit_action_item(action, builder);
@@ -217,8 +223,14 @@ fn visit_element(element: &TopLevelElement, builder: &mut SemanticTokenBuilder) 
                         let col = (watcher.span.start_col.saturating_sub(1)) as u32;
                         builder.push(line, col, 6, token_types::DECORATOR, 0); // @watch
                         
-                        // Note: => arrow position is harder to determine for watchers because of variable argument lists
-                        // We'll skip precise arrow highlighting for watchers for now
+                        // Highlight => arrow by reading from source
+                        if let Some(line_text) = document.get_line(line as usize) {
+                            let start = (col as usize).min(line_text.len());
+                            if let Some(arrow_pos) = line_text[start..].find(">>") {
+                                let arrow_col = col + arrow_pos as u32;
+                                builder.push(line, arrow_col, 2, token_types::OPERATOR, 0);
+                            }
+                        }
 
                         for target in &watcher.targets {
                             visit_expression(target, builder);
@@ -237,7 +249,7 @@ fn visit_element(element: &TopLevelElement, builder: &mut SemanticTokenBuilder) 
             emit_token(builder, &template.span, 0, 8, token_types::KEYWORD, token_modifiers::DEFINITION);
 
             for content in &template.content {
-                visit_template_content(content, builder);
+                visit_template_content(content, builder, document);
             }
         }
 
@@ -268,7 +280,7 @@ fn visit_element(element: &TopLevelElement, builder: &mut SemanticTokenBuilder) 
             }
 
             for content in &frag.body {
-                visit_template_content(content, builder);
+                visit_template_content(content, builder, document);
             }
         }
 
@@ -338,8 +350,77 @@ fn visit_element(element: &TopLevelElement, builder: &mut SemanticTokenBuilder) 
         TopLevelElement::Comment { value, span } => {
             let line = (span.start_line.saturating_sub(1)) as u32;
             let col = (span.start_col.saturating_sub(1)) as u32;
-            let length = value.len() as u32 + 4; // include // or /* */
-            builder.push(line, col, length, token_types::COMMENT, 0);
+            
+            // Calculate actual length by checking source
+            if let Some(line_text) = document.get_line(line as usize) {
+                let text_from_col = &line_text[col as usize..];
+                
+                let length = if text_from_col.starts_with("/**") {
+                    // Docblock comment - find the closing */
+                    if let Some(close_pos) = text_from_col.find("*/") {
+                        (close_pos + 2) as u32
+                    } else {
+                        // Multi-line docblock, use span
+                        let end_line = (span.end_line.saturating_sub(1)) as u32;
+                        if end_line == line {
+                            // Single line, use value length + delimiters
+                            value.len() as u32 + 6 // /** */
+                        } else {
+                            // Multi-line, calculate from span
+                            text_from_col.len() as u32
+                        }
+                    }
+                } else if text_from_col.starts_with("/*") {
+                    // Block comment - find the closing */
+                    if let Some(close_pos) = text_from_col.find("*/") {
+                        (close_pos + 2) as u32
+                    } else {
+                        // Multi-line block, use span
+                        let end_line = (span.end_line.saturating_sub(1)) as u32;
+                        if end_line == line {
+                            value.len() as u32 + 4 // /* */
+                        } else {
+                            text_from_col.len() as u32
+                        }
+                    }
+                } else if text_from_col.starts_with("//") {
+                    // Line comment - goes to end of line
+                    text_from_col.trim_end().len() as u32
+                } else {
+                    // Fallback
+                    value.len() as u32 + 4
+                };
+                
+                builder.push(line, col, length, token_types::COMMENT, 0);
+                
+                // For multi-line comments, emit tokens for continuation lines
+                let end_line = (span.end_line.saturating_sub(1)) as u32;
+                if end_line > line {
+                    for l in (line + 1)..=end_line {
+                        if let Some(cont_line) = document.get_line(l as usize) {
+                            let trimmed = cont_line.trim_start();
+                            let indent = cont_line.len() - trimmed.len();
+                            let cont_length = if l == end_line {
+                                // Last line - find */ if present
+                                if let Some(close_pos) = trimmed.find("*/") {
+                                    close_pos + 2
+                                } else {
+                                    trimmed.len()
+                                }
+                            } else {
+                                trimmed.len()
+                            };
+                            if cont_length > 0 {
+                                builder.push(l, indent as u32, cont_length as u32, token_types::COMMENT, 0);
+                            }
+                        }
+                    }
+                }
+            } else {
+                // Fallback
+                let length = value.len() as u32 + 4;
+                builder.push(line, col, length, token_types::COMMENT, 0);
+            }
         }
     }
 }
@@ -427,12 +508,31 @@ fn visit_state_declaration(decl: &StateDeclaration, builder: &mut SemanticTokenB
 }
 
 /// Visit template content
-fn visit_template_content(content: &TemplateContent, builder: &mut SemanticTokenBuilder) {
+fn visit_template_content(content: &TemplateContent, builder: &mut SemanticTokenBuilder, document: &Document) {
     match content {
         TemplateContent::Component(comp) => {
-            // Component name
+            // Component name - find actual position from source
             let line = (comp.span.start_line.saturating_sub(1)) as u32;
-            builder.push(line, 1, comp.name.len() as u32, token_types::CLASS, 0); // +1 for <
+            let start_col = (comp.span.start_col.saturating_sub(1)) as u32;
+            
+            // Read the line and find where the component name actually starts
+            if let Some(line_text) = document.get_line(line as usize) {
+                // Find the < character, then skip any whitespace to get to the name
+                let search_end = (start_col as usize + 10).min(line_text.len());
+                if let Some(bracket_pos) = line_text[..search_end].rfind('<') {
+                    let after_bracket = &line_text[bracket_pos + 1..];
+                    // Skip whitespace after <
+                    let name_offset = after_bracket.chars().take_while(|c| c.is_whitespace()).count();
+                    let name_col = bracket_pos + 1 + name_offset;
+                    builder.push(line, name_col as u32, comp.name.len() as u32, token_types::CLASS, 0);
+                } else {
+                    // Fallback to span position
+                    builder.push(line, start_col, comp.name.len() as u32, token_types::CLASS, 0);
+                }
+            } else {
+                // Fallback
+                builder.push(line, start_col, comp.name.len() as u32, token_types::CLASS, 0);
+            }
 
             // Attributes
             for attr in &comp.attributes {
@@ -458,9 +558,35 @@ fn visit_template_content(content: &TemplateContent, builder: &mut SemanticToken
                 builder.push(event_line, event_col, event.event.len() as u32 + 1, token_types::EVENT, 0);
             }
 
+            // Highlight closing syntax
+            if comp.self_closing {
+                // Find /> in source - scan from end of span backwards
+                let end_line = (comp.span.end_line.saturating_sub(1)) as u32;
+                if let Some(line_text) = document.get_line(end_line as usize) {
+                    let search_end = (comp.span.end_col as usize).min(line_text.len());
+                    if let Some(slash_pos) = line_text[..search_end].rfind("/>") {
+                        // Emit token for />
+                        builder.push(end_line, slash_pos as u32, 2, token_types::OPERATOR, 0);
+                    }
+                }
+            } else if !comp.children.is_empty() {
+                // Has closing tag </Component>
+                // Find the closing tag in source after children
+                let end_line = (comp.span.end_line.saturating_sub(1)) as u32;
+                if let Some(line_text) = document.get_line(end_line as usize) {
+                    // Look for </ComponentName>
+                    let closing_pattern = format!("</{}", comp.name);
+                    let search_end = (comp.span.end_col as usize).min(line_text.len());
+                    if let Some(close_pos) = line_text[..search_end].rfind(&closing_pattern) {
+                        // Highlight the component name in closing tag
+                        builder.push(end_line, (close_pos + 2) as u32, comp.name.len() as u32, token_types::CLASS, 0);
+                    }
+                }
+            }
+
             // Children
             for child in &comp.children {
-                visit_template_content(child, builder);
+                visit_template_content(child, builder, document);
             }
         }
 
@@ -476,7 +602,7 @@ fn visit_template_content(content: &TemplateContent, builder: &mut SemanticToken
         }
 
         TemplateContent::ControlFlow(cf) => {
-            visit_control_flow(cf, builder);
+            visit_control_flow(cf, builder, document);
         }
 
         TemplateContent::SlotDefinition(slot) => {
@@ -497,13 +623,31 @@ fn visit_template_content(content: &TemplateContent, builder: &mut SemanticToken
         TemplateContent::Comment { value, span } => {
             let line = (span.start_line.saturating_sub(1)) as u32;
             let col = (span.start_col.saturating_sub(1)) as u32;
-            builder.push(line, col, value.len() as u32 + 4, token_types::COMMENT, 0);
+            // Calculate actual comment length including delimiters
+            let length = if value.starts_with("//") || value.starts_with("/*") {
+                value.len() as u32
+            } else {
+                // Add delimiters if not included
+                if value.contains('\n') || line_text_contains_block_comment(document, line, col) {
+                    value.len() as u32 + 4 // /* */
+                } else {
+                    value.len() as u32 + 2 // //
+                }
+            };
+            builder.push(line, col, length, token_types::COMMENT, 0);
         }
     }
 }
 
+// Helper to check if a position has a block comment
+fn line_text_contains_block_comment(document: &Document, line: u32, col: u32) -> bool {
+    document.get_line(line as usize)
+        .map(|text| text[col as usize..].starts_with("/*"))
+        .unwrap_or(false)
+}
+
 /// Visit control flow
-fn visit_control_flow(cf: &ControlFlow, builder: &mut SemanticTokenBuilder) {
+fn visit_control_flow(cf: &ControlFlow, builder: &mut SemanticTokenBuilder, document: &Document) {
     match cf {
         ControlFlow::If(if_block) => {
             let line = (if_block.span.start_line.saturating_sub(1)) as u32;
@@ -512,7 +656,7 @@ fn visit_control_flow(cf: &ControlFlow, builder: &mut SemanticTokenBuilder) {
             visit_expression(&if_block.condition, builder);
 
             for content in &if_block.then_branch {
-                visit_template_content(content, builder);
+                visit_template_content(content, builder, document);
             }
 
             for else_if in &if_block.else_if_branches {
@@ -520,14 +664,14 @@ fn visit_control_flow(cf: &ControlFlow, builder: &mut SemanticTokenBuilder) {
                 builder.push(else_if_line, 0, 7, token_types::KEYWORD, 0); // "else if"
                 visit_expression(&else_if.condition, builder);
                 for content in &else_if.body {
-                    visit_template_content(content, builder);
+                    visit_template_content(content, builder, document);
                 }
             }
 
             if let Some(else_branch) = &if_block.else_branch {
                 builder.push(line, 0, 4, token_types::KEYWORD, 0); // "else"
                 for content in else_branch {
-                    visit_template_content(content, builder);
+                    visit_template_content(content, builder, document);
                 }
             }
         }
@@ -562,7 +706,7 @@ fn visit_control_flow(cf: &ControlFlow, builder: &mut SemanticTokenBuilder) {
             visit_expression(&for_block.iterable, builder);
 
             for content in &for_block.body {
-                visit_template_content(content, builder);
+                visit_template_content(content, builder, document);
             }
         }
 
@@ -601,7 +745,7 @@ fn visit_control_flow(cf: &ControlFlow, builder: &mut SemanticTokenBuilder) {
                 }
 
                 for content in &arm.body {
-                    visit_template_content(content, builder);
+                    visit_template_content(content, builder, document);
                 }
             }
         }
