@@ -635,15 +635,44 @@ impl AstBuilder {
     fn build_state_block(&self, pair: Pair<'_, Rule>) -> BuildResult<StateBlock> {
         let span = span_from_pair(&pair);
         let mut declarations = Vec::new();
+        let mut pending_comment: Option<String> = None;
 
         for inner in pair.into_inner() {
             match inner.as_rule() {
                 Rule::state_declaration => {
-                    declarations.push(self.build_state_declaration(inner)?);
+                    let mut decl = self.build_state_declaration(inner)?;
+                    // Attach pending comment to this declaration
+                    if let Some(comment) = pending_comment.take() {
+                        match &mut decl {
+                            StateDeclaration::Regular(s) => {
+                                s.doc_comment = Some(comment);
+                            }
+                            StateDeclaration::Computed(s) => {
+                                s.doc_comment = Some(comment);
+                            }
+                            StateDeclaration::Validated(s) => {
+                                s.doc_comment = Some(comment);
+                            }
+                        }
+                    }
+                    declarations.push(decl);
                 }
-                Rule::line_comment | Rule::block_comment => {
-                    // Comments in state blocks are ignored for now
-                    // Could be added to StateBlock if we want to preserve them
+                Rule::line_comment => {
+                    // Extract comment text (remove // prefix)
+                    let text = inner.as_str().trim_start_matches("//").trim();
+                    pending_comment = Some(text.to_string());
+                }
+                Rule::block_comment => {
+                    // Extract comment text (remove /* */ delimiters)
+                    let text = inner.as_str()
+                        .trim_start_matches("/*")
+                        .trim_end_matches("*/")
+                        .trim();
+                    // Check if it's a doc comment (starts with *)
+                    if text.starts_with('*') {
+                        let doc_text = text.trim_start_matches('*').trim();
+                        pending_comment = Some(doc_text.to_string());
+                    }
                 }
                 _ => {}
             }
@@ -706,6 +735,7 @@ impl AstBuilder {
                 value: super::expr::LiteralValue::Null,
                 span: span.clone(),
             })),
+            doc_comment: None,
             span,
         })
     }
@@ -756,6 +786,7 @@ impl AstBuilder {
             type_annotation,
             value,
             validators,
+            doc_comment: None,
             span,
         })
     }
@@ -802,6 +833,7 @@ impl AstBuilder {
             optional,
             type_annotation,
             value,
+            doc_comment: None,
             span,
         })
     }

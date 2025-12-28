@@ -77,6 +77,10 @@ pub struct RegularState {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub value: Option<Expression>,
 
+    /// Documentation comment from preceding /** */ or // comment
+    #[serde(skip_serializing_if = "Option::is_none", skip_deserializing)]
+    pub doc_comment: Option<String>,
+
     pub span: Span,
 }
 
@@ -96,6 +100,10 @@ pub struct ComputedState {
 
     /// Computed expression
     pub expression: Expression,
+
+    /// Documentation comment from preceding /** */ or // comment
+    #[serde(skip_serializing_if = "Option::is_none", skip_deserializing)]
+    pub doc_comment: Option<String>,
 
     pub span: Span,
 }
@@ -120,6 +128,10 @@ pub struct ValidatedState {
 
     /// Validation chain (flattened as attributes)
     pub validators: Vec<Validator>,
+
+    /// Documentation comment from preceding /** */ or // comment
+    #[serde(skip_serializing_if = "Option::is_none", skip_deserializing)]
+    pub doc_comment: Option<String>,
 
     pub span: Span,
 }
