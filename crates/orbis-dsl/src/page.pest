@@ -1968,7 +1968,7 @@ css_value_part = @{
 
 // Interpolation in CSS: {state.theme.color}
 css_interpolation = {
-    "{" ~ (member_access | identifier) ~ "}"
+    "{" ~ expression ~ "}"
 }
 
 // ============================================================================

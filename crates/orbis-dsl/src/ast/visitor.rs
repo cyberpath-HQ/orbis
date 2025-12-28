@@ -409,6 +409,7 @@ pub fn walk_template_content<V: Visitor>(visitor: &mut V, content: &TemplateCont
         TemplateContent::ControlFlow(f) => visitor.visit_control_flow(f),
         TemplateContent::FragmentUsage(u) => visitor.visit_fragment_usage(u),
         TemplateContent::SlotDefinition(s) => visitor.visit_slot_definition(s),
+        TemplateContent::Expression { expr, .. } => visitor.visit_expression(expr),
         TemplateContent::Text { .. } | TemplateContent::Comment { .. } => {}
     }
 }

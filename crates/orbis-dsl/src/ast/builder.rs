@@ -469,8 +469,46 @@ impl AstBuilder {
                 Ok(Some(TopLevelElement::Interface(iface)))
             }
             Rule::const_declaration => {
-                // For now, skip const declarations or handle as needed
-                Ok(None)
+                // Parse: const identifier (: type_annotation)? = state_value
+                let span = span_from_pair(&inner);
+                let mut name: Option<String> = None;
+                let mut type_annotation = None;
+                let mut value_expr = None;
+                
+                for part in inner.into_inner() {
+                    match part.as_rule() {
+                        Rule::identifier => {
+                            name = Some(part.as_str().to_string());
+                        }
+                        Rule::type_annotation => {
+                            type_annotation = Some(self.build_type_annotation(part)?);
+                        }
+                        Rule::state_value => {
+                            value_expr = Some(self.build_state_value(part)?);
+                        }
+                        _ => {}
+                    }
+                }
+                
+                if let (Some(name), Some(value)) = (name, value_expr) {
+                    let item = super::node::ExportableItem::Const {
+                        name,
+                        type_annotation,
+                        value,
+                        span: span.clone(),
+                    };
+                    
+                    let export_stmt = super::node::ExportStatement {
+                        is_default,
+                        is_pub: exported,
+                        item,
+                        span,
+                    };
+                    
+                    Ok(Some(TopLevelElement::Export(export_stmt)))
+                } else {
+                    Ok(None)
+                }
             }
             _ => Ok(None),
         }
@@ -1622,35 +1660,57 @@ impl AstBuilder {
 
     fn build_state_assignment_action(&self, pair: Pair<'_, Rule>) -> BuildResult<Action> {
         let span = span_from_pair(&pair);
-        let text = pair.as_str();
+        
+        // The pair might be an `action` rule containing a `state_assignment` rule
+        // or it might be the `state_assignment` rule itself
+        let assignment_pair = if pair.as_rule() == Rule::state_assignment {
+            pair
+        } else {
+            // Look for state_assignment in inner rules
+            pair.into_inner()
+                .find(|p| p.as_rule() == Rule::state_assignment)
+                .ok_or_else(|| {
+                    BuildError::invalid_value("Expected state_assignment rule", span.clone())
+                })?
+        };
+        
+        let mut target: Option<MemberAccess> = None;
+        let mut value: Option<Expression> = None;
 
-        // Split on '=' but not '==' or '=>'
-        let parts: Vec<&str> = text.splitn(2, '=').collect();
-        if parts.len() != 2 {
-            return Ok(Action::Custom(CustomAction {
-                name: text.to_string(),
-                params: vec![],
-                span,
-            }));
+        for inner in assignment_pair.into_inner() {
+            match inner.as_rule() {
+                Rule::state_path => {
+                    // state_path is: ^"state" ~ ("." ~ identifier)+
+                    // Extract it as member_access with root="state"
+                    let inner_span = span_from_pair(&inner);
+                    let mut path = Vec::new();
+                    
+                    for p in inner.into_inner() {
+                        if p.as_rule() == Rule::identifier {
+                            path.push(p.as_str().to_string());
+                        }
+                    }
+                    
+                    target = Some(MemberAccess {
+                        root: "state".to_string(),
+                        path,
+                        span: inner_span,
+                    });
+                }
+                Rule::expression => {
+                    value = Some(self.build_expression(inner)?);
+                }
+                _ => {}
+            }
         }
 
-        let target_str = parts[0].trim();
-        let value_str = parts[1].trim().trim_start_matches('>').trim();
-
-        // Build target as member access
-        let target_parts: Vec<&str> = target_str.split('.').collect();
-        let target = MemberAccess {
-            root: target_parts[0].to_string(),
-            path: if target_parts.len() > 1 {
-                target_parts[1..].iter().map(|s| s.to_string()).collect()
-            } else {
-                vec![]
-            },
-            span: span.clone(),
-        };
-
-        // Parse value expression - simple parsing for now
-        let value = self.parse_simple_value(value_str, span.clone());
+        let target = target.ok_or_else(|| {
+            BuildError::missing_required("state_path in state_assignment", span.clone())
+        })?;
+        
+        let value = value.ok_or_else(|| {
+            BuildError::missing_required("expression in state_assignment", span.clone())
+        })?;
 
         Ok(Action::StateAssignment(StateAssignment {
             target,
@@ -1934,7 +1994,30 @@ impl AstBuilder {
         for inner in pair.into_inner() {
             match inner.as_rule() {
                 Rule::component => {
-                    content.push(TemplateContent::Component(self.build_component(inner)?));
+                    let comp = self.build_component(inner)?;
+                    // Convert Slot components to SlotDefinition
+                    if comp.name == "Slot" {
+                        let name = comp.attributes.iter()
+                            .find(|a| a.name == "name")
+                            .and_then(|a| {
+                                if let crate::ast::component::AttributeValue::String { value } = &a.value {
+                                    Some(value.clone())
+                                } else {
+                                    None
+                                }
+                            });
+                        
+                        // If no name provided, set it to "default"
+                        let name = Some(name.unwrap_or_else(|| "default".to_string()));
+                        
+                        content.push(TemplateContent::SlotDefinition(SlotDefinition {
+                            name,
+                            fallback: comp.children.clone(),
+                            span: comp.span,
+                        }));
+                    } else {
+                        content.push(TemplateContent::Component(comp));
+                    }
                 }
                 Rule::control_flow => {
                     content.push(TemplateContent::ControlFlow(self.build_control_flow(inner)?));
@@ -1951,11 +2034,48 @@ impl AstBuilder {
                     });
                 }
                 Rule::text_content => {
+                    // text_content can be plain_component_text or interpolated_text
+                    if let Some(text_inner) = inner.clone().into_inner().next() {
+                        match text_inner.as_rule() {
+                            Rule::interpolated_text => {
+                                // It's an expression inside {}, extract it
+                                if let Some(expr_pair) = text_inner.into_inner().next() {
+                                    if expr_pair.as_rule() == Rule::expression {
+                                        let expr = self.build_expression(expr_pair)?;
+                                        content.push(TemplateContent::Expression {
+                                            expr: Box::new(expr),
+                                            span: span_from_pair(&inner),
+                                        });
+                                        continue;
+                                    }
+                                }
+                            }
+                            Rule::plain_component_text => {
+                                let text_span = span_from_pair(&inner);
+                                let value = inner.as_str().to_string();
+                                content.push(TemplateContent::Text {
+                                    value,
+                                    span: text_span,
+                                });
+                                continue;
+                            }
+                            _ => {}
+                        }
+                    }
+                    // Fallback: treat as plain text
                     let text_span = span_from_pair(&inner);
                     let value = inner.as_str().to_string();
                     content.push(TemplateContent::Text {
                         value,
                         span: text_span,
+                    });
+                }
+                Rule::line_comment => {
+                    let comment_span = span_from_pair(&inner);
+                    let value = inner.as_str().trim_start_matches("//").trim().to_string();
+                    content.push(TemplateContent::Comment {
+                        value,
+                        span: comment_span,
                     });
                 }
                 _ => {}
@@ -2017,6 +2137,9 @@ impl AstBuilder {
                 }
             }
         }
+        
+        // Deduplicate attributes (keep last occurrence)
+        attributes = self.dedupe_attributes(attributes);
 
         Ok(Component {
             name,
@@ -2070,6 +2193,9 @@ impl AstBuilder {
         // Parse attributes and events from inner pairs
         // Use a helper function to recurse into nested rules
         self.collect_component_parts(pair, &mut name, &mut attributes, &mut events);
+        
+        // Deduplicate attributes (keep last occurrence)
+        attributes = self.dedupe_attributes(attributes);
 
         Ok(Component {
             name,
@@ -2080,6 +2206,22 @@ impl AstBuilder {
             slot: None,
             span,
         })
+    }
+
+    /// Deduplicate attributes, keeping the last occurrence of each attribute name
+    fn dedupe_attributes(&self, attributes: Vec<Attribute>) -> Vec<Attribute> {
+        use std::collections::HashMap;
+        
+        // Use HashMap to track last occurrence by attribute name
+        let mut attr_map: HashMap<String, Attribute> = HashMap::new();
+        
+        for attr in attributes {
+            // Store/overwrite with the last occurrence
+            attr_map.insert(attr.name.clone(), attr);
+        }
+        
+        // Convert back to Vec (order may differ but that's acceptable)
+        attr_map.into_values().collect()
     }
 
     /// Recursively collect component name, attributes, and events from a pair tree
@@ -2161,6 +2303,9 @@ impl AstBuilder {
                 _ => {}
             }
         }
+        
+        // Deduplicate attributes (keep last occurrence)
+        attributes = self.dedupe_attributes(attributes);
 
         Ok(Component {
             name,
@@ -2316,7 +2461,30 @@ impl AstBuilder {
         for inner in pair.into_inner() {
             match inner.as_rule() {
                 Rule::component => {
-                    children.push(TemplateContent::Component(self.build_component(inner)?));
+                    let comp = self.build_component(inner)?;
+                    // Convert Slot components to SlotDefinition
+                    if comp.name == "Slot" {
+                        let name = comp.attributes.iter()
+                            .find(|a| a.name == "name")
+                            .and_then(|a| {
+                                if let crate::ast::component::AttributeValue::String { value } = &a.value {
+                                    Some(value.clone())
+                                } else {
+                                    None
+                                }
+                            });
+                        
+                        // If no name provided, set it to "default"
+                        let name = Some(name.unwrap_or_else(|| "default".to_string()));
+                        
+                        children.push(TemplateContent::SlotDefinition(SlotDefinition {
+                            name,
+                            fallback: comp.children.clone(),
+                            span: comp.span,
+                        }));
+                    } else {
+                        children.push(TemplateContent::Component(comp));
+                    }
                 }
                 Rule::control_flow => {
                     children.push(TemplateContent::ControlFlow(self.build_control_flow(inner)?));
@@ -2326,6 +2494,37 @@ impl AstBuilder {
                         .push(TemplateContent::FragmentUsage(self.build_fragment_usage(inner)?));
                 }
                 Rule::text_content => {
+                    // text_content can be plain_component_text or interpolated_text
+                    if let Some(text_inner) = inner.clone().into_inner().next() {
+                        match text_inner.as_rule() {
+                            Rule::interpolated_text => {
+                                // It's an expression inside {}, extract it
+                                if let Some(expr_pair) = text_inner.into_inner().next() {
+                                    if expr_pair.as_rule() == Rule::expression {
+                                        // Convert to TemplateContent::Expression
+                                        let expr = self.build_expression(expr_pair)?;
+                                        children.push(TemplateContent::Expression {
+                                            expr: Box::new(expr),
+                                            span: span_from_pair(&inner),
+                                        });
+                                        continue;
+                                    }
+                                }
+                            }
+                            Rule::plain_component_text => {
+                                // Plain text, use as is
+                                let text_span = span_from_pair(&inner);
+                                let value = inner.as_str().to_string();
+                                children.push(TemplateContent::Text {
+                                    value,
+                                    span: text_span,
+                                });
+                                continue;
+                            }
+                            _ => {}
+                        }
+                    }
+                    // Fallback: treat as plain text
                     let text_span = span_from_pair(&inner);
                     let value = inner.as_str().to_string();
                     children.push(TemplateContent::Text {
@@ -2756,15 +2955,19 @@ impl AstBuilder {
             span: span.clone(),
         };
         let mut index = None;
+        let mut found_item = false;
 
         for inner in pair.into_inner() {
             if inner.as_rule() == Rule::identifier {
-                if item.name == "item" {
+                if !found_item {
+                    // First identifier is the item
                     item = Identifier {
                         name: inner.as_str().to_string(),
                         span: span_from_pair(&inner),
                     };
+                    found_item = true;
                 } else {
+                    // Second identifier is the index
                     index = Some(Identifier {
                         name: inner.as_str().to_string(),
                         span: span_from_pair(&inner),
@@ -2918,7 +3121,30 @@ impl AstBuilder {
         for inner in pair.into_inner() {
             match inner.as_rule() {
                 Rule::component => {
-                    content.push(TemplateContent::Component(self.build_component(inner)?));
+                    let comp = self.build_component(inner)?;
+                    // Convert Slot components to SlotDefinition
+                    if comp.name == "Slot" {
+                        let name = comp.attributes.iter()
+                            .find(|a| a.name == "name")
+                            .and_then(|a| {
+                                if let crate::ast::component::AttributeValue::String { value } = &a.value {
+                                    Some(value.clone())
+                                } else {
+                                    None
+                                }
+                            });
+                        
+                        // If no name provided, set it to "default"
+                        let name = Some(name.unwrap_or_else(|| "default".to_string()));
+                        
+                        content.push(TemplateContent::SlotDefinition(SlotDefinition {
+                            name,
+                            fallback: comp.children.clone(),
+                            span: comp.span,
+                        }));
+                    } else {
+                        content.push(TemplateContent::Component(comp));
+                    }
                 }
                 Rule::control_flow => {
                     content.push(TemplateContent::ControlFlow(self.build_control_flow(inner)?));
@@ -2927,6 +3153,35 @@ impl AstBuilder {
                     content.push(TemplateContent::FragmentUsage(self.build_fragment_usage(inner)?));
                 }
                 Rule::text_content => {
+                    // text_content can be plain_component_text or interpolated_text
+                    if let Some(text_inner) = inner.clone().into_inner().next() {
+                        match text_inner.as_rule() {
+                            Rule::interpolated_text => {
+                                // It's an expression inside {}, extract it
+                                if let Some(expr_pair) = text_inner.into_inner().next() {
+                                    if expr_pair.as_rule() == Rule::expression {
+                                        let expr = self.build_expression(expr_pair)?;
+                                        content.push(TemplateContent::Expression {
+                                            expr: Box::new(expr),
+                                            span: span_from_pair(&inner),
+                                        });
+                                        continue;
+                                    }
+                                }
+                            }
+                            Rule::plain_component_text => {
+                                let text_span = span_from_pair(&inner);
+                                let value = inner.as_str().to_string();
+                                content.push(TemplateContent::Text {
+                                    value,
+                                    span: text_span,
+                                });
+                                continue;
+                            }
+                            _ => {}
+                        }
+                    }
+                    // Fallback: treat as plain text
                     let text_span = span_from_pair(&inner);
                     let value = inner.as_str().to_string();
                     content.push(TemplateContent::Text {
@@ -3067,7 +3322,30 @@ impl AstBuilder {
         for inner in pair.into_inner() {
             match inner.as_rule() {
                 Rule::component => {
-                    content.push(TemplateContent::Component(self.build_component(inner)?));
+                    let comp = self.build_component(inner)?;
+                    // Convert Slot components to SlotDefinition
+                    if comp.name == "Slot" {
+                        let name = comp.attributes.iter()
+                            .find(|a| a.name == "name")
+                            .and_then(|a| {
+                                if let crate::ast::component::AttributeValue::String { value } = &a.value {
+                                    Some(value.clone())
+                                } else {
+                                    None
+                                }
+                            });
+                        
+                        // If no name provided, set it to "default"
+                        let name = Some(name.unwrap_or_else(|| "default".to_string()));
+                        
+                        content.push(TemplateContent::SlotDefinition(SlotDefinition {
+                            name,
+                            fallback: comp.children.clone(),
+                            span: comp.span,
+                        }));
+                    } else {
+                        content.push(TemplateContent::Component(comp));
+                    }
                 }
                 Rule::control_flow => {
                     content.push(TemplateContent::ControlFlow(self.build_control_flow(inner)?));
@@ -3555,9 +3833,14 @@ impl AstBuilder {
         for inner in pair.into_inner() {
             match inner.as_rule() {
                 Rule::css_value_part => {
-                    parts.push(super::node::CssValuePart::Text {
-                        value: inner.as_str().to_string(),
-                    });
+                    let mut value = inner.as_str().to_string();
+                    // Strip quotes from quoted strings (e.g., content: "text" -> content: text)
+                    if value.starts_with('"') && value.ends_with('"') && value.len() >= 2 {
+                        value = value[1..value.len()-1].to_string();
+                    } else if value.starts_with('\'') && value.ends_with('\'') && value.len() >= 2 {
+                        value = value[1..value.len()-1].to_string();
+                    }
+                    parts.push(super::node::CssValuePart::Text { value });
                 }
                 Rule::css_interpolation => {
                     has_interpolation = true;
@@ -3575,7 +3858,7 @@ impl AstBuilder {
         if has_interpolation {
             Ok(super::node::CssValue::Interpolated { parts })
         } else {
-            // Combine all text parts into a single plain value
+            // Combine all text parts into a single plain value and trim whitespace
             let combined: String = parts
                 .into_iter()
                 .filter_map(|p| {
@@ -3586,7 +3869,9 @@ impl AstBuilder {
                     }
                 })
                 .collect::<Vec<_>>()
-                .join("");
+                .join("")
+                .trim()
+                .to_string();
             Ok(super::node::CssValue::Plain { value: combined })
         }
     }

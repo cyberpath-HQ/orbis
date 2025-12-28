@@ -382,6 +382,8 @@ pub enum TemplateContent {
     FragmentUsage(FragmentUsage),
     /// Slot definition (inside fragments)
     SlotDefinition(SlotDefinition),
+    /// Expression (interpolated in text)
+    Expression { expr: Box<Expression>, span: Span },
     /// Text content
     Text { value: String, span: Span },
     /// Comment
