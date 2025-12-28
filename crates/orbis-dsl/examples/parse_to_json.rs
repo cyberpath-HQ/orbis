@@ -60,9 +60,13 @@ fn main() {
                                     let mut fragments = 0;
                                     let mut styles = 0;
                                     let mut exports = 0;
+                                    let mut comments = 0;
 
                                     for element in &ast.elements {
                                         match element {
+                                            orbis_dsl::ast::TopLevelElement::Comment { .. } => {
+                                                comments += 1
+                                            }
                                             orbis_dsl::ast::TopLevelElement::Page(_) => pages += 1,
                                             orbis_dsl::ast::TopLevelElement::State(_) => states += 1,
                                             orbis_dsl::ast::TopLevelElement::Template(_) => {
@@ -92,6 +96,7 @@ fn main() {
                                     println!("      Templates: {}", templates);
                                     println!("      Styles: {}", styles);
                                     println!("      Exports: {}", exports);
+                                    println!("      Comments: {}", comments);
                                 }
                             }
                             Err(e) => {
