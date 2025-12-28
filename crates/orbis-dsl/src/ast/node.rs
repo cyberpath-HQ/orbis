@@ -650,6 +650,8 @@ pub struct StyleRule {
     pub selectors: Vec<String>,
     /// CSS property declarations
     pub declarations: Vec<StyleDeclaration>,
+    /// Nested style rules (for CSS nesting support)
+    pub nested_rules: Vec<StyleRule>,
     pub span: Span,
 }
 

@@ -1700,7 +1700,7 @@ literal_type = {
 
 // Simple type: primitive or custom type name
 simple_type = {
-    String | Number | Bool | Object | Array | Null | Any | Void | Never | identifier
+    String | Number | Boolean | Bool | Object | Array | Null | Any | Void | Never | identifier
 }
 
 // ============================================================================
@@ -1920,8 +1920,14 @@ variant_names = {
 }
 
 // Style rule: .class, #id, element, [attr] { ... }
+// Supports nesting: .parent { .child { } }
 style_rule = {
-    style_selector_list ~ "{" ~ style_declaration* ~ "}"
+    style_selector_list ~ "{" ~ style_rule_content* ~ "}"
+}
+
+// Style rule content can be either declarations or nested rules
+style_rule_content = {
+    style_declaration | style_rule
 }
 
 style_selector_list = {
@@ -1934,14 +1940,17 @@ style_selector = @{
 }
 
 style_selector_part = @{
-    // Class, ID, element, attribute, pseudo-class, pseudo-element, combinator
-    ("." | "#" | "[" | ":" | "::" | "&" | ">" | "+" | "~" | " ")? ~
-    (ASCII_ALPHANUMERIC | "-" | "_" | "(" | ")" | "=" | "\"" | "'" | "]" | "*")+
+    // Supports: class, ID, element, attribute, pseudo-class, pseudo-element, combinator, and & for nesting
+    // & can stand alone or be followed by other selector characters
+    "&" ~ (ASCII_ALPHANUMERIC | "-" | "_" | "(" | ")" | "=" | "\"" | "'" | "]" | "*" | ":" | "." | "#" | "[")* |
+    "*" |  // Universal selector
+    ("." | "#" | "[" | ":" | "::" | ">" | "+" | "~" | " ") ~ (ASCII_ALPHANUMERIC | "-" | "_" | "(" | ")" | "=" | "\"" | "'" | "]" | "*")* |
+    (ASCII_ALPHANUMERIC | "-" | "_")+
 }
 
-// Style declaration: property: value;
+// Style declaration: property: value; (semicolon optional for last declaration in block)
 style_declaration = {
-    at_apply | css_property ~ ":" ~ css_value ~ ";"
+    at_apply | css_property ~ ":" ~ css_value ~ ";"?
 }
 
 css_property = @{

@@ -18,7 +18,7 @@ use super::expr::{
     MethodCall, StateAssignment, UnaryExpr, UnaryOp,
 };
 use super::node::{
-    Action, ActionItem, ActionWithHandlers, AstFile, CallAction, ControlFlow, CustomAction,
+    Action, ActionItem, ActionWithHandlers, AstFile, ControlFlow, CustomAction,
     FetchAction, HookEntry, HooksBlock, ImportClause, ImportSpecifier, ImportStatement,
     InterfaceDefinition, InterfaceMember, LifecycleHook, LifecycleHookKind, PageBlock,
     ResponseHandler, ResponseHandlerType, Span, StateBlock, StylesBlock, SubmitAction,
@@ -638,11 +638,22 @@ impl AstBuilder {
         pair: Pair<'_, Rule>,
     ) -> BuildResult<ValidatedState> {
         let span = span_from_pair(&pair);
+        let source = pair.as_str();
         let mut name = String::new();
         let mut optional = false;
         let mut type_annotation = None;
         let mut value = None;
         let mut validators = Vec::new();
+
+        // Check for optional marker by looking at the source text
+        if source.contains("?:") || (source.contains('?') && !source.contains("@")) {
+            if let Some(q_pos) = source.find('?') {
+                let after_q = &source[q_pos + 1..];
+                if after_q.trim_start().starts_with(':') || after_q.trim_start().starts_with('@') || after_q.trim_start().starts_with('=') {
+                    optional = true;
+                }
+            }
+        }
 
         for inner in pair.into_inner() {
             match inner.as_rule() {
@@ -658,13 +669,7 @@ impl AstBuilder {
                 Rule::validation_chain => {
                     validators = self.build_validation_chain(inner)?;
                 }
-                _ => {
-                    // Check for optional marker "?"
-                    let text = inner.as_str();
-                    if text == "?" {
-                        optional = true;
-                    }
-                }
+                _ => {}
             }
         }
 
@@ -680,10 +685,25 @@ impl AstBuilder {
 
     fn build_regular_state_declaration(&self, pair: Pair<'_, Rule>) -> BuildResult<RegularState> {
         let span = span_from_pair(&pair);
+        let source = pair.as_str();
         let mut name = String::new();
         let mut optional = false;
         let mut type_annotation = None;
         let mut value = None;
+        
+        // Check for optional marker by looking at the source text
+        // The pattern is: identifier ~ "?"? ~ ...
+        // So we need to check if there's a ? after the identifier
+        if source.contains("?:") || source.matches('?').count() > 0 {
+            // Need to check if the ? comes before : or = or at end
+            if let Some(q_pos) = source.find('?') {
+                // Check if ? is followed by : or whitespace then :
+                let after_q = &source[q_pos + 1..];
+                if after_q.trim_start().starts_with(':') || after_q.is_empty() {
+                    optional = true;
+                }
+            }
+        }
 
         for inner in pair.into_inner() {
             match inner.as_rule() {
@@ -696,13 +716,7 @@ impl AstBuilder {
                 Rule::state_value => {
                     value = Some(self.build_state_value(inner)?);
                 }
-                _ => {
-                    // Check for optional marker "?"
-                    let text = inner.as_str();
-                    if text == "?" {
-                        optional = true;
-                    }
-                }
+                _ => {}
             }
         }
 
@@ -1179,8 +1193,14 @@ impl AstBuilder {
 
     fn build_member_access_expr(&self, pair: Pair<'_, Rule>) -> BuildResult<Expression> {
         let span = span_from_pair(&pair);
-        let text = pair.as_str().trim();
-        let parts: Vec<&str> = text.split('.').map(|s| s.trim()).collect();
+        let mut parts = Vec::new();
+        
+        // Extract identifiers from the member_access pairs
+        for inner in pair.into_inner() {
+            if inner.as_rule() == Rule::identifier {
+                parts.push(inner.as_str().to_string());
+            }
+        }
 
         if parts.is_empty() {
             return Ok(Expression::Literal(Literal {
@@ -1189,8 +1209,8 @@ impl AstBuilder {
             }));
         }
 
-        let root = parts[0].to_string();
-        let path: Vec<String> = parts[1..].iter().map(|s| s.to_string()).collect();
+        let root = parts.remove(0);
+        let path = parts;
 
         Ok(Expression::MemberAccess(MemberAccess { root, path, span }))
     }
@@ -1438,7 +1458,36 @@ impl AstBuilder {
         for inner in pair.into_inner() {
             match inner.as_rule() {
                 Rule::watch_target => {
-                    targets.push(self.build_expression(inner)?);
+                    // watch_target contains either state_path or member_access
+                    if let Some(target_inner) = inner.into_inner().next() {
+                        match target_inner.as_rule() {
+                            Rule::member_access => {
+                                targets.push(self.build_member_access_expr(target_inner)?);
+                            }
+                            Rule::state_path => {
+                                // state_path is: ^"state" ~ ("." ~ identifier)+
+                                // We need to extract it as member_access with root="state"
+                                let span = span_from_pair(&target_inner);
+                                let mut path = Vec::new();
+                                
+                                for p in target_inner.into_inner() {
+                                    if p.as_rule() == Rule::identifier {
+                                        path.push(p.as_str().to_string());
+                                    }
+                                }
+                                
+                                targets.push(Expression::MemberAccess(MemberAccess {
+                                    root: "state".to_string(),
+                                    path,
+                                    span,
+                                }));
+                            }
+                            _ => {
+                                // Fallback: try to build as expression
+                                targets.push(self.build_expression(target_inner)?);
+                            }
+                        }
+                    }
                 }
                 Rule::watcher_options => {
                     options = self.build_watcher_options(inner)?;
@@ -1710,13 +1759,6 @@ impl AstBuilder {
                 return Ok(Action::Submit(SubmitAction {
                     target: args_as_expressions.first().cloned(),
                     data: None,
-                    span,
-                }));
-            }
-            "api" | "call" => {
-                return Ok(Action::Call(CallAction {
-                    api: method.clone(),
-                    args: args_as_expressions,
                     span,
                 }));
             }
@@ -2112,7 +2154,9 @@ impl AstBuilder {
                 }
                 Rule::fragment_slot_content => {
                     // Build fragment slot content as children
-                    children = self.build_template_content_list(inner)?;
+                    // Important: extend instead of replace to accumulate all children
+                    let content_list = self.build_template_content_list(inner)?;
+                    children.extend(content_list);
                 }
                 _ => {}
             }
@@ -3417,6 +3461,7 @@ impl AstBuilder {
         let span = span_from_pair(&pair);
         let mut selectors = Vec::new();
         let mut declarations = Vec::new();
+        let mut nested_rules = Vec::new();
 
         for inner in pair.into_inner() {
             match inner.as_rule() {
@@ -3427,7 +3472,26 @@ impl AstBuilder {
                         }
                     }
                 }
+                Rule::style_rule_content => {
+                    // Style rule content can be either a declaration or a nested rule
+                    for content_inner in inner.into_inner() {
+                        match content_inner.as_rule() {
+                            Rule::style_declaration => {
+                                if let Ok(decl) = self.build_style_declaration(content_inner) {
+                                    declarations.push(decl);
+                                }
+                            }
+                            Rule::style_rule => {
+                                if let Ok(nested_rule) = self.build_style_rule(content_inner) {
+                                    nested_rules.push(nested_rule);
+                                }
+                            }
+                            _ => {}
+                        }
+                    }
+                }
                 Rule::style_declaration => {
+                    // Legacy support for direct style_declaration (if grammar still produces it)
                     if let Ok(decl) = self.build_style_declaration(inner) {
                         declarations.push(decl);
                     }
@@ -3439,6 +3503,7 @@ impl AstBuilder {
         Ok(super::node::StyleRule {
             selectors,
             declarations,
+            nested_rules,
             span,
         })
     }
