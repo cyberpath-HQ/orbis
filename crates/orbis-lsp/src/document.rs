@@ -195,22 +195,30 @@ impl Document {
 
         let line_text = self.get_line(line).unwrap_or_default();
 
-        // Get text before cursor on current line
-        let prefix = if col <= line_text.len() {
+        // Get full text before the cursor (across lines) for accurate context detection
+        let offset = self.position_to_offset(pos).unwrap_or(0);
+        let full_prefix: String = self
+            .text()
+            .chars()
+            .take(offset)
+            .collect();
+
+        // Get text before cursor on current line (used mostly for display/debugging)
+        let line_prefix = if col <= line_text.len() {
             line_text[..col.min(line_text.len())].to_string()
         } else {
             line_text.clone()
         };
 
-        // Determine context type
-        let context_type = determine_context_type(&prefix, &line_text);
+        // Determine context type using the full prefix for multi-line awareness
+        let context_type = determine_context_type(&full_prefix, &line_text);
 
-        // Get the current word being typed
-        let trigger_word = get_current_word(&prefix);
+        // Get the current word being typed (searching backwards from the full prefix)
+        let trigger_word = get_current_word(&full_prefix);
 
         DocumentContext {
             line: line_text,
-            prefix,
+            prefix: line_prefix,
             trigger_word,
             context_type,
         }
@@ -277,28 +285,17 @@ fn get_current_word(prefix: &str) -> String {
     word
 }
 
-fn determine_context_type(prefix: &str, _full_line: &str) -> ContextType {
-    let trimmed = prefix.trim();
+fn determine_context_type(full_prefix: &str, _current_line: &str) -> ContextType {
+    let trimmed = full_prefix.trim();
 
     // Check for import context
     if trimmed.starts_with("import ") || trimmed.starts_with("use ") {
         return ContextType::Import;
     }
 
-    // Check if inside expression
-    let open_braces = prefix.matches('{').count();
-    let close_braces = prefix.matches('}').count();
-    if open_braces > close_braces {
-        // Check if it's an action body
-        if prefix.contains("=>") {
-            return ContextType::ActionBody;
-        }
-        return ContextType::Expression;
-    }
-
-    // Check if we're in a component tag
-    if let Some(tag_start) = prefix.rfind('<') {
-        let after_tag = &prefix[tag_start..];
+    // Check if we're in a component tag (before expression detection so braces in outer blocks don't mask attributes)
+    if let Some(tag_start) = full_prefix.rfind('<') {
+        let after_tag = &full_prefix[tag_start..];
         // Check if tag is still open (no >)
         if !after_tag.contains('>') || after_tag.rfind('<') > after_tag.rfind('>') {
             // Extract component name
@@ -310,8 +307,15 @@ fn determine_context_type(prefix: &str, _full_line: &str) -> ContextType {
                 .to_string();
 
             if !component.is_empty() {
+                // If we're inside an attribute expression within the tag, surface expression completions instead
+                let brace_in_tag_open = after_tag.rfind('{');
+                let brace_in_tag_close = after_tag.rfind('}');
+                if brace_in_tag_open > brace_in_tag_close {
+                    return ContextType::Expression;
+                }
+
                 // Check if we're after @ (event)
-                if prefix.ends_with('@') || prefix.contains(" @") {
+                if after_tag.ends_with('@') || after_tag.contains(" @") {
                     return ContextType::ComponentEvent { component };
                 }
                 // Otherwise expect attribute
@@ -320,26 +324,48 @@ fn determine_context_type(prefix: &str, _full_line: &str) -> ContextType {
         }
     }
 
-    // Check block contexts by looking for block keywords
-    let text_before = prefix.to_lowercase();
-    if text_before.contains("template") && open_braces > 0 {
-        return ContextType::Template;
+    // Determine the most recent unmatched brace
+    let last_open_brace = full_prefix.rfind('{');
+    let last_close_brace = full_prefix.rfind('}');
+    let inside_braces = match (last_open_brace, last_close_brace) {
+        (Some(open), Some(close)) => open > close,
+        (Some(_), None) => true,
+        _ => false,
+    };
+
+    // Detect block contexts based on the token immediately before the latest opening brace
+    if let Some(open_idx) = last_open_brace {
+        let before_brace = full_prefix[..open_idx].trim_end();
+        if before_brace.ends_with("template") {
+            return ContextType::Template;
+        }
+        if before_brace.ends_with("state") {
+            return ContextType::StateBlock;
+        }
+        if before_brace.ends_with("hooks") {
+            return ContextType::HooksBlock;
+        }
+        if before_brace.ends_with("page") {
+            return ContextType::PageBlock;
+        }
+        if before_brace.ends_with("styles") {
+            return ContextType::Styles;
+        }
     }
-    if text_before.contains("state") && open_braces > 0 {
-        return ContextType::StateBlock;
-    }
-    if text_before.contains("hooks") && open_braces > 0 {
-        return ContextType::HooksBlock;
-    }
-    if text_before.contains("page") && open_braces > 0 {
-        return ContextType::PageBlock;
-    }
-    if text_before.contains("styles") && open_braces > 0 {
-        return ContextType::Styles;
+
+    // If we're inside braces after an arrow, assume expression inside an action body
+    if inside_braces {
+        if let (Some(arrow_pos), Some(open_pos)) = (full_prefix.rfind("=>"), last_open_brace) {
+            if arrow_pos < open_pos {
+                return ContextType::Expression;
+            }
+        }
+        // Fallback: generic expression
+        return ContextType::Expression;
     }
 
     // Check for type annotation context
-    if prefix.ends_with(':') || prefix.contains(": ") {
+    if full_prefix.ends_with(':') || full_prefix.contains(": ") {
         return ContextType::TypeAnnotation;
     }
 

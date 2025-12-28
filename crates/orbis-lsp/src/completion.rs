@@ -637,6 +637,15 @@ fn expression_completions(symbols: &SymbolTable, trigger: &str) -> Vec<Completio
         ..Default::default()
     });
 
+    // Add console prefix
+    items.push(CompletionItem {
+        label: "console".to_string(),
+        kind: Some(CompletionItemKind::MODULE),
+        detail: Some("Console logging".to_string()),
+        insert_text: Some("console.".to_string()),
+        ..Default::default()
+    });
+
     // Add state variables if trigger starts with "state."
     if trigger.starts_with("state.") {
         for (name, sym) in &symbols.state_vars {
@@ -650,6 +659,20 @@ fn expression_completions(symbols: &SymbolTable, trigger: &str) -> Vec<Completio
                         value: d,
                     })
                 }),
+                ..Default::default()
+            });
+        }
+    }
+
+    // Add console methods if requested
+    if trigger.starts_with("console.") {
+        for method in ["log", "info", "warn", "error", "debug"] {
+            items.push(CompletionItem {
+                label: format!("console.{}", method),
+                kind: Some(CompletionItemKind::FUNCTION),
+                detail: Some("Console method".to_string()),
+                insert_text: Some(format!("console.{}($1)", method)),
+                insert_text_format: Some(InsertTextFormat::SNIPPET),
                 ..Default::default()
             });
         }

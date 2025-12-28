@@ -177,6 +177,9 @@ impl Analyzer {
                     suggestion: Self::suggest_fix(&e.message),
                     related: vec![],
                 });
+
+                // Best-effort symbol extraction so completion can still work on incomplete code
+                Self::collect_state_symbols_best_effort(source, &mut symbols);
                 None
             }
         };
@@ -252,6 +255,49 @@ impl Analyzer {
                     );
                 }
                 _ => {}
+            }
+        }
+    }
+
+    /// Fallback state symbol collector for incomplete/invalid documents
+    fn collect_state_symbols_best_effort(source: &str, symbols: &mut SymbolTable) {
+        let mut in_state_block = false;
+
+        for line in source.lines() {
+            let trimmed = line.trim();
+
+            if trimmed.starts_with("state") && trimmed.contains('{') {
+                in_state_block = true;
+                continue;
+            }
+
+            if in_state_block {
+                if trimmed.starts_with('}') {
+                    in_state_block = false;
+                    continue;
+                }
+
+                // Skip empty lines and comments
+                if trimmed.is_empty() || trimmed.starts_with("//") {
+                    continue;
+                }
+
+                // Extract identifier up to whitespace, ':' or '='
+                let name_end = trimmed
+                    .find(|c: char| c == ':' || c == '=' || c.is_whitespace())
+                    .unwrap_or(trimmed.len());
+
+                if name_end > 0 {
+                    let name = trimmed[..name_end].to_string();
+                    symbols.state_vars.entry(name.clone()).or_insert(StateSymbol {
+                        name,
+                        type_annotation: None,
+                        is_computed: false,
+                        is_validated: false,
+                        span: ast::Span::default(),
+                        documentation: None,
+                    });
+                }
             }
         }
     }

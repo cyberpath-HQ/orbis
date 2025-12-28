@@ -585,11 +585,11 @@ fn visit_template_content(content: &TemplateContent, builder: &mut SemanticToken
             
             // Read the line and find where the component name actually starts
             if let Some(line_text) = document.get_line(line as usize) {
-                // Find the < character, then skip any whitespace to get to the name
-                let search_end = (start_col as usize + 10).min(line_text.len());
-                if let Some(bracket_pos) = line_text[..search_end].rfind('<') {
+                // Prefer the last '<' before or at span.start_col to avoid grabbing from previous constructs
+                let search_limit = (start_col as usize).min(line_text.len());
+                let search_slice = if search_limit == 0 { line_text.as_str() } else { &line_text[..=search_limit] };
+                if let Some(bracket_pos) = search_slice.rfind('<') {
                     let after_bracket = &line_text[bracket_pos + 1..];
-                    // Skip whitespace after <
                     let name_offset = after_bracket.chars().take_while(|c| c.is_whitespace()).count();
                     let name_col = bracket_pos + 1 + name_offset;
                     builder.push(line, name_col as u32, comp.name.len() as u32, token_types::CLASS, 0);
@@ -687,13 +687,77 @@ fn visit_template_content(content: &TemplateContent, builder: &mut SemanticToken
         }
 
         TemplateContent::FragmentUsage(frag) => {
+            // Highlight like a component (CLASS) to match opening/closing tag color
             let line = (frag.span.start_line.saturating_sub(1)) as u32;
-            builder.push(line, 1, frag.name.len() as u32, token_types::FUNCTION, 0);
+            let start_col = (frag.span.start_col.saturating_sub(1)) as u32;
 
+            if let Some(line_text) = document.get_line(line as usize) {
+                let search_limit = (start_col as usize).min(line_text.len());
+                let search_slice = if search_limit == 0 { line_text.as_str() } else { &line_text[..=search_limit] };
+                if let Some(bracket_pos) = search_slice.rfind('<') {
+                    let after_bracket = &line_text[bracket_pos + 1..];
+                    let name_offset = after_bracket.chars().take_while(|c| c.is_whitespace()).count();
+                    let name_col = bracket_pos + 1 + name_offset;
+                    builder.push(line, name_col as u32, frag.name.len() as u32, token_types::CLASS, 0);
+                } else {
+                    builder.push(line, start_col, frag.name.len() as u32, token_types::CLASS, 0);
+                }
+            } else {
+                builder.push(line, start_col, frag.name.len() as u32, token_types::CLASS, 0);
+            }
+
+            // Properties
             for prop in &frag.properties {
                 let prop_line = (prop.span.start_line.saturating_sub(1)) as u32;
                 let prop_col = (prop.span.start_col.saturating_sub(1)) as u32;
                 builder.push(prop_line, prop_col, prop.name.len() as u32, token_types::PARAMETER, 0);
+            }
+
+            // Events
+            for event in &frag.events {
+                let event_line = (event.span.start_line.saturating_sub(1)) as u32;
+                let event_col = (event.span.start_col.saturating_sub(1)) as u32;
+                builder.push(event_line, event_col, event.event.len() as u32 + 1, token_types::EVENT, 0);
+
+                if let Some(line_text) = document.get_line(event_line as usize) {
+                    let start = (event_col as usize).min(line_text.len());
+                    if let Some(arrow_pos) = line_text[start..].find("=>") {
+                        let arrow_col = event_col + arrow_pos as u32;
+                        builder.push(event_line, arrow_col, 2, token_types::OPERATOR, 0);
+                    }
+                }
+            }
+
+            // Closing handling similar to components
+            if frag.self_closing {
+                let end_line = (frag.span.end_line.saturating_sub(1)) as u32;
+                let start_line = (frag.span.start_line.saturating_sub(1)) as u32;
+                for search_line in (start_line..=end_line).rev() {
+                    if let Some(line_text) = document.get_line(search_line as usize) {
+                        let search_end = if search_line == end_line {
+                            (frag.span.end_col as usize).min(line_text.len())
+                        } else {
+                            line_text.len()
+                        };
+                        if let Some(slash_pos) = line_text[..search_end].rfind("/>") {
+                            builder.push(search_line, slash_pos as u32, 2, token_types::OPERATOR, 0);
+                            break;
+                        }
+                    }
+                }
+            } else {
+                let end_line = (frag.span.end_line.saturating_sub(1)) as u32;
+                let start_line = (frag.span.start_line.saturating_sub(1)) as u32;
+                for search_line in (start_line..=end_line).rev() {
+                    if let Some(line_text) = document.get_line(search_line as usize) {
+                        let line_lower = line_text.to_lowercase();
+                        let pattern = format!("</{}", frag.name);
+                        if let Some(close_pos) = line_lower.find(&pattern) {
+                            builder.push(search_line, (close_pos + 2) as u32, frag.name.len() as u32, token_types::CLASS, 0);
+                            break;
+                        }
+                    }
+                }
             }
         }
 
@@ -719,18 +783,41 @@ fn visit_template_content(content: &TemplateContent, builder: &mut SemanticToken
         TemplateContent::Comment { value, span } => {
             let line = (span.start_line.saturating_sub(1)) as u32;
             let col = (span.start_col.saturating_sub(1)) as u32;
-            // Calculate actual comment length including delimiters
-            let length = if value.starts_with("//") || value.starts_with("/*") {
-                value.len() as u32
-            } else {
-                // Add delimiters if not included
-                if value.contains('\n') || line_text_contains_block_comment(document, line, col) {
-                    value.len() as u32 + 4 // /* */
+            
+            // Get the actual comment text from source to calculate correct length
+            if let Some(line_text) = document.get_line(line as usize) {
+                // Find // or /* in the line
+                if let Some(comment_start) = line_text[col as usize..].find("//") {
+                    // Line comment - extends to end of line (but not including trailing newline)
+                    let actual_col = col + comment_start as u32;
+                    let rest_of_line = &line_text[actual_col as usize..];
+                    // Don't trim - include all characters up to newline
+                    let length = rest_of_line.len() as u32;
+                    builder.push(line, actual_col, length, token_types::COMMENT, 0);
+                } else if let Some(comment_start) = line_text[col as usize..].find("/*") {
+                    // Block comment - need to find */
+                    let actual_col = col + comment_start as u32;
+                    let start_pos = actual_col as usize;
+                    
+                    // Search for */ on same line or multi-line
+                    if let Some(end_pos) = line_text[start_pos..].find("*/") {
+                        let length = (end_pos + 2) as u32; // Include */
+                        builder.push(line, actual_col, length, token_types::COMMENT, 0);
+                    } else {
+                        // Multi-line block comment - just highlight start line
+                        let length = (line_text.len() - start_pos) as u32;
+                        builder.push(line, actual_col, length, token_types::COMMENT, 0);
+                    }
                 } else {
-                    value.len() as u32 + 2 // //
+                    // Fallback - shouldn't happen
+                    let length = value.len() as u32 + 2;
+                    builder.push(line, col, length, token_types::COMMENT, 0);
                 }
-            };
-            builder.push(line, col, length, token_types::COMMENT, 0);
+            } else {
+                // Fallback
+                let length = value.len() as u32 + 2;
+                builder.push(line, col, length, token_types::COMMENT, 0);
+            }
         }
     }
 }
