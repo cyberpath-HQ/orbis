@@ -27,20 +27,20 @@ hooks {
     @unmount => {
         console.log("Page unmounting")
     }
-    @watch(state.count) => {
+    @watch(state.count) {
         console.log(state.count)
     }
 }
 
-fragment NonExisting() {
+fragment Example() {
     <Text id=""/>
 }
 
 template {
     // Container with whitelisted attributes
     <Container id="main" className="container" visible={true}>
-        <NonExisting>
-        </NonExisting>
+        <Example>
+        </Example>
         
         // Flex layout with specific attributes
         <Flex direction="row" justify="center" align="center" gap="4">
@@ -99,6 +99,7 @@ template {
             <Skeleton variant="circular" />
             <Skeleton variant="rectangular" />
         }
+        <Skeleton variant="rectangular" />
         
         // Modal example
         <Modal id="demo-modal" title="Demo Modal" open={false}>
