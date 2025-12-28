@@ -1,0 +1,455 @@
+{
+    "Page Block": {
+        "prefix": "page",
+        "body": [
+            "page {",
+            "\tid: \"${1:page-id}\"",
+            "\ttitle: \"${2:Page Title}\"",
+            "\troute: \"${3:/path}\"",
+            "}"
+        ],
+        "description": "Create a page block with metadata"
+    },
+    "State Block": {
+        "prefix": "state",
+        "body": [
+            "state {",
+            "\t${1:name}: ${2:Type} = ${3:initialValue}",
+            "}"
+        ],
+        "description": "Create a state block"
+    },
+    "State Variable": {
+        "prefix": "svar",
+        "body": "${1:name}: ${2:Type} = ${3:value}",
+        "description": "Declare a state variable"
+    },
+    "Computed State": {
+        "prefix": "computed",
+        "body": "@computed ${1:name} = ${2:expression}",
+        "description": "Declare a computed state variable"
+    },
+    "Validated State": {
+        "prefix": "validated",
+        "body": [
+            "@validate(\"${1:pattern}\", \"${2:error message}\")",
+            "${3:name}: ${4:String} = ${5:\"\"}"
+        ],
+        "description": "Declare a validated state variable"
+    },
+    "Hooks Block": {
+        "prefix": "hooks",
+        "body": [
+            "hooks {",
+            "\t@mount {",
+            "\t\t${1:// mount actions}",
+            "\t}",
+            "}"
+        ],
+        "description": "Create a hooks block"
+    },
+    "Mount Hook": {
+        "prefix": "@mount",
+        "body": [
+            "@mount {",
+            "\t${1:// actions}",
+            "}"
+        ],
+        "description": "Create a mount lifecycle hook"
+    },
+    "Unmount Hook": {
+        "prefix": "@unmount",
+        "body": [
+            "@unmount {",
+            "\t${1:// cleanup actions}",
+            "}"
+        ],
+        "description": "Create an unmount lifecycle hook"
+    },
+    "Watch Hook": {
+        "prefix": "@watch",
+        "body": [
+            "@watch(${1:variable}) {",
+            "\t${2:// actions when variable changes}",
+            "}"
+        ],
+        "description": "Create a watcher hook"
+    },
+    "Template Block": {
+        "prefix": "template",
+        "body": [
+            "template {",
+            "\t${1:// components}",
+            "}"
+        ],
+        "description": "Create a template block"
+    },
+    "Fragment Definition": {
+        "prefix": "fragment",
+        "body": [
+            "fragment ${1:FragmentName}(${2:props}) {",
+            "\t${3:// fragment content}",
+            "}"
+        ],
+        "description": "Define a reusable fragment"
+    },
+    "Interface Definition": {
+        "prefix": "interface",
+        "body": [
+            "interface ${1:InterfaceName} {",
+            "\t${2:property}: ${3:Type}",
+            "}"
+        ],
+        "description": "Define an interface"
+    },
+    "Styles Block": {
+        "prefix": "styles",
+        "body": [
+            "styles {",
+            "\t.${1:class-name} {",
+            "\t\t${2:property}: ${3:value};",
+            "\t}",
+            "}"
+        ],
+        "description": "Create a styles block"
+    },
+    "Container Component": {
+        "prefix": "Container",
+        "body": [
+            "<Container class=\"${1:container}\">",
+            "\t${2:// children}",
+            "</Container>"
+        ],
+        "description": "Create a Container component"
+    },
+    "Grid Component": {
+        "prefix": "Grid",
+        "body": [
+            "<Grid cols={${1:2}} gap=\"${2:4}\">",
+            "\t${3:// grid items}",
+            "</Grid>"
+        ],
+        "description": "Create a Grid component"
+    },
+    "Flex Component": {
+        "prefix": "Flex",
+        "body": [
+            "<Flex direction=\"${1|row,column|}\" justify=\"${2|start,center,end,between|}\" align=\"${3|start,center,end|}\">",
+            "\t${4:// flex items}",
+            "</Flex>"
+        ],
+        "description": "Create a Flex component"
+    },
+    "Text Component": {
+        "prefix": "Text",
+        "body": "<Text>${1:content}</Text>",
+        "description": "Create a Text component"
+    },
+    "Heading Component": {
+        "prefix": "Heading",
+        "body": "<Heading level={${1|1,2,3,4,5,6|}}>${2:Heading Text}</Heading>",
+        "description": "Create a Heading component"
+    },
+    "Button Component": {
+        "prefix": "Button",
+        "body": [
+            "<Button",
+            "\tvariant=\"${1|primary,secondary,outline,ghost,destructive|}\"",
+            "\t@click={${2:action}}",
+            ">",
+            "\t${3:Button Text}",
+            "</Button>"
+        ],
+        "description": "Create a Button component"
+    },
+    "Field Component": {
+        "prefix": "Field",
+        "body": [
+            "<Field",
+            "\tlabel=\"${1:Label}\"",
+            "\tvalue={${2:value}}",
+            "\ttype=\"${3|text,email,password,number,tel,url|}\"",
+            "\t@change={${4:handleChange}}",
+            "/>"
+        ],
+        "description": "Create a Field (input) component"
+    },
+    "Form Component": {
+        "prefix": "Form",
+        "body": [
+            "<Form @submit={${1:handleSubmit}}>",
+            "\t${2:// form fields}",
+            "\t<Button type=\"submit\">Submit</Button>",
+            "</Form>"
+        ],
+        "description": "Create a Form component"
+    },
+    "Card Component": {
+        "prefix": "Card",
+        "body": [
+            "<Card>",
+            "\t${1:// card content}",
+            "</Card>"
+        ],
+        "description": "Create a Card component"
+    },
+    "Table Component": {
+        "prefix": "Table",
+        "body": [
+            "<Table data={${1:data}} columns={${2:columns}}>",
+            "</Table>"
+        ],
+        "description": "Create a Table component"
+    },
+    "List Component": {
+        "prefix": "List",
+        "body": [
+            "<List>",
+            "\tfor item in ${1:items} {",
+            "\t\t<ListItem>{item}</ListItem>",
+            "\t}",
+            "</List>"
+        ],
+        "description": "Create a List component with iteration"
+    },
+    "Modal Component": {
+        "prefix": "Modal",
+        "body": [
+            "<Modal",
+            "\topen={${1:isOpen}}",
+            "\ttitle=\"${2:Modal Title}\"",
+            "\t@close={${3:handleClose}}",
+            ">",
+            "\t${4:// modal content}",
+            "</Modal>"
+        ],
+        "description": "Create a Modal component"
+    },
+    "Alert Component": {
+        "prefix": "Alert",
+        "body": [
+            "<Alert variant=\"${1|info,success,warning,error|}\">",
+            "\t${2:Alert message}",
+            "</Alert>"
+        ],
+        "description": "Create an Alert component"
+    },
+    "Tabs Component": {
+        "prefix": "Tabs",
+        "body": [
+            "<Tabs defaultTab=\"${1:tab1}\">",
+            "\t<Tab id=\"${1:tab1}\" label=\"${2:Tab 1}\">",
+            "\t\t${3:// tab 1 content}",
+            "\t</Tab>",
+            "\t<Tab id=\"${4:tab2}\" label=\"${5:Tab 2}\">",
+            "\t\t${6:// tab 2 content}",
+            "\t</Tab>",
+            "</Tabs>"
+        ],
+        "description": "Create a Tabs component"
+    },
+    "If Statement": {
+        "prefix": "if",
+        "body": [
+            "if ${1:condition} {",
+            "\t${2:// content}",
+            "}"
+        ],
+        "description": "Create an if conditional block"
+    },
+    "If-Else Statement": {
+        "prefix": "ifelse",
+        "body": [
+            "if ${1:condition} {",
+            "\t${2:// if content}",
+            "} else {",
+            "\t${3:// else content}",
+            "}"
+        ],
+        "description": "Create an if-else conditional block"
+    },
+    "For Loop": {
+        "prefix": "for",
+        "body": [
+            "for ${1:item} in ${2:items} {",
+            "\t${3:// content}",
+            "}"
+        ],
+        "description": "Create a for loop"
+    },
+    "For Loop with Index": {
+        "prefix": "fori",
+        "body": [
+            "for ${1:item}, ${2:index} in ${3:items} {",
+            "\t${4:// content}",
+            "}"
+        ],
+        "description": "Create a for loop with index"
+    },
+    "When Pattern Matching": {
+        "prefix": "when",
+        "body": [
+            "when ${1:value} {",
+            "\t${2:pattern1} => {",
+            "\t\t${3:// content}",
+            "\t}",
+            "\t_ => {",
+            "\t\t${4:// default content}",
+            "\t}",
+            "}"
+        ],
+        "description": "Create a when pattern matching block"
+    },
+    "API Call Action": {
+        "prefix": "api",
+        "body": "api.${1:service}.${2:method}(${3:params})",
+        "description": "Create an API call action"
+    },
+    "Toast Action": {
+        "prefix": "toast",
+        "body": "toast.${1|success,error,warning,info|}(\"${2:message}\")",
+        "description": "Create a toast notification action"
+    },
+    "Router Navigate": {
+        "prefix": "router",
+        "body": "router.navigate(\"${1:/path}\")",
+        "description": "Navigate to a route"
+    },
+    "Console Log": {
+        "prefix": "log",
+        "body": "console.log(${1:value})",
+        "description": "Log a value to console"
+    },
+    "Set State": {
+        "prefix": "set",
+        "body": "${1:variable} = ${2:value}",
+        "description": "Set a state variable"
+    },
+    "Import TypeScript": {
+        "prefix": "import",
+        "body": "import { ${1:name} } from \"${2:path}\"",
+        "description": "Import from TypeScript module"
+    },
+    "Import Rust": {
+        "prefix": "use",
+        "body": "use ${1:crate}::${2:module}",
+        "description": "Import from Rust crate"
+    },
+    "Export Fragment": {
+        "prefix": "exportfragment",
+        "body": [
+            "export fragment ${1:FragmentName}(${2:props}) {",
+            "\t${3:// content}",
+            "}"
+        ],
+        "description": "Export a fragment"
+    },
+    "Export Interface": {
+        "prefix": "exportinterface",
+        "body": [
+            "export interface ${1:InterfaceName} {",
+            "\t${2:property}: ${3:Type}",
+            "}"
+        ],
+        "description": "Export an interface"
+    },
+    "Full Page Template": {
+        "prefix": "orbis-page",
+        "body": [
+            "// ${1:Page description}",
+            "",
+            "page {",
+            "\tid: \"${2:page-id}\"",
+            "\ttitle: \"${3:Page Title}\"",
+            "\troute: \"${4:/path}\"",
+            "}",
+            "",
+            "state {",
+            "\t${5:loading}: Bool = false",
+            "}",
+            "",
+            "hooks {",
+            "\t@mount {",
+            "\t\t${6:// initialization}",
+            "\t}",
+            "}",
+            "",
+            "template {",
+            "\t<Container class=\"p-4\">",
+            "\t\t<Heading level={1}>${3:Page Title}</Heading>",
+            "\t\t${7:// page content}",
+            "\t</Container>",
+            "}"
+        ],
+        "description": "Create a complete Orbis page template"
+    },
+    "Data Fetch Pattern": {
+        "prefix": "orbis-fetch",
+        "body": [
+            "state {",
+            "\tdata: ${1:DataType}[] = []",
+            "\tloading: Bool = false",
+            "\terror: String? = null",
+            "}",
+            "",
+            "hooks {",
+            "\t@mount {",
+            "\t\tloading = true",
+            "\t\ttry {",
+            "\t\t\tdata = api.${2:service}.${3:list}()",
+            "\t\t} catch (e) {",
+            "\t\t\terror = e.message",
+            "\t\t} finally {",
+            "\t\t\tloading = false",
+            "\t\t}",
+            "\t}",
+            "}",
+            "",
+            "template {",
+            "\tif loading {",
+            "\t\t<LoadingOverlay />",
+            "\t} else if error != null {",
+            "\t\t<Alert variant=\"error\">{error}</Alert>",
+            "\t} else {",
+            "\t\t<List>",
+            "\t\t\tfor item in data {",
+            "\t\t\t\t<ListItem>{item}</ListItem>",
+            "\t\t\t}",
+            "\t\t</List>",
+            "\t}",
+            "}"
+        ],
+        "description": "Create a data fetching pattern with loading and error states"
+    },
+    "Form Pattern": {
+        "prefix": "orbis-form",
+        "body": [
+            "state {",
+            "\t${1:fieldName}: String = \"\"",
+            "\tsubmitting: Bool = false",
+            "\terrors: Map<String, String> = {}",
+            "}",
+            "",
+            "template {",
+            "\t<Form @submit={handleSubmit}>",
+            "\t\t<Field",
+            "\t\t\tlabel=\"${2:Field Label}\"",
+            "\t\t\tvalue={${1:fieldName}}",
+            "\t\t\t@change={${1:fieldName} = event.value}",
+            "\t\t\terror={errors.get(\"${1:fieldName}\")}",
+            "\t\t/>",
+            "\t\t<Button type=\"submit\" loading={submitting}>",
+            "\t\t\tSubmit",
+            "\t\t</Button>",
+            "\t</Form>",
+            "}",
+            "",
+            "hooks {",
+            "\t@watch(${1:fieldName}) {",
+            "\t\t// validation",
+            "\t}",
+            "}"
+        ],
+        "description": "Create a form pattern with validation"
+    }
+}
