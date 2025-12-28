@@ -376,6 +376,7 @@ mod tests {
                     Span::default(),
                 ),
             ],
+            doc_comment: None,
             span: Span::default(),
         };
 
