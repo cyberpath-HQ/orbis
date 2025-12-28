@@ -2208,7 +2208,7 @@ component_with_children = {
 }
 
 component_children = {
-    (component | control_flow | text_content | fragment_usage | line_comment)*
+    (line_comment | block_comment | component | control_flow | fragment_usage | text_content)*
 }
 
 component_closing_tag = {

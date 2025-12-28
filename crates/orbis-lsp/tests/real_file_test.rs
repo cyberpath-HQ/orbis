@@ -118,16 +118,17 @@ fn test_component_whitelisting_simple() {
     }
     assert!(!mount_arrows.is_empty(), "@mount => arrow should be highlighted");
     
-    // Check template comments (line 41 in file = line 40 0-indexed)
-    // NOTE: Parser may not capture all comments in template blocks - this is a parser limitation
+    // Check template comments (line 40+ in file)
+    // After fixing parser, ALL comments should be captured
     let template_comments: Vec<_> = tokens.iter()
-        .filter(|t| t.0 >= 38 && t.0 <= 50 && t.3 == 11)
+        .filter(|t| t.0 >= 38 && t.0 <= 110 && t.3 == 11)
         .collect();
-    println!("\n=== TEMPLATE COMMENTS (lines 39-51) ===");
+    println!("\n=== TEMPLATE COMMENTS (lines 39-111) ===");
     for token in &template_comments {
         println!("Line {}, Col {}, Len {}", token.0, token.1, token.2);
     }
-    assert!(template_comments.len() >= 1, "At least some template comments should be highlighted, found {}", template_comments.len());
+    // Should have comments on lines: 40, 45, 47, 49, 53, 72, 83, 89, 92, 95, 104, 109 = 12 total
+    assert!(template_comments.len() >= 12, "All template comments should be highlighted, found {}", template_comments.len());
     
     // Check Button with @click handler (lines 76-82)
     // Check Button component (line 73 in file = line 72 0-indexed)
