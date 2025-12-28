@@ -152,7 +152,7 @@ template {
             if let Ok(json) = serde_json::to_string_pretty(&ast) {
                 println!();
                 println!("JSON Output:");
-                println!("{}", json);
+                // println!("{}", json);
             }
         }
         Err(e) => {

@@ -977,11 +977,11 @@
                 ],
                 "span": {
                   "start": 1485,
-                  "end": 1513,
+                  "end": 1501,
                   "start_line": 72,
                   "start_col": 9,
-                  "end_line": 73,
-                  "end_col": 5
+                  "end_line": 72,
+                  "end_col": 25
                 }
               },
               "value": {
@@ -991,12 +991,12 @@
                   "value": false
                 },
                 "span": {
-                  "start": 1485,
-                  "end": 1513,
+                  "start": 1503,
+                  "end": 1508,
                   "start_line": 72,
-                  "start_col": 9,
-                  "end_line": 73,
-                  "end_col": 5
+                  "start_col": 27,
+                  "end_line": 72,
+                  "end_col": 32
                 }
               },
               "span": {
@@ -1022,10 +1022,11 @@
           "hook_type": "watcher",
           "targets": [
             {
-              "expr_type": "literal",
-              "value": {
-                "type": "null"
-              },
+              "expr_type": "member_access",
+              "root": "state",
+              "path": [
+                "searchQuery"
+              ],
               "span": {
                 "start": 1531,
                 "end": 1548,
@@ -1061,24 +1062,24 @@
                 ],
                 "span": {
                   "start": 1578,
-                  "end": 1599,
+                  "end": 1596,
                   "start_line": 76,
                   "start_col": 9,
                   "end_line": 76,
-                  "end_col": 30
+                  "end_col": 27
                 }
               },
               "value": {
                 "expr_type": "literal",
                 "value": {
-                  "type": "number",
-                  "value": 1.0
+                  "type": "integer",
+                  "value": 1
                 },
                 "span": {
-                  "start": 1578,
+                  "start": 1598,
                   "end": 1599,
                   "start_line": 76,
-                  "start_col": 9,
+                  "start_col": 29,
                   "end_line": 76,
                   "end_col": 30
                 }
@@ -1420,6 +1421,139 @@
               "content_type": "component",
               "name": "CardContent",
               "children": [
+                {
+                  "content_type": "component",
+                  "name": "Text",
+                  "self_closing": true,
+                  "attributes": [
+                    {
+                      "name": "variant",
+                      "value": {
+                        "value_type": "string",
+                        "value": "caption"
+                      },
+                      "span": {
+                        "start": 2085,
+                        "end": 2102,
+                        "start_line": 92,
+                        "start_col": 19,
+                        "end_line": 92,
+                        "end_col": 36
+                      }
+                    },
+                    {
+                      "name": "content",
+                      "value": {
+                        "value_type": "expression",
+                        "value": {
+                          "expr_type": "member_access",
+                          "root": "product",
+                          "path": [
+                            "category"
+                          ],
+                          "span": {
+                            "start": 2112,
+                            "end": 2128,
+                            "start_line": 92,
+                            "start_col": 46,
+                            "end_line": 92,
+                            "end_col": 62
+                          }
+                        }
+                      },
+                      "span": {
+                        "start": 2103,
+                        "end": 2129,
+                        "start_line": 92,
+                        "start_col": 37,
+                        "end_line": 92,
+                        "end_col": 63
+                      }
+                    },
+                    {
+                      "name": "className",
+                      "value": {
+                        "value_type": "string",
+                        "value": "product-category"
+                      },
+                      "span": {
+                        "start": 2130,
+                        "end": 2158,
+                        "start_line": 92,
+                        "start_col": 64,
+                        "end_line": 92,
+                        "end_col": 92
+                      }
+                    }
+                  ],
+                  "span": {
+                    "start": 2079,
+                    "end": 2161,
+                    "start_line": 92,
+                    "start_col": 13,
+                    "end_line": 92,
+                    "end_col": 95
+                  }
+                },
+                {
+                  "content_type": "component",
+                  "name": "Heading",
+                  "self_closing": true,
+                  "attributes": [
+                    {
+                      "name": "level",
+                      "value": {
+                        "value_type": "string",
+                        "value": "4"
+                      },
+                      "span": {
+                        "start": 2183,
+                        "end": 2192,
+                        "start_line": 93,
+                        "start_col": 22,
+                        "end_line": 93,
+                        "end_col": 31
+                      }
+                    },
+                    {
+                      "name": "text",
+                      "value": {
+                        "value_type": "expression",
+                        "value": {
+                          "expr_type": "member_access",
+                          "root": "product",
+                          "path": [
+                            "name"
+                          ],
+                          "span": {
+                            "start": 2199,
+                            "end": 2211,
+                            "start_line": 93,
+                            "start_col": 38,
+                            "end_line": 93,
+                            "end_col": 50
+                          }
+                        }
+                      },
+                      "span": {
+                        "start": 2193,
+                        "end": 2212,
+                        "start_line": 93,
+                        "start_col": 32,
+                        "end_line": 93,
+                        "end_col": 51
+                      }
+                    }
+                  ],
+                  "span": {
+                    "start": 2174,
+                    "end": 2215,
+                    "start_line": 93,
+                    "start_col": 13,
+                    "end_line": 93,
+                    "end_col": 54
+                  }
+                },
                 {
                   "content_type": "component",
                   "name": "Flex",
@@ -1817,21 +1951,21 @@
                                         ],
                                         "span": {
                                           "start": 2825,
-                                          "end": 2856,
+                                          "end": 2847,
                                           "start_line": 109,
                                           "start_col": 33,
                                           "end_line": 109,
-                                          "end_col": 64
+                                          "end_col": 55
                                         }
                                       },
                                       "value": {
                                         "expr_type": "identifier",
                                         "name": "product",
                                         "span": {
-                                          "start": 2825,
+                                          "start": 2849,
                                           "end": 2856,
                                           "start_line": 109,
-                                          "start_col": 33,
+                                          "start_col": 57,
                                           "end_line": 109,
                                           "end_col": 64
                                         }
@@ -1856,11 +1990,11 @@
                                         ],
                                         "span": {
                                           "start": 2858,
-                                          "end": 2887,
+                                          "end": 2880,
                                           "start_line": 109,
                                           "start_col": 66,
                                           "end_line": 109,
-                                          "end_col": 95
+                                          "end_col": 88
                                         }
                                       },
                                       "value": {
@@ -1870,12 +2004,12 @@
                                           "value": true
                                         },
                                         "span": {
-                                          "start": 2858,
-                                          "end": 2887,
+                                          "start": 2882,
+                                          "end": 2886,
                                           "start_line": 109,
-                                          "start_col": 66,
+                                          "start_col": 90,
                                           "end_line": 109,
-                                          "end_col": 95
+                                          "end_col": 94
                                         }
                                       },
                                       "span": {
@@ -3408,24 +3542,24 @@
                                             ],
                                             "span": {
                                               "start": 6258,
-                                              "end": 6282,
+                                              "end": 6279,
                                               "start_line": 196,
                                               "start_col": 29,
                                               "end_line": 196,
-                                              "end_col": 53
+                                              "end_col": 50
                                             }
                                           },
                                           "value": {
                                             "expr_type": "literal",
                                             "value": {
-                                              "type": "number",
-                                              "value": 0.0
+                                              "type": "integer",
+                                              "value": 0
                                             },
                                             "span": {
-                                              "start": 6258,
+                                              "start": 6281,
                                               "end": 6282,
                                               "start_line": 196,
-                                              "start_col": 29,
+                                              "start_col": 52,
                                               "end_line": 196,
                                               "end_col": 53
                                             }
@@ -3450,26 +3584,26 @@
                                             ],
                                             "span": {
                                               "start": 6313,
-                                              "end": 6367,
+                                              "end": 6334,
                                               "start_line": 197,
                                               "start_col": 29,
-                                              "end_line": 198,
-                                              "end_col": 25
+                                              "end_line": 197,
+                                              "end_col": 50
                                             }
                                           },
                                           "value": {
                                             "expr_type": "literal",
                                             "value": {
-                                              "type": "number",
-                                              "value": 10000.0
+                                              "type": "integer",
+                                              "value": 10000
                                             },
                                             "span": {
-                                              "start": 6313,
-                                              "end": 6367,
+                                              "start": 6336,
+                                              "end": 6341,
                                               "start_line": 197,
-                                              "start_col": 29,
-                                              "end_line": 198,
-                                              "end_col": 25
+                                              "start_col": 52,
+                                              "end_line": 197,
+                                              "end_col": 57
                                             }
                                           },
                                           "span": {
@@ -3910,6 +4044,96 @@
                                             }
                                           },
                                           "span": {
+                                            "start": 7291,
+                                            "end": 7328,
+                                            "start_line": 218,
+                                            "start_col": 47,
+                                            "end_line": 218,
+                                            "end_col": 84
+                                          }
+                                        }
+                                      ],
+                                      "children": [
+                                        {
+                                          "content_type": "text",
+                                          "value": "Newest",
+                                          "span": {
+                                            "start": 7329,
+                                            "end": 7335,
+                                            "start_line": 218,
+                                            "start_col": 85,
+                                            "end_line": 218,
+                                            "end_col": 91
+                                          }
+                                        }
+                                      ],
+                                      "span": {
+                                        "start": 7277,
+                                        "end": 7350,
+                                        "start_line": 218,
+                                        "start_col": 33,
+                                        "end_line": 218,
+                                        "end_col": 106
+                                      }
+                                    },
+                                    {
+                                      "content_type": "component",
+                                      "name": "DropdownItem",
+                                      "events": [
+                                        {
+                                          "event": "click",
+                                          "handler": {
+                                            "handler_type": {
+                                              "type": "identifier",
+                                              "value": "handler"
+                                            }
+                                          },
+                                          "span": {
+                                            "start": 7397,
+                                            "end": 7437,
+                                            "start_line": 219,
+                                            "start_col": 47,
+                                            "end_line": 219,
+                                            "end_col": 87
+                                          }
+                                        }
+                                      ],
+                                      "children": [
+                                        {
+                                          "content_type": "text",
+                                          "value": "Price: Low to High",
+                                          "span": {
+                                            "start": 7438,
+                                            "end": 7456,
+                                            "start_line": 219,
+                                            "start_col": 88,
+                                            "end_line": 219,
+                                            "end_col": 106
+                                          }
+                                        }
+                                      ],
+                                      "span": {
+                                        "start": 7383,
+                                        "end": 7471,
+                                        "start_line": 219,
+                                        "start_col": 33,
+                                        "end_line": 219,
+                                        "end_col": 121
+                                      }
+                                    },
+                                    {
+                                      "content_type": "component",
+                                      "name": "DropdownItem",
+                                      "events": [
+                                        {
+                                          "event": "click",
+                                          "handler": {
+                                            "handler_type": {
+                                              "type": "identifier",
+                                              "value": "handler"
+                                            }
+                                          },
+                                          "span": {
                                             "start": 7518,
                                             "end": 7559,
                                             "start_line": 220,
@@ -4040,11 +4264,11 @@
                                                     ],
                                                     "span": {
                                                       "start": 7883,
-                                                      "end": 7907,
+                                                      "end": 7898,
                                                       "start_line": 227,
                                                       "start_col": 45,
                                                       "end_line": 227,
-                                                      "end_col": 69
+                                                      "end_col": 60
                                                     }
                                                   },
                                                   "value": {
@@ -4054,12 +4278,12 @@
                                                       "value": "grid"
                                                     },
                                                     "span": {
-                                                      "start": 7883,
-                                                      "end": 7907,
+                                                      "start": 7900,
+                                                      "end": 7906,
                                                       "start_line": 227,
-                                                      "start_col": 45,
+                                                      "start_col": 62,
                                                       "end_line": 227,
-                                                      "end_col": 69
+                                                      "end_col": 68
                                                     }
                                                   },
                                                   "span": {
@@ -4177,11 +4401,11 @@
                                                     ],
                                                     "span": {
                                                       "start": 8159,
-                                                      "end": 8183,
+                                                      "end": 8174,
                                                       "start_line": 233,
                                                       "start_col": 45,
                                                       "end_line": 233,
-                                                      "end_col": 69
+                                                      "end_col": 60
                                                     }
                                                   },
                                                   "value": {
@@ -4191,12 +4415,12 @@
                                                       "value": "list"
                                                     },
                                                     "span": {
-                                                      "start": 8159,
-                                                      "end": 8183,
+                                                      "start": 8176,
+                                                      "end": 8182,
                                                       "start_line": 233,
-                                                      "start_col": 45,
+                                                      "start_col": 62,
                                                       "end_line": 233,
-                                                      "end_col": 69
+                                                      "end_col": 68
                                                     }
                                                   },
                                                   "span": {
@@ -4857,24 +5081,24 @@
                                                     ],
                                                     "span": {
                                                       "start": 9756,
-                                                      "end": 9780,
+                                                      "end": 9777,
                                                       "start_line": 272,
                                                       "start_col": 33,
                                                       "end_line": 272,
-                                                      "end_col": 57
+                                                      "end_col": 54
                                                     }
                                                   },
                                                   "value": {
                                                     "expr_type": "literal",
                                                     "value": {
-                                                      "type": "number",
-                                                      "value": 0.0
+                                                      "type": "integer",
+                                                      "value": 0
                                                     },
                                                     "span": {
-                                                      "start": 9756,
+                                                      "start": 9779,
                                                       "end": 9780,
                                                       "start_line": 272,
-                                                      "start_col": 33,
+                                                      "start_col": 56,
                                                       "end_line": 272,
                                                       "end_col": 57
                                                     }
@@ -4899,26 +5123,26 @@
                                                     ],
                                                     "span": {
                                                       "start": 9815,
-                                                      "end": 9873,
+                                                      "end": 9836,
                                                       "start_line": 273,
                                                       "start_col": 33,
-                                                      "end_line": 274,
-                                                      "end_col": 29
+                                                      "end_line": 273,
+                                                      "end_col": 54
                                                     }
                                                   },
                                                   "value": {
                                                     "expr_type": "literal",
                                                     "value": {
-                                                      "type": "number",
-                                                      "value": 10000.0
+                                                      "type": "integer",
+                                                      "value": 10000
                                                     },
                                                     "span": {
-                                                      "start": 9815,
-                                                      "end": 9873,
+                                                      "start": 9838,
+                                                      "end": 9843,
                                                       "start_line": 273,
-                                                      "start_col": 33,
-                                                      "end_line": 274,
-                                                      "end_col": 29
+                                                      "start_col": 56,
+                                                      "end_line": 273,
+                                                      "end_col": 61
                                                     }
                                                   },
                                                   "span": {
@@ -5341,24 +5565,51 @@
                                             ],
                                             "span": {
                                               "start": 10581,
-                                              "end": 10622,
+                                              "end": 10599,
                                               "start_line": 292,
                                               "start_col": 37,
                                               "end_line": 292,
-                                              "end_col": 78
+                                              "end_col": 55
                                             }
                                           },
                                           "value": {
-                                            "expr_type": "member_access",
-                                            "root": "state",
-                                            "path": [
-                                              "currentPage - 1"
-                                            ],
+                                            "expr_type": "binary",
+                                            "left": {
+                                              "expr_type": "member_access",
+                                              "root": "state",
+                                              "path": [
+                                                "currentPage"
+                                              ],
+                                              "span": {
+                                                "start": 10601,
+                                                "end": 10619,
+                                                "start_line": 292,
+                                                "start_col": 57,
+                                                "end_line": 292,
+                                                "end_col": 75
+                                              }
+                                            },
+                                            "op": "sub",
+                                            "right": {
+                                              "expr_type": "literal",
+                                              "value": {
+                                                "type": "integer",
+                                                "value": 1
+                                              },
+                                              "span": {
+                                                "start": 10621,
+                                                "end": 10622,
+                                                "start_line": 292,
+                                                "start_col": 77,
+                                                "end_line": 292,
+                                                "end_col": 78
+                                              }
+                                            },
                                             "span": {
-                                              "start": 10581,
+                                              "start": 10601,
                                               "end": 10622,
                                               "start_line": 292,
-                                              "start_col": 37,
+                                              "start_col": 57,
                                               "end_line": 292,
                                               "end_col": 78
                                             }
@@ -5533,24 +5784,51 @@
                                             ],
                                             "span": {
                                               "start": 10857,
-                                              "end": 10898,
+                                              "end": 10875,
                                               "start_line": 298,
                                               "start_col": 37,
                                               "end_line": 298,
-                                              "end_col": 78
+                                              "end_col": 55
                                             }
                                           },
                                           "value": {
-                                            "expr_type": "member_access",
-                                            "root": "state",
-                                            "path": [
-                                              "currentPage + 1"
-                                            ],
+                                            "expr_type": "binary",
+                                            "left": {
+                                              "expr_type": "member_access",
+                                              "root": "state",
+                                              "path": [
+                                                "currentPage"
+                                              ],
+                                              "span": {
+                                                "start": 10877,
+                                                "end": 10895,
+                                                "start_line": 298,
+                                                "start_col": 57,
+                                                "end_line": 298,
+                                                "end_col": 75
+                                              }
+                                            },
+                                            "op": "add",
+                                            "right": {
+                                              "expr_type": "literal",
+                                              "value": {
+                                                "type": "integer",
+                                                "value": 1
+                                              },
+                                              "span": {
+                                                "start": 10897,
+                                                "end": 10898,
+                                                "start_line": 298,
+                                                "start_col": 77,
+                                                "end_line": 298,
+                                                "end_col": 78
+                                              }
+                                            },
                                             "span": {
-                                              "start": 10857,
+                                              "start": 10877,
                                               "end": 10898,
                                               "start_line": 298,
-                                              "start_col": 37,
+                                              "start_col": 57,
                                               "end_line": 298,
                                               "end_col": 78
                                             }
@@ -5692,6 +5970,520 @@
               ],
               "children": [
                 {
+                  "content_type": "control_flow",
+                  "flow_type": "if",
+                  "condition": {
+                    "expr_type": "member_access",
+                    "root": "state",
+                    "path": [
+                      "selectedProduct"
+                    ],
+                    "span": {
+                      "start": 11132,
+                      "end": 11154,
+                      "start_line": 306,
+                      "start_col": 16,
+                      "end_line": 306,
+                      "end_col": 38
+                    }
+                  },
+                  "then_branch": [
+                    {
+                      "content_type": "component",
+                      "name": "Flex",
+                      "attributes": [
+                        {
+                          "name": "direction",
+                          "value": {
+                            "value_type": "string",
+                            "value": "column"
+                          },
+                          "span": {
+                            "start": 11178,
+                            "end": 11196,
+                            "start_line": 307,
+                            "start_col": 23,
+                            "end_line": 307,
+                            "end_col": 41
+                          }
+                        },
+                        {
+                          "name": "gap",
+                          "value": {
+                            "value_type": "string",
+                            "value": "4"
+                          },
+                          "span": {
+                            "start": 11197,
+                            "end": 11204,
+                            "start_line": 307,
+                            "start_col": 42,
+                            "end_line": 307,
+                            "end_col": 49
+                          }
+                        }
+                      ],
+                      "children": [
+                        {
+                          "content_type": "component",
+                          "name": "Image",
+                          "self_closing": true,
+                          "attributes": [
+                            {
+                              "name": "src",
+                              "value": {
+                                "value_type": "expression",
+                                "value": {
+                                  "expr_type": "member_access",
+                                  "root": "state",
+                                  "path": [
+                                    "selectedProduct",
+                                    "image"
+                                  ],
+                                  "span": {
+                                    "start": 11238,
+                                    "end": 11265,
+                                    "start_line": 308,
+                                    "start_col": 33,
+                                    "end_line": 308,
+                                    "end_col": 60
+                                  }
+                                }
+                              },
+                              "span": {
+                                "start": 11233,
+                                "end": 11266,
+                                "start_line": 308,
+                                "start_col": 28,
+                                "end_line": 308,
+                                "end_col": 61
+                              }
+                            },
+                            {
+                              "name": "alt",
+                              "value": {
+                                "value_type": "expression",
+                                "value": {
+                                  "expr_type": "member_access",
+                                  "root": "state",
+                                  "path": [
+                                    "selectedProduct",
+                                    "name"
+                                  ],
+                                  "span": {
+                                    "start": 11272,
+                                    "end": 11298,
+                                    "start_line": 308,
+                                    "start_col": 67,
+                                    "end_line": 308,
+                                    "end_col": 93
+                                  }
+                                }
+                              },
+                              "span": {
+                                "start": 11267,
+                                "end": 11299,
+                                "start_line": 308,
+                                "start_col": 62,
+                                "end_line": 308,
+                                "end_col": 94
+                              }
+                            }
+                          ],
+                          "span": {
+                            "start": 11226,
+                            "end": 11302,
+                            "start_line": 308,
+                            "start_col": 21,
+                            "end_line": 308,
+                            "end_col": 97
+                          }
+                        },
+                        {
+                          "content_type": "component",
+                          "name": "Heading",
+                          "self_closing": true,
+                          "attributes": [
+                            {
+                              "name": "level",
+                              "value": {
+                                "value_type": "string",
+                                "value": "3"
+                              },
+                              "span": {
+                                "start": 11332,
+                                "end": 11341,
+                                "start_line": 309,
+                                "start_col": 30,
+                                "end_line": 309,
+                                "end_col": 39
+                              }
+                            },
+                            {
+                              "name": "text",
+                              "value": {
+                                "value_type": "expression",
+                                "value": {
+                                  "expr_type": "member_access",
+                                  "root": "state",
+                                  "path": [
+                                    "selectedProduct",
+                                    "name"
+                                  ],
+                                  "span": {
+                                    "start": 11348,
+                                    "end": 11374,
+                                    "start_line": 309,
+                                    "start_col": 46,
+                                    "end_line": 309,
+                                    "end_col": 72
+                                  }
+                                }
+                              },
+                              "span": {
+                                "start": 11342,
+                                "end": 11375,
+                                "start_line": 309,
+                                "start_col": 40,
+                                "end_line": 309,
+                                "end_col": 73
+                              }
+                            }
+                          ],
+                          "span": {
+                            "start": 11323,
+                            "end": 11378,
+                            "start_line": 309,
+                            "start_col": 21,
+                            "end_line": 309,
+                            "end_col": 76
+                          }
+                        },
+                        {
+                          "content_type": "component",
+                          "name": "Text",
+                          "self_closing": true,
+                          "attributes": [
+                            {
+                              "name": "variant",
+                              "value": {
+                                "value_type": "string",
+                                "value": "body"
+                              },
+                              "span": {
+                                "start": 11405,
+                                "end": 11419,
+                                "start_line": 310,
+                                "start_col": 27,
+                                "end_line": 310,
+                                "end_col": 41
+                              }
+                            },
+                            {
+                              "name": "content",
+                              "value": {
+                                "value_type": "expression",
+                                "value": {
+                                  "expr_type": "member_access",
+                                  "root": "state",
+                                  "path": [
+                                    "selectedProduct",
+                                    "description"
+                                  ],
+                                  "span": {
+                                    "start": 11429,
+                                    "end": 11462,
+                                    "start_line": 310,
+                                    "start_col": 51,
+                                    "end_line": 310,
+                                    "end_col": 84
+                                  }
+                                }
+                              },
+                              "span": {
+                                "start": 11420,
+                                "end": 11463,
+                                "start_line": 310,
+                                "start_col": 42,
+                                "end_line": 310,
+                                "end_col": 85
+                              }
+                            }
+                          ],
+                          "span": {
+                            "start": 11399,
+                            "end": 11466,
+                            "start_line": 310,
+                            "start_col": 21,
+                            "end_line": 310,
+                            "end_col": 88
+                          }
+                        },
+                        {
+                          "content_type": "component",
+                          "name": "Text",
+                          "self_closing": true,
+                          "attributes": [
+                            {
+                              "name": "variant",
+                              "value": {
+                                "value_type": "string",
+                                "value": "body"
+                              },
+                              "span": {
+                                "start": 11493,
+                                "end": 11507,
+                                "start_line": 311,
+                                "start_col": 27,
+                                "end_line": 311,
+                                "end_col": 41
+                              }
+                            },
+                            {
+                              "name": "content",
+                              "value": {
+                                "value_type": "expression",
+                                "value": {
+                                  "expr_type": "binary",
+                                  "left": {
+                                    "expr_type": "literal",
+                                    "value": {
+                                      "type": "string",
+                                      "value": "$"
+                                    },
+                                    "span": {
+                                      "start": 11517,
+                                      "end": 11520,
+                                      "start_line": 311,
+                                      "start_col": 51,
+                                      "end_line": 311,
+                                      "end_col": 54
+                                    }
+                                  },
+                                  "op": "add",
+                                  "right": {
+                                    "expr_type": "member_access",
+                                    "root": "state",
+                                    "path": [
+                                      "selectedProduct",
+                                      "price"
+                                    ],
+                                    "span": {
+                                      "start": 11523,
+                                      "end": 11550,
+                                      "start_line": 311,
+                                      "start_col": 57,
+                                      "end_line": 311,
+                                      "end_col": 84
+                                    }
+                                  },
+                                  "span": {
+                                    "start": 11517,
+                                    "end": 11550,
+                                    "start_line": 311,
+                                    "start_col": 51,
+                                    "end_line": 311,
+                                    "end_col": 84
+                                  }
+                                }
+                              },
+                              "span": {
+                                "start": 11508,
+                                "end": 11551,
+                                "start_line": 311,
+                                "start_col": 42,
+                                "end_line": 311,
+                                "end_col": 85
+                              }
+                            },
+                            {
+                              "name": "className",
+                              "value": {
+                                "value_type": "string",
+                                "value": "price"
+                              },
+                              "span": {
+                                "start": 11552,
+                                "end": 11569,
+                                "start_line": 311,
+                                "start_col": 86,
+                                "end_line": 311,
+                                "end_col": 103
+                              }
+                            }
+                          ],
+                          "span": {
+                            "start": 11487,
+                            "end": 11572,
+                            "start_line": 311,
+                            "start_col": 21,
+                            "end_line": 311,
+                            "end_col": 106
+                          }
+                        },
+                        {
+                          "content_type": "component",
+                          "name": "Button",
+                          "self_closing": true,
+                          "attributes": [
+                            {
+                              "name": "label",
+                              "value": {
+                                "value_type": "string",
+                                "value": "Add to Cart"
+                              },
+                              "span": {
+                                "start": 11626,
+                                "end": 11645,
+                                "start_line": 313,
+                                "start_col": 25,
+                                "end_line": 313,
+                                "end_col": 44
+                              }
+                            },
+                            {
+                              "name": "variant",
+                              "value": {
+                                "value_type": "string",
+                                "value": "primary"
+                              },
+                              "span": {
+                                "start": 11670,
+                                "end": 11687,
+                                "start_line": 314,
+                                "start_col": 25,
+                                "end_line": 314,
+                                "end_col": 42
+                              }
+                            }
+                          ],
+                          "events": [
+                            {
+                              "event": "click",
+                              "handler": {
+                                "handler_type": {
+                                  "type": "arrow",
+                                  "value": {
+                                    "params": [],
+                                    "body": {
+                                      "body_type": "block",
+                                      "content": [
+                                        {
+                                          "stmt_type": "expression",
+                                          "expr_type": "method_call",
+                                          "namespace": "console",
+                                          "method": "log",
+                                          "arguments": [
+                                            {
+                                              "value": {
+                                                "expr_type": "literal",
+                                                "value": {
+                                                  "type": "string",
+                                                  "value": "Add to cart"
+                                                },
+                                                "span": {
+                                                  "start": 11736,
+                                                  "end": 11749,
+                                                  "start_line": 315,
+                                                  "start_col": 49,
+                                                  "end_line": 315,
+                                                  "end_col": 62
+                                                }
+                                              }
+                                            }
+                                          ],
+                                          "span": {
+                                            "start": 11724,
+                                            "end": 11750,
+                                            "start_line": 315,
+                                            "start_col": 37,
+                                            "end_line": 315,
+                                            "end_col": 63
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "span": {
+                                      "start": 11712,
+                                      "end": 11752,
+                                      "start_line": 315,
+                                      "start_col": 25,
+                                      "end_line": 315,
+                                      "end_col": 65
+                                    }
+                                  }
+                                }
+                              },
+                              "span": {
+                                "start": 11712,
+                                "end": 11752,
+                                "start_line": 315,
+                                "start_col": 25,
+                                "end_line": 315,
+                                "end_col": 65
+                              }
+                            }
+                          ],
+                          "span": {
+                            "start": 11593,
+                            "end": 11775,
+                            "start_line": 312,
+                            "start_col": 21,
+                            "end_line": 316,
+                            "end_col": 23
+                          }
+                        }
+                      ],
+                      "span": {
+                        "start": 11172,
+                        "end": 11799,
+                        "start_line": 307,
+                        "start_col": 17,
+                        "end_line": 317,
+                        "end_col": 24
+                      }
+                    }
+                  ],
+                  "span": {
+                    "start": 11129,
+                    "end": 11826,
+                    "start_line": 306,
+                    "start_col": 13,
+                    "end_line": 319,
+                    "end_col": 13
+                  }
+                },
+                {
+                  "content_type": "component",
+                  "name": "Spacer",
+                  "self_closing": true,
+                  "attributes": [
+                    {
+                      "name": "size",
+                      "value": {
+                        "value_type": "string",
+                        "value": "md"
+                      },
+                      "span": {
+                        "start": 11834,
+                        "end": 11843,
+                        "start_line": 319,
+                        "start_col": 21,
+                        "end_line": 319,
+                        "end_col": 30
+                      }
+                    }
+                  ],
+                  "span": {
+                    "start": 11826,
+                    "end": 11846,
+                    "start_line": 319,
+                    "start_col": 13,
+                    "end_line": 319,
+                    "end_col": 33
+                  }
+                },
+                {
                   "content_type": "component",
                   "name": "Button",
                   "self_closing": true,
@@ -5749,11 +6541,11 @@
                                     ],
                                     "span": {
                                       "start": 11958,
-                                      "end": 11988,
+                                      "end": 11980,
                                       "start_line": 323,
                                       "start_col": 29,
                                       "end_line": 323,
-                                      "end_col": 59
+                                      "end_col": 51
                                     }
                                   },
                                   "value": {
@@ -5763,12 +6555,12 @@
                                       "value": false
                                     },
                                     "span": {
-                                      "start": 11958,
-                                      "end": 11988,
+                                      "start": 11982,
+                                      "end": 11987,
                                       "start_line": 323,
-                                      "start_col": 29,
+                                      "start_col": 53,
                                       "end_line": 323,
-                                      "end_col": 59
+                                      "end_col": 58
                                     }
                                   },
                                   "span": {
@@ -5871,6 +6663,7 @@
               }
             }
           ],
+          "nested_rules": [],
           "span": {
             "start": 12062,
             "end": 12110,
@@ -5917,6 +6710,7 @@
               }
             }
           ],
+          "nested_rules": [],
           "span": {
             "start": 12120,
             "end": 12216,
@@ -5948,6 +6742,7 @@
               }
             }
           ],
+          "nested_rules": [],
           "span": {
             "start": 12226,
             "end": 12271,
@@ -5979,6 +6774,7 @@
               }
             }
           ],
+          "nested_rules": [],
           "span": {
             "start": 12281,
             "end": 12330,
@@ -6055,6 +6851,7 @@
               }
             }
           ],
+          "nested_rules": [],
           "span": {
             "start": 12340,
             "end": 12482,
@@ -6086,6 +6883,7 @@
               }
             }
           ],
+          "nested_rules": [],
           "span": {
             "start": 12492,
             "end": 12544,
@@ -6117,6 +6915,7 @@
               }
             }
           ],
+          "nested_rules": [],
           "span": {
             "start": 12554,
             "end": 12592,
@@ -6148,6 +6947,7 @@
               }
             }
           ],
+          "nested_rules": [],
           "span": {
             "start": 12602,
             "end": 12655,
@@ -6179,6 +6979,7 @@
               }
             }
           ],
+          "nested_rules": [],
           "span": {
             "start": 12665,
             "end": 12705,
@@ -6210,6 +7011,7 @@
               }
             }
           ],
+          "nested_rules": [],
           "span": {
             "start": 12715,
             "end": 12772,
@@ -6256,6 +7058,7 @@
               }
             }
           ],
+          "nested_rules": [],
           "span": {
             "start": 12782,
             "end": 12868,
@@ -6317,6 +7120,7 @@
               }
             }
           ],
+          "nested_rules": [],
           "span": {
             "start": 12878,
             "end": 12966,
@@ -6348,6 +7152,7 @@
               }
             }
           ],
+          "nested_rules": [],
           "span": {
             "start": 12976,
             "end": 13035,
@@ -6394,6 +7199,7 @@
               }
             }
           ],
+          "nested_rules": [],
           "span": {
             "start": 13045,
             "end": 13124,

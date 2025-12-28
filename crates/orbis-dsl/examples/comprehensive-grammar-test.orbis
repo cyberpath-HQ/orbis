@@ -257,9 +257,11 @@ template {
     // If-else if-else chain
     if state.status == "loading" {
         <CircularProgress />
-    } else if state.status == "error" {
+    } 
+    else if state.status == "error" {
         <Alert severity="error">{state.errorMessage}</Alert>
-    } else {
+    } 
+    else {
         <DataTable data={state.items} />
     }
     
@@ -379,6 +381,25 @@ styles scoped {
     // Nested-like selectors (using &)
     .button {
         padding: 8px 16px;
+
+        &:before {
+            content: "🏗️";
+            width: 10px;
+            height: 10px
+        }
+
+        & .nested-1 {
+            & .nested-2.optional {
+                background: blue
+            }
+        }
+    }
+    
+    // State interpolation in CSS
+    .themed {
+        color: {state.theme.primaryColor};
+        background: {state.theme.bgColor};
+        font-size: {state.settings.fontSize + 1};
     }
     
     // Pseudo-classes and pseudo-elements

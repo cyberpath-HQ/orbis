@@ -940,10 +940,11 @@
           "hook_type": "watcher",
           "targets": [
             {
-              "expr_type": "literal",
-              "value": {
-                "type": "null"
-              },
+              "expr_type": "member_access",
+              "root": "state",
+              "path": [
+                "password"
+              ],
               "span": {
                 "start": 1251,
                 "end": 1265,
@@ -1252,6 +1253,96 @@
                     }
                   ],
                   "children": [
+                    {
+                      "content_type": "component",
+                      "name": "Icon",
+                      "self_closing": true,
+                      "attributes": [
+                        {
+                          "name": "name",
+                          "value": {
+                            "value_type": "string",
+                            "value": "user-plus"
+                          },
+                          "span": {
+                            "start": 1724,
+                            "end": 1740,
+                            "start_line": 79,
+                            "start_col": 23,
+                            "end_line": 79,
+                            "end_col": 39
+                          }
+                        },
+                        {
+                          "name": "size",
+                          "value": {
+                            "value_type": "string",
+                            "value": "xl"
+                          },
+                          "span": {
+                            "start": 1741,
+                            "end": 1750,
+                            "start_line": 79,
+                            "start_col": 40,
+                            "end_line": 79,
+                            "end_col": 49
+                          }
+                        }
+                      ],
+                      "span": {
+                        "start": 1718,
+                        "end": 1753,
+                        "start_line": 79,
+                        "start_col": 17,
+                        "end_line": 79,
+                        "end_col": 52
+                      }
+                    },
+                    {
+                      "content_type": "component",
+                      "name": "Heading",
+                      "self_closing": true,
+                      "attributes": [
+                        {
+                          "name": "level",
+                          "value": {
+                            "value_type": "string",
+                            "value": "2"
+                          },
+                          "span": {
+                            "start": 1779,
+                            "end": 1788,
+                            "start_line": 80,
+                            "start_col": 26,
+                            "end_line": 80,
+                            "end_col": 35
+                          }
+                        },
+                        {
+                          "name": "text",
+                          "value": {
+                            "value_type": "string",
+                            "value": "Create your account"
+                          },
+                          "span": {
+                            "start": 1789,
+                            "end": 1815,
+                            "start_line": 80,
+                            "start_col": 36,
+                            "end_line": 80,
+                            "end_col": 62
+                          }
+                        }
+                      ],
+                      "span": {
+                        "start": 1770,
+                        "end": 1818,
+                        "start_line": 80,
+                        "start_col": 17,
+                        "end_line": 80,
+                        "end_col": 65
+                      }
+                    },
                     {
                       "content_type": "component",
                       "name": "Text",
@@ -3007,24 +3098,51 @@
                                                     ],
                                                     "span": {
                                                       "start": 6838,
-                                                      "end": 6879,
+                                                      "end": 6856,
                                                       "start_line": 187,
                                                       "start_col": 45,
                                                       "end_line": 187,
-                                                      "end_col": 86
+                                                      "end_col": 63
                                                     }
                                                   },
                                                   "value": {
-                                                    "expr_type": "member_access",
-                                                    "root": "state",
-                                                    "path": [
-                                                      "currentStep - 1"
-                                                    ],
+                                                    "expr_type": "binary",
+                                                    "left": {
+                                                      "expr_type": "member_access",
+                                                      "root": "state",
+                                                      "path": [
+                                                        "currentStep"
+                                                      ],
+                                                      "span": {
+                                                        "start": 6858,
+                                                        "end": 6876,
+                                                        "start_line": 187,
+                                                        "start_col": 65,
+                                                        "end_line": 187,
+                                                        "end_col": 83
+                                                      }
+                                                    },
+                                                    "op": "sub",
+                                                    "right": {
+                                                      "expr_type": "literal",
+                                                      "value": {
+                                                        "type": "integer",
+                                                        "value": 1
+                                                      },
+                                                      "span": {
+                                                        "start": 6878,
+                                                        "end": 6879,
+                                                        "start_line": 187,
+                                                        "start_col": 85,
+                                                        "end_line": 187,
+                                                        "end_col": 86
+                                                      }
+                                                    },
                                                     "span": {
-                                                      "start": 6838,
+                                                      "start": 6858,
                                                       "end": 6879,
                                                       "start_line": 187,
-                                                      "start_col": 45,
+                                                      "start_col": 65,
                                                       "end_line": 187,
                                                       "end_col": 86
                                                     }
@@ -3199,24 +3317,51 @@
                                                     ],
                                                     "span": {
                                                       "start": 7270,
-                                                      "end": 7311,
+                                                      "end": 7288,
                                                       "start_line": 197,
                                                       "start_col": 45,
                                                       "end_line": 197,
-                                                      "end_col": 86
+                                                      "end_col": 63
                                                     }
                                                   },
                                                   "value": {
-                                                    "expr_type": "member_access",
-                                                    "root": "state",
-                                                    "path": [
-                                                      "currentStep + 1"
-                                                    ],
+                                                    "expr_type": "binary",
+                                                    "left": {
+                                                      "expr_type": "member_access",
+                                                      "root": "state",
+                                                      "path": [
+                                                        "currentStep"
+                                                      ],
+                                                      "span": {
+                                                        "start": 7290,
+                                                        "end": 7308,
+                                                        "start_line": 197,
+                                                        "start_col": 65,
+                                                        "end_line": 197,
+                                                        "end_col": 83
+                                                      }
+                                                    },
+                                                    "op": "add",
+                                                    "right": {
+                                                      "expr_type": "literal",
+                                                      "value": {
+                                                        "type": "integer",
+                                                        "value": 1
+                                                      },
+                                                      "span": {
+                                                        "start": 7310,
+                                                        "end": 7311,
+                                                        "start_line": 197,
+                                                        "start_col": 85,
+                                                        "end_line": 197,
+                                                        "end_col": 86
+                                                      }
+                                                    },
                                                     "span": {
-                                                      "start": 7270,
+                                                      "start": 7290,
                                                       "end": 7311,
                                                       "start_line": 197,
-                                                      "start_col": 45,
+                                                      "start_col": 65,
                                                       "end_line": 197,
                                                       "end_col": 86
                                                     }
@@ -3441,6 +3586,51 @@
                   "children": [
                     {
                       "content_type": "component",
+                      "name": "Text",
+                      "self_closing": true,
+                      "attributes": [
+                        {
+                          "name": "variant",
+                          "value": {
+                            "value_type": "string",
+                            "value": "body"
+                          },
+                          "span": {
+                            "start": 7891,
+                            "end": 7905,
+                            "start_line": 214,
+                            "start_col": 23,
+                            "end_line": 214,
+                            "end_col": 37
+                          }
+                        },
+                        {
+                          "name": "content",
+                          "value": {
+                            "value_type": "string",
+                            "value": "Already have an account?"
+                          },
+                          "span": {
+                            "start": 7906,
+                            "end": 7940,
+                            "start_line": 214,
+                            "start_col": 38,
+                            "end_line": 214,
+                            "end_col": 72
+                          }
+                        }
+                      ],
+                      "span": {
+                        "start": 7885,
+                        "end": 7943,
+                        "start_line": 214,
+                        "start_col": 17,
+                        "end_line": 214,
+                        "end_col": 75
+                      }
+                    },
+                    {
+                      "content_type": "component",
                       "name": "Link",
                       "attributes": [
                         {
@@ -3626,6 +3816,7 @@
               }
             }
           ],
+          "nested_rules": [],
           "span": {
             "start": 8077,
             "end": 8276,
@@ -3717,6 +3908,7 @@
               }
             }
           ],
+          "nested_rules": [],
           "span": {
             "start": 8286,
             "end": 8474,
@@ -3763,6 +3955,7 @@
               }
             }
           ],
+          "nested_rules": [],
           "span": {
             "start": 8484,
             "end": 8573,
@@ -3794,6 +3987,7 @@
               }
             }
           ],
+          "nested_rules": [],
           "span": {
             "start": 8583,
             "end": 8640,
@@ -3855,6 +4049,7 @@
               }
             }
           ],
+          "nested_rules": [],
           "span": {
             "start": 8650,
             "end": 8745,
@@ -3916,6 +4111,7 @@
               }
             }
           ],
+          "nested_rules": [],
           "span": {
             "start": 8755,
             "end": 8847,
@@ -3977,6 +4173,7 @@
               }
             }
           ],
+          "nested_rules": [],
           "span": {
             "start": 8857,
             "end": 8976,
@@ -4023,6 +4220,7 @@
               }
             }
           ],
+          "nested_rules": [],
           "span": {
             "start": 8986,
             "end": 9075,

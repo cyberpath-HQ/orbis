@@ -678,11 +678,11 @@
                 ],
                 "span": {
                   "start": 1205,
-                  "end": 1233,
+                  "end": 1221,
                   "start_line": 54,
                   "start_col": 9,
-                  "end_line": 55,
-                  "end_col": 5
+                  "end_line": 54,
+                  "end_col": 25
                 }
               },
               "value": {
@@ -692,12 +692,12 @@
                   "value": false
                 },
                 "span": {
-                  "start": 1205,
-                  "end": 1233,
+                  "start": 1223,
+                  "end": 1228,
                   "start_line": 54,
-                  "start_col": 9,
-                  "end_line": 55,
-                  "end_col": 5
+                  "start_col": 27,
+                  "end_line": 54,
+                  "end_col": 32
                 }
               },
               "span": {
@@ -1396,11 +1396,11 @@
                                         ],
                                         "span": {
                                           "start": 2184,
-                                          "end": 2213,
+                                          "end": 2206,
                                           "start_line": 86,
                                           "start_col": 33,
                                           "end_line": 86,
-                                          "end_col": 62
+                                          "end_col": 55
                                         }
                                       },
                                       "value": {
@@ -1410,12 +1410,12 @@
                                           "value": true
                                         },
                                         "span": {
-                                          "start": 2184,
-                                          "end": 2213,
+                                          "start": 2208,
+                                          "end": 2212,
                                           "start_line": 86,
-                                          "start_col": 33,
+                                          "start_col": 57,
                                           "end_line": 86,
-                                          "end_col": 62
+                                          "end_col": 61
                                         }
                                       },
                                       "span": {
@@ -1517,11 +1517,11 @@
                                         ],
                                         "span": {
                                           "start": 2366,
-                                          "end": 2392,
+                                          "end": 2385,
                                           "start_line": 91,
                                           "start_col": 33,
                                           "end_line": 91,
-                                          "end_col": 59
+                                          "end_col": 52
                                         }
                                       },
                                       "value": {
@@ -1531,12 +1531,12 @@
                                           "value": true
                                         },
                                         "span": {
-                                          "start": 2366,
-                                          "end": 2392,
+                                          "start": 2387,
+                                          "end": 2391,
                                           "start_line": 91,
-                                          "start_col": 33,
+                                          "start_col": 54,
                                           "end_line": 91,
-                                          "end_col": 59
+                                          "end_col": 58
                                         }
                                       },
                                       "span": {
@@ -2240,6 +2240,141 @@
                                   "name": "field",
                                   "value": {
                                     "value_type": "string",
+                                    "value": "id"
+                                  },
+                                  "span": {
+                                    "start": 3688,
+                                    "end": 3698,
+                                    "start_line": 132,
+                                    "start_col": 38,
+                                    "end_line": 132,
+                                    "end_col": 48
+                                  }
+                                },
+                                {
+                                  "name": "header",
+                                  "value": {
+                                    "value_type": "string",
+                                    "value": "ID"
+                                  },
+                                  "span": {
+                                    "start": 3699,
+                                    "end": 3710,
+                                    "start_line": 132,
+                                    "start_col": 49,
+                                    "end_line": 132,
+                                    "end_col": 60
+                                  }
+                                }
+                              ],
+                              "span": {
+                                "start": 3675,
+                                "end": 3713,
+                                "start_line": 132,
+                                "start_col": 25,
+                                "end_line": 132,
+                                "end_col": 63
+                              }
+                            },
+                            {
+                              "content_type": "component",
+                              "name": "TableColumn",
+                              "self_closing": true,
+                              "attributes": [
+                                {
+                                  "name": "field",
+                                  "value": {
+                                    "value_type": "string",
+                                    "value": "customer"
+                                  },
+                                  "span": {
+                                    "start": 3751,
+                                    "end": 3767,
+                                    "start_line": 133,
+                                    "start_col": 38,
+                                    "end_line": 133,
+                                    "end_col": 54
+                                  }
+                                },
+                                {
+                                  "name": "header",
+                                  "value": {
+                                    "value_type": "string",
+                                    "value": "Customer"
+                                  },
+                                  "span": {
+                                    "start": 3768,
+                                    "end": 3785,
+                                    "start_line": 133,
+                                    "start_col": 55,
+                                    "end_line": 133,
+                                    "end_col": 72
+                                  }
+                                }
+                              ],
+                              "span": {
+                                "start": 3738,
+                                "end": 3788,
+                                "start_line": 133,
+                                "start_col": 25,
+                                "end_line": 133,
+                                "end_col": 75
+                              }
+                            },
+                            {
+                              "content_type": "component",
+                              "name": "TableColumn",
+                              "self_closing": true,
+                              "attributes": [
+                                {
+                                  "name": "field",
+                                  "value": {
+                                    "value_type": "string",
+                                    "value": "amount"
+                                  },
+                                  "span": {
+                                    "start": 3826,
+                                    "end": 3840,
+                                    "start_line": 134,
+                                    "start_col": 38,
+                                    "end_line": 134,
+                                    "end_col": 52
+                                  }
+                                },
+                                {
+                                  "name": "header",
+                                  "value": {
+                                    "value_type": "string",
+                                    "value": "Amount"
+                                  },
+                                  "span": {
+                                    "start": 3841,
+                                    "end": 3856,
+                                    "start_line": 134,
+                                    "start_col": 53,
+                                    "end_line": 134,
+                                    "end_col": 68
+                                  }
+                                }
+                              ],
+                              "span": {
+                                "start": 3813,
+                                "end": 3859,
+                                "start_line": 134,
+                                "start_col": 25,
+                                "end_line": 134,
+                                "end_col": 71
+                              }
+                            },
+                            {
+                              "content_type": "component",
+                              "name": "TableColumn",
+                              "self_closing": true,
+                              "attributes": [
+                                {
+                                  "name": "field",
+                                  "value": {
+                                    "value_type": "string",
                                     "value": "status"
                                   },
                                   "span": {
@@ -2383,6 +2518,366 @@
               "children": [
                 {
                   "content_type": "component",
+                  "name": "Text",
+                  "self_closing": true,
+                  "attributes": [
+                    {
+                      "name": "content",
+                      "value": {
+                        "value_type": "string",
+                        "value": "Select export format:"
+                      },
+                      "span": {
+                        "start": 4155,
+                        "end": 4186,
+                        "start_line": 143,
+                        "start_col": 19,
+                        "end_line": 143,
+                        "end_col": 50
+                      }
+                    }
+                  ],
+                  "span": {
+                    "start": 4149,
+                    "end": 4189,
+                    "start_line": 143,
+                    "start_col": 13,
+                    "end_line": 143,
+                    "end_col": 53
+                  }
+                },
+                {
+                  "content_type": "component",
+                  "name": "Spacer",
+                  "self_closing": true,
+                  "attributes": [
+                    {
+                      "name": "size",
+                      "value": {
+                        "value_type": "string",
+                        "value": "md"
+                      },
+                      "span": {
+                        "start": 4210,
+                        "end": 4219,
+                        "start_line": 144,
+                        "start_col": 21,
+                        "end_line": 144,
+                        "end_col": 30
+                      }
+                    }
+                  ],
+                  "span": {
+                    "start": 4202,
+                    "end": 4222,
+                    "start_line": 144,
+                    "start_col": 13,
+                    "end_line": 144,
+                    "end_col": 33
+                  }
+                },
+                {
+                  "content_type": "component",
+                  "name": "Flex",
+                  "attributes": [
+                    {
+                      "name": "direction",
+                      "value": {
+                        "value_type": "string",
+                        "value": "column"
+                      },
+                      "span": {
+                        "start": 4241,
+                        "end": 4259,
+                        "start_line": 145,
+                        "start_col": 19,
+                        "end_line": 145,
+                        "end_col": 37
+                      }
+                    },
+                    {
+                      "name": "gap",
+                      "value": {
+                        "value_type": "string",
+                        "value": "2"
+                      },
+                      "span": {
+                        "start": 4260,
+                        "end": 4267,
+                        "start_line": 145,
+                        "start_col": 38,
+                        "end_line": 145,
+                        "end_col": 45
+                      }
+                    }
+                  ],
+                  "children": [
+                    {
+                      "content_type": "component",
+                      "name": "Button",
+                      "self_closing": true,
+                      "attributes": [
+                        {
+                          "name": "label",
+                          "value": {
+                            "value_type": "string",
+                            "value": "CSV"
+                          },
+                          "span": {
+                            "start": 4293,
+                            "end": 4304,
+                            "start_line": 146,
+                            "start_col": 25,
+                            "end_line": 146,
+                            "end_col": 36
+                          }
+                        },
+                        {
+                          "name": "variant",
+                          "value": {
+                            "value_type": "string",
+                            "value": "secondary"
+                          },
+                          "span": {
+                            "start": 4305,
+                            "end": 4324,
+                            "start_line": 146,
+                            "start_col": 37,
+                            "end_line": 146,
+                            "end_col": 56
+                          }
+                        }
+                      ],
+                      "events": [
+                        {
+                          "event": "click",
+                          "handler": {
+                            "handler_type": {
+                              "type": "arrow",
+                              "value": {
+                                "params": [],
+                                "body": {
+                                  "body_type": "block",
+                                  "content": [
+                                    {
+                                      "stmt_type": "expression",
+                                      "expr_type": "method_call",
+                                      "namespace": "console",
+                                      "method": "log",
+                                      "arguments": [
+                                        {
+                                          "value": {
+                                            "expr_type": "literal",
+                                            "value": {
+                                              "type": "string",
+                                              "value": "Export CSV"
+                                            },
+                                            "span": {
+                                              "start": 4349,
+                                              "end": 4361,
+                                              "start_line": 146,
+                                              "start_col": 81,
+                                              "end_line": 146,
+                                              "end_col": 93
+                                            }
+                                          }
+                                        }
+                                      ],
+                                      "span": {
+                                        "start": 4337,
+                                        "end": 4362,
+                                        "start_line": 146,
+                                        "start_col": 69,
+                                        "end_line": 146,
+                                        "end_col": 94
+                                      }
+                                    }
+                                  ]
+                                },
+                                "span": {
+                                  "start": 4325,
+                                  "end": 4364,
+                                  "start_line": 146,
+                                  "start_col": 57,
+                                  "end_line": 146,
+                                  "end_col": 96
+                                }
+                              }
+                            }
+                          },
+                          "span": {
+                            "start": 4325,
+                            "end": 4364,
+                            "start_line": 146,
+                            "start_col": 57,
+                            "end_line": 146,
+                            "end_col": 96
+                          }
+                        }
+                      ],
+                      "span": {
+                        "start": 4285,
+                        "end": 4367,
+                        "start_line": 146,
+                        "start_col": 17,
+                        "end_line": 146,
+                        "end_col": 99
+                      }
+                    },
+                    {
+                      "content_type": "component",
+                      "name": "Button",
+                      "self_closing": true,
+                      "attributes": [
+                        {
+                          "name": "label",
+                          "value": {
+                            "value_type": "string",
+                            "value": "Excel"
+                          },
+                          "span": {
+                            "start": 4392,
+                            "end": 4405,
+                            "start_line": 147,
+                            "start_col": 25,
+                            "end_line": 147,
+                            "end_col": 38
+                          }
+                        },
+                        {
+                          "name": "variant",
+                          "value": {
+                            "value_type": "string",
+                            "value": "secondary"
+                          },
+                          "span": {
+                            "start": 4406,
+                            "end": 4425,
+                            "start_line": 147,
+                            "start_col": 39,
+                            "end_line": 147,
+                            "end_col": 58
+                          }
+                        }
+                      ],
+                      "events": [
+                        {
+                          "event": "click",
+                          "handler": {
+                            "handler_type": {
+                              "type": "arrow",
+                              "value": {
+                                "params": [],
+                                "body": {
+                                  "body_type": "block",
+                                  "content": [
+                                    {
+                                      "stmt_type": "expression",
+                                      "expr_type": "method_call",
+                                      "namespace": "console",
+                                      "method": "log",
+                                      "arguments": [
+                                        {
+                                          "value": {
+                                            "expr_type": "literal",
+                                            "value": {
+                                              "type": "string",
+                                              "value": "Export Excel"
+                                            },
+                                            "span": {
+                                              "start": 4450,
+                                              "end": 4464,
+                                              "start_line": 147,
+                                              "start_col": 83,
+                                              "end_line": 147,
+                                              "end_col": 97
+                                            }
+                                          }
+                                        }
+                                      ],
+                                      "span": {
+                                        "start": 4438,
+                                        "end": 4465,
+                                        "start_line": 147,
+                                        "start_col": 71,
+                                        "end_line": 147,
+                                        "end_col": 98
+                                      }
+                                    }
+                                  ]
+                                },
+                                "span": {
+                                  "start": 4426,
+                                  "end": 4467,
+                                  "start_line": 147,
+                                  "start_col": 59,
+                                  "end_line": 147,
+                                  "end_col": 100
+                                }
+                              }
+                            }
+                          },
+                          "span": {
+                            "start": 4426,
+                            "end": 4467,
+                            "start_line": 147,
+                            "start_col": 59,
+                            "end_line": 147,
+                            "end_col": 100
+                          }
+                        }
+                      ],
+                      "span": {
+                        "start": 4384,
+                        "end": 4470,
+                        "start_line": 147,
+                        "start_col": 17,
+                        "end_line": 147,
+                        "end_col": 103
+                      }
+                    }
+                  ],
+                  "span": {
+                    "start": 4235,
+                    "end": 4490,
+                    "start_line": 145,
+                    "start_col": 13,
+                    "end_line": 148,
+                    "end_col": 20
+                  }
+                },
+                {
+                  "content_type": "component",
+                  "name": "Spacer",
+                  "self_closing": true,
+                  "attributes": [
+                    {
+                      "name": "size",
+                      "value": {
+                        "value_type": "string",
+                        "value": "md"
+                      },
+                      "span": {
+                        "start": 4511,
+                        "end": 4520,
+                        "start_line": 149,
+                        "start_col": 21,
+                        "end_line": 149,
+                        "end_col": 30
+                      }
+                    }
+                  ],
+                  "span": {
+                    "start": 4503,
+                    "end": 4523,
+                    "start_line": 149,
+                    "start_col": 13,
+                    "end_line": 149,
+                    "end_col": 33
+                  }
+                },
+                {
+                  "content_type": "component",
                   "name": "Button",
                   "self_closing": true,
                   "attributes": [
@@ -2439,11 +2934,11 @@
                                     ],
                                     "span": {
                                       "start": 4587,
-                                      "end": 4617,
+                                      "end": 4609,
                                       "start_line": 150,
                                       "start_col": 64,
                                       "end_line": 150,
-                                      "end_col": 94
+                                      "end_col": 86
                                     }
                                   },
                                   "value": {
@@ -2453,12 +2948,12 @@
                                       "value": false
                                     },
                                     "span": {
-                                      "start": 4587,
-                                      "end": 4617,
+                                      "start": 4611,
+                                      "end": 4616,
                                       "start_line": 150,
-                                      "start_col": 64,
+                                      "start_col": 88,
                                       "end_line": 150,
-                                      "end_col": 94
+                                      "end_col": 93
                                     }
                                   },
                                   "span": {
@@ -2591,6 +3086,7 @@
               }
             }
           ],
+          "nested_rules": [],
           "span": {
             "start": 4679,
             "end": 4778,
@@ -2652,6 +3148,7 @@
               }
             }
           ],
+          "nested_rules": [],
           "span": {
             "start": 4788,
             "end": 4905,
@@ -2683,6 +3180,7 @@
               }
             }
           ],
+          "nested_rules": [],
           "span": {
             "start": 4915,
             "end": 4966,
@@ -2714,6 +3212,7 @@
               }
             }
           ],
+          "nested_rules": [],
           "span": {
             "start": 4976,
             "end": 5028,
