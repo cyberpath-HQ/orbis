@@ -185,7 +185,7 @@ fn visit_element(element: &TopLevelElement, builder: &mut SemanticTokenBuilder, 
             emit_token(builder, &state.span, 0, 5, token_types::KEYWORD, token_modifiers::DEFINITION);
 
             for decl in &state.declarations {
-                visit_state_declaration(decl, builder);
+                visit_state_declaration(decl, builder, document);
             }
         }
 
@@ -425,10 +425,68 @@ fn visit_element(element: &TopLevelElement, builder: &mut SemanticTokenBuilder, 
     }
 }
 
+/// Helper to emit tokens for a doc comment
+fn emit_doc_comment(doc: &str, decl_line: usize, builder: &mut SemanticTokenBuilder, document: &Document) {
+    // Doc comment appears before the declaration
+    // Count lines in doc to determine start position
+    let doc_line_count = doc.lines().count();
+    if doc_line_count == 0 {
+        return;
+    }
+    
+    // Doc comment starts at decl_line - doc_line_count - 1 (for closing */)
+    // We need to find the actual /** marker in the source
+    let search_start = decl_line.saturating_sub(doc_line_count + 3); // Account for /** and */
+    
+    // Search backwards from declaration to find /**
+    for line_idx in (search_start..decl_line).rev() {
+        if let Some(line_text) = document.get_line(line_idx) {
+            if let Some(pos) = line_text.find("/**") {
+                // Found start of doc comment - emit tokens for all lines
+                let start_line = line_idx as u32;
+                let start_col = pos as u32;
+                
+                // Emit token for /** line
+                let first_line_len = line_text[pos..].trim_end().len() as u32;
+                builder.push(start_line, start_col, first_line_len, token_types::COMMENT, 0);
+                
+                // Emit tokens for middle lines
+                let mut current_line = line_idx + 1;
+                while current_line < decl_line {
+                    if let Some(cont_line) = document.get_line(current_line) {
+                        let trimmed = cont_line.trim_start();
+                        if trimmed.starts_with("*/") {
+                            // Closing line
+                            let indent = cont_line.len() - trimmed.len();
+                            builder.push(current_line as u32, indent as u32, trimmed.len() as u32, token_types::COMMENT, 0);
+                            break;
+                        } else {
+                            // Middle line
+                            let indent = cont_line.len() - trimmed.len();
+                            let line_len = cont_line.trim_end().len() - indent;
+                            if line_len > 0 {
+                                builder.push(current_line as u32, indent as u32, line_len as u32, token_types::COMMENT, 0);
+                            }
+                        }
+                    }
+                    current_line += 1;
+                }
+                
+                return;
+            }
+        }
+    }
+}
+
 /// Visit state declaration
-fn visit_state_declaration(decl: &StateDeclaration, builder: &mut SemanticTokenBuilder) {
+fn visit_state_declaration(decl: &StateDeclaration, builder: &mut SemanticTokenBuilder, document: &Document) {
     match decl {
         StateDeclaration::Regular(reg) => {
+            // Handle doc comment if present
+            if let Some(doc) = &reg.doc_comment {
+                emit_doc_comment(doc, reg.span.start_line, builder, document);
+            }
+            
             let line = (reg.span.start_line.saturating_sub(1)) as u32;
             let col = (reg.span.start_col.saturating_sub(1)) as u32;
             
@@ -463,6 +521,11 @@ fn visit_state_declaration(decl: &StateDeclaration, builder: &mut SemanticTokenB
         }
 
         StateDeclaration::Computed(comp) => {
+            // Handle doc comment if present
+            if let Some(doc) = &comp.doc_comment {
+                emit_doc_comment(doc, comp.span.start_line, builder, document);
+            }
+            
             let line = (comp.span.start_line.saturating_sub(1)) as u32;
 
             if comp.explicit_computed {
@@ -483,6 +546,11 @@ fn visit_state_declaration(decl: &StateDeclaration, builder: &mut SemanticTokenB
         }
 
         StateDeclaration::Validated(val) => {
+            // Handle doc comment if present
+            if let Some(doc) = &val.doc_comment {
+                emit_doc_comment(doc, val.span.start_line, builder, document);
+            }
+            
             let line = (val.span.start_line.saturating_sub(1)) as u32;
 
             // Variable name
@@ -590,15 +658,24 @@ fn visit_template_content(content: &TemplateContent, builder: &mut SemanticToken
                 }
             } else if !comp.children.is_empty() {
                 // Has closing tag </Component>
-                // Find the closing tag in source after children
+                // comp.name is lowercase, but source may have Capital - search case-insensitively
                 let end_line = (comp.span.end_line.saturating_sub(1)) as u32;
-                if let Some(line_text) = document.get_line(end_line as usize) {
-                    // Look for </ComponentName>
-                    let closing_pattern = format!("</{}", comp.name);
-                    let search_end = (comp.span.end_col as usize).min(line_text.len());
-                    if let Some(close_pos) = line_text[..search_end].rfind(&closing_pattern) {
-                        // Highlight the component name in closing tag
-                        builder.push(end_line, (close_pos + 2) as u32, comp.name.len() as u32, token_types::CLASS, 0);
+                let start_line = (comp.span.start_line.saturating_sub(1)) as u32;
+                
+                // Search backwards from end_line to start_line for </
+                for search_line in (start_line..=end_line).rev() {
+                    if let Some(line_text) = document.get_line(search_line as usize) {
+                        // Find all occurrences of </ and check if followed by comp.name (case-insensitive)
+                        let line_lower = line_text.to_lowercase();
+                        let pattern = format!("</{}", comp.name); // comp.name is already lowercase
+                        if let Some(close_pos) = line_lower.find(&pattern) {
+                            // Found closing tag - highlight component name (use actual case from source)
+                            // Extract the actual component name from source (after </)
+                            let name_start = close_pos + 2;
+                            let name_len = comp.name.len();
+                            builder.push(search_line, name_start as u32, name_len as u32, token_types::CLASS, 0);
+                            break;
+                        }
                     }
                 }
             }

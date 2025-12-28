@@ -16,19 +16,7 @@
 use tower_lsp::{LspService, Server};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-mod analysis;
-mod backend;
-mod capabilities;
-mod completion;
-mod definition;
-mod diagnostics;
-mod document;
-mod hover;
-mod references;
-mod semantic_tokens;
-mod symbols;
-
-use backend::OrbisBackend;
+use orbis_lsp::OrbisBackend;
 
 #[tokio::main]
 async fn main() {
