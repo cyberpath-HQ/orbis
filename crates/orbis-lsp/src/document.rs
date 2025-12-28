@@ -162,6 +162,32 @@ impl Document {
         ))
     }
 
+    /// Check if a position is inside a string literal
+    /// This is a simple heuristic that counts quotes before the position
+    pub fn is_in_string(&self, pos: &Position) -> bool {
+        let line = pos.line as usize;
+        let col = pos.character as usize;
+        
+        let line_text = self.get_line(line).unwrap_or_default();
+        if col >= line_text.len() {
+            return false;
+        }
+        
+        // Count unescaped quotes before position
+        let prefix = &line_text[..col];
+        let mut in_string = false;
+        let mut prev_char = ' ';
+        
+        for ch in prefix.chars() {
+            if ch == '"' && prev_char != '\\' {
+                in_string = !in_string;
+            }
+            prev_char = ch;
+        }
+        
+        in_string
+    }
+
     /// Get the context at a given position (for completion)
     pub fn get_context(&self, pos: &Position) -> DocumentContext {
         let line = pos.line as usize;

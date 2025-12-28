@@ -20,9 +20,14 @@ pub fn get_hover(
     // Get the word at position
     let (word, range) = doc.word_at_position(pos)?;
 
+    // Skip keyword/component hover if we're inside a string literal
+    let in_string = doc.is_in_string(pos);
+
     // Try page property hover
-    if let Some(hover) = hover_for_page_property(&word, range.clone()) {
-        return Some(hover);
+    if !in_string {
+        if let Some(hover) = hover_for_page_property(&word, range.clone()) {
+            return Some(hover);
+        }
     }
 
     // Try to find symbol info
@@ -30,14 +35,18 @@ pub fn get_hover(
         return Some(hover);
     }
 
-    // Try component hover
-    if let Some(hover) = hover_for_component(&word, range.clone()) {
-        return Some(hover);
+    // Try component hover (skip if in string)
+    if !in_string {
+        if let Some(hover) = hover_for_component(&word, range.clone()) {
+            return Some(hover);
+        }
     }
 
-    // Try keyword hover
-    if let Some(hover) = hover_for_keyword(&word, range.clone()) {
-        return Some(hover);
+    // Try keyword hover (skip if in string)
+    if !in_string {
+        if let Some(hover) = hover_for_keyword(&word, range.clone()) {
+            return Some(hover);
+        }
     }
 
     // Try event hover (for @click, @submit, etc.)

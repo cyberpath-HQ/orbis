@@ -202,6 +202,10 @@ fn visit_element(element: &TopLevelElement, builder: &mut SemanticTokenBuilder) 
                         let line = (hook.span.start_line.saturating_sub(1)) as u32;
                         let col = (hook.span.start_col.saturating_sub(1)) as u32;
                         builder.push(line, col, decorator.len() as u32, token_types::DECORATOR, 0);
+                        
+                        // Highlight the => arrow (it's after the decorator, typically with space)
+                        // Approximate position: decorator length + 1 space
+                        builder.push(line, col + decorator.len() as u32 + 1, 2, token_types::OPERATOR, 0);
 
                         for action in &hook.actions {
                             visit_action_item(action, builder);
@@ -212,6 +216,9 @@ fn visit_element(element: &TopLevelElement, builder: &mut SemanticTokenBuilder) 
                         let line = (watcher.span.start_line.saturating_sub(1)) as u32;
                         let col = (watcher.span.start_col.saturating_sub(1)) as u32;
                         builder.push(line, col, 6, token_types::DECORATOR, 0); // @watch
+                        
+                        // Note: => arrow position is harder to determine for watchers because of variable argument lists
+                        // We'll skip precise arrow highlighting for watchers for now
 
                         for target in &watcher.targets {
                             visit_expression(target, builder);

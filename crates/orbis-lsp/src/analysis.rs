@@ -257,15 +257,15 @@ impl Analyzer {
 
     fn process_state_block(block: &StateBlock, symbols: &mut SymbolTable) {
         for decl in &block.declarations {
-            let (name, type_ann, is_computed, is_validated, span) = match decl {
+            let (name, type_ann, is_computed, is_validated, span, doc_comment) = match decl {
                 StateDeclaration::Regular(r) => {
-                    (r.name.clone(), r.type_annotation.as_ref(), false, false, &r.span)
+                    (r.name.clone(), r.type_annotation.as_ref(), false, false, &r.span, r.doc_comment.clone())
                 }
                 StateDeclaration::Computed(c) => {
-                    (c.name.clone(), c.type_annotation.as_ref(), true, false, &c.span)
+                    (c.name.clone(), c.type_annotation.as_ref(), true, false, &c.span, c.doc_comment.clone())
                 }
                 StateDeclaration::Validated(v) => {
-                    (v.name.clone(), v.type_annotation.as_ref(), false, true, &v.span)
+                    (v.name.clone(), v.type_annotation.as_ref(), false, true, &v.span, v.doc_comment.clone())
                 }
             };
 
@@ -277,7 +277,7 @@ impl Analyzer {
                     is_computed,
                     is_validated,
                     span: span.clone(),
-                    documentation: None,
+                    documentation: doc_comment,
                 },
             );
         }
@@ -482,6 +482,21 @@ impl Analyzer {
                         });
                     }
                 }
+                SymbolKind::Component => {
+                    // Check if component is a built-in component or a defined fragment
+                    if !Self::is_builtin_component(&reference.name)
+                        && !symbols.fragments.contains_key(&reference.name)
+                        && !symbols.imports.contains_key(&reference.name)
+                    {
+                        errors.push(AnalysisError {
+                            message: format!("Undefined component: '{}'", reference.name),
+                            span: Some(reference.span.clone()),
+                            severity: ErrorSeverity::Error,
+                            suggestion: Some("Make sure you've defined this component as a fragment or check the spelling.".to_string()),
+                            related: vec![],
+                        });
+                    }
+                }
                 _ => {}
             }
         }
@@ -518,6 +533,32 @@ impl Analyzer {
             return Some("Make sure you're using a valid Orbis component name.".to_string());
         }
         None
+    }
+
+    /// Check if a component name is a built-in Orbis component
+    /// Component names in AST are normalized to snake_case, so we compare against those
+    fn is_builtin_component(name: &str) -> bool {
+        matches!(
+            name,
+            // Layout components
+            "container" | "grid" | "flex" | "spacer" | "divider" |
+            // Typography
+            "text" | "heading" |
+            // Forms
+            "field" | "form" | "button" | "dropdown" |
+            // Data Display
+            "card" | "table" | "list" | "badge" | "stat_card" | "data_display" |
+            // Navigation
+            "link" | "tabs" | "accordion" | "breadcrumb" |
+            // Feedback
+            "alert" | "progress" | "loading_overlay" | "skeleton" | "empty_state" |
+            // Overlays
+            "modal" | "tooltip" |
+            // Media
+            "image" | "icon" | "avatar" | "chart" |
+            // Utility
+            "section" | "page_header"
+        )
     }
 
     fn suggest_similar_symbol<'a>(
