@@ -534,10 +534,6 @@
                     "match": "===|!==|==|!=|<=|>="
                 },
                 {
-                    "name": "keyword.operator.comparison.orbis",
-                    "match": "(?<!=)>|<(?!=)"
-                },
-                {
                     "name": "keyword.operator.logical.orbis",
                     "match": "&&|\\|\\||!"
                 },
