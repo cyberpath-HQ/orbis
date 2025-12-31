@@ -26,7 +26,7 @@ async fn main() {
             tracing_subscriber::EnvFilter::try_from_default_env()
                 .unwrap_or_else(|_| "orbis_lsp=info".into()),
         )
-        .with(tracing_subscriber::fmt::layer().with_writer(std::io::stderr))
+        .with(tracing_subscriber::fmt::layer().with_ansi(false).with_writer(std::io::stderr))
         .init();
 
     tracing::info!("Starting Orbis Language Server");

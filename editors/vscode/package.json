@@ -54,6 +54,26 @@
                 "path": "./syntaxes/orbis.tmLanguage.json"
             }
         ],
+        "semanticTokenScopes": [
+            {
+                "language": "orbis",
+                "scopes": {
+                    "operator": ["keyword.operator.orbis"],
+                    "keyword": ["keyword.control.orbis"],
+                    "decorator": ["entity.name.function.decorator.orbis"],
+                    "event": ["entity.name.function.event.orbis"],
+                    "property": ["variable.other.property.orbis"],
+                    "string": ["string.quoted.orbis"],
+                    "comment": ["comment.orbis"],
+                    "number": ["constant.numeric.orbis"],
+                    "type": ["entity.name.type.orbis"],
+                    "class": ["entity.name.type.class.orbis"],
+                    "function": ["entity.name.function.orbis"],
+                    "variable": ["variable.other.orbis"],
+                    "parameter": ["variable.parameter.orbis"]
+                }
+            }
+        ],
         "configuration": {
             "title": "Orbis DSL",
             "properties": {

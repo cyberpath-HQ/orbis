@@ -1,7 +1,7 @@
 # Orbis DSL Improvements Roadmap
 
 > **Created**: December 24, 2025  
-> **Last Updated**: December 26, 2025  
+> **Last Updated**: December 27, 2025  
 > **Branch**: `feature/pest-based-dsl-for-page-definitions-plugin-metadata-dsl`
 
 This document outlines the current state of the Orbis DSL and proposes improvements to make it more powerful, clean, easy to read and migrate to, while providing excellent developer experience (DX).
@@ -45,8 +45,8 @@ This document outlines the current state of the Orbis DSL and proposes improveme
 
 ### 📊 Current Limitations
 
-1. **No IDE support** - No LSP, syntax highlighting, or autocomplete
-2. **Basic error messages** - Pest errors are technical, not user-friendly
+1. ~~**No IDE support** - No LSP, syntax highlighting, or autocomplete~~ → ✅ **RESOLVED** - Full LSP + VS Code extension
+2. ~~**Basic error messages** - Pest errors are technical, not user-friendly~~ → ✅ **RESOLVED** - Rich diagnostics in LSP
 3. ~~**No modularity** - Can't import/reuse page fragments or components~~ → ✅ **RESOLVED** - Fragments + Import/Export
 4. ~~**No custom components** - Limited to 23 built-in components~~ → Now 32 components
 5. ~~**No CSS integration** - Styling requires className strings~~ → ✅ **RESOLVED** - CSS-in-DSL
@@ -54,7 +54,7 @@ This document outlines the current state of the Orbis DSL and proposes improveme
 7. ~~**No computed properties** - State is static declarations only~~ → ✅ **RESOLVED**
 8. ~~**No validation rules** - Beyond schema, no custom validation~~ → ✅ **RESOLVED** - Zod v4 validation
 9. **No debugging tools** - No dev mode, error boundaries, or tracing
-10. **No formatter** - Manual code formatting required
+10. **No formatter** - Manual code formatting required (CLI planned for Phase 4)
 11. ~~**Basic type system** - No unions, generics, interfaces~~ → ✅ **RESOLVED** - Enhanced types
 12. ~~**No watchers** - Can't react to state changes~~ → ✅ **RESOLVED** - Watcher hooks
 
@@ -62,73 +62,120 @@ This document outlines the current state of the Orbis DSL and proposes improveme
 
 ## Priority 1: Essential DX Improvements (Must-Have)
 
-### 1.1 Language Server Protocol (LSP) Implementation
+### 1.1 Language Server Protocol (LSP) Implementation ✅ COMPLETED
 **Impact**: 🔥 Critical | **Effort**: 🏗️ High | **Timeline**: 2-3 weeks
 
-**Why**: IDE integration is the #1 request from developers. Without autocomplete, diagnostics, and jump-to-definition, adoption will be slow.
+> **Status**: ✅ Fully implemented with tower-lsp. Provides comprehensive IDE support for Orbis DSL.
 
-**What to implement**:
-- **Autocomplete** for:
-  - Component names (all whitelisted)
-  - Attribute names (context-aware per component)
-  - Event names (whitelisted per component)
-  - State variable names (from state block)
-  - Action types (from action system)
-- **Hover documentation** showing:
-  - Component descriptions
-  - Attribute descriptions and allowed values
-  - Deprecation warnings with alternatives
-- **Diagnostics** with:
-  - Friendly error messages (not Pest internals)
-  - Quick fixes for common mistakes
-  - "Did you mean X?" suggestions
-- **Go-to-definition** for state variables
-- **Rename refactoring** for state variables
-- **Document symbols** for outline view
+**Implementation Details**:
 
-**Technical approach**:
-- Create `crates/orbis-lsp` using `tower-lsp`
-- Reuse existing Pest parser for syntax analysis
-- Build symbol table from AST
-- Integrate with component definitions from build.rs
+The LSP is implemented in `crates/orbis-lsp/` and provides:
 
-**VS Code extension structure**:
+- **Completions**: Context-aware autocomplete for:
+  - All 32 built-in components with snippets
+  - Component-specific attributes and events
+  - Top-level blocks (page, state, hooks, template, fragment, interface, styles)
+  - State decorators (@computed, @validate)
+  - Lifecycle hooks (@mount, @unmount, @watch)
+  - Control flow (if, for, when)
+  - Actions (api, toast, router, console)
+  - Expression variables and member access
+  
+- **Hover Documentation**: Detailed docs showing:
+  - Component descriptions with attributes/events tables
+  - Keyword usage with examples
+  - Symbol information (state variables, fragments, interfaces)
+  
+- **Diagnostics**: Real-time error reporting with:
+  - Friendly error messages (not raw Pest errors)
+  - "Did you mean X?" suggestions using Levenshtein distance
+  - Error codes (E0001-E0100, W0001-W0002)
+  - Related information and quick fix data
+  
+- **Go to Definition**: Navigate to declarations of:
+  - State variables
+  - Fragments
+  - Interfaces
+  - Imports
+  
+- **Find References**: Locate all usages of:
+  - State variables
+  - Fragments
+  - Interfaces
+  
+- **Document Symbols**: Outline view showing:
+  - Page block with properties
+  - State variables (regular, computed, validated)
+  - Hooks (lifecycle and watchers)
+  - Template component tree
+  - Fragments and interfaces
+  
+- **Semantic Tokens**: Rich syntax highlighting for:
+  - Keywords, components, variables
+  - Properties, events, decorators
+  - Strings, numbers, operators
+  
+- **Rename Support**: Safe symbol renaming across the file
+- **Folding Ranges**: Collapse code blocks
+- **Code Actions**: Quick fixes for diagnostics
+- **Inlay Hints**: Type hints for inferred state variables
+
+**VS Code Extension** (`editors/vscode/`):
+- TextMate grammar for basic syntax highlighting
+- Language configuration (brackets, comments, folding)
+- LSP client with automatic server discovery
+- 50+ code snippets for common patterns
+- Commands: Restart Server, Show Output
+
+**Installation**:
+```bash
+# Build LSP server
+cargo build --release -p orbis-lsp
+
+# Install VS Code extension
+cd editors/vscode
+npm install
+npm run compile
+# Press F5 to launch Extension Development Host
 ```
-orbis-vscode/
-├── package.json
-├── syntaxes/
-│   └── orbis.tmLanguage.json  # Syntax highlighting
-├── language-configuration.json
-└── src/
-    └── extension.ts           # LSP client
-```
 
-**Example user experience**:
-```orbis
-template {
-    <Bu|  ← Autocomplete shows: Button, Badge
-    <Button la|  ← Shows: label, loading (with descriptions)
+**Configuration**:
+```json
+{
+    "orbis.lsp.path": "/path/to/orbis-lsp",
+    "orbis.trace.server": "verbose"
 }
 ```
 
 ---
 
-### 1.2 Rich Error Messages with Recovery Suggestions
+### 1.2 Rich Error Messages with Recovery Suggestions ✅ INCLUDED IN LSP
 **Impact**: 🔥 Critical | **Effort**: 🛠️ Medium | **Timeline**: 1 week
 
-**Why**: Current Pest errors like `positives: [FieldAttributes]` are cryptic. Developers need actionable guidance.
+> **Status**: ✅ Implemented as part of LSP diagnostics. Provides friendly error messages with suggestions.
 
-**What to implement**:
-- **Custom error types** replacing Pest errors:
-  ```rust
-  pub enum OrbisError {
-      UnknownComponent { name: String, line: usize, suggestions: Vec<String> },
-      InvalidAttribute { component: String, attr: String, valid: Vec<String> },
-      MissingRequiredAttribute { component: String, attr: String },
-      DeprecatedUsage { item: String, replacement: String, docs_url: String },
-      ExpressionError { expr: String, reason: String },
-      // ...
-  }
+**What's implemented**:
+- **Custom error types** with structured information:
+  - `AnalysisError` enum with variants for undefined symbols, duplicate definitions, etc.
+  - Error codes for categorization (E0001-E0100 for errors, W0001-W0002 for warnings)
+  - Source location (line, column) for precise error highlighting
+  
+- **Fuzzy matching** for suggestions:
+  - Levenshtein distance algorithm for "Did you mean X?" suggestions
+  - Suggests similar component names, attribute names, variable names
+  
+- **Multi-error reporting**: Shows all errors at once, doesn't stop at first
+- **Severity levels**: Error, Warning, Info, Hint with appropriate colors
+- **Related information**: Shows definition locations for "defined here" messages
+
+**Example output in VS Code**:
+```
+Error: Undefined state variable 'usrname' [E0001]
+  Did you mean 'username'?
+
+Warning: Unused state variable 'tempData' [W0001]
+  Consider removing or using this variable
+```
   ```
 - **Fuzzy matching** for suggestions:
   ```

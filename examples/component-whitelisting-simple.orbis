@@ -27,13 +27,13 @@ hooks {
     @unmount => {
         console.log("Page unmounting")
     }
-    @watch(state.count) {
+    @watch(state.count) => {
         console.log(state.count)
     }
 }
 
 fragment Example() {
-    <Text id=""/>
+    <Text id="" />
 }
 
 template {

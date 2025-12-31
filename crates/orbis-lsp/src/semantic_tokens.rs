@@ -202,13 +202,18 @@ fn visit_element(element: &TopLevelElement, builder: &mut SemanticTokenBuilder, 
                         };
                         let line = (hook.span.start_line.saturating_sub(1)) as u32;
                         let col = (hook.span.start_col.saturating_sub(1)) as u32;
+                        tracing::debug!("Emitting decorator token for lifecycle hook: {} at line {}, col {}", decorator, line, col);
                         builder.push(line, col, decorator.len() as u32, token_types::DECORATOR, 0);
                         
                         // Highlight the => arrow by reading from source
                         if let Some(line_text) = document.get_line(line as usize) {
+                            tracing::debug!("Line text for lifecycle hook: {}", line_text);
                             let start = (col as usize).min(line_text.len());
+                            tracing::debug!("Searching for => starting at col {}", start);
+                            tracing::debug!("Substring to search: {}", &line_text[start..]);
                             if let Some(arrow_pos) = line_text[start..].find("=>") {
                                 let arrow_col = col + arrow_pos as u32;
+                                tracing::debug!("Found => at col {}", arrow_col);
                                 builder.push(line, arrow_col, 2, token_types::OPERATOR, 0);
                             }
                         }

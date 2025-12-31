@@ -9,11 +9,13 @@ members = [
     "crates/orbis-plugin",
     "crates/orbis-server",
     "crates/orbis-auth",
+    "crates/orbis-dsl",
+    "crates/orbis-lsp",
     
     # Main application
     "orbis/src-tauri",
     # Sample plugins are independent packages
-    "plugins/*", "crates/orbis-dsl",
+    "plugins/*",
 ]
 
 [workspace.package]
