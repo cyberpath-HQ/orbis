@@ -1,0 +1,393 @@
+// Example Page 3: E-commerce Product Catalog
+// This example demonstrates data handling and filtering
+
+import { ProductCard, ProductGrid } from "@ui/commerce"
+import { type Product, type Category } from "@types/commerce"
+
+page {
+    id: "product-catalog"
+    title: "Product Catalog"
+    description: "Browse our product catalog"
+    route: "/products"
+    requires_auth: false
+    layout: "commerce"
+}
+
+// Product interfaces
+interface ProductFilters {
+    categories: array
+    minPrice: number
+    maxPrice: number
+}
+
+interface CartItem {
+    productId: string
+    quantity: number
+}
+
+state {
+    // Products data
+    products: array = []
+    categories: array = []
+    totalCount = 0
+    
+    // Loading states
+    isLoading = true
+    hasError = false
+    errorMessage = ""
+    
+    // Pagination
+    currentPage = 1
+    pageSize = 24
+    
+    // View options
+    viewMode = "grid"
+    
+    // Filters
+    filterMinPrice = 0
+    filterMaxPrice = 10000
+    filterInStock = false
+    sortBy = "newest"
+    
+    // Search
+    searchQuery = ""
+    
+    // UI state
+    isFilterPanelOpen = true
+    selectedProduct = null
+    isQuickViewOpen = false
+    
+    // Cart
+    cartItems: array = []
+    
+    // Computed values
+    @computed hasActiveFilters => filterMinPrice > 0 || filterMaxPrice < 10000
+    @computed filteredProductCount => products.length
+    @computed cartItemCount => cartItems.length
+}
+
+hooks {
+    @mount => {
+        console.log("Product catalog mounted"),
+        state.isLoading = false
+    }
+    
+    @watch(state.searchQuery, debounce: 500) => {
+        state.currentPage = 1,
+        console.log("Search query changed")
+    }
+}
+
+// Product card fragment
+fragment ProductCardSimple(product: Product) {
+    <Card className="product-card">
+        <Container className="product-image-container">
+            <Image src={product.image} alt={product.name} />
+            if product.discount > 0 {
+                <Badge variant="error" content="Sale" className="discount-badge" />
+            }
+        </Container>
+        
+        <CardContent>
+            <Text variant="caption" content={product.category} className="product-category" />
+            <Heading level="4" text={product.name} />
+            <Flex direction="row" align="baseline" gap="2" className="product-pricing">
+                <Text variant="body" content={"$" + product.price} className="current-price" />
+            </Flex>
+        </CardContent>
+        
+        <CardFooter>
+            <Flex direction="row" gap="2">
+                <Button 
+                    label="Add to Cart"
+                    variant="primary"
+                    @click => { console.log("Add to cart") }
+                />
+                <Button 
+                    label="View"
+                    variant="ghost"
+                    @click => { state.selectedProduct = product, state.isQuickViewOpen = true }
+                />
+            </Flex>
+        </CardFooter>
+    </Card>
+}
+
+// Note: Slot-based fragments are demonstrated in registration-form.orbis
+// This file uses simpler inline patterns for filtering UI
+
+template {
+    <Container className="catalog-page">
+        // Page header
+        <Container className="page-header">
+            <Flex direction="row" justify="between" align="center">
+                <Breadcrumb>
+                    <BreadcrumbItem href="/">Home</BreadcrumbItem>
+                    <BreadcrumbItem>Products</BreadcrumbItem>
+                </Breadcrumb>
+                
+                <Flex direction="row" align="center" gap="4">
+                    <Field 
+                        name="search"
+                        fieldType="text"
+                        placeholder="Search products..."
+                        bindTo="state.searchQuery"
+                        className="product-search"
+                    />
+                    
+                    <Button variant="ghost" @click => { router.navigate("/cart") }>
+                        <Icon name="shopping-cart" />
+                        if state.cartItemCount > 0 {
+                            <Badge variant="primary" content={state.cartItemCount} className="cart-badge" />
+                        }
+                    </Button>
+                </Flex>
+            </Flex>
+        </Container>
+        
+        <Flex direction="row" gap="6" className="catalog-container">
+            // Filter sidebar
+            <Container className="filter-sidebar">
+                <Flex direction="row" justify="between" align="center">
+                    <Heading level="3" text="Filters" />
+                </Flex>
+                
+                <Spacer size="lg" />
+                
+                <Container className="filter-section">
+                    <Heading level="5" text="Price Range" />
+                    <Spacer size="sm" />
+                    <Flex direction="row" gap="2">
+                        <Field 
+                            name="minPrice"
+                            fieldType="number"
+                            placeholder="Min"
+                            bindTo="state.filterMinPrice"
+                        />
+                        <Text content="-" />
+                        <Field 
+                            name="maxPrice"
+                            fieldType="number"
+                            placeholder="Max"
+                            bindTo="state.filterMaxPrice"
+                        />
+                    </Flex>
+                </Container>
+                
+                <Divider />
+                
+                <Container className="filter-section">
+                    <Heading level="5" text="Availability" />
+                    <Spacer size="sm" />
+                    <Field 
+                        name="inStock"
+                        fieldType="checkbox"
+                        label="In Stock Only"
+                        bindTo="state.filterInStock"
+                    />
+                </Container>
+                
+                if state.hasActiveFilters {
+                    <Spacer size="lg" />
+                    <Button 
+                        label="Clear All Filters"
+                        variant="secondary"
+                        @click => { 
+                            state.filterMinPrice = 0, 
+                            state.filterMaxPrice = 10000 
+                        }
+                    />
+                }
+            </Container>
+            
+            // Main content
+            <Container className="catalog-main">
+                // Toolbar
+                <Flex direction="row" justify="between" align="center" className="catalog-toolbar">
+                    <Text variant="body" content={"Showing " + state.filteredProductCount + " products"} />
+                    
+                    <Flex direction="row" align="center" gap="4">
+                        <Dropdown>
+                            <DropdownTrigger>
+                                <Button variant="ghost">
+                                    <Text content="Sort by" />
+                                    <Icon name="chevron-down" />
+                                </Button>
+                            </DropdownTrigger>
+                            <DropdownMenu>
+                                <DropdownItem @click => { state.sortBy = "newest" }>Newest</DropdownItem>
+                                <DropdownItem @click => { state.sortBy = "price_asc" }>Price: Low to High</DropdownItem>
+                                <DropdownItem @click => { state.sortBy = "price_desc" }>Price: High to Low</DropdownItem>
+                            </DropdownMenu>
+                        </Dropdown>
+                        
+                        <Flex direction="row" gap="1">
+                            <Button 
+                                variant="ghost"
+                                @click => { state.viewMode = "grid" }
+                            >
+                                <Icon name="grid" />
+                            </Button>
+                            <Button 
+                                variant="ghost"
+                                @click => { state.viewMode = "list" }
+                            >
+                                <Icon name="list" />
+                            </Button>
+                        </Flex>
+                    </Flex>
+                </Flex>
+                
+                <Spacer size="lg" />
+                
+                // Product grid
+                if state.isLoading {
+                    <Grid columns="3" gap="4">
+                        <Skeleton variant="rectangular" />
+                        <Skeleton variant="rectangular" />
+                        <Skeleton variant="rectangular" />
+                    </Grid>
+                } else if state.hasError {
+                    <EmptyState 
+                        icon="alert-triangle"
+                        title="Failed to load products"
+                        description={state.errorMessage}
+                    >
+                        <Button 
+                            label="Try Again"
+                            variant="primary"
+                            @click => { console.log("Retry") }
+                        />
+                    </EmptyState>
+                } else if state.products.length == 0 {
+                    <EmptyState 
+                        icon="package"
+                        title="No products found"
+                        description="Try adjusting your filters"
+                    >
+                        <Button 
+                            label="Clear Filters"
+                            variant="secondary"
+                            @click => { 
+                                state.filterMinPrice = 0, 
+                                state.filterMaxPrice = 10000 
+                            }
+                        />
+                    </EmptyState>
+                } else {
+                    <Grid columns="3" gap="4" className="product-grid">
+                        for product in state.products {
+                            <ProductCardSimple product={product} />
+                        }
+                    </Grid>
+                }
+                
+                // Pagination
+                <Spacer size="xl" />
+                <Flex direction="row" justify="center" gap="2">
+                    <Button 
+                        label="Previous"
+                        variant="ghost"
+                        disabled={state.currentPage == 1}
+                        @click => { state.currentPage = state.currentPage - 1 }
+                    />
+                    <Text content={"Page " + state.currentPage} />
+                    <Button 
+                        label="Next"
+                        variant="ghost"
+                        @click => { state.currentPage = state.currentPage + 1 }
+                    />
+                </Flex>
+            </Container>
+        </Flex>
+        
+        // Quick view modal
+        <Modal id="quick-view-modal" title="Product Details" open={state.isQuickViewOpen}>
+            if state.selectedProduct {
+                <Flex direction="column" gap="4">
+                    <Image src={state.selectedProduct.image} alt={state.selectedProduct.name} />
+                    <Heading level="3" text={state.selectedProduct.name} />
+                    <Text variant="body" content={state.selectedProduct.description} />
+                    <Text variant="body" content={"$" + state.selectedProduct.price} className="price" />
+                    <Button 
+                        label="Add to Cart"
+                        variant="primary"
+                        @click => { console.log("Add to cart") }
+                    />
+                </Flex>
+            }
+            <Spacer size="md" />
+            <Button 
+                label="Close"
+                variant="ghost"
+                @click => { state.isQuickViewOpen = false }
+            />
+        </Modal>
+    </Container>
+}
+
+styles scoped {
+    .catalog-page {
+        min-height: 100vh;
+    }
+    
+    .page-header {
+        padding: 16px 24px;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .product-search {
+        width: 300px;
+    }
+    
+    .catalog-container {
+        padding: 24px;
+    }
+    
+    .filter-sidebar {
+        width: 280px;
+        background: var(--card-bg);
+        border-radius: var(--radius);
+        padding: 24px;
+    }
+    
+    .filter-section {
+        margin-bottom: 16px;
+    }
+    
+    .catalog-main {
+        flex: 1;
+    }
+    
+    .catalog-toolbar {
+        margin-bottom: 24px;
+    }
+    
+    .product-grid {
+        gap: 24px;
+    }
+    
+    .product-card {
+        transition: transform 0.2s;
+    }
+    
+    .product-image-container {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .discount-badge {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+    }
+    
+    .product-category {
+        color: var(--text-muted);
+    }
+    
+    .current-price {
+        font-weight: 600;
+        color: var(--primary);
+    }
+}

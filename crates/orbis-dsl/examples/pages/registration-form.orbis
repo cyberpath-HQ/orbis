@@ -1,0 +1,270 @@
+// Example Page 2: User Registration Form
+// This example demonstrates forms and validation
+
+import { Form, FormField } from "@ui/form"
+import { Input, Checkbox } from "@ui/input"
+import { type UserRegistration } from "@types/auth"
+
+page {
+    id: "registration"
+    title: "Create Account"
+    description: "User registration form"
+    route: "/register"
+    requires_auth: false
+    layout: "auth"
+}
+
+// User data interfaces
+interface PersonalInfo {
+    firstName: string
+    lastName: string
+    email: string
+}
+
+interface AccountDetails {
+    username: string
+    password: string
+}
+
+state {
+    // Current step
+    currentStep = 1
+    
+    // Form data
+    firstName = ""
+    lastName = ""
+    email = ""
+    username = ""
+    password = ""
+    confirmPassword = ""
+    
+    // Preferences
+    newsletter = true
+    agreeToTerms = false
+    
+    // Loading states
+    isSubmitting = false
+    
+    // Error states
+    submitError = ""
+    
+    // Computed state
+    @computed isValid => firstName != "" && lastName != "" && email != ""
+    @computed canSubmit => isValid && agreeToTerms == true
+    @computed fullName => firstName + " " + lastName
+}
+
+hooks {
+    @mount => {
+        console.log("Registration form mounted")
+    }
+    
+    @watch(state.password, debounce: 300) => {
+        console.log("Password changed")
+    }
+}
+
+// Form field fragment
+fragment FormFieldWrapper(label: string, required: bool) {
+    <Container className="form-field">
+        <Text variant="label" content={label} />
+        <slot />
+    </Container>
+}
+
+template {
+    <Container className="registration-page">
+        <Card className="registration-card">
+            <CardHeader className="registration-header">
+                <Icon name="user-plus" size="xl" />
+                <Heading level="2" text="Create your account" />
+                <Text variant="body" content="Join thousands of users" />
+            </CardHeader>
+            
+            <CardContent className="registration-content">
+                <Form id="registration-form" @submit => { console.log("Form submitted") }>
+                    
+                    if state.currentStep == 1 {
+                        <Container className="step-content">
+                            <Heading level="4" text="Personal Information" />
+                            
+                            <Grid columns="2" gap="4">
+                                <Field 
+                                    name="firstName"
+                                    label="First Name"
+                                    fieldType="text"
+                                    placeholder="Enter your first name"
+                                    required={true}
+                                    bindTo="state.firstName"
+                                />
+                                <Field 
+                                    name="lastName"
+                                    label="Last Name"
+                                    fieldType="text"
+                                    placeholder="Enter your last name"
+                                    required={true}
+                                    bindTo="state.lastName"
+                                />
+                            </Grid>
+                            
+                            <Field 
+                                name="email"
+                                label="Email Address"
+                                fieldType="email"
+                                placeholder="you@example.com"
+                                required={true}
+                                bindTo="state.email"
+                            />
+                        </Container>
+                    }
+                    
+                    if state.currentStep == 2 {
+                        <Container className="step-content">
+                            <Heading level="4" text="Account Details" />
+                            
+                            <Field 
+                                name="username"
+                                label="Username"
+                                fieldType="text"
+                                placeholder="Choose a username"
+                                required={true}
+                                bindTo="state.username"
+                            />
+                            
+                            <Field 
+                                name="password"
+                                label="Password"
+                                fieldType="password"
+                                placeholder="Create a strong password"
+                                required={true}
+                                bindTo="state.password"
+                            />
+                            
+                            <Field 
+                                name="confirmPassword"
+                                label="Confirm Password"
+                                fieldType="password"
+                                placeholder="Confirm your password"
+                                required={true}
+                                bindTo="state.confirmPassword"
+                            />
+                        </Container>
+                    }
+                    
+                    if state.currentStep == 3 {
+                        <Container className="step-content">
+                            <Heading level="4" text="Preferences" />
+                            
+                            <Field 
+                                name="newsletter"
+                                label="Subscribe to newsletter"
+                                fieldType="checkbox"
+                                bindTo="state.newsletter"
+                            />
+                            
+                            <Divider />
+                            
+                            <Field 
+                                name="agreeToTerms"
+                                label="I agree to the Terms of Service"
+                                fieldType="checkbox"
+                                required={true}
+                                bindTo="state.agreeToTerms"
+                            />
+                            
+                            if state.submitError {
+                                <Alert type="error" message={state.submitError} />
+                            }
+                        </Container>
+                    }
+                    
+                    // Form actions
+                    <Flex direction="row" justify="between" className="form-actions">
+                        if state.currentStep > 1 {
+                            <Button 
+                                label="Back"
+                                variant="ghost"
+                                @click => { state.currentStep = state.currentStep - 1 }
+                            />
+                        } else {
+                            <Container />
+                        }
+                        
+                        if state.currentStep < 3 {
+                            <Button 
+                                label="Continue"
+                                variant="primary"
+                                @click => { state.currentStep = state.currentStep + 1 }
+                            />
+                        } else {
+                            <Button 
+                                label="Create Account"
+                                variant="primary"
+                                disabled={!state.canSubmit}
+                                type="submit"
+                            />
+                        }
+                    </Flex>
+                </Form>
+            </CardContent>
+            
+            <Divider />
+            
+            <CardFooter className="registration-footer">
+                <Text variant="body" content="Already have an account?" />
+                <Link href="/login">Sign in</Link>
+            </CardFooter>
+        </Card>
+    </Container>
+}
+
+styles scoped {
+    .registration-page {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 32px;
+        background: var(--bg-subtle);
+    }
+    
+    .registration-card {
+        width: 100%;
+        max-width: 500px;
+        background: var(--card-bg);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .registration-header {
+        text-align: center;
+        padding: 32px 32px 16px;
+    }
+    
+    .registration-content {
+        padding: 24px 32px;
+    }
+    
+    .step-content {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .form-field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    
+    .form-actions {
+        margin-top: 24px;
+        padding-top: 24px;
+        border-top: 1px solid var(--border);
+    }
+    
+    .registration-footer {
+        text-align: center;
+        padding: 16px 32px 32px;
+    }
+}

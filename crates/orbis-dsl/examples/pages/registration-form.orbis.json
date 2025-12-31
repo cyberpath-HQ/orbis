@@ -1,0 +1,4253 @@
+{
+  "path": "/home/ebalo/Desktop/projects/rust/orbis-assets/crates/orbis-dsl/examples/pages/registration-form.orbis",
+  "imports": [
+    {
+      "style": "type_script",
+      "clause": {
+        "type": "named",
+        "specifiers": [
+          {
+            "name": "Form",
+            "span": {
+              "start": 102,
+              "end": 106,
+              "start_line": 4,
+              "start_col": 10,
+              "end_line": 4,
+              "end_col": 14
+            }
+          },
+          {
+            "name": "FormField",
+            "span": {
+              "start": 108,
+              "end": 118,
+              "start_line": 4,
+              "start_col": 16,
+              "end_line": 4,
+              "end_col": 26
+            }
+          }
+        ]
+      },
+      "path": "@ui/form",
+      "span": {
+        "start": 93,
+        "end": 135,
+        "start_line": 4,
+        "start_col": 1,
+        "end_line": 4,
+        "end_col": 43
+      }
+    },
+    {
+      "style": "type_script",
+      "clause": {
+        "type": "named",
+        "specifiers": [
+          {
+            "name": "Input",
+            "span": {
+              "start": 145,
+              "end": 150,
+              "start_line": 5,
+              "start_col": 10,
+              "end_line": 5,
+              "end_col": 15
+            }
+          },
+          {
+            "name": "Checkbox",
+            "span": {
+              "start": 152,
+              "end": 161,
+              "start_line": 5,
+              "start_col": 17,
+              "end_line": 5,
+              "end_col": 26
+            }
+          }
+        ]
+      },
+      "path": "@ui/input",
+      "span": {
+        "start": 136,
+        "end": 179,
+        "start_line": 5,
+        "start_col": 1,
+        "end_line": 5,
+        "end_col": 44
+      }
+    },
+    {
+      "style": "type_script",
+      "clause": {
+        "type": "named",
+        "specifiers": [
+          {
+            "name": "UserRegistration",
+            "is_type": true,
+            "span": {
+              "start": 189,
+              "end": 211,
+              "start_line": 6,
+              "start_col": 10,
+              "end_line": 6,
+              "end_col": 32
+            }
+          }
+        ]
+      },
+      "path": "@types/auth",
+      "span": {
+        "start": 180,
+        "end": 231,
+        "start_line": 6,
+        "start_col": 1,
+        "end_line": 6,
+        "end_col": 52
+      }
+    }
+  ],
+  "elements": [
+    {
+      "kind": "page",
+      "id": "registration",
+      "title": "Create Account",
+      "description": "User registration form",
+      "route": "/register",
+      "requires_auth": false,
+      "layout": "auth",
+      "span": {
+        "start": 233,
+        "end": 401,
+        "start_line": 8,
+        "start_col": 1,
+        "end_line": 15,
+        "end_col": 2
+      }
+    },
+    {
+      "kind": "interface",
+      "name": "PersonalInfo",
+      "members": [
+        {
+          "name": "firstName",
+          "type_annotation": {
+            "type_kind": "primitive",
+            "kind": "string",
+            "span": {
+              "start": 467,
+              "end": 473,
+              "start_line": 19,
+              "start_col": 16,
+              "end_line": 19,
+              "end_col": 22
+            }
+          },
+          "span": {
+            "start": 456,
+            "end": 473,
+            "start_line": 19,
+            "start_col": 5,
+            "end_line": 19,
+            "end_col": 22
+          }
+        },
+        {
+          "name": "lastName",
+          "type_annotation": {
+            "type_kind": "primitive",
+            "kind": "string",
+            "span": {
+              "start": 488,
+              "end": 494,
+              "start_line": 20,
+              "start_col": 15,
+              "end_line": 20,
+              "end_col": 21
+            }
+          },
+          "span": {
+            "start": 478,
+            "end": 494,
+            "start_line": 20,
+            "start_col": 5,
+            "end_line": 20,
+            "end_col": 21
+          }
+        },
+        {
+          "name": "email",
+          "type_annotation": {
+            "type_kind": "primitive",
+            "kind": "string",
+            "span": {
+              "start": 506,
+              "end": 512,
+              "start_line": 21,
+              "start_col": 12,
+              "end_line": 21,
+              "end_col": 18
+            }
+          },
+          "span": {
+            "start": 499,
+            "end": 512,
+            "start_line": 21,
+            "start_col": 5,
+            "end_line": 21,
+            "end_col": 18
+          }
+        }
+      ],
+      "span": {
+        "start": 427,
+        "end": 514,
+        "start_line": 18,
+        "start_col": 1,
+        "end_line": 22,
+        "end_col": 2
+      }
+    },
+    {
+      "kind": "interface",
+      "name": "AccountDetails",
+      "members": [
+        {
+          "name": "username",
+          "type_annotation": {
+            "type_kind": "primitive",
+            "kind": "string",
+            "span": {
+              "start": 557,
+              "end": 563,
+              "start_line": 25,
+              "start_col": 15,
+              "end_line": 25,
+              "end_col": 21
+            }
+          },
+          "span": {
+            "start": 547,
+            "end": 563,
+            "start_line": 25,
+            "start_col": 5,
+            "end_line": 25,
+            "end_col": 21
+          }
+        },
+        {
+          "name": "password",
+          "type_annotation": {
+            "type_kind": "primitive",
+            "kind": "string",
+            "span": {
+              "start": 578,
+              "end": 584,
+              "start_line": 26,
+              "start_col": 15,
+              "end_line": 26,
+              "end_col": 21
+            }
+          },
+          "span": {
+            "start": 568,
+            "end": 584,
+            "start_line": 26,
+            "start_col": 5,
+            "end_line": 26,
+            "end_col": 21
+          }
+        }
+      ],
+      "span": {
+        "start": 516,
+        "end": 586,
+        "start_line": 24,
+        "start_col": 1,
+        "end_line": 27,
+        "end_col": 2
+      }
+    },
+    {
+      "kind": "state",
+      "declarations": [
+        {
+          "declaration_type": "regular",
+          "name": "currentStep",
+          "value": {
+            "expr_type": "literal",
+            "value": {
+              "type": "integer",
+              "value": 1
+            },
+            "span": {
+              "start": 634,
+              "end": 635,
+              "start_line": 31,
+              "start_col": 19,
+              "end_line": 31,
+              "end_col": 20
+            }
+          },
+          "span": {
+            "start": 620,
+            "end": 635,
+            "start_line": 31,
+            "start_col": 5,
+            "end_line": 31,
+            "end_col": 20
+          }
+        },
+        {
+          "declaration_type": "regular",
+          "name": "firstName",
+          "value": {
+            "expr_type": "literal",
+            "value": {
+              "type": "string",
+              "value": ""
+            },
+            "span": {
+              "start": 674,
+              "end": 676,
+              "start_line": 34,
+              "start_col": 17,
+              "end_line": 34,
+              "end_col": 19
+            }
+          },
+          "span": {
+            "start": 662,
+            "end": 676,
+            "start_line": 34,
+            "start_col": 5,
+            "end_line": 34,
+            "end_col": 19
+          }
+        },
+        {
+          "declaration_type": "regular",
+          "name": "lastName",
+          "value": {
+            "expr_type": "literal",
+            "value": {
+              "type": "string",
+              "value": ""
+            },
+            "span": {
+              "start": 692,
+              "end": 694,
+              "start_line": 35,
+              "start_col": 16,
+              "end_line": 35,
+              "end_col": 18
+            }
+          },
+          "span": {
+            "start": 681,
+            "end": 694,
+            "start_line": 35,
+            "start_col": 5,
+            "end_line": 35,
+            "end_col": 18
+          }
+        },
+        {
+          "declaration_type": "regular",
+          "name": "email",
+          "value": {
+            "expr_type": "literal",
+            "value": {
+              "type": "string",
+              "value": ""
+            },
+            "span": {
+              "start": 707,
+              "end": 709,
+              "start_line": 36,
+              "start_col": 13,
+              "end_line": 36,
+              "end_col": 15
+            }
+          },
+          "span": {
+            "start": 699,
+            "end": 709,
+            "start_line": 36,
+            "start_col": 5,
+            "end_line": 36,
+            "end_col": 15
+          }
+        },
+        {
+          "declaration_type": "regular",
+          "name": "username",
+          "value": {
+            "expr_type": "literal",
+            "value": {
+              "type": "string",
+              "value": ""
+            },
+            "span": {
+              "start": 725,
+              "end": 727,
+              "start_line": 37,
+              "start_col": 16,
+              "end_line": 37,
+              "end_col": 18
+            }
+          },
+          "span": {
+            "start": 714,
+            "end": 727,
+            "start_line": 37,
+            "start_col": 5,
+            "end_line": 37,
+            "end_col": 18
+          }
+        },
+        {
+          "declaration_type": "regular",
+          "name": "password",
+          "value": {
+            "expr_type": "literal",
+            "value": {
+              "type": "string",
+              "value": ""
+            },
+            "span": {
+              "start": 743,
+              "end": 745,
+              "start_line": 38,
+              "start_col": 16,
+              "end_line": 38,
+              "end_col": 18
+            }
+          },
+          "span": {
+            "start": 732,
+            "end": 745,
+            "start_line": 38,
+            "start_col": 5,
+            "end_line": 38,
+            "end_col": 18
+          }
+        },
+        {
+          "declaration_type": "regular",
+          "name": "confirmPassword",
+          "value": {
+            "expr_type": "literal",
+            "value": {
+              "type": "string",
+              "value": ""
+            },
+            "span": {
+              "start": 768,
+              "end": 770,
+              "start_line": 39,
+              "start_col": 23,
+              "end_line": 39,
+              "end_col": 25
+            }
+          },
+          "span": {
+            "start": 750,
+            "end": 770,
+            "start_line": 39,
+            "start_col": 5,
+            "end_line": 39,
+            "end_col": 25
+          }
+        },
+        {
+          "declaration_type": "regular",
+          "name": "newsletter",
+          "value": {
+            "expr_type": "literal",
+            "value": {
+              "type": "boolean",
+              "value": true
+            },
+            "span": {
+              "start": 812,
+              "end": 816,
+              "start_line": 42,
+              "start_col": 18,
+              "end_line": 42,
+              "end_col": 22
+            }
+          },
+          "span": {
+            "start": 799,
+            "end": 816,
+            "start_line": 42,
+            "start_col": 5,
+            "end_line": 42,
+            "end_col": 22
+          }
+        },
+        {
+          "declaration_type": "regular",
+          "name": "agreeToTerms",
+          "value": {
+            "expr_type": "literal",
+            "value": {
+              "type": "boolean",
+              "value": false
+            },
+            "span": {
+              "start": 836,
+              "end": 841,
+              "start_line": 43,
+              "start_col": 20,
+              "end_line": 43,
+              "end_col": 25
+            }
+          },
+          "span": {
+            "start": 821,
+            "end": 841,
+            "start_line": 43,
+            "start_col": 5,
+            "end_line": 43,
+            "end_col": 25
+          }
+        },
+        {
+          "declaration_type": "regular",
+          "name": "isSubmitting",
+          "value": {
+            "expr_type": "literal",
+            "value": {
+              "type": "boolean",
+              "value": false
+            },
+            "span": {
+              "start": 888,
+              "end": 893,
+              "start_line": 46,
+              "start_col": 20,
+              "end_line": 46,
+              "end_col": 25
+            }
+          },
+          "span": {
+            "start": 873,
+            "end": 893,
+            "start_line": 46,
+            "start_col": 5,
+            "end_line": 46,
+            "end_col": 25
+          }
+        },
+        {
+          "declaration_type": "regular",
+          "name": "submitError",
+          "value": {
+            "expr_type": "literal",
+            "value": {
+              "type": "string",
+              "value": ""
+            },
+            "span": {
+              "start": 937,
+              "end": 939,
+              "start_line": 49,
+              "start_col": 19,
+              "end_line": 49,
+              "end_col": 21
+            }
+          },
+          "span": {
+            "start": 923,
+            "end": 939,
+            "start_line": 49,
+            "start_col": 5,
+            "end_line": 49,
+            "end_col": 21
+          }
+        },
+        {
+          "declaration_type": "computed",
+          "name": "isValid",
+          "explicit_computed": true,
+          "expression": {
+            "expr_type": "binary",
+            "left": {
+              "expr_type": "binary",
+              "left": {
+                "expr_type": "binary",
+                "left": {
+                  "expr_type": "identifier",
+                  "name": "firstName",
+                  "span": {
+                    "start": 992,
+                    "end": 1001,
+                    "start_line": 52,
+                    "start_col": 26,
+                    "end_line": 52,
+                    "end_col": 35
+                  }
+                },
+                "op": "not_eq",
+                "right": {
+                  "expr_type": "literal",
+                  "value": {
+                    "type": "string",
+                    "value": ""
+                  },
+                  "span": {
+                    "start": 1005,
+                    "end": 1007,
+                    "start_line": 52,
+                    "start_col": 39,
+                    "end_line": 52,
+                    "end_col": 41
+                  }
+                },
+                "span": {
+                  "start": 992,
+                  "end": 1040,
+                  "start_line": 52,
+                  "start_col": 26,
+                  "end_line": 52,
+                  "end_col": 74
+                }
+              },
+              "op": "and",
+              "right": {
+                "expr_type": "binary",
+                "left": {
+                  "expr_type": "identifier",
+                  "name": "lastName",
+                  "span": {
+                    "start": 1011,
+                    "end": 1019,
+                    "start_line": 52,
+                    "start_col": 45,
+                    "end_line": 52,
+                    "end_col": 53
+                  }
+                },
+                "op": "not_eq",
+                "right": {
+                  "expr_type": "literal",
+                  "value": {
+                    "type": "string",
+                    "value": ""
+                  },
+                  "span": {
+                    "start": 1023,
+                    "end": 1025,
+                    "start_line": 52,
+                    "start_col": 57,
+                    "end_line": 52,
+                    "end_col": 59
+                  }
+                },
+                "span": {
+                  "start": 992,
+                  "end": 1040,
+                  "start_line": 52,
+                  "start_col": 26,
+                  "end_line": 52,
+                  "end_col": 74
+                }
+              },
+              "span": {
+                "start": 992,
+                "end": 1040,
+                "start_line": 52,
+                "start_col": 26,
+                "end_line": 52,
+                "end_col": 74
+              }
+            },
+            "op": "and",
+            "right": {
+              "expr_type": "binary",
+              "left": {
+                "expr_type": "identifier",
+                "name": "email",
+                "span": {
+                  "start": 1029,
+                  "end": 1034,
+                  "start_line": 52,
+                  "start_col": 63,
+                  "end_line": 52,
+                  "end_col": 68
+                }
+              },
+              "op": "not_eq",
+              "right": {
+                "expr_type": "literal",
+                "value": {
+                  "type": "string",
+                  "value": ""
+                },
+                "span": {
+                  "start": 1038,
+                  "end": 1040,
+                  "start_line": 52,
+                  "start_col": 72,
+                  "end_line": 52,
+                  "end_col": 74
+                }
+              },
+              "span": {
+                "start": 992,
+                "end": 1040,
+                "start_line": 52,
+                "start_col": 26,
+                "end_line": 52,
+                "end_col": 74
+              }
+            },
+            "span": {
+              "start": 992,
+              "end": 1040,
+              "start_line": 52,
+              "start_col": 26,
+              "end_line": 52,
+              "end_col": 74
+            }
+          },
+          "span": {
+            "start": 971,
+            "end": 1040,
+            "start_line": 52,
+            "start_col": 5,
+            "end_line": 52,
+            "end_col": 74
+          }
+        },
+        {
+          "declaration_type": "computed",
+          "name": "canSubmit",
+          "explicit_computed": true,
+          "expression": {
+            "expr_type": "binary",
+            "left": {
+              "expr_type": "identifier",
+              "name": "isValid",
+              "span": {
+                "start": 1068,
+                "end": 1075,
+                "start_line": 53,
+                "start_col": 28,
+                "end_line": 53,
+                "end_col": 35
+              }
+            },
+            "op": "and",
+            "right": {
+              "expr_type": "binary",
+              "left": {
+                "expr_type": "identifier",
+                "name": "agreeToTerms",
+                "span": {
+                  "start": 1079,
+                  "end": 1091,
+                  "start_line": 53,
+                  "start_col": 39,
+                  "end_line": 53,
+                  "end_col": 51
+                }
+              },
+              "op": "eq",
+              "right": {
+                "expr_type": "literal",
+                "value": {
+                  "type": "boolean",
+                  "value": true
+                },
+                "span": {
+                  "start": 1095,
+                  "end": 1099,
+                  "start_line": 53,
+                  "start_col": 55,
+                  "end_line": 53,
+                  "end_col": 59
+                }
+              },
+              "span": {
+                "start": 1068,
+                "end": 1099,
+                "start_line": 53,
+                "start_col": 28,
+                "end_line": 53,
+                "end_col": 59
+              }
+            },
+            "span": {
+              "start": 1068,
+              "end": 1099,
+              "start_line": 53,
+              "start_col": 28,
+              "end_line": 53,
+              "end_col": 59
+            }
+          },
+          "span": {
+            "start": 1045,
+            "end": 1099,
+            "start_line": 53,
+            "start_col": 5,
+            "end_line": 53,
+            "end_col": 59
+          }
+        },
+        {
+          "declaration_type": "computed",
+          "name": "fullName",
+          "explicit_computed": true,
+          "expression": {
+            "expr_type": "binary",
+            "left": {
+              "expr_type": "binary",
+              "left": {
+                "expr_type": "identifier",
+                "name": "firstName",
+                "span": {
+                  "start": 1126,
+                  "end": 1135,
+                  "start_line": 54,
+                  "start_col": 27,
+                  "end_line": 54,
+                  "end_col": 36
+                }
+              },
+              "op": "add",
+              "right": {
+                "expr_type": "literal",
+                "value": {
+                  "type": "string",
+                  "value": " "
+                },
+                "span": {
+                  "start": 1138,
+                  "end": 1141,
+                  "start_line": 54,
+                  "start_col": 39,
+                  "end_line": 54,
+                  "end_col": 42
+                }
+              },
+              "span": {
+                "start": 1126,
+                "end": 1152,
+                "start_line": 54,
+                "start_col": 27,
+                "end_line": 54,
+                "end_col": 53
+              }
+            },
+            "op": "add",
+            "right": {
+              "expr_type": "identifier",
+              "name": "lastName",
+              "span": {
+                "start": 1144,
+                "end": 1152,
+                "start_line": 54,
+                "start_col": 45,
+                "end_line": 54,
+                "end_col": 53
+              }
+            },
+            "span": {
+              "start": 1126,
+              "end": 1152,
+              "start_line": 54,
+              "start_col": 27,
+              "end_line": 54,
+              "end_col": 53
+            }
+          },
+          "span": {
+            "start": 1104,
+            "end": 1152,
+            "start_line": 54,
+            "start_col": 5,
+            "end_line": 54,
+            "end_col": 53
+          }
+        }
+      ],
+      "span": {
+        "start": 588,
+        "end": 1154,
+        "start_line": 29,
+        "start_col": 1,
+        "end_line": 55,
+        "end_col": 2
+      }
+    },
+    {
+      "kind": "hooks",
+      "entries": [
+        {
+          "hook_type": "lifecycle",
+          "kind": "mount",
+          "actions": [
+            {
+              "action_type": "simple",
+              "type": "method_call",
+              "namespace": "console",
+              "method": "log",
+              "arguments": [
+                {
+                  "value": {
+                    "expr_type": "literal",
+                    "value": {
+                      "type": "string",
+                      "value": "Registration form mounted"
+                    },
+                    "span": {
+                      "start": 1200,
+                      "end": 1227,
+                      "start_line": 59,
+                      "start_col": 21,
+                      "end_line": 59,
+                      "end_col": 48
+                    }
+                  }
+                }
+              ],
+              "span": {
+                "start": 1188,
+                "end": 1228,
+                "start_line": 59,
+                "start_col": 9,
+                "end_line": 59,
+                "end_col": 49
+              }
+            }
+          ],
+          "span": {
+            "start": 1168,
+            "end": 1234,
+            "start_line": 58,
+            "start_col": 5,
+            "end_line": 60,
+            "end_col": 6
+          }
+        },
+        {
+          "hook_type": "watcher",
+          "targets": [
+            {
+              "expr_type": "member_access",
+              "root": "state",
+              "path": [
+                "password"
+              ],
+              "span": {
+                "start": 1251,
+                "end": 1265,
+                "start_line": 62,
+                "start_col": 12,
+                "end_line": 62,
+                "end_col": 26
+              }
+            }
+          ],
+          "options": [
+            {
+              "name": "debounce",
+              "value": 300.0,
+              "span": {
+                "start": 1267,
+                "end": 1280,
+                "start_line": 62,
+                "start_col": 28,
+                "end_line": 62,
+                "end_col": 41
+              }
+            }
+          ],
+          "actions": [
+            {
+              "action_type": "simple",
+              "type": "method_call",
+              "namespace": "console",
+              "method": "log",
+              "arguments": [
+                {
+                  "value": {
+                    "expr_type": "literal",
+                    "value": {
+                      "type": "string",
+                      "value": "Password changed"
+                    },
+                    "span": {
+                      "start": 1307,
+                      "end": 1325,
+                      "start_line": 63,
+                      "start_col": 21,
+                      "end_line": 63,
+                      "end_col": 39
+                    }
+                  }
+                }
+              ],
+              "span": {
+                "start": 1295,
+                "end": 1326,
+                "start_line": 63,
+                "start_col": 9,
+                "end_line": 63,
+                "end_col": 40
+              }
+            }
+          ],
+          "span": {
+            "start": 1244,
+            "end": 1332,
+            "start_line": 62,
+            "start_col": 5,
+            "end_line": 64,
+            "end_col": 6
+          }
+        }
+      ],
+      "span": {
+        "start": 1156,
+        "end": 1334,
+        "start_line": 57,
+        "start_col": 1,
+        "end_line": 65,
+        "end_col": 2
+      }
+    },
+    {
+      "kind": "fragment",
+      "name": "FormFieldWrapper",
+      "params": [
+        {
+          "name": "label",
+          "type_annotation": {
+            "type_kind": "primitive",
+            "kind": "string",
+            "span": {
+              "start": 1392,
+              "end": 1398,
+              "start_line": 68,
+              "start_col": 34,
+              "end_line": 68,
+              "end_col": 40
+            }
+          },
+          "required": true,
+          "span": {
+            "start": 1385,
+            "end": 1398,
+            "start_line": 68,
+            "start_col": 27,
+            "end_line": 68,
+            "end_col": 40
+          }
+        },
+        {
+          "name": "required",
+          "type_annotation": {
+            "type_kind": "primitive",
+            "kind": "boolean",
+            "span": {
+              "start": 1410,
+              "end": 1414,
+              "start_line": 68,
+              "start_col": 52,
+              "end_line": 68,
+              "end_col": 56
+            }
+          },
+          "required": true,
+          "span": {
+            "start": 1400,
+            "end": 1414,
+            "start_line": 68,
+            "start_col": 42,
+            "end_line": 68,
+            "end_col": 56
+          }
+        }
+      ],
+      "body": [
+        {
+          "content_type": "component",
+          "name": "Container",
+          "attributes": [
+            {
+              "name": "className",
+              "value": {
+                "value_type": "string",
+                "value": "form-field"
+              },
+              "span": {
+                "start": 1433,
+                "end": 1455,
+                "start_line": 69,
+                "start_col": 16,
+                "end_line": 69,
+                "end_col": 38
+              }
+            }
+          ],
+          "children": [
+            {
+              "content_type": "component",
+              "name": "Text",
+              "self_closing": true,
+              "attributes": [
+                {
+                  "name": "variant",
+                  "value": {
+                    "value_type": "string",
+                    "value": "label"
+                  },
+                  "span": {
+                    "start": 1471,
+                    "end": 1486,
+                    "start_line": 70,
+                    "start_col": 15,
+                    "end_line": 70,
+                    "end_col": 30
+                  }
+                },
+                {
+                  "name": "content",
+                  "value": {
+                    "value_type": "expression",
+                    "value": {
+                      "expr_type": "identifier",
+                      "name": "label",
+                      "span": {
+                        "start": 1496,
+                        "end": 1501,
+                        "start_line": 70,
+                        "start_col": 40,
+                        "end_line": 70,
+                        "end_col": 45
+                      }
+                    }
+                  },
+                  "span": {
+                    "start": 1487,
+                    "end": 1502,
+                    "start_line": 70,
+                    "start_col": 31,
+                    "end_line": 70,
+                    "end_col": 46
+                  }
+                }
+              ],
+              "span": {
+                "start": 1465,
+                "end": 1505,
+                "start_line": 70,
+                "start_col": 9,
+                "end_line": 70,
+                "end_col": 49
+              }
+            },
+            {
+              "content_type": "component",
+              "name": "slot",
+              "self_closing": true,
+              "span": {
+                "start": 1514,
+                "end": 1522,
+                "start_line": 71,
+                "start_col": 9,
+                "end_line": 71,
+                "end_col": 17
+              }
+            }
+          ],
+          "span": {
+            "start": 1422,
+            "end": 1539,
+            "start_line": 69,
+            "start_col": 5,
+            "end_line": 72,
+            "end_col": 17
+          }
+        }
+      ],
+      "span": {
+        "start": 1359,
+        "end": 1541,
+        "start_line": 68,
+        "start_col": 1,
+        "end_line": 73,
+        "end_col": 2
+      }
+    },
+    {
+      "kind": "template",
+      "content": [
+        {
+          "content_type": "component",
+          "name": "Container",
+          "attributes": [
+            {
+              "name": "className",
+              "value": {
+                "value_type": "string",
+                "value": "registration-page"
+              },
+              "span": {
+                "start": 1569,
+                "end": 1598,
+                "start_line": 76,
+                "start_col": 16,
+                "end_line": 76,
+                "end_col": 45
+              }
+            }
+          ],
+          "children": [
+            {
+              "content_type": "component",
+              "name": "Card",
+              "attributes": [
+                {
+                  "name": "className",
+                  "value": {
+                    "value_type": "string",
+                    "value": "registration-card"
+                  },
+                  "span": {
+                    "start": 1614,
+                    "end": 1643,
+                    "start_line": 77,
+                    "start_col": 15,
+                    "end_line": 77,
+                    "end_col": 44
+                  }
+                }
+              ],
+              "children": [
+                {
+                  "content_type": "component",
+                  "name": "CardHeader",
+                  "attributes": [
+                    {
+                      "name": "className",
+                      "value": {
+                        "value_type": "string",
+                        "value": "registration-header"
+                      },
+                      "span": {
+                        "start": 1669,
+                        "end": 1700,
+                        "start_line": 78,
+                        "start_col": 25,
+                        "end_line": 78,
+                        "end_col": 56
+                      }
+                    }
+                  ],
+                  "children": [
+                    {
+                      "content_type": "component",
+                      "name": "Icon",
+                      "self_closing": true,
+                      "attributes": [
+                        {
+                          "name": "name",
+                          "value": {
+                            "value_type": "string",
+                            "value": "user-plus"
+                          },
+                          "span": {
+                            "start": 1724,
+                            "end": 1740,
+                            "start_line": 79,
+                            "start_col": 23,
+                            "end_line": 79,
+                            "end_col": 39
+                          }
+                        },
+                        {
+                          "name": "size",
+                          "value": {
+                            "value_type": "string",
+                            "value": "xl"
+                          },
+                          "span": {
+                            "start": 1741,
+                            "end": 1750,
+                            "start_line": 79,
+                            "start_col": 40,
+                            "end_line": 79,
+                            "end_col": 49
+                          }
+                        }
+                      ],
+                      "span": {
+                        "start": 1718,
+                        "end": 1753,
+                        "start_line": 79,
+                        "start_col": 17,
+                        "end_line": 79,
+                        "end_col": 52
+                      }
+                    },
+                    {
+                      "content_type": "component",
+                      "name": "Heading",
+                      "self_closing": true,
+                      "attributes": [
+                        {
+                          "name": "level",
+                          "value": {
+                            "value_type": "string",
+                            "value": "2"
+                          },
+                          "span": {
+                            "start": 1779,
+                            "end": 1788,
+                            "start_line": 80,
+                            "start_col": 26,
+                            "end_line": 80,
+                            "end_col": 35
+                          }
+                        },
+                        {
+                          "name": "text",
+                          "value": {
+                            "value_type": "string",
+                            "value": "Create your account"
+                          },
+                          "span": {
+                            "start": 1789,
+                            "end": 1815,
+                            "start_line": 80,
+                            "start_col": 36,
+                            "end_line": 80,
+                            "end_col": 62
+                          }
+                        }
+                      ],
+                      "span": {
+                        "start": 1770,
+                        "end": 1818,
+                        "start_line": 80,
+                        "start_col": 17,
+                        "end_line": 80,
+                        "end_col": 65
+                      }
+                    },
+                    {
+                      "content_type": "component",
+                      "name": "Text",
+                      "self_closing": true,
+                      "attributes": [
+                        {
+                          "name": "variant",
+                          "value": {
+                            "value_type": "string",
+                            "value": "body"
+                          },
+                          "span": {
+                            "start": 1841,
+                            "end": 1855,
+                            "start_line": 81,
+                            "start_col": 23,
+                            "end_line": 81,
+                            "end_col": 37
+                          }
+                        },
+                        {
+                          "name": "content",
+                          "value": {
+                            "value_type": "string",
+                            "value": "Join thousands of users"
+                          },
+                          "span": {
+                            "start": 1856,
+                            "end": 1889,
+                            "start_line": 81,
+                            "start_col": 38,
+                            "end_line": 81,
+                            "end_col": 71
+                          }
+                        }
+                      ],
+                      "span": {
+                        "start": 1835,
+                        "end": 1892,
+                        "start_line": 81,
+                        "start_col": 17,
+                        "end_line": 81,
+                        "end_col": 74
+                      }
+                    }
+                  ],
+                  "span": {
+                    "start": 1657,
+                    "end": 1918,
+                    "start_line": 78,
+                    "start_col": 13,
+                    "end_line": 82,
+                    "end_col": 26
+                  }
+                },
+                {
+                  "content_type": "component",
+                  "name": "CardContent",
+                  "attributes": [
+                    {
+                      "name": "className",
+                      "value": {
+                        "value_type": "string",
+                        "value": "registration-content"
+                      },
+                      "span": {
+                        "start": 1957,
+                        "end": 1989,
+                        "start_line": 84,
+                        "start_col": 26,
+                        "end_line": 84,
+                        "end_col": 58
+                      }
+                    }
+                  ],
+                  "children": [
+                    {
+                      "content_type": "component",
+                      "name": "Form",
+                      "attributes": [
+                        {
+                          "name": "id",
+                          "value": {
+                            "value_type": "string",
+                            "value": "registration-form"
+                          },
+                          "span": {
+                            "start": 2013,
+                            "end": 2035,
+                            "start_line": 85,
+                            "start_col": 23,
+                            "end_line": 85,
+                            "end_col": 45
+                          }
+                        }
+                      ],
+                      "events": [
+                        {
+                          "event": "submit",
+                          "handler": {
+                            "handler_type": {
+                              "type": "arrow",
+                              "value": {
+                                "params": [],
+                                "body": {
+                                  "body_type": "block",
+                                  "content": [
+                                    {
+                                      "stmt_type": "expression",
+                                      "expr_type": "method_call",
+                                      "namespace": "console",
+                                      "method": "log",
+                                      "arguments": [
+                                        {
+                                          "value": {
+                                            "expr_type": "literal",
+                                            "value": {
+                                              "type": "string",
+                                              "value": "Form submitted"
+                                            },
+                                            "span": {
+                                              "start": 2061,
+                                              "end": 2077,
+                                              "start_line": 85,
+                                              "start_col": 71,
+                                              "end_line": 85,
+                                              "end_col": 87
+                                            }
+                                          }
+                                        }
+                                      ],
+                                      "span": {
+                                        "start": 2049,
+                                        "end": 2078,
+                                        "start_line": 85,
+                                        "start_col": 59,
+                                        "end_line": 85,
+                                        "end_col": 88
+                                      }
+                                    }
+                                  ]
+                                },
+                                "span": {
+                                  "start": 2036,
+                                  "end": 2080,
+                                  "start_line": 85,
+                                  "start_col": 46,
+                                  "end_line": 85,
+                                  "end_col": 90
+                                }
+                              }
+                            }
+                          },
+                          "span": {
+                            "start": 2036,
+                            "end": 2080,
+                            "start_line": 85,
+                            "start_col": 46,
+                            "end_line": 85,
+                            "end_col": 90
+                          }
+                        }
+                      ],
+                      "children": [
+                        {
+                          "content_type": "control_flow",
+                          "flow_type": "if",
+                          "condition": {
+                            "expr_type": "binary",
+                            "left": {
+                              "expr_type": "member_access",
+                              "root": "state",
+                              "path": [
+                                "currentStep"
+                              ],
+                              "span": {
+                                "start": 2126,
+                                "end": 2144,
+                                "start_line": 87,
+                                "start_col": 24,
+                                "end_line": 87,
+                                "end_col": 42
+                              }
+                            },
+                            "op": "eq",
+                            "right": {
+                              "expr_type": "literal",
+                              "value": {
+                                "type": "integer",
+                                "value": 1
+                              },
+                              "span": {
+                                "start": 2147,
+                                "end": 2148,
+                                "start_line": 87,
+                                "start_col": 45,
+                                "end_line": 87,
+                                "end_col": 46
+                              }
+                            },
+                            "span": {
+                              "start": 2126,
+                              "end": 2148,
+                              "start_line": 87,
+                              "start_col": 24,
+                              "end_line": 87,
+                              "end_col": 46
+                            }
+                          },
+                          "then_branch": [
+                            {
+                              "content_type": "component",
+                              "name": "Container",
+                              "attributes": [
+                                {
+                                  "name": "className",
+                                  "value": {
+                                    "value_type": "string",
+                                    "value": "step-content"
+                                  },
+                                  "span": {
+                                    "start": 2186,
+                                    "end": 2210,
+                                    "start_line": 88,
+                                    "start_col": 36,
+                                    "end_line": 88,
+                                    "end_col": 60
+                                  }
+                                }
+                              ],
+                              "children": [
+                                {
+                                  "content_type": "component",
+                                  "name": "Heading",
+                                  "self_closing": true,
+                                  "attributes": [
+                                    {
+                                      "name": "level",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "4"
+                                      },
+                                      "span": {
+                                        "start": 2249,
+                                        "end": 2258,
+                                        "start_line": 89,
+                                        "start_col": 38,
+                                        "end_line": 89,
+                                        "end_col": 47
+                                      }
+                                    },
+                                    {
+                                      "name": "text",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "Personal Information"
+                                      },
+                                      "span": {
+                                        "start": 2259,
+                                        "end": 2286,
+                                        "start_line": 89,
+                                        "start_col": 48,
+                                        "end_line": 89,
+                                        "end_col": 75
+                                      }
+                                    }
+                                  ],
+                                  "span": {
+                                    "start": 2240,
+                                    "end": 2289,
+                                    "start_line": 89,
+                                    "start_col": 29,
+                                    "end_line": 89,
+                                    "end_col": 78
+                                  }
+                                },
+                                {
+                                  "content_type": "component",
+                                  "name": "Grid",
+                                  "attributes": [
+                                    {
+                                      "name": "columns",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "2"
+                                      },
+                                      "span": {
+                                        "start": 2353,
+                                        "end": 2364,
+                                        "start_line": 91,
+                                        "start_col": 35,
+                                        "end_line": 91,
+                                        "end_col": 46
+                                      }
+                                    },
+                                    {
+                                      "name": "gap",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "4"
+                                      },
+                                      "span": {
+                                        "start": 2365,
+                                        "end": 2372,
+                                        "start_line": 91,
+                                        "start_col": 47,
+                                        "end_line": 91,
+                                        "end_col": 54
+                                      }
+                                    }
+                                  ],
+                                  "children": [
+                                    {
+                                      "content_type": "component",
+                                      "name": "Field",
+                                      "self_closing": true,
+                                      "attributes": [
+                                        {
+                                          "name": "name",
+                                          "value": {
+                                            "value_type": "string",
+                                            "value": "firstName"
+                                          },
+                                          "span": {
+                                            "start": 2450,
+                                            "end": 2466,
+                                            "start_line": 93,
+                                            "start_col": 37,
+                                            "end_line": 93,
+                                            "end_col": 53
+                                          }
+                                        },
+                                        {
+                                          "name": "label",
+                                          "value": {
+                                            "value_type": "string",
+                                            "value": "First Name"
+                                          },
+                                          "span": {
+                                            "start": 2503,
+                                            "end": 2521,
+                                            "start_line": 94,
+                                            "start_col": 37,
+                                            "end_line": 94,
+                                            "end_col": 55
+                                          }
+                                        },
+                                        {
+                                          "name": "fieldType",
+                                          "value": {
+                                            "value_type": "string",
+                                            "value": "text"
+                                          },
+                                          "span": {
+                                            "start": 2558,
+                                            "end": 2574,
+                                            "start_line": 95,
+                                            "start_col": 37,
+                                            "end_line": 95,
+                                            "end_col": 53
+                                          }
+                                        },
+                                        {
+                                          "name": "placeholder",
+                                          "value": {
+                                            "value_type": "string",
+                                            "value": "Enter your first name"
+                                          },
+                                          "span": {
+                                            "start": 2611,
+                                            "end": 2646,
+                                            "start_line": 96,
+                                            "start_col": 37,
+                                            "end_line": 96,
+                                            "end_col": 72
+                                          }
+                                        },
+                                        {
+                                          "name": "required",
+                                          "value": {
+                                            "value_type": "expression",
+                                            "value": {
+                                              "expr_type": "literal",
+                                              "value": {
+                                                "type": "boolean",
+                                                "value": true
+                                              },
+                                              "span": {
+                                                "start": 2693,
+                                                "end": 2697,
+                                                "start_line": 97,
+                                                "start_col": 47,
+                                                "end_line": 97,
+                                                "end_col": 51
+                                              }
+                                            }
+                                          },
+                                          "span": {
+                                            "start": 2683,
+                                            "end": 2698,
+                                            "start_line": 97,
+                                            "start_col": 37,
+                                            "end_line": 97,
+                                            "end_col": 52
+                                          }
+                                        },
+                                        {
+                                          "name": "bindTo",
+                                          "value": {
+                                            "value_type": "string",
+                                            "value": "state.firstName"
+                                          },
+                                          "span": {
+                                            "start": 2735,
+                                            "end": 2759,
+                                            "start_line": 98,
+                                            "start_col": 37,
+                                            "end_line": 98,
+                                            "end_col": 61
+                                          }
+                                        }
+                                      ],
+                                      "span": {
+                                        "start": 2406,
+                                        "end": 2794,
+                                        "start_line": 92,
+                                        "start_col": 33,
+                                        "end_line": 99,
+                                        "end_col": 35
+                                      }
+                                    },
+                                    {
+                                      "content_type": "component",
+                                      "name": "Field",
+                                      "self_closing": true,
+                                      "attributes": [
+                                        {
+                                          "name": "name",
+                                          "value": {
+                                            "value_type": "string",
+                                            "value": "lastName"
+                                          },
+                                          "span": {
+                                            "start": 2871,
+                                            "end": 2886,
+                                            "start_line": 101,
+                                            "start_col": 37,
+                                            "end_line": 101,
+                                            "end_col": 52
+                                          }
+                                        },
+                                        {
+                                          "name": "label",
+                                          "value": {
+                                            "value_type": "string",
+                                            "value": "Last Name"
+                                          },
+                                          "span": {
+                                            "start": 2923,
+                                            "end": 2940,
+                                            "start_line": 102,
+                                            "start_col": 37,
+                                            "end_line": 102,
+                                            "end_col": 54
+                                          }
+                                        },
+                                        {
+                                          "name": "fieldType",
+                                          "value": {
+                                            "value_type": "string",
+                                            "value": "text"
+                                          },
+                                          "span": {
+                                            "start": 2977,
+                                            "end": 2993,
+                                            "start_line": 103,
+                                            "start_col": 37,
+                                            "end_line": 103,
+                                            "end_col": 53
+                                          }
+                                        },
+                                        {
+                                          "name": "placeholder",
+                                          "value": {
+                                            "value_type": "string",
+                                            "value": "Enter your last name"
+                                          },
+                                          "span": {
+                                            "start": 3030,
+                                            "end": 3064,
+                                            "start_line": 104,
+                                            "start_col": 37,
+                                            "end_line": 104,
+                                            "end_col": 71
+                                          }
+                                        },
+                                        {
+                                          "name": "required",
+                                          "value": {
+                                            "value_type": "expression",
+                                            "value": {
+                                              "expr_type": "literal",
+                                              "value": {
+                                                "type": "boolean",
+                                                "value": true
+                                              },
+                                              "span": {
+                                                "start": 3111,
+                                                "end": 3115,
+                                                "start_line": 105,
+                                                "start_col": 47,
+                                                "end_line": 105,
+                                                "end_col": 51
+                                              }
+                                            }
+                                          },
+                                          "span": {
+                                            "start": 3101,
+                                            "end": 3116,
+                                            "start_line": 105,
+                                            "start_col": 37,
+                                            "end_line": 105,
+                                            "end_col": 52
+                                          }
+                                        },
+                                        {
+                                          "name": "bindTo",
+                                          "value": {
+                                            "value_type": "string",
+                                            "value": "state.lastName"
+                                          },
+                                          "span": {
+                                            "start": 3153,
+                                            "end": 3176,
+                                            "start_line": 106,
+                                            "start_col": 37,
+                                            "end_line": 106,
+                                            "end_col": 60
+                                          }
+                                        }
+                                      ],
+                                      "span": {
+                                        "start": 2827,
+                                        "end": 3211,
+                                        "start_line": 100,
+                                        "start_col": 33,
+                                        "end_line": 107,
+                                        "end_col": 35
+                                      }
+                                    }
+                                  ],
+                                  "span": {
+                                    "start": 2347,
+                                    "end": 3247,
+                                    "start_line": 91,
+                                    "start_col": 29,
+                                    "end_line": 108,
+                                    "end_col": 36
+                                  }
+                                },
+                                {
+                                  "content_type": "component",
+                                  "name": "Field",
+                                  "self_closing": true,
+                                  "attributes": [
+                                    {
+                                      "name": "name",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "email"
+                                      },
+                                      "span": {
+                                        "start": 3345,
+                                        "end": 3357,
+                                        "start_line": 111,
+                                        "start_col": 33,
+                                        "end_line": 111,
+                                        "end_col": 45
+                                      }
+                                    },
+                                    {
+                                      "name": "label",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "Email Address"
+                                      },
+                                      "span": {
+                                        "start": 3390,
+                                        "end": 3411,
+                                        "start_line": 112,
+                                        "start_col": 33,
+                                        "end_line": 112,
+                                        "end_col": 54
+                                      }
+                                    },
+                                    {
+                                      "name": "fieldType",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "email"
+                                      },
+                                      "span": {
+                                        "start": 3444,
+                                        "end": 3461,
+                                        "start_line": 113,
+                                        "start_col": 33,
+                                        "end_line": 113,
+                                        "end_col": 50
+                                      }
+                                    },
+                                    {
+                                      "name": "placeholder",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "you@example.com"
+                                      },
+                                      "span": {
+                                        "start": 3494,
+                                        "end": 3523,
+                                        "start_line": 114,
+                                        "start_col": 33,
+                                        "end_line": 114,
+                                        "end_col": 62
+                                      }
+                                    },
+                                    {
+                                      "name": "required",
+                                      "value": {
+                                        "value_type": "expression",
+                                        "value": {
+                                          "expr_type": "literal",
+                                          "value": {
+                                            "type": "boolean",
+                                            "value": true
+                                          },
+                                          "span": {
+                                            "start": 3566,
+                                            "end": 3570,
+                                            "start_line": 115,
+                                            "start_col": 43,
+                                            "end_line": 115,
+                                            "end_col": 47
+                                          }
+                                        }
+                                      },
+                                      "span": {
+                                        "start": 3556,
+                                        "end": 3571,
+                                        "start_line": 115,
+                                        "start_col": 33,
+                                        "end_line": 115,
+                                        "end_col": 48
+                                      }
+                                    },
+                                    {
+                                      "name": "bindTo",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "state.email"
+                                      },
+                                      "span": {
+                                        "start": 3604,
+                                        "end": 3624,
+                                        "start_line": 116,
+                                        "start_col": 33,
+                                        "end_line": 116,
+                                        "end_col": 53
+                                      }
+                                    }
+                                  ],
+                                  "span": {
+                                    "start": 3305,
+                                    "end": 3655,
+                                    "start_line": 110,
+                                    "start_col": 29,
+                                    "end_line": 117,
+                                    "end_col": 31
+                                  }
+                                }
+                              ],
+                              "span": {
+                                "start": 2175,
+                                "end": 3692,
+                                "start_line": 88,
+                                "start_col": 25,
+                                "end_line": 118,
+                                "end_col": 37
+                              }
+                            }
+                          ],
+                          "span": {
+                            "start": 2123,
+                            "end": 3756,
+                            "start_line": 87,
+                            "start_col": 21,
+                            "end_line": 121,
+                            "end_col": 21
+                          }
+                        },
+                        {
+                          "content_type": "control_flow",
+                          "flow_type": "if",
+                          "condition": {
+                            "expr_type": "binary",
+                            "left": {
+                              "expr_type": "member_access",
+                              "root": "state",
+                              "path": [
+                                "currentStep"
+                              ],
+                              "span": {
+                                "start": 3759,
+                                "end": 3777,
+                                "start_line": 121,
+                                "start_col": 24,
+                                "end_line": 121,
+                                "end_col": 42
+                              }
+                            },
+                            "op": "eq",
+                            "right": {
+                              "expr_type": "literal",
+                              "value": {
+                                "type": "integer",
+                                "value": 2
+                              },
+                              "span": {
+                                "start": 3780,
+                                "end": 3781,
+                                "start_line": 121,
+                                "start_col": 45,
+                                "end_line": 121,
+                                "end_col": 46
+                              }
+                            },
+                            "span": {
+                              "start": 3759,
+                              "end": 3781,
+                              "start_line": 121,
+                              "start_col": 24,
+                              "end_line": 121,
+                              "end_col": 46
+                            }
+                          },
+                          "then_branch": [
+                            {
+                              "content_type": "component",
+                              "name": "Container",
+                              "attributes": [
+                                {
+                                  "name": "className",
+                                  "value": {
+                                    "value_type": "string",
+                                    "value": "step-content"
+                                  },
+                                  "span": {
+                                    "start": 3819,
+                                    "end": 3843,
+                                    "start_line": 122,
+                                    "start_col": 36,
+                                    "end_line": 122,
+                                    "end_col": 60
+                                  }
+                                }
+                              ],
+                              "children": [
+                                {
+                                  "content_type": "component",
+                                  "name": "Heading",
+                                  "self_closing": true,
+                                  "attributes": [
+                                    {
+                                      "name": "level",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "4"
+                                      },
+                                      "span": {
+                                        "start": 3882,
+                                        "end": 3891,
+                                        "start_line": 123,
+                                        "start_col": 38,
+                                        "end_line": 123,
+                                        "end_col": 47
+                                      }
+                                    },
+                                    {
+                                      "name": "text",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "Account Details"
+                                      },
+                                      "span": {
+                                        "start": 3892,
+                                        "end": 3914,
+                                        "start_line": 123,
+                                        "start_col": 48,
+                                        "end_line": 123,
+                                        "end_col": 70
+                                      }
+                                    }
+                                  ],
+                                  "span": {
+                                    "start": 3873,
+                                    "end": 3917,
+                                    "start_line": 123,
+                                    "start_col": 29,
+                                    "end_line": 123,
+                                    "end_col": 73
+                                  }
+                                },
+                                {
+                                  "content_type": "component",
+                                  "name": "Field",
+                                  "self_closing": true,
+                                  "attributes": [
+                                    {
+                                      "name": "name",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "username"
+                                      },
+                                      "span": {
+                                        "start": 4015,
+                                        "end": 4030,
+                                        "start_line": 126,
+                                        "start_col": 33,
+                                        "end_line": 126,
+                                        "end_col": 48
+                                      }
+                                    },
+                                    {
+                                      "name": "label",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "Username"
+                                      },
+                                      "span": {
+                                        "start": 4063,
+                                        "end": 4079,
+                                        "start_line": 127,
+                                        "start_col": 33,
+                                        "end_line": 127,
+                                        "end_col": 49
+                                      }
+                                    },
+                                    {
+                                      "name": "fieldType",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "text"
+                                      },
+                                      "span": {
+                                        "start": 4112,
+                                        "end": 4128,
+                                        "start_line": 128,
+                                        "start_col": 33,
+                                        "end_line": 128,
+                                        "end_col": 49
+                                      }
+                                    },
+                                    {
+                                      "name": "placeholder",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "Choose a username"
+                                      },
+                                      "span": {
+                                        "start": 4161,
+                                        "end": 4192,
+                                        "start_line": 129,
+                                        "start_col": 33,
+                                        "end_line": 129,
+                                        "end_col": 64
+                                      }
+                                    },
+                                    {
+                                      "name": "required",
+                                      "value": {
+                                        "value_type": "expression",
+                                        "value": {
+                                          "expr_type": "literal",
+                                          "value": {
+                                            "type": "boolean",
+                                            "value": true
+                                          },
+                                          "span": {
+                                            "start": 4235,
+                                            "end": 4239,
+                                            "start_line": 130,
+                                            "start_col": 43,
+                                            "end_line": 130,
+                                            "end_col": 47
+                                          }
+                                        }
+                                      },
+                                      "span": {
+                                        "start": 4225,
+                                        "end": 4240,
+                                        "start_line": 130,
+                                        "start_col": 33,
+                                        "end_line": 130,
+                                        "end_col": 48
+                                      }
+                                    },
+                                    {
+                                      "name": "bindTo",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "state.username"
+                                      },
+                                      "span": {
+                                        "start": 4273,
+                                        "end": 4296,
+                                        "start_line": 131,
+                                        "start_col": 33,
+                                        "end_line": 131,
+                                        "end_col": 56
+                                      }
+                                    }
+                                  ],
+                                  "span": {
+                                    "start": 3975,
+                                    "end": 4327,
+                                    "start_line": 125,
+                                    "start_col": 29,
+                                    "end_line": 132,
+                                    "end_col": 31
+                                  }
+                                },
+                                {
+                                  "content_type": "component",
+                                  "name": "Field",
+                                  "self_closing": true,
+                                  "attributes": [
+                                    {
+                                      "name": "name",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "password"
+                                      },
+                                      "span": {
+                                        "start": 4425,
+                                        "end": 4440,
+                                        "start_line": 135,
+                                        "start_col": 33,
+                                        "end_line": 135,
+                                        "end_col": 48
+                                      }
+                                    },
+                                    {
+                                      "name": "label",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "Password"
+                                      },
+                                      "span": {
+                                        "start": 4473,
+                                        "end": 4489,
+                                        "start_line": 136,
+                                        "start_col": 33,
+                                        "end_line": 136,
+                                        "end_col": 49
+                                      }
+                                    },
+                                    {
+                                      "name": "fieldType",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "password"
+                                      },
+                                      "span": {
+                                        "start": 4522,
+                                        "end": 4542,
+                                        "start_line": 137,
+                                        "start_col": 33,
+                                        "end_line": 137,
+                                        "end_col": 53
+                                      }
+                                    },
+                                    {
+                                      "name": "placeholder",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "Create a strong password"
+                                      },
+                                      "span": {
+                                        "start": 4575,
+                                        "end": 4613,
+                                        "start_line": 138,
+                                        "start_col": 33,
+                                        "end_line": 138,
+                                        "end_col": 71
+                                      }
+                                    },
+                                    {
+                                      "name": "required",
+                                      "value": {
+                                        "value_type": "expression",
+                                        "value": {
+                                          "expr_type": "literal",
+                                          "value": {
+                                            "type": "boolean",
+                                            "value": true
+                                          },
+                                          "span": {
+                                            "start": 4656,
+                                            "end": 4660,
+                                            "start_line": 139,
+                                            "start_col": 43,
+                                            "end_line": 139,
+                                            "end_col": 47
+                                          }
+                                        }
+                                      },
+                                      "span": {
+                                        "start": 4646,
+                                        "end": 4661,
+                                        "start_line": 139,
+                                        "start_col": 33,
+                                        "end_line": 139,
+                                        "end_col": 48
+                                      }
+                                    },
+                                    {
+                                      "name": "bindTo",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "state.password"
+                                      },
+                                      "span": {
+                                        "start": 4694,
+                                        "end": 4717,
+                                        "start_line": 140,
+                                        "start_col": 33,
+                                        "end_line": 140,
+                                        "end_col": 56
+                                      }
+                                    }
+                                  ],
+                                  "span": {
+                                    "start": 4385,
+                                    "end": 4748,
+                                    "start_line": 134,
+                                    "start_col": 29,
+                                    "end_line": 141,
+                                    "end_col": 31
+                                  }
+                                },
+                                {
+                                  "content_type": "component",
+                                  "name": "Field",
+                                  "self_closing": true,
+                                  "attributes": [
+                                    {
+                                      "name": "name",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "confirmPassword"
+                                      },
+                                      "span": {
+                                        "start": 4846,
+                                        "end": 4868,
+                                        "start_line": 144,
+                                        "start_col": 33,
+                                        "end_line": 144,
+                                        "end_col": 55
+                                      }
+                                    },
+                                    {
+                                      "name": "label",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "Confirm Password"
+                                      },
+                                      "span": {
+                                        "start": 4901,
+                                        "end": 4925,
+                                        "start_line": 145,
+                                        "start_col": 33,
+                                        "end_line": 145,
+                                        "end_col": 57
+                                      }
+                                    },
+                                    {
+                                      "name": "fieldType",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "password"
+                                      },
+                                      "span": {
+                                        "start": 4958,
+                                        "end": 4978,
+                                        "start_line": 146,
+                                        "start_col": 33,
+                                        "end_line": 146,
+                                        "end_col": 53
+                                      }
+                                    },
+                                    {
+                                      "name": "placeholder",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "Confirm your password"
+                                      },
+                                      "span": {
+                                        "start": 5011,
+                                        "end": 5046,
+                                        "start_line": 147,
+                                        "start_col": 33,
+                                        "end_line": 147,
+                                        "end_col": 68
+                                      }
+                                    },
+                                    {
+                                      "name": "required",
+                                      "value": {
+                                        "value_type": "expression",
+                                        "value": {
+                                          "expr_type": "literal",
+                                          "value": {
+                                            "type": "boolean",
+                                            "value": true
+                                          },
+                                          "span": {
+                                            "start": 5089,
+                                            "end": 5093,
+                                            "start_line": 148,
+                                            "start_col": 43,
+                                            "end_line": 148,
+                                            "end_col": 47
+                                          }
+                                        }
+                                      },
+                                      "span": {
+                                        "start": 5079,
+                                        "end": 5094,
+                                        "start_line": 148,
+                                        "start_col": 33,
+                                        "end_line": 148,
+                                        "end_col": 48
+                                      }
+                                    },
+                                    {
+                                      "name": "bindTo",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "state.confirmPassword"
+                                      },
+                                      "span": {
+                                        "start": 5127,
+                                        "end": 5157,
+                                        "start_line": 149,
+                                        "start_col": 33,
+                                        "end_line": 149,
+                                        "end_col": 63
+                                      }
+                                    }
+                                  ],
+                                  "span": {
+                                    "start": 4806,
+                                    "end": 5188,
+                                    "start_line": 143,
+                                    "start_col": 29,
+                                    "end_line": 150,
+                                    "end_col": 31
+                                  }
+                                }
+                              ],
+                              "span": {
+                                "start": 3808,
+                                "end": 5225,
+                                "start_line": 122,
+                                "start_col": 25,
+                                "end_line": 151,
+                                "end_col": 37
+                              }
+                            }
+                          ],
+                          "span": {
+                            "start": 3756,
+                            "end": 5289,
+                            "start_line": 121,
+                            "start_col": 21,
+                            "end_line": 154,
+                            "end_col": 21
+                          }
+                        },
+                        {
+                          "content_type": "control_flow",
+                          "flow_type": "if",
+                          "condition": {
+                            "expr_type": "binary",
+                            "left": {
+                              "expr_type": "member_access",
+                              "root": "state",
+                              "path": [
+                                "currentStep"
+                              ],
+                              "span": {
+                                "start": 5292,
+                                "end": 5310,
+                                "start_line": 154,
+                                "start_col": 24,
+                                "end_line": 154,
+                                "end_col": 42
+                              }
+                            },
+                            "op": "eq",
+                            "right": {
+                              "expr_type": "literal",
+                              "value": {
+                                "type": "integer",
+                                "value": 3
+                              },
+                              "span": {
+                                "start": 5313,
+                                "end": 5314,
+                                "start_line": 154,
+                                "start_col": 45,
+                                "end_line": 154,
+                                "end_col": 46
+                              }
+                            },
+                            "span": {
+                              "start": 5292,
+                              "end": 5314,
+                              "start_line": 154,
+                              "start_col": 24,
+                              "end_line": 154,
+                              "end_col": 46
+                            }
+                          },
+                          "then_branch": [
+                            {
+                              "content_type": "component",
+                              "name": "Container",
+                              "attributes": [
+                                {
+                                  "name": "className",
+                                  "value": {
+                                    "value_type": "string",
+                                    "value": "step-content"
+                                  },
+                                  "span": {
+                                    "start": 5352,
+                                    "end": 5376,
+                                    "start_line": 155,
+                                    "start_col": 36,
+                                    "end_line": 155,
+                                    "end_col": 60
+                                  }
+                                }
+                              ],
+                              "children": [
+                                {
+                                  "content_type": "component",
+                                  "name": "Heading",
+                                  "self_closing": true,
+                                  "attributes": [
+                                    {
+                                      "name": "level",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "4"
+                                      },
+                                      "span": {
+                                        "start": 5415,
+                                        "end": 5424,
+                                        "start_line": 156,
+                                        "start_col": 38,
+                                        "end_line": 156,
+                                        "end_col": 47
+                                      }
+                                    },
+                                    {
+                                      "name": "text",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "Preferences"
+                                      },
+                                      "span": {
+                                        "start": 5425,
+                                        "end": 5443,
+                                        "start_line": 156,
+                                        "start_col": 48,
+                                        "end_line": 156,
+                                        "end_col": 66
+                                      }
+                                    }
+                                  ],
+                                  "span": {
+                                    "start": 5406,
+                                    "end": 5446,
+                                    "start_line": 156,
+                                    "start_col": 29,
+                                    "end_line": 156,
+                                    "end_col": 69
+                                  }
+                                },
+                                {
+                                  "content_type": "component",
+                                  "name": "Field",
+                                  "self_closing": true,
+                                  "attributes": [
+                                    {
+                                      "name": "name",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "newsletter"
+                                      },
+                                      "span": {
+                                        "start": 5544,
+                                        "end": 5561,
+                                        "start_line": 159,
+                                        "start_col": 33,
+                                        "end_line": 159,
+                                        "end_col": 50
+                                      }
+                                    },
+                                    {
+                                      "name": "label",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "Subscribe to newsletter"
+                                      },
+                                      "span": {
+                                        "start": 5594,
+                                        "end": 5625,
+                                        "start_line": 160,
+                                        "start_col": 33,
+                                        "end_line": 160,
+                                        "end_col": 64
+                                      }
+                                    },
+                                    {
+                                      "name": "fieldType",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "checkbox"
+                                      },
+                                      "span": {
+                                        "start": 5658,
+                                        "end": 5678,
+                                        "start_line": 161,
+                                        "start_col": 33,
+                                        "end_line": 161,
+                                        "end_col": 53
+                                      }
+                                    },
+                                    {
+                                      "name": "bindTo",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "state.newsletter"
+                                      },
+                                      "span": {
+                                        "start": 5711,
+                                        "end": 5736,
+                                        "start_line": 162,
+                                        "start_col": 33,
+                                        "end_line": 162,
+                                        "end_col": 58
+                                      }
+                                    }
+                                  ],
+                                  "span": {
+                                    "start": 5504,
+                                    "end": 5767,
+                                    "start_line": 158,
+                                    "start_col": 29,
+                                    "end_line": 163,
+                                    "end_col": 31
+                                  }
+                                },
+                                {
+                                  "content_type": "component",
+                                  "name": "Divider",
+                                  "self_closing": true,
+                                  "span": {
+                                    "start": 5825,
+                                    "end": 5836,
+                                    "start_line": 165,
+                                    "start_col": 29,
+                                    "end_line": 165,
+                                    "end_col": 40
+                                  }
+                                },
+                                {
+                                  "content_type": "component",
+                                  "name": "Field",
+                                  "self_closing": true,
+                                  "attributes": [
+                                    {
+                                      "name": "name",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "agreeToTerms"
+                                      },
+                                      "span": {
+                                        "start": 5934,
+                                        "end": 5953,
+                                        "start_line": 168,
+                                        "start_col": 33,
+                                        "end_line": 168,
+                                        "end_col": 52
+                                      }
+                                    },
+                                    {
+                                      "name": "label",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "I agree to the Terms of Service"
+                                      },
+                                      "span": {
+                                        "start": 5986,
+                                        "end": 6025,
+                                        "start_line": 169,
+                                        "start_col": 33,
+                                        "end_line": 169,
+                                        "end_col": 72
+                                      }
+                                    },
+                                    {
+                                      "name": "fieldType",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "checkbox"
+                                      },
+                                      "span": {
+                                        "start": 6058,
+                                        "end": 6078,
+                                        "start_line": 170,
+                                        "start_col": 33,
+                                        "end_line": 170,
+                                        "end_col": 53
+                                      }
+                                    },
+                                    {
+                                      "name": "required",
+                                      "value": {
+                                        "value_type": "expression",
+                                        "value": {
+                                          "expr_type": "literal",
+                                          "value": {
+                                            "type": "boolean",
+                                            "value": true
+                                          },
+                                          "span": {
+                                            "start": 6121,
+                                            "end": 6125,
+                                            "start_line": 171,
+                                            "start_col": 43,
+                                            "end_line": 171,
+                                            "end_col": 47
+                                          }
+                                        }
+                                      },
+                                      "span": {
+                                        "start": 6111,
+                                        "end": 6126,
+                                        "start_line": 171,
+                                        "start_col": 33,
+                                        "end_line": 171,
+                                        "end_col": 48
+                                      }
+                                    },
+                                    {
+                                      "name": "bindTo",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "state.agreeToTerms"
+                                      },
+                                      "span": {
+                                        "start": 6159,
+                                        "end": 6186,
+                                        "start_line": 172,
+                                        "start_col": 33,
+                                        "end_line": 172,
+                                        "end_col": 60
+                                      }
+                                    }
+                                  ],
+                                  "span": {
+                                    "start": 5894,
+                                    "end": 6217,
+                                    "start_line": 167,
+                                    "start_col": 29,
+                                    "end_line": 173,
+                                    "end_col": 31
+                                  }
+                                },
+                                {
+                                  "content_type": "control_flow",
+                                  "flow_type": "if",
+                                  "condition": {
+                                    "expr_type": "member_access",
+                                    "root": "state",
+                                    "path": [
+                                      "submitError"
+                                    ],
+                                    "span": {
+                                      "start": 6278,
+                                      "end": 6296,
+                                      "start_line": 175,
+                                      "start_col": 32,
+                                      "end_line": 175,
+                                      "end_col": 50
+                                    }
+                                  },
+                                  "then_branch": [
+                                    {
+                                      "content_type": "component",
+                                      "name": "Alert",
+                                      "self_closing": true,
+                                      "attributes": [
+                                        {
+                                          "name": "type",
+                                          "value": {
+                                            "value_type": "string",
+                                            "value": "error"
+                                          },
+                                          "span": {
+                                            "start": 6337,
+                                            "end": 6349,
+                                            "start_line": 176,
+                                            "start_col": 40,
+                                            "end_line": 176,
+                                            "end_col": 52
+                                          }
+                                        },
+                                        {
+                                          "name": "message",
+                                          "value": {
+                                            "value_type": "expression",
+                                            "value": {
+                                              "expr_type": "member_access",
+                                              "root": "state",
+                                              "path": [
+                                                "submitError"
+                                              ],
+                                              "span": {
+                                                "start": 6359,
+                                                "end": 6376,
+                                                "start_line": 176,
+                                                "start_col": 62,
+                                                "end_line": 176,
+                                                "end_col": 79
+                                              }
+                                            }
+                                          },
+                                          "span": {
+                                            "start": 6350,
+                                            "end": 6377,
+                                            "start_line": 176,
+                                            "start_col": 53,
+                                            "end_line": 176,
+                                            "end_col": 80
+                                          }
+                                        }
+                                      ],
+                                      "span": {
+                                        "start": 6330,
+                                        "end": 6380,
+                                        "start_line": 176,
+                                        "start_col": 33,
+                                        "end_line": 176,
+                                        "end_col": 83
+                                      }
+                                    }
+                                  ],
+                                  "span": {
+                                    "start": 6275,
+                                    "end": 6435,
+                                    "start_line": 175,
+                                    "start_col": 29,
+                                    "end_line": 178,
+                                    "end_col": 25
+                                  }
+                                }
+                              ],
+                              "span": {
+                                "start": 5341,
+                                "end": 6447,
+                                "start_line": 155,
+                                "start_col": 25,
+                                "end_line": 178,
+                                "end_col": 37
+                              }
+                            }
+                          ],
+                          "span": {
+                            "start": 5289,
+                            "end": 6547,
+                            "start_line": 154,
+                            "start_col": 21,
+                            "end_line": 182,
+                            "end_col": 21
+                          }
+                        },
+                        {
+                          "content_type": "component",
+                          "name": "Flex",
+                          "attributes": [
+                            {
+                              "name": "direction",
+                              "value": {
+                                "value_type": "string",
+                                "value": "row"
+                              },
+                              "span": {
+                                "start": 6553,
+                                "end": 6568,
+                                "start_line": 182,
+                                "start_col": 27,
+                                "end_line": 182,
+                                "end_col": 42
+                              }
+                            },
+                            {
+                              "name": "justify",
+                              "value": {
+                                "value_type": "string",
+                                "value": "between"
+                              },
+                              "span": {
+                                "start": 6569,
+                                "end": 6586,
+                                "start_line": 182,
+                                "start_col": 43,
+                                "end_line": 182,
+                                "end_col": 60
+                              }
+                            },
+                            {
+                              "name": "className",
+                              "value": {
+                                "value_type": "string",
+                                "value": "form-actions"
+                              },
+                              "span": {
+                                "start": 6587,
+                                "end": 6611,
+                                "start_line": 182,
+                                "start_col": 61,
+                                "end_line": 182,
+                                "end_col": 85
+                              }
+                            }
+                          ],
+                          "children": [
+                            {
+                              "content_type": "control_flow",
+                              "flow_type": "if",
+                              "condition": {
+                                "expr_type": "binary",
+                                "left": {
+                                  "expr_type": "member_access",
+                                  "root": "state",
+                                  "path": [
+                                    "currentStep"
+                                  ],
+                                  "span": {
+                                    "start": 6640,
+                                    "end": 6658,
+                                    "start_line": 183,
+                                    "start_col": 28,
+                                    "end_line": 183,
+                                    "end_col": 46
+                                  }
+                                },
+                                "op": "gt",
+                                "right": {
+                                  "expr_type": "literal",
+                                  "value": {
+                                    "type": "integer",
+                                    "value": 1
+                                  },
+                                  "span": {
+                                    "start": 6660,
+                                    "end": 6661,
+                                    "start_line": 183,
+                                    "start_col": 48,
+                                    "end_line": 183,
+                                    "end_col": 49
+                                  }
+                                },
+                                "span": {
+                                  "start": 6640,
+                                  "end": 6661,
+                                  "start_line": 183,
+                                  "start_col": 28,
+                                  "end_line": 183,
+                                  "end_col": 49
+                                }
+                              },
+                              "then_branch": [
+                                {
+                                  "content_type": "component",
+                                  "name": "Button",
+                                  "self_closing": true,
+                                  "attributes": [
+                                    {
+                                      "name": "label",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "Back"
+                                      },
+                                      "span": {
+                                        "start": 6733,
+                                        "end": 6745,
+                                        "start_line": 185,
+                                        "start_col": 33,
+                                        "end_line": 185,
+                                        "end_col": 45
+                                      }
+                                    },
+                                    {
+                                      "name": "variant",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "ghost"
+                                      },
+                                      "span": {
+                                        "start": 6778,
+                                        "end": 6793,
+                                        "start_line": 186,
+                                        "start_col": 33,
+                                        "end_line": 186,
+                                        "end_col": 48
+                                      }
+                                    }
+                                  ],
+                                  "events": [
+                                    {
+                                      "event": "click",
+                                      "handler": {
+                                        "handler_type": {
+                                          "type": "arrow",
+                                          "value": {
+                                            "params": [],
+                                            "body": {
+                                              "body_type": "block",
+                                              "content": [
+                                                {
+                                                  "stmt_type": "expression",
+                                                  "expr_type": "assignment",
+                                                  "target": {
+                                                    "expr_type": "member_access",
+                                                    "root": "state",
+                                                    "path": [
+                                                      "currentStep"
+                                                    ],
+                                                    "span": {
+                                                      "start": 6838,
+                                                      "end": 6856,
+                                                      "start_line": 187,
+                                                      "start_col": 45,
+                                                      "end_line": 187,
+                                                      "end_col": 63
+                                                    }
+                                                  },
+                                                  "value": {
+                                                    "expr_type": "binary",
+                                                    "left": {
+                                                      "expr_type": "member_access",
+                                                      "root": "state",
+                                                      "path": [
+                                                        "currentStep"
+                                                      ],
+                                                      "span": {
+                                                        "start": 6858,
+                                                        "end": 6876,
+                                                        "start_line": 187,
+                                                        "start_col": 65,
+                                                        "end_line": 187,
+                                                        "end_col": 83
+                                                      }
+                                                    },
+                                                    "op": "sub",
+                                                    "right": {
+                                                      "expr_type": "literal",
+                                                      "value": {
+                                                        "type": "integer",
+                                                        "value": 1
+                                                      },
+                                                      "span": {
+                                                        "start": 6878,
+                                                        "end": 6879,
+                                                        "start_line": 187,
+                                                        "start_col": 85,
+                                                        "end_line": 187,
+                                                        "end_col": 86
+                                                      }
+                                                    },
+                                                    "span": {
+                                                      "start": 6858,
+                                                      "end": 6879,
+                                                      "start_line": 187,
+                                                      "start_col": 65,
+                                                      "end_line": 187,
+                                                      "end_col": 86
+                                                    }
+                                                  },
+                                                  "span": {
+                                                    "start": 6838,
+                                                    "end": 6879,
+                                                    "start_line": 187,
+                                                    "start_col": 45,
+                                                    "end_line": 187,
+                                                    "end_col": 86
+                                                  }
+                                                }
+                                              ]
+                                            },
+                                            "span": {
+                                              "start": 6826,
+                                              "end": 6881,
+                                              "start_line": 187,
+                                              "start_col": 33,
+                                              "end_line": 187,
+                                              "end_col": 88
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "span": {
+                                        "start": 6826,
+                                        "end": 6881,
+                                        "start_line": 187,
+                                        "start_col": 33,
+                                        "end_line": 187,
+                                        "end_col": 88
+                                      }
+                                    }
+                                  ],
+                                  "span": {
+                                    "start": 6692,
+                                    "end": 6912,
+                                    "start_line": 184,
+                                    "start_col": 29,
+                                    "end_line": 188,
+                                    "end_col": 31
+                                  }
+                                }
+                              ],
+                              "else_branch": [
+                                {
+                                  "content_type": "component",
+                                  "name": "Container",
+                                  "self_closing": true,
+                                  "span": {
+                                    "start": 6974,
+                                    "end": 6987,
+                                    "start_line": 190,
+                                    "start_col": 29,
+                                    "end_line": 190,
+                                    "end_col": 42
+                                  }
+                                }
+                              ],
+                              "span": {
+                                "start": 6637,
+                                "end": 7013,
+                                "start_line": 183,
+                                "start_col": 25,
+                                "end_line": 191,
+                                "end_col": 26
+                              }
+                            },
+                            {
+                              "content_type": "control_flow",
+                              "flow_type": "if",
+                              "condition": {
+                                "expr_type": "binary",
+                                "left": {
+                                  "expr_type": "member_access",
+                                  "root": "state",
+                                  "path": [
+                                    "currentStep"
+                                  ],
+                                  "span": {
+                                    "start": 7066,
+                                    "end": 7084,
+                                    "start_line": 193,
+                                    "start_col": 28,
+                                    "end_line": 193,
+                                    "end_col": 46
+                                  }
+                                },
+                                "op": "lt",
+                                "right": {
+                                  "expr_type": "literal",
+                                  "value": {
+                                    "type": "integer",
+                                    "value": 3
+                                  },
+                                  "span": {
+                                    "start": 7086,
+                                    "end": 7087,
+                                    "start_line": 193,
+                                    "start_col": 48,
+                                    "end_line": 193,
+                                    "end_col": 49
+                                  }
+                                },
+                                "span": {
+                                  "start": 7066,
+                                  "end": 7087,
+                                  "start_line": 193,
+                                  "start_col": 28,
+                                  "end_line": 193,
+                                  "end_col": 49
+                                }
+                              },
+                              "then_branch": [
+                                {
+                                  "content_type": "component",
+                                  "name": "Button",
+                                  "self_closing": true,
+                                  "attributes": [
+                                    {
+                                      "name": "label",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "Continue"
+                                      },
+                                      "span": {
+                                        "start": 7159,
+                                        "end": 7175,
+                                        "start_line": 195,
+                                        "start_col": 33,
+                                        "end_line": 195,
+                                        "end_col": 49
+                                      }
+                                    },
+                                    {
+                                      "name": "variant",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "primary"
+                                      },
+                                      "span": {
+                                        "start": 7208,
+                                        "end": 7225,
+                                        "start_line": 196,
+                                        "start_col": 33,
+                                        "end_line": 196,
+                                        "end_col": 50
+                                      }
+                                    }
+                                  ],
+                                  "events": [
+                                    {
+                                      "event": "click",
+                                      "handler": {
+                                        "handler_type": {
+                                          "type": "arrow",
+                                          "value": {
+                                            "params": [],
+                                            "body": {
+                                              "body_type": "block",
+                                              "content": [
+                                                {
+                                                  "stmt_type": "expression",
+                                                  "expr_type": "assignment",
+                                                  "target": {
+                                                    "expr_type": "member_access",
+                                                    "root": "state",
+                                                    "path": [
+                                                      "currentStep"
+                                                    ],
+                                                    "span": {
+                                                      "start": 7270,
+                                                      "end": 7288,
+                                                      "start_line": 197,
+                                                      "start_col": 45,
+                                                      "end_line": 197,
+                                                      "end_col": 63
+                                                    }
+                                                  },
+                                                  "value": {
+                                                    "expr_type": "binary",
+                                                    "left": {
+                                                      "expr_type": "member_access",
+                                                      "root": "state",
+                                                      "path": [
+                                                        "currentStep"
+                                                      ],
+                                                      "span": {
+                                                        "start": 7290,
+                                                        "end": 7308,
+                                                        "start_line": 197,
+                                                        "start_col": 65,
+                                                        "end_line": 197,
+                                                        "end_col": 83
+                                                      }
+                                                    },
+                                                    "op": "add",
+                                                    "right": {
+                                                      "expr_type": "literal",
+                                                      "value": {
+                                                        "type": "integer",
+                                                        "value": 1
+                                                      },
+                                                      "span": {
+                                                        "start": 7310,
+                                                        "end": 7311,
+                                                        "start_line": 197,
+                                                        "start_col": 85,
+                                                        "end_line": 197,
+                                                        "end_col": 86
+                                                      }
+                                                    },
+                                                    "span": {
+                                                      "start": 7290,
+                                                      "end": 7311,
+                                                      "start_line": 197,
+                                                      "start_col": 65,
+                                                      "end_line": 197,
+                                                      "end_col": 86
+                                                    }
+                                                  },
+                                                  "span": {
+                                                    "start": 7270,
+                                                    "end": 7311,
+                                                    "start_line": 197,
+                                                    "start_col": 45,
+                                                    "end_line": 197,
+                                                    "end_col": 86
+                                                  }
+                                                }
+                                              ]
+                                            },
+                                            "span": {
+                                              "start": 7258,
+                                              "end": 7313,
+                                              "start_line": 197,
+                                              "start_col": 33,
+                                              "end_line": 197,
+                                              "end_col": 88
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "span": {
+                                        "start": 7258,
+                                        "end": 7313,
+                                        "start_line": 197,
+                                        "start_col": 33,
+                                        "end_line": 197,
+                                        "end_col": 88
+                                      }
+                                    }
+                                  ],
+                                  "span": {
+                                    "start": 7118,
+                                    "end": 7344,
+                                    "start_line": 194,
+                                    "start_col": 29,
+                                    "end_line": 198,
+                                    "end_col": 31
+                                  }
+                                }
+                              ],
+                              "else_branch": [
+                                {
+                                  "content_type": "component",
+                                  "name": "Button",
+                                  "self_closing": true,
+                                  "attributes": [
+                                    {
+                                      "name": "label",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "Create Account"
+                                      },
+                                      "span": {
+                                        "start": 7447,
+                                        "end": 7469,
+                                        "start_line": 201,
+                                        "start_col": 33,
+                                        "end_line": 201,
+                                        "end_col": 55
+                                      }
+                                    },
+                                    {
+                                      "name": "variant",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "primary"
+                                      },
+                                      "span": {
+                                        "start": 7502,
+                                        "end": 7519,
+                                        "start_line": 202,
+                                        "start_col": 33,
+                                        "end_line": 202,
+                                        "end_col": 50
+                                      }
+                                    },
+                                    {
+                                      "name": "disabled",
+                                      "value": {
+                                        "value_type": "expression",
+                                        "value": {
+                                          "expr_type": "unary",
+                                          "op": "not",
+                                          "operand": {
+                                            "expr_type": "member_access",
+                                            "root": "state",
+                                            "path": [
+                                              "canSubmit"
+                                            ],
+                                            "span": {
+                                              "start": 7563,
+                                              "end": 7578,
+                                              "start_line": 203,
+                                              "start_col": 44,
+                                              "end_line": 203,
+                                              "end_col": 59
+                                            }
+                                          },
+                                          "span": {
+                                            "start": 7562,
+                                            "end": 7578,
+                                            "start_line": 203,
+                                            "start_col": 43,
+                                            "end_line": 203,
+                                            "end_col": 59
+                                          }
+                                        }
+                                      },
+                                      "span": {
+                                        "start": 7552,
+                                        "end": 7579,
+                                        "start_line": 203,
+                                        "start_col": 33,
+                                        "end_line": 203,
+                                        "end_col": 60
+                                      }
+                                    },
+                                    {
+                                      "name": "type",
+                                      "value": {
+                                        "value_type": "string",
+                                        "value": "submit"
+                                      },
+                                      "span": {
+                                        "start": 7612,
+                                        "end": 7625,
+                                        "start_line": 204,
+                                        "start_col": 33,
+                                        "end_line": 204,
+                                        "end_col": 46
+                                      }
+                                    }
+                                  ],
+                                  "span": {
+                                    "start": 7406,
+                                    "end": 7656,
+                                    "start_line": 200,
+                                    "start_col": 29,
+                                    "end_line": 205,
+                                    "end_col": 31
+                                  }
+                                }
+                              ],
+                              "span": {
+                                "start": 7063,
+                                "end": 7682,
+                                "start_line": 193,
+                                "start_col": 25,
+                                "end_line": 206,
+                                "end_col": 26
+                              }
+                            }
+                          ],
+                          "span": {
+                            "start": 6547,
+                            "end": 7710,
+                            "start_line": 182,
+                            "start_col": 21,
+                            "end_line": 207,
+                            "end_col": 28
+                          }
+                        }
+                      ],
+                      "span": {
+                        "start": 2007,
+                        "end": 7734,
+                        "start_line": 85,
+                        "start_col": 17,
+                        "end_line": 208,
+                        "end_col": 24
+                      }
+                    }
+                  ],
+                  "span": {
+                    "start": 1944,
+                    "end": 7761,
+                    "start_line": 84,
+                    "start_col": 13,
+                    "end_line": 209,
+                    "end_col": 27
+                  }
+                },
+                {
+                  "content_type": "component",
+                  "name": "Divider",
+                  "self_closing": true,
+                  "span": {
+                    "start": 7787,
+                    "end": 7798,
+                    "start_line": 211,
+                    "start_col": 13,
+                    "end_line": 211,
+                    "end_col": 24
+                  }
+                },
+                {
+                  "content_type": "component",
+                  "name": "CardFooter",
+                  "attributes": [
+                    {
+                      "name": "className",
+                      "value": {
+                        "value_type": "string",
+                        "value": "registration-footer"
+                      },
+                      "span": {
+                        "start": 7836,
+                        "end": 7867,
+                        "start_line": 213,
+                        "start_col": 25,
+                        "end_line": 213,
+                        "end_col": 56
+                      }
+                    }
+                  ],
+                  "children": [
+                    {
+                      "content_type": "component",
+                      "name": "Text",
+                      "self_closing": true,
+                      "attributes": [
+                        {
+                          "name": "variant",
+                          "value": {
+                            "value_type": "string",
+                            "value": "body"
+                          },
+                          "span": {
+                            "start": 7891,
+                            "end": 7905,
+                            "start_line": 214,
+                            "start_col": 23,
+                            "end_line": 214,
+                            "end_col": 37
+                          }
+                        },
+                        {
+                          "name": "content",
+                          "value": {
+                            "value_type": "string",
+                            "value": "Already have an account?"
+                          },
+                          "span": {
+                            "start": 7906,
+                            "end": 7940,
+                            "start_line": 214,
+                            "start_col": 38,
+                            "end_line": 214,
+                            "end_col": 72
+                          }
+                        }
+                      ],
+                      "span": {
+                        "start": 7885,
+                        "end": 7943,
+                        "start_line": 214,
+                        "start_col": 17,
+                        "end_line": 214,
+                        "end_col": 75
+                      }
+                    },
+                    {
+                      "content_type": "component",
+                      "name": "Link",
+                      "attributes": [
+                        {
+                          "name": "href",
+                          "value": {
+                            "value_type": "string",
+                            "value": "/login"
+                          },
+                          "span": {
+                            "start": 7966,
+                            "end": 7979,
+                            "start_line": 215,
+                            "start_col": 23,
+                            "end_line": 215,
+                            "end_col": 36
+                          }
+                        }
+                      ],
+                      "children": [
+                        {
+                          "content_type": "text",
+                          "value": "Sign in",
+                          "span": {
+                            "start": 7980,
+                            "end": 7987,
+                            "start_line": 215,
+                            "start_col": 37,
+                            "end_line": 215,
+                            "end_col": 44
+                          }
+                        }
+                      ],
+                      "span": {
+                        "start": 7960,
+                        "end": 7994,
+                        "start_line": 215,
+                        "start_col": 17,
+                        "end_line": 215,
+                        "end_col": 51
+                      }
+                    }
+                  ],
+                  "span": {
+                    "start": 7824,
+                    "end": 8020,
+                    "start_line": 213,
+                    "start_col": 13,
+                    "end_line": 216,
+                    "end_col": 26
+                  }
+                }
+              ],
+              "span": {
+                "start": 1608,
+                "end": 8036,
+                "start_line": 77,
+                "start_col": 9,
+                "end_line": 217,
+                "end_col": 16
+              }
+            }
+          ],
+          "span": {
+            "start": 1558,
+            "end": 8053,
+            "start_line": 76,
+            "start_col": 5,
+            "end_line": 218,
+            "end_col": 17
+          }
+        }
+      ],
+      "span": {
+        "start": 1543,
+        "end": 8055,
+        "start_line": 75,
+        "start_col": 1,
+        "end_line": 219,
+        "end_col": 2
+      }
+    },
+    {
+      "kind": "styles",
+      "scoped": true,
+      "modifiers": [
+        "scoped"
+      ],
+      "rules": [
+        {
+          "content_type": "rule",
+          "selectors": [
+            ".registration-page"
+          ],
+          "declarations": [
+            {
+              "property": "min-height",
+              "value": {
+                "value_type": "plain",
+                "value": "100vh"
+              },
+              "span": {
+                "start": 8106,
+                "end": 8124,
+                "start_line": 223,
+                "start_col": 9,
+                "end_line": 223,
+                "end_col": 27
+              }
+            },
+            {
+              "property": "display",
+              "value": {
+                "value_type": "plain",
+                "value": "flex"
+              },
+              "span": {
+                "start": 8133,
+                "end": 8147,
+                "start_line": 224,
+                "start_col": 9,
+                "end_line": 224,
+                "end_col": 23
+              }
+            },
+            {
+              "property": "align-items",
+              "value": {
+                "value_type": "plain",
+                "value": "center"
+              },
+              "span": {
+                "start": 8156,
+                "end": 8176,
+                "start_line": 225,
+                "start_col": 9,
+                "end_line": 225,
+                "end_col": 29
+              }
+            },
+            {
+              "property": "justify-content",
+              "value": {
+                "value_type": "plain",
+                "value": "center"
+              },
+              "span": {
+                "start": 8185,
+                "end": 8209,
+                "start_line": 226,
+                "start_col": 9,
+                "end_line": 226,
+                "end_col": 33
+              }
+            },
+            {
+              "property": "padding",
+              "value": {
+                "value_type": "plain",
+                "value": "32px"
+              },
+              "span": {
+                "start": 8218,
+                "end": 8232,
+                "start_line": 227,
+                "start_col": 9,
+                "end_line": 227,
+                "end_col": 23
+              }
+            },
+            {
+              "property": "background",
+              "value": {
+                "value_type": "plain",
+                "value": "var(--bg-subtle)"
+              },
+              "span": {
+                "start": 8241,
+                "end": 8270,
+                "start_line": 228,
+                "start_col": 9,
+                "end_line": 228,
+                "end_col": 38
+              }
+            }
+          ],
+          "nested_rules": [],
+          "span": {
+            "start": 8077,
+            "end": 8276,
+            "start_line": 222,
+            "start_col": 5,
+            "end_line": 229,
+            "end_col": 6
+          }
+        },
+        {
+          "content_type": "rule",
+          "selectors": [
+            ".registration-card"
+          ],
+          "declarations": [
+            {
+              "property": "width",
+              "value": {
+                "value_type": "plain",
+                "value": "100%"
+              },
+              "span": {
+                "start": 8315,
+                "end": 8327,
+                "start_line": 232,
+                "start_col": 9,
+                "end_line": 232,
+                "end_col": 21
+              }
+            },
+            {
+              "property": "max-width",
+              "value": {
+                "value_type": "plain",
+                "value": "500px"
+              },
+              "span": {
+                "start": 8336,
+                "end": 8353,
+                "start_line": 233,
+                "start_col": 9,
+                "end_line": 233,
+                "end_col": 26
+              }
+            },
+            {
+              "property": "background",
+              "value": {
+                "value_type": "plain",
+                "value": "var(--card-bg)"
+              },
+              "span": {
+                "start": 8362,
+                "end": 8389,
+                "start_line": 234,
+                "start_col": 9,
+                "end_line": 234,
+                "end_col": 36
+              }
+            },
+            {
+              "property": "border-radius",
+              "value": {
+                "value_type": "plain",
+                "value": "var(--radius-lg)"
+              },
+              "span": {
+                "start": 8398,
+                "end": 8430,
+                "start_line": 235,
+                "start_col": 9,
+                "end_line": 235,
+                "end_col": 41
+              }
+            },
+            {
+              "property": "box-shadow",
+              "value": {
+                "value_type": "plain",
+                "value": "var(--shadow-lg)"
+              },
+              "span": {
+                "start": 8439,
+                "end": 8468,
+                "start_line": 236,
+                "start_col": 9,
+                "end_line": 236,
+                "end_col": 38
+              }
+            }
+          ],
+          "nested_rules": [],
+          "span": {
+            "start": 8286,
+            "end": 8474,
+            "start_line": 231,
+            "start_col": 5,
+            "end_line": 237,
+            "end_col": 6
+          }
+        },
+        {
+          "content_type": "rule",
+          "selectors": [
+            ".registration-header"
+          ],
+          "declarations": [
+            {
+              "property": "text-align",
+              "value": {
+                "value_type": "plain",
+                "value": "center"
+              },
+              "span": {
+                "start": 8515,
+                "end": 8534,
+                "start_line": 240,
+                "start_col": 9,
+                "end_line": 240,
+                "end_col": 28
+              }
+            },
+            {
+              "property": "padding",
+              "value": {
+                "value_type": "plain",
+                "value": "32px 32px 16px"
+              },
+              "span": {
+                "start": 8543,
+                "end": 8567,
+                "start_line": 241,
+                "start_col": 9,
+                "end_line": 241,
+                "end_col": 33
+              }
+            }
+          ],
+          "nested_rules": [],
+          "span": {
+            "start": 8484,
+            "end": 8573,
+            "start_line": 239,
+            "start_col": 5,
+            "end_line": 242,
+            "end_col": 6
+          }
+        },
+        {
+          "content_type": "rule",
+          "selectors": [
+            ".registration-content"
+          ],
+          "declarations": [
+            {
+              "property": "padding",
+              "value": {
+                "value_type": "plain",
+                "value": "24px 32px"
+              },
+              "span": {
+                "start": 8615,
+                "end": 8634,
+                "start_line": 245,
+                "start_col": 9,
+                "end_line": 245,
+                "end_col": 28
+              }
+            }
+          ],
+          "nested_rules": [],
+          "span": {
+            "start": 8583,
+            "end": 8640,
+            "start_line": 244,
+            "start_col": 5,
+            "end_line": 246,
+            "end_col": 6
+          }
+        },
+        {
+          "content_type": "rule",
+          "selectors": [
+            ".step-content"
+          ],
+          "declarations": [
+            {
+              "property": "display",
+              "value": {
+                "value_type": "plain",
+                "value": "flex"
+              },
+              "span": {
+                "start": 8674,
+                "end": 8688,
+                "start_line": 249,
+                "start_col": 9,
+                "end_line": 249,
+                "end_col": 23
+              }
+            },
+            {
+              "property": "flex-direction",
+              "value": {
+                "value_type": "plain",
+                "value": "column"
+              },
+              "span": {
+                "start": 8697,
+                "end": 8720,
+                "start_line": 250,
+                "start_col": 9,
+                "end_line": 250,
+                "end_col": 32
+              }
+            },
+            {
+              "property": "gap",
+              "value": {
+                "value_type": "plain",
+                "value": "20px"
+              },
+              "span": {
+                "start": 8729,
+                "end": 8739,
+                "start_line": 251,
+                "start_col": 9,
+                "end_line": 251,
+                "end_col": 19
+              }
+            }
+          ],
+          "nested_rules": [],
+          "span": {
+            "start": 8650,
+            "end": 8745,
+            "start_line": 248,
+            "start_col": 5,
+            "end_line": 252,
+            "end_col": 6
+          }
+        },
+        {
+          "content_type": "rule",
+          "selectors": [
+            ".form-field"
+          ],
+          "declarations": [
+            {
+              "property": "display",
+              "value": {
+                "value_type": "plain",
+                "value": "flex"
+              },
+              "span": {
+                "start": 8777,
+                "end": 8791,
+                "start_line": 255,
+                "start_col": 9,
+                "end_line": 255,
+                "end_col": 23
+              }
+            },
+            {
+              "property": "flex-direction",
+              "value": {
+                "value_type": "plain",
+                "value": "column"
+              },
+              "span": {
+                "start": 8800,
+                "end": 8823,
+                "start_line": 256,
+                "start_col": 9,
+                "end_line": 256,
+                "end_col": 32
+              }
+            },
+            {
+              "property": "gap",
+              "value": {
+                "value_type": "plain",
+                "value": "6px"
+              },
+              "span": {
+                "start": 8832,
+                "end": 8841,
+                "start_line": 257,
+                "start_col": 9,
+                "end_line": 257,
+                "end_col": 18
+              }
+            }
+          ],
+          "nested_rules": [],
+          "span": {
+            "start": 8755,
+            "end": 8847,
+            "start_line": 254,
+            "start_col": 5,
+            "end_line": 258,
+            "end_col": 6
+          }
+        },
+        {
+          "content_type": "rule",
+          "selectors": [
+            ".form-actions"
+          ],
+          "declarations": [
+            {
+              "property": "margin-top",
+              "value": {
+                "value_type": "plain",
+                "value": "24px"
+              },
+              "span": {
+                "start": 8881,
+                "end": 8898,
+                "start_line": 261,
+                "start_col": 9,
+                "end_line": 261,
+                "end_col": 26
+              }
+            },
+            {
+              "property": "padding-top",
+              "value": {
+                "value_type": "plain",
+                "value": "24px"
+              },
+              "span": {
+                "start": 8907,
+                "end": 8925,
+                "start_line": 262,
+                "start_col": 9,
+                "end_line": 262,
+                "end_col": 27
+              }
+            },
+            {
+              "property": "border-top",
+              "value": {
+                "value_type": "plain",
+                "value": "1px solid var(--border)"
+              },
+              "span": {
+                "start": 8934,
+                "end": 8970,
+                "start_line": 263,
+                "start_col": 9,
+                "end_line": 263,
+                "end_col": 45
+              }
+            }
+          ],
+          "nested_rules": [],
+          "span": {
+            "start": 8857,
+            "end": 8976,
+            "start_line": 260,
+            "start_col": 5,
+            "end_line": 264,
+            "end_col": 6
+          }
+        },
+        {
+          "content_type": "rule",
+          "selectors": [
+            ".registration-footer"
+          ],
+          "declarations": [
+            {
+              "property": "text-align",
+              "value": {
+                "value_type": "plain",
+                "value": "center"
+              },
+              "span": {
+                "start": 9017,
+                "end": 9036,
+                "start_line": 267,
+                "start_col": 9,
+                "end_line": 267,
+                "end_col": 28
+              }
+            },
+            {
+              "property": "padding",
+              "value": {
+                "value_type": "plain",
+                "value": "16px 32px 32px"
+              },
+              "span": {
+                "start": 9045,
+                "end": 9069,
+                "start_line": 268,
+                "start_col": 9,
+                "end_line": 268,
+                "end_col": 33
+              }
+            }
+          ],
+          "nested_rules": [],
+          "span": {
+            "start": 8986,
+            "end": 9075,
+            "start_line": 266,
+            "start_col": 5,
+            "end_line": 269,
+            "end_col": 6
+          }
+        }
+      ],
+      "raw_css": "styles\n.registration-page {\n        min-height: 100vh;\n        display: flex;\n        align-items: center;\n        justify-content: center;\n        padding: 32px;\n        background: var(--bg-subtle);\n    }\n.registration-card {\n        width: 100%;\n        max-width: 500px;\n        background: var(--card-bg);\n        border-radius: var(--radius-lg);\n        box-shadow: var(--shadow-lg);\n    }\n.registration-header {\n        text-align: center;\n        padding: 32px 32px 16px;\n    }\n.registration-content {\n        padding: 24px 32px;\n    }\n.step-content {\n        display: flex;\n        flex-direction: column;\n        gap: 20px;\n    }\n.form-field {\n        display: flex;\n        flex-direction: column;\n        gap: 6px;\n    }\n.form-actions {\n        margin-top: 24px;\n        padding-top: 24px;\n        border-top: 1px solid var(--border);\n    }\n.registration-footer {\n        text-align: center;\n        padding: 16px 32px 32px;\n    }",
+      "span": {
+        "start": 8057,
+        "end": 9077,
+        "start_line": 221,
+        "start_col": 1,
+        "end_line": 270,
+        "end_col": 2
+      }
+    }
+  ],
+  "span": {
+    "start": 0,
+    "end": 9078,
+    "start_line": 1,
+    "start_col": 1,
+    "end_line": 271,
+    "end_col": 1
+  }
+}

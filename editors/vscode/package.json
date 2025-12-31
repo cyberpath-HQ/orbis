@@ -1,0 +1,186 @@
+{
+  "name": "orbis-dsl",
+  "displayName": "Orbis DSL",
+  "description": "Language support for Orbis DSL - UI page definition language",
+  "version": "0.1.0",
+  "publisher": "orbis",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ebalo/orbis-assets"
+  },
+  "categories": [
+    "Programming Languages",
+    "Linters",
+    "Formatters",
+    "Snippets"
+  ],
+  "keywords": [
+    "orbis",
+    "dsl",
+    "ui",
+    "pages",
+    "components"
+  ],
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "activationEvents": [
+    "onLanguage:orbis"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "orbis",
+        "aliases": [
+          "Orbis DSL",
+          "orbis"
+        ],
+        "extensions": [
+          ".orbis"
+        ],
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./icons/orbis-light.svg",
+          "dark": "./icons/orbis-dark.svg"
+        }
+      }
+    ],
+    "grammars": [
+      {
+        "language": "orbis",
+        "scopeName": "source.orbis",
+        "path": "./syntaxes/orbis.tmLanguage.json"
+      }
+    ],
+    "semanticTokenScopes": [
+      {
+        "language": "orbis",
+        "scopes": {
+          "operator": [
+            "keyword.operator.orbis"
+          ],
+          "keyword": [
+            "keyword.control.orbis"
+          ],
+          "decorator": [
+            "entity.name.function.decorator.orbis"
+          ],
+          "event": [
+            "entity.name.function.event.orbis"
+          ],
+          "property": [
+            "variable.other.property.orbis"
+          ],
+          "string": [
+            "string.quoted.orbis"
+          ],
+          "comment": [
+            "comment.orbis"
+          ],
+          "number": [
+            "constant.numeric.orbis"
+          ],
+          "type": [
+            "entity.name.type.orbis"
+          ],
+          "class": [
+            "entity.name.type.class.orbis"
+          ],
+          "function": [
+            "entity.name.function.orbis"
+          ],
+          "variable": [
+            "variable.other.orbis"
+          ],
+          "parameter": [
+            "variable.parameter.orbis"
+          ]
+        }
+      }
+    ],
+    "configuration": {
+      "title": "Orbis DSL",
+      "properties": {
+        "orbis.lsp.path": {
+          "type": "string",
+          "default": "",
+          "description": "Path to the orbis-lsp executable. If empty, will look in PATH."
+        },
+        "orbis.lsp.args": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "description": "Additional arguments to pass to the LSP server."
+        },
+        "orbis.trace.server": {
+          "type": "string",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "Traces the communication between VS Code and the language server."
+        },
+        "orbis.validation.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable/disable validation."
+        },
+        "orbis.completion.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable/disable completions."
+        },
+        "orbis.hover.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable/disable hover documentation."
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "orbis.restartServer",
+        "title": "Restart Language Server",
+        "category": "Orbis"
+      },
+      {
+        "command": "orbis.showOutput",
+        "title": "Show Output Channel",
+        "category": "Orbis"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "orbis",
+        "path": "./snippets/orbis.json"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "bun run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "bun run compile && bun run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js",
+    "package": "vsce package",
+    "publish": "vsce publish"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "eslint": "^8.55.0",
+    "typescript": "^5.3.2"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  }
+}

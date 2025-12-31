@@ -1,0 +1,7 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "Orbis DSL",
+    "patterns": [],
+    "repository": {},
+    "scopeName": "source.orbis"
+}

@@ -4,10 +4,24 @@ import DocsLayout from '@/layouts/DocsLayout.astro';
 
 export async function getStaticPaths() {
     const docsEntries = await getCollection(`docs`);
-    return docsEntries.map((entry) => ({
+    let static_paths =  docsEntries.map((entry) => ({
         params: { slug: entry.id === `intro` ? undefined : entry.id },
         props:  { entry },
     }));
+
+    const additional_paths = [];
+
+    // Add an additional path for the overview page aliasing it to the parent directory
+    for (const path of static_paths) {
+        if(path.props.entry.id.endsWith("overview")) {
+            additional_paths.push({
+                params: { slug: path.props.entry.id.replace(/\/overview$/, '') },
+                props:  { entry: path.props.entry },
+            });
+        }
+    }
+
+    return [...static_paths, ...additional_paths];
 }
 
 const { entry } = Astro.props;

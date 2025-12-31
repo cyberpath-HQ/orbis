@@ -1,0 +1,67 @@
+page {
+    id: "greeting-page"
+    title: "Quick Start"
+    icon: "waves"
+    route: "/hello"
+}
+
+state {
+    name: string = "World"
+    count = 0
+    message = ""
+    loading = false
+    items: Item[] = []
+}
+
+hooks {
+    @mount => {
+        console.log("Page mounted")
+    }
+}
+
+template {
+    <Container className="flex items-center justify-center">
+        <Card className="p-8 shadow-2xl">
+            <Text content="Hello, {state.name}!" className="text-4xl font-bold" />
+            
+            <Text content="Clicks: {state.count}" className="text-center" />
+            
+            if state.loading {
+                <Spinner />
+            }
+            
+            for item in state.items {
+                <ItemCard title={item.name} />
+            }
+            
+            <Field 
+                type="text"
+                placeholder="Enter your name"
+                defaultValue={state.name}
+                bind="name"
+            />
+            
+            <Button 
+                label="Click Me!"
+                className="w-full"
+                @click => {
+                    state.count = state.count + 1,
+                    toast.show("Clicked!", level: success)
+                }
+            />
+            
+            // Example with response handlers
+            <Button 
+                label="Load Data"
+                @click => api.call("load_data") {
+                    success => {
+                        state.items = $response.body.items
+                    }
+                    error => {
+                        toast.show("Failed", level: error)
+                    }
+                }
+            />
+        </Card>
+    </Container>
+}
